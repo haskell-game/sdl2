@@ -1,7 +1,7 @@
 name:                sdl2
-version:             1.0.2
+version:             1.1.0
 synopsis:            Bindings to SDL2
-description:         Bindings to the SDL2 library, version 2.0.1.
+description:         Low-level bindings to the SDL2 library, version 2.0.3.
 license:             BSD3
 license-file:        LICENSE
 author:              Gabríel Arthúr Pétursson
@@ -45,7 +45,7 @@ library
     SDL2
 
   pkgconfig-depends:
-    sdl2 >= 2.0.1
+    sdl2 >= 2.0.3
 
   build-depends:
     base == 4.*

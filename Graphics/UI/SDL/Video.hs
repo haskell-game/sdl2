@@ -18,6 +18,7 @@ module Graphics.UI.SDL.Video (
 	glGetSwapInterval,
 	glLoadLibrary,
 	glMakeCurrent,
+	glResetAttributes,
 	glSetAttribute,
 	glSetSwapInterval,
 	glSwapWindow,
@@ -220,6 +221,7 @@ foreign import ccall "SDL.h SDL_GL_GetProcAddress" glGetProcAddress :: CString -
 foreign import ccall "SDL.h SDL_GL_GetSwapInterval" glGetSwapInterval :: IO CInt
 foreign import ccall "SDL.h SDL_GL_LoadLibrary" glLoadLibrary :: CString -> IO CInt
 foreign import ccall "SDL.h SDL_GL_MakeCurrent" glMakeCurrent :: Window -> GLContext -> IO CInt
+foreign import ccall "SDL.h SDL_GL_ResetAttributes" glResetAttributes :: IO ()
 foreign import ccall "SDL.h SDL_GL_SetAttribute" glSetAttribute :: GLattr -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_GL_SetSwapInterval" glSetSwapInterval :: CInt -> IO CInt
 foreign import ccall "SDL.h SDL_GL_SwapWindow" glSwapWindow :: Window -> IO ()

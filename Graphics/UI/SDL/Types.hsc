@@ -249,6 +249,7 @@ data Event = WindowEvent {
            , mouseButtonEventWhich :: Word32
            , mouseButtonEventButton :: Word8
            , mouseButtonEventState :: Word8
+           , mouseButtonEventClicks :: Word8
            , mouseButtonEventX :: Int32
            , mouseButtonEventY :: Int32
            }
@@ -481,9 +482,10 @@ instance Storable Event where
 			which <- (#peek SDL_Event, button.which) ptr
 			button <- (#peek SDL_Event, button.button) ptr
 			state <- (#peek SDL_Event, button.state) ptr
+			clicks <- (#peek SDL_Event, button.clicks) ptr
 			x <- (#peek SDL_Event, button.x) ptr
 			y <- (#peek SDL_Event, button.y) ptr
-			return $! f wid which button state x y
+			return $! f wid which button state clicks x y
 
 		joybutton f = do
 			which <- (#peek SDL_Event, jbutton.which) ptr
@@ -560,13 +562,14 @@ instance Storable Event where
 			(#poke SDL_Event, motion.y) ptr y
 			(#poke SDL_Event, motion.xrel) ptr xrel
 			(#poke SDL_Event, motion.yrel) ptr yrel
-		MouseButtonEvent typ timestamp wid which button state x y -> do
+		MouseButtonEvent typ timestamp wid which button state clicks x y -> do
 			(#poke SDL_Event, common.type) ptr typ
 			(#poke SDL_Event, common.timestamp) ptr timestamp
 			(#poke SDL_Event, button.windowID) ptr wid
 			(#poke SDL_Event, button.which) ptr which
 			(#poke SDL_Event, button.button) ptr button
 			(#poke SDL_Event, button.state) ptr state
+			(#poke SDL_Event, button.clicks) ptr clicks
 			(#poke SDL_Event, button.x) ptr x
 			(#poke SDL_Event, button.y) ptr y
 		MouseWheelEvent typ timestamp wid which x y -> do

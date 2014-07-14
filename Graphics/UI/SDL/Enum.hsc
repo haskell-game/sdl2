@@ -388,6 +388,18 @@ module Graphics.UI.SDL.Enum (
 	-- * Miscellaneous Enumerations
 	-- | These enumerations are not used directly by any SDL function, thus they have a polymorphic type.
 
+	-- ** Button
+	buttonLeft,
+	buttonMiddle,
+	buttonRight,
+	buttonX1,
+	buttonX2,
+	buttonLMask,
+	buttonMMask,
+	buttonRMask,
+	buttonX1Mask,
+	buttonX2Mask,
+
 	-- ** Event Type
 	eventTypeFirstEvent,
 	eventTypeQuit,
@@ -532,7 +544,7 @@ module Graphics.UI.SDL.Enum (
 import Data.Int
 import Data.Word
 
-type AudioStatus = Word32 -- (#type SDL_AudioStatus)
+type AudioStatus = (#type SDL_AudioStatus)
 
 audioStatusStopped :: AudioStatus
 audioStatusPlaying :: AudioStatus
@@ -542,7 +554,7 @@ audioStatusStopped = (#const SDL_AUDIO_STOPPED)
 audioStatusPlaying = (#const SDL_AUDIO_PLAYING)
 audioStatusPaused = (#const SDL_AUDIO_PAUSED)
 
-type BlendMode = Word32 -- (#type SDL_BlendMode)
+type BlendMode = (#type SDL_BlendMode)
 
 blendModeNone :: BlendMode
 blendModeBlend :: BlendMode
@@ -554,7 +566,7 @@ blendModeBlend = (#const SDL_BLENDMODE_BLEND)
 blendModeAdd = (#const SDL_BLENDMODE_ADD)
 blendModeMod = (#const SDL_BLENDMODE_MOD)
 
-type EventAction = Word32 -- (#type SDL_eventaction)
+type EventAction = (#type SDL_eventaction)
 
 eventActionAddEvent :: EventAction
 eventActionPeekEvent :: EventAction
@@ -564,7 +576,7 @@ eventActionAddEvent = (#const SDL_ADDEVENT)
 eventActionPeekEvent = (#const SDL_PEEKEVENT)
 eventActionGetEvent = (#const SDL_GETEVENT)
 
-type GameControllerAxis = Int32 -- (#type SDL_GameControllerAxis)
+type GameControllerAxis = (#type SDL_GameControllerAxis)
 
 gameControllerAxisInvalid :: GameControllerAxis
 gameControllerAxisLeftX :: GameControllerAxis
@@ -584,7 +596,7 @@ gameControllerAxisTriggerLeft = (#const SDL_CONTROLLER_AXIS_TRIGGERLEFT)
 gameControllerAxisTriggerRight = (#const SDL_CONTROLLER_AXIS_TRIGGERRIGHT)
 gameControllerAxisMax = (#const SDL_CONTROLLER_AXIS_MAX)
 
-type GameControllerButton = Int32 -- (#type SDL_GameControllerButton)
+type GameControllerButton = (#type SDL_GameControllerButton)
 
 gameControllerButtonInvalid :: GameControllerButton
 gameControllerButtonA :: GameControllerButton
@@ -622,7 +634,7 @@ gameControllerButtonDPadLeft = (#const SDL_CONTROLLER_BUTTON_DPAD_LEFT)
 gameControllerButtonDPadRight = (#const SDL_CONTROLLER_BUTTON_DPAD_RIGHT)
 gameControllerButtonMax = (#const SDL_CONTROLLER_BUTTON_MAX)
 
-type GLattr = Word32 -- (#type SDL_GLattr)
+type GLattr = (#type SDL_GLattr)
 
 glAttrRedSize :: GLattr
 glAttrGreenSize :: GLattr
@@ -674,7 +686,7 @@ glAttrContextProfileMask = (#const SDL_GL_CONTEXT_PROFILE_MASK)
 glAttrShareWithCurrentContext = (#const SDL_GL_SHARE_WITH_CURRENT_CONTEXT)
 glAttrFramebufferSRGBCapable = (#const SDL_GL_FRAMEBUFFER_SRGB_CAPABLE)
 
-type HintPriority = Word32 -- (#type SDL_HintPriority)
+type HintPriority = (#type SDL_HintPriority)
 
 hintPriorityDefault :: HintPriority
 hintPriorityNormal :: HintPriority
@@ -684,7 +696,7 @@ hintPriorityDefault = (#const SDL_HINT_DEFAULT)
 hintPriorityNormal = (#const SDL_HINT_NORMAL)
 hintPriorityOverride = (#const SDL_HINT_OVERRIDE)
 
-type Keymod = Word32 -- (#type SDL_Keymod)
+type Keymod = (#type SDL_Keymod)
 
 keymodNone :: Keymod
 keymodLShift :: Keymod
@@ -714,7 +726,7 @@ keymodCaps = (#const KMOD_CAPS)
 keymodMode = (#const KMOD_MODE)
 keymodReserved = (#const KMOD_RESERVED)
 
-type LogPriority = Word32 -- (#type SDL_LogPriority)
+type LogPriority = (#type SDL_LogPriority)
 
 logPriorityVerbose :: LogPriority
 logPriorityDebug :: LogPriority
@@ -732,7 +744,7 @@ logPriorityError = (#const SDL_LOG_PRIORITY_ERROR)
 logPriorityCritical = (#const SDL_LOG_PRIORITY_CRITICAL)
 logPriorityPriorities = (#const SDL_NUM_LOG_PRIORITIES)
 
-type PowerState = Word32 -- (#type SDL_PowerState)
+type PowerState = (#type SDL_PowerState)
 
 powerStateUnknown :: PowerState
 powerStateOnBattery :: PowerState
@@ -746,7 +758,7 @@ powerStateNoBattery = (#const SDL_POWERSTATE_NO_BATTERY)
 powerStateCharging = (#const SDL_POWERSTATE_CHARGING)
 powerStateCharged = (#const SDL_POWERSTATE_CHARGED)
 
-type RendererFlip = Word32 -- (#type SDL_RendererFlip)
+type RendererFlip = (#type SDL_RendererFlip)
 
 rendererFlipNone :: RendererFlip
 rendererFlipHorizontal :: RendererFlip
@@ -756,7 +768,7 @@ rendererFlipNone = (#const SDL_FLIP_NONE)
 rendererFlipHorizontal = (#const SDL_FLIP_HORIZONTAL)
 rendererFlipVertical = (#const SDL_FLIP_VERTICAL)
 
-type Scancode = Word32 -- (#type SDL_Scancode)
+type Scancode = (#type SDL_Scancode)
 
 scancodeUnknown :: Scancode
 scancodeA :: Scancode
@@ -1244,7 +1256,7 @@ scancodeApp1 = (#const SDL_SCANCODE_APP1)
 scancodeApp2 = (#const SDL_SCANCODE_APP2)
 scancodeNum = (#const SDL_NUM_SCANCODES)
 
-type SystemCursor = Word32 -- (#type SDL_SystemCursor)
+type SystemCursor = (#type SDL_SystemCursor)
 
 systemCursorArrow :: SystemCursor
 systemCursorIBeam :: SystemCursor
@@ -1273,6 +1285,28 @@ systemCursorSizeAll = (#const SDL_SYSTEM_CURSOR_SIZEALL)
 systemCursorNo = (#const SDL_SYSTEM_CURSOR_NO)
 systemCursorHand = (#const SDL_SYSTEM_CURSOR_HAND)
 systemCursorNum = (#const SDL_NUM_SYSTEM_CURSORS)
+
+buttonLeft :: (Num a) => a
+buttonMiddle :: (Num a) => a
+buttonRight :: (Num a) => a
+buttonX1 :: (Num a) => a
+buttonX2 :: (Num a) => a
+buttonLMask :: (Num a) => a
+buttonMMask :: (Num a) => a
+buttonRMask :: (Num a) => a
+buttonX1Mask :: (Num a) => a
+buttonX2Mask :: (Num a) => a
+
+buttonLeft = (#const SDL_BUTTON_LEFT)
+buttonMiddle = (#const SDL_BUTTON_MIDDLE)
+buttonRight = (#const SDL_BUTTON_RIGHT)
+buttonX1 = (#const SDL_BUTTON_X1)
+buttonX2 = (#const SDL_BUTTON_X2)
+buttonLMask = (#const SDL_BUTTON_LMASK)
+buttonMMask = (#const SDL_BUTTON_MMASK)
+buttonRMask = (#const SDL_BUTTON_RMASK)
+buttonX1Mask = (#const SDL_BUTTON_X1MASK)
+buttonX2Mask = (#const SDL_BUTTON_X2MASK)
 
 eventTypeFirstEvent :: (Num a) => a
 eventTypeQuit :: (Num a) => a

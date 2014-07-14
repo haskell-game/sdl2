@@ -86,7 +86,8 @@ module Graphics.UI.SDL.Event (
 
 	-- * Game Controller Support
 	gameControllerAddMapping,
-	-- gameControllerAddMappingsFromFile,
+	gameControllerAddMappingsFromFile,
+	gameControllerAddMappingsFromRW,
 	gameControllerClose,
 	gameControllerEventState,
 	gameControllerGetAttached,
@@ -116,6 +117,7 @@ import Foreign.Marshal.Alloc
 import Foreign.Ptr
 import Foreign.Storable
 import Graphics.UI.SDL.Enum
+import Graphics.UI.SDL.Filesystem
 import Graphics.UI.SDL.Types
 
 foreign import ccall "SDL.h SDL_AddEventWatch" addEventWatch :: EventFilter -> Ptr () -> IO ()
@@ -136,7 +138,6 @@ foreign import ccall "SDL.h SDL_PeepEvents" peepEvents :: Ptr Event -> CInt -> E
 foreign import ccall "SDL.h SDL_PollEvent" pollEvent :: Ptr Event -> IO CInt
 foreign import ccall "SDL.h SDL_PumpEvents" pumpEvents :: IO ()
 foreign import ccall "SDL.h SDL_PushEvent" pushEvent :: Ptr Event -> IO CInt
--- foreign import ccall "SDL.h SDL_QuitRequested" quitRequested :: IO Bool
 foreign import ccall "SDL.h SDL_RecordGesture" recordGesture :: TouchID -> IO CInt
 foreign import ccall "SDL.h SDL_RegisterEvents" registerEvents :: CInt -> IO Word32
 foreign import ccall "SDL.h SDL_SaveAllDollarTemplates" saveAllDollarTemplates :: Ptr RWops -> IO CInt
@@ -200,7 +201,7 @@ foreign import ccall "SDL.h SDL_JoystickUpdate" joystickUpdate :: IO ()
 foreign import ccall "SDL.h SDL_NumJoysticks" numJoysticks :: IO CInt
 
 foreign import ccall "SDL.h SDL_GameControllerAddMapping" gameControllerAddMapping :: CString -> IO CInt
--- foreign import ccall "SDL.h SDL_GameControllerAddMappingsFromFile" gameControllerAddMappingsFromFile :: CString -> IO CInt -- Available in SDL 2.0.2
+foreign import ccall "SDL.h SDL_GameControllerAddMappingsFromRW" gameControllerAddMappingsFromRW :: Ptr RWops -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_GameControllerClose" gameControllerClose :: GameController -> IO ()
 foreign import ccall "SDL.h SDL_GameControllerEventState" gameControllerEventState :: CInt -> IO CInt
 foreign import ccall "SDL.h SDL_GameControllerGetAttached" gameControllerGetAttached :: GameController -> IO Bool
@@ -246,6 +247,11 @@ joystickGetGUIDString :: JoystickGUID -> CString -> CInt -> IO ()
 joystickGetGUIDString guid pszGUID cbGUID = alloca $ \ptr -> do
 	poke ptr guid
 	joystickGetGUIDString' ptr pszGUID cbGUID
+
+gameControllerAddMappingsFromFile :: CString -> IO CInt
+gameControllerAddMappingsFromFile file = do
+	rw <- withCString "rb" $ rwFromFile file
+	gameControllerAddMappingsFromRW rw 1
 
 gameControllerGetBindForAxis :: GameController -> GameControllerAxis -> IO GameControllerButtonBind
 gameControllerGetBindForAxis gamecontroller axis = alloca $ \ptr -> do
