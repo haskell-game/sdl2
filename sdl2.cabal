@@ -1,0 +1,54 @@
+name:                sdl2
+version:             1.0.0
+synopsis:            Bindings to SDL2
+description:         Bindings to the SDL2 library, version 2.0.1.
+license:             BSD3
+license-file:        LICENSE
+author:              Gabríel Arthúr Pétursson
+maintainer:          gabriel@system.is
+copyright:           Copyright © 2013, 2014  Gabríel Arthúr Pétursson
+category:            Graphics
+build-type:          Simple
+cabal-version:       >= 1.10
+
+extra-source-files:
+  cbits/sdlhelper.c,
+  include/sdlhelper.h
+
+library
+  ghc-options: -Wall
+
+  exposed-modules:
+    Graphics.UI.SDL
+    Graphics.UI.SDL.Audio
+    Graphics.UI.SDL.Basic
+    Graphics.UI.SDL.Enum
+    Graphics.UI.SDL.Event
+    Graphics.UI.SDL.Filesystem
+    Graphics.UI.SDL.Haptic
+    Graphics.UI.SDL.Power
+    Graphics.UI.SDL.Timer
+    Graphics.UI.SDL.Types
+    Graphics.UI.SDL.Video
+
+  c-sources:
+    cbits/sdlhelper.c
+
+  include-dirs:
+    include
+
+  includes:
+    SDL.h
+    sdlhelper.h
+
+  extra-libraries:
+    SDL2
+
+  pkgconfig-depends:
+    sdl2 >= 2.0.1
+
+  build-depends:
+    base == 4.*
+
+  default-language:
+    Haskell2010
