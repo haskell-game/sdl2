@@ -61,9 +61,9 @@ foreign import ccall "SDL.h SDL_QuitSubSystem" quitSubSystem :: Word32 -> IO ()
 foreign import ccall "SDL.h SDL_SetMainReady" setMainReady :: IO ()
 foreign import ccall "SDL.h SDL_WasInit" wasInit :: Word32 -> IO Word32
 
-foreign import ccall "SDL.h SDL_AddHintCallback" addHintCallback :: CString -> FunPtr (Ptr () -> CString -> CString -> CString -> IO ()) -> Ptr () -> IO ()
+foreign import ccall "SDL.h SDL_AddHintCallback" addHintCallback :: CString -> HintCallback -> Ptr () -> IO ()
 foreign import ccall "SDL.h SDL_ClearHints" clearHints :: IO ()
-foreign import ccall "SDL.h SDL_DelHintCallback" delHintCallback :: CString -> FunPtr (Ptr () -> CString -> CString -> CString -> IO ()) -> Ptr () -> IO ()
+foreign import ccall "SDL.h SDL_DelHintCallback" delHintCallback :: CString -> HintCallback -> Ptr () -> IO ()
 foreign import ccall "SDL.h SDL_GetHint" getHint :: CString -> IO CString
 foreign import ccall "SDL.h SDL_SetHint" setHint :: CString -> CString -> IO Bool
 foreign import ccall "SDL.h SDL_SetHintWithPriority" setHintWithPriority :: CString -> CString -> HintPriority -> IO Bool
@@ -80,4 +80,4 @@ foreign import ccall "SDL.h SDL_LogSetPriority" logSetPriority :: CInt -> LogPri
 
 foreign import ccall "SDL.h SDL_GetRevision" getRevision :: IO CString
 foreign import ccall "SDL.h SDL_GetRevisionNumber" getRevisionNumber :: IO CInt
-foreign import ccall "SDL.h SDL_GetVersion" getVersion :: Ptr () -> IO ()
+foreign import ccall "SDL.h SDL_GetVersion" getVersion :: Ptr Version -> IO ()

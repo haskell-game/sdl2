@@ -10,6 +10,7 @@ module Graphics.UI.SDL.Types (
 	GestureID,
 	GLContext,
 	Haptic,
+	HintCallback,
 	Joystick,
 	JoystickID,
 	Keycode,
@@ -44,7 +45,8 @@ module Graphics.UI.SDL.Types (
 	Rect(..),
 	RendererInfo(..),
 	RWops(..),
-	Surface(..)
+	Surface(..),
+	Version(..)
 ) where
 
 #include "SDL.h"
@@ -68,6 +70,7 @@ type GameController = Ptr ()
 type GestureID = Int64
 type GLContext = Ptr ()
 type Haptic = Ptr ()
+type HintCallback = FunPtr (Ptr () -> CString -> CString -> CString -> IO ())
 type Joystick = Ptr ()
 type JoystickID = Int32
 type Keycode = Int32
@@ -1301,3 +1304,22 @@ instance Storable Surface where
 		(#poke SDL_Surface, userdata) ptr userdata
 		(#poke SDL_Surface, clip_rect) ptr cliprect
 		(#poke SDL_Surface, refcount) ptr refcount
+
+data Version = Version {
+               versionMajor :: Word8
+             , versionMinor :: Word8
+             , versionPatch :: Word8
+             } deriving (Eq, Show)
+
+instance Storable Version where
+	sizeOf _ = (#size SDL_version)
+	alignment = sizeOf
+	peek ptr = do
+		major <- (#peek SDL_version, major) ptr
+		minor <- (#peek SDL_version, minor) ptr
+		patch <- (#peek SDL_version, patch) ptr
+		return $! Version major minor patch
+	poke ptr (Version major minor patch) = do
+		(#poke SDL_version, major) ptr major
+		(#poke SDL_version, minor) ptr minor
+		(#poke SDL_version, patch) ptr patch
