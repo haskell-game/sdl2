@@ -1,5 +1,5 @@
 name:                sdl2
-version:             1.0.1
+version:             1.0.2
 synopsis:            Bindings to SDL2
 description:         Bindings to the SDL2 library, version 2.0.1.
 license:             BSD3

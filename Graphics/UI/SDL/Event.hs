@@ -126,7 +126,7 @@ foreign import ccall "SDL.h SDL_FlushEvent" flushEvent :: Word32 -> IO ()
 foreign import ccall "SDL.h SDL_FlushEvents" flushEvents :: Word32 -> Word32 -> IO ()
 foreign import ccall "SDL.h SDL_GetEventFilter" getEventFilter :: Ptr EventFilter -> Ptr (Ptr ()) -> IO Bool
 foreign import ccall "SDL.h SDL_GetNumTouchDevices" getNumTouchDevices :: IO CInt
-foreign import ccall "SDL.h SDL_GetNumTouchFingers" getNumTouchFingers :: TouchID -> CInt
+foreign import ccall "SDL.h SDL_GetNumTouchFingers" getNumTouchFingers :: TouchID -> IO CInt
 foreign import ccall "SDL.h SDL_GetTouchDevice" getTouchDevice :: CInt -> IO TouchID
 foreign import ccall "SDL.h SDL_GetTouchFinger" getTouchFinger :: TouchID -> CInt -> IO (Ptr Finger)
 foreign import ccall "SDL.h SDL_HasEvent" hasEvent :: Word32 -> IO Bool
