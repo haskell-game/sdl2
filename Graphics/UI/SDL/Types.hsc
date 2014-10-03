@@ -3,6 +3,7 @@ module Graphics.UI.SDL.Types (
 	AudioCallback,
 	AudioDeviceID,
 	AudioFormat,
+	Cond,
 	Cursor,
 	EventFilter,
 	FingerID,
@@ -15,15 +16,24 @@ module Graphics.UI.SDL.Types (
 	JoystickID,
 	Keycode,
 	LogOutputFunction,
+	Mutex,
 	Renderer,
+	Sem,
+	SpinLock,
+	SysWMinfo,
 	SysWMmsg,
 	Texture,
+	Thread,
+	ThreadFunction,
+	ThreadID,
 	TimerCallback,
 	TimerID,
+	TLSID,
 	TouchID,
 	Window,
 
 	-- * Data Structures
+	Atomic(..),
 	AudioCVT(..),
 	AudioSpec(..),
 	Color(..),
@@ -63,6 +73,7 @@ import Graphics.UI.SDL.Enum
 type AudioCallback = FunPtr (Ptr () -> Ptr Word8 -> CInt -> IO ())
 type AudioDeviceID = Word32
 type AudioFormat = Word16
+type Cond = Ptr ()
 type Cursor = Ptr ()
 type EventFilter = FunPtr (Ptr () -> Ptr Event -> IO CInt)
 type FingerID = Int64
@@ -75,13 +86,34 @@ type Joystick = Ptr ()
 type JoystickID = Int32
 type Keycode = Int32
 type LogOutputFunction = FunPtr (Ptr () -> CInt -> LogPriority -> CString -> IO ())
+type Mutex = Ptr ()
 type Renderer = Ptr ()
+type Sem = Ptr ()
+type SpinLock = CInt
+type SysWMinfo = Ptr ()
 type SysWMmsg = Ptr ()
 type Texture = Ptr ()
+type Thread = Ptr ()
+type ThreadFunction = FunPtr (Ptr () -> IO CInt)
+type ThreadID = CULong
 type TimerCallback = FunPtr (Word32 -> Ptr () -> IO Word32)
 type TimerID = CInt
+type TLSID = CUInt
 type TouchID = Int64
 type Window = Ptr ()
+
+data Atomic = Atomic {
+              atomicValue :: CInt
+            } deriving (Eq, Show)
+
+instance Storable Atomic where
+	sizeOf _ = (#size SDL_atomic_t)
+	alignment = sizeOf
+	peek ptr = do
+		value <- (#peek SDL_atomic_t, value) ptr
+		return $! Atomic value
+	poke ptr (Atomic value) = do
+		(#poke SDL_atomic_t, value) ptr value
 
 data AudioCVT = AudioCVT {
                 audioCVTNeeded :: CInt

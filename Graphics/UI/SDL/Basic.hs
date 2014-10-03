@@ -18,24 +18,23 @@ module Graphics.UI.SDL.Basic (
 	-- * Error Handling
 	clearError,
 	getError,
-	-- setError,
+	setError,
 
 	-- * Log Handling
-	-- log,
-	-- logCritical,
-	-- logDebug,
-	-- logError,
+	log,
+	logCritical,
+	logDebug,
+	logError,
 	logGetOutputFunction,
 	logGetPriority,
-	-- logInfo,
-	-- logMessage,
-	-- logMessageV,
+	logInfo,
+	logMessage,
 	logResetPriorities,
 	logSetAllPriority,
 	logSetOutputFunction,
 	logSetPriority,
-	-- logVerbose,
-	-- logWarn,
+	logVerbose,
+	logWarn,
 
 	-- * Assertions
 	-- | Use Haskell's own assertion primitives rather than SDL's.
@@ -52,7 +51,7 @@ import Foreign.C.Types
 import Foreign.Ptr
 import Graphics.UI.SDL.Enum
 import Graphics.UI.SDL.Types
-import Prelude hiding (init)
+import Prelude hiding (init, log)
 
 foreign import ccall "SDL.h SDL_Init" init :: Word32 -> IO CInt
 foreign import ccall "SDL.h SDL_InitSubSystem" initSubSystem :: Word32 -> IO CInt
@@ -70,9 +69,11 @@ foreign import ccall "SDL.h SDL_SetHintWithPriority" setHintWithPriority :: CStr
 
 foreign import ccall "SDL.h SDL_ClearError" clearError :: IO ()
 foreign import ccall "SDL.h SDL_GetError" getError :: IO CString
+foreign import ccall "sdlhelper.c SDLHelper_SetError" setError :: CString -> IO CInt
 
 foreign import ccall "SDL.h SDL_LogGetOutputFunction" logGetOutputFunction :: Ptr LogOutputFunction -> Ptr (Ptr ()) -> IO ()
 foreign import ccall "SDL.h SDL_LogGetPriority" logGetPriority :: CInt -> IO LogPriority
+foreign import ccall "sdlhelper.c SDLHelper_LogMessage" logMessage :: CInt -> LogPriority -> CString -> IO ()
 foreign import ccall "SDL.h SDL_LogResetPriorities" logResetPriorities :: IO ()
 foreign import ccall "SDL.h SDL_LogSetAllPriority" logSetAllPriority :: LogPriority -> IO ()
 foreign import ccall "SDL.h SDL_LogSetOutputFunction" logSetOutputFunction :: LogOutputFunction -> Ptr () -> IO ()
@@ -81,3 +82,24 @@ foreign import ccall "SDL.h SDL_LogSetPriority" logSetPriority :: CInt -> LogPri
 foreign import ccall "SDL.h SDL_GetRevision" getRevision :: IO CString
 foreign import ccall "SDL.h SDL_GetRevisionNumber" getRevisionNumber :: IO CInt
 foreign import ccall "SDL.h SDL_GetVersion" getVersion :: Ptr Version -> IO ()
+
+log :: CString -> IO ()
+log = logMessage logCategoryApplication logPriorityInfo
+
+logCritical :: CInt -> CString -> IO ()
+logCritical category = logMessage category logPriorityCritical
+
+logDebug :: CInt -> CString -> IO ()
+logDebug category = logMessage category logPriorityDebug
+
+logError :: CInt -> CString -> IO ()
+logError category = logMessage category logPriorityError
+
+logInfo :: CInt -> CString -> IO ()
+logInfo category = logMessage category logPriorityInfo
+
+logVerbose :: CInt -> CString -> IO ()
+logVerbose category = logMessage category logPriorityVerbose
+
+logWarn :: CInt -> CString -> IO ()
+logWarn category = logMessage category logPriorityWarn

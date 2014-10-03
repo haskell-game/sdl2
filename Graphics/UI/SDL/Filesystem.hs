@@ -36,8 +36,8 @@ import Foreign.C.Types
 import Foreign.Ptr
 import Graphics.UI.SDL.Types
 
-foreign import ccall "SDL.H SDL_GetBasePath" getBasePath :: IO CString
-foreign import ccall "SDL.H SDL_GetPrefPath" getPrefPath :: CString -> CString -> IO CString
+foreign import ccall "SDL.h SDL_GetBasePath" getBasePath :: IO CString
+foreign import ccall "SDL.h SDL_GetPrefPath" getPrefPath :: CString -> CString -> IO CString
 
 foreign import ccall "SDL.h SDL_AllocRW" allocRW :: IO (Ptr RWops)
 foreign import ccall "SDL.h SDL_FreeRW" freeRW :: Ptr RWops -> IO ()

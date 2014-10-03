@@ -385,6 +385,12 @@ module Graphics.UI.SDL.Enum (
 	systemCursorHand,
 	systemCursorNum,
 
+	-- * Thread Priority
+	ThreadPriority,
+	threadPriorityLow,
+	threadPriorityNormal,
+	threadPriorityHigh,
+
 	-- * Miscellaneous Enumerations
 	-- | These enumerations are not used directly by any SDL function, thus they have a polymorphic type.
 
@@ -443,17 +449,6 @@ module Graphics.UI.SDL.Enum (
 	eventTypeUserEvent,
 	eventTypeLastEvent,
 
-	-- ** OpenGL Profile
-	glProfileCore,
-	glProfileCompatibility,
-	glProfileES,
-
-	-- ** OpenGL Context Flag
-	glContextFlagDebug,
-	glContextFlagForwardCompatible,
-	glContextFlagRobustAccess,
-	glContextFlagResetIsolation,
-
 	-- ** Initialization Flag
 	initFlagTimer,
 	initFlagAudio,
@@ -476,6 +471,18 @@ module Graphics.UI.SDL.Enum (
 	joystickHatLeftUp,
 	joystickHatLeftDown,
 
+	-- ** Log Category
+	logCategoryApplication,
+	logCategoryError,
+	logCategoryAssert,
+	logCategorySystem,
+	logCategoryAudio,
+	logCategoryVideo,
+	logCategoryRender,
+	logCategoryInput,
+	logCategoryTest,
+	logCategoryCustom,
+
 	-- ** Message Box Flags
 	messageBoxFlagError,
 	messageBoxFlagWarning,
@@ -484,6 +491,55 @@ module Graphics.UI.SDL.Enum (
 	-- ** Message Box Button Flags
 	messageBoxButtonFlagReturnKeyDefault,
 	messageBoxButtonFlagEscapeKeyDefault,
+
+	-- ** OpenGL Profile
+	glProfileCore,
+	glProfileCompatibility,
+	glProfileES,
+
+	-- ** OpenGL Context Flag
+	glContextFlagDebug,
+	glContextFlagForwardCompatible,
+	glContextFlagRobustAccess,
+	glContextFlagResetIsolation,
+
+	-- ** Pixel Formats
+	pixelFormatUnknown,
+	pixelFormatIndex1LSB,
+	pixelFormatIndex1MSB,
+	pixelFormatIndex4LSB,
+	pixelFormatIndex4MSB,
+	pixelFormatIndex8,
+	pixelFormatRGB332,
+	pixelFormatRGB444,
+	pixelFormatRGB555,
+	pixelFormatBGR555,
+	pixelFormatARGB4444,
+	pixelFormatRGBA4444,
+	pixelFormatABGR4444,
+	pixelFormatBGRA4444,
+	pixelFormatARGB1555,
+	pixelFormatRGBA5551,
+	pixelFormatABGR1555,
+	pixelFormatBGRA5551,
+	pixelFormatRGB565,
+	pixelFormatBGR565,
+	pixelFormatRGB24,
+	pixelFormatBGR24,
+	pixelFormatRGB888,
+	pixelFormatRGBX8888,
+	pixelFormatBGR888,
+	pixelFormatBGRX8888,
+	pixelFormatARGB8888,
+	pixelFormatRGBA8888,
+	pixelFormatABGR8888,
+	pixelFormatBGRA8888,
+	pixelFormatARGB2101010,
+	pixelFormatYV12,
+	pixelFormatIYUV,
+	pixelFormatYUY2,
+	pixelFormatUYVY,
+	pixelFormatYVYU,
 
 	-- ** Renderer Flags
 	rendererFlagSoftware,
@@ -1286,6 +1342,16 @@ systemCursorNo = (#const SDL_SYSTEM_CURSOR_NO)
 systemCursorHand = (#const SDL_SYSTEM_CURSOR_HAND)
 systemCursorNum = (#const SDL_NUM_SYSTEM_CURSORS)
 
+type ThreadPriority = (#type SDL_ThreadPriority)
+
+threadPriorityLow :: ThreadPriority
+threadPriorityNormal :: ThreadPriority
+threadPriorityHigh :: ThreadPriority
+
+threadPriorityLow = (#const SDL_THREAD_PRIORITY_LOW)
+threadPriorityNormal = (#const SDL_THREAD_PRIORITY_NORMAL)
+threadPriorityHigh = (#const SDL_THREAD_PRIORITY_HIGH)
+
 buttonLeft :: (Num a) => a
 buttonMiddle :: (Num a) => a
 buttonRight :: (Num a) => a
@@ -1392,24 +1458,6 @@ eventTypeDropFile = (#const SDL_DROPFILE)
 eventTypeUserEvent = (#const SDL_USEREVENT)
 eventTypeLastEvent = (#const SDL_LASTEVENT)
 
-glProfileCore :: (Num a) => a
-glProfileCompatibility :: (Num a) => a
-glProfileES :: (Num a) => a
-
-glProfileCore = (#const SDL_GL_CONTEXT_PROFILE_CORE)
-glProfileCompatibility = (#const SDL_GL_CONTEXT_PROFILE_COMPATIBILITY)
-glProfileES = (#const SDL_GL_CONTEXT_PROFILE_ES)
-
-glContextFlagDebug :: (Num a) => a
-glContextFlagForwardCompatible :: (Num a) => a
-glContextFlagRobustAccess :: (Num a) => a
-glContextFlagResetIsolation :: (Num a) => a
-
-glContextFlagDebug = (#const SDL_GL_CONTEXT_DEBUG_FLAG)
-glContextFlagForwardCompatible = (#const SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG)
-glContextFlagRobustAccess = (#const SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG)
-glContextFlagResetIsolation = (#const SDL_GL_CONTEXT_RESET_ISOLATION_FLAG)
-
 initFlagTimer :: (Num a) => a
 initFlagAudio :: (Num a) => a
 initFlagVideo :: (Num a) => a
@@ -1450,6 +1498,28 @@ joystickHatRightDown = (#const SDL_HAT_RIGHTDOWN)
 joystickHatLeftUp = (#const SDL_HAT_LEFTUP)
 joystickHatLeftDown = (#const SDL_HAT_LEFTDOWN)
 
+logCategoryApplication :: (Num a) => a
+logCategoryError :: (Num a) => a
+logCategoryAssert :: (Num a) => a
+logCategorySystem :: (Num a) => a
+logCategoryAudio :: (Num a) => a
+logCategoryVideo :: (Num a) => a
+logCategoryRender :: (Num a) => a
+logCategoryInput :: (Num a) => a
+logCategoryTest :: (Num a) => a
+logCategoryCustom :: (Num a) => a
+
+logCategoryApplication = (#const SDL_LOG_CATEGORY_APPLICATION)
+logCategoryError = (#const SDL_LOG_CATEGORY_ERROR)
+logCategoryAssert = (#const SDL_LOG_CATEGORY_ASSERT)
+logCategorySystem = (#const SDL_LOG_CATEGORY_SYSTEM)
+logCategoryAudio = (#const SDL_LOG_CATEGORY_AUDIO)
+logCategoryVideo = (#const SDL_LOG_CATEGORY_VIDEO)
+logCategoryRender = (#const SDL_LOG_CATEGORY_RENDER)
+logCategoryInput = (#const SDL_LOG_CATEGORY_INPUT)
+logCategoryTest = (#const SDL_LOG_CATEGORY_TEST)
+logCategoryCustom = (#const SDL_LOG_CATEGORY_CUSTOM)
+
 messageBoxFlagError :: (Num a) => a
 messageBoxFlagWarning :: (Num a) => a
 messageBoxFlagInformation :: (Num a) => a
@@ -1463,6 +1533,98 @@ messageBoxButtonFlagEscapeKeyDefault :: (Num a) => a
 
 messageBoxButtonFlagReturnKeyDefault = (#const SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT)
 messageBoxButtonFlagEscapeKeyDefault = (#const SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT)
+
+glProfileCore :: (Num a) => a
+glProfileCompatibility :: (Num a) => a
+glProfileES :: (Num a) => a
+
+glProfileCore = (#const SDL_GL_CONTEXT_PROFILE_CORE)
+glProfileCompatibility = (#const SDL_GL_CONTEXT_PROFILE_COMPATIBILITY)
+glProfileES = (#const SDL_GL_CONTEXT_PROFILE_ES)
+
+glContextFlagDebug :: (Num a) => a
+glContextFlagForwardCompatible :: (Num a) => a
+glContextFlagRobustAccess :: (Num a) => a
+glContextFlagResetIsolation :: (Num a) => a
+
+glContextFlagDebug = (#const SDL_GL_CONTEXT_DEBUG_FLAG)
+glContextFlagForwardCompatible = (#const SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG)
+glContextFlagRobustAccess = (#const SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG)
+glContextFlagResetIsolation = (#const SDL_GL_CONTEXT_RESET_ISOLATION_FLAG)
+
+pixelFormatUnknown :: (Num a) => a
+pixelFormatIndex1LSB :: (Num a) => a
+pixelFormatIndex1MSB :: (Num a) => a
+pixelFormatIndex4LSB :: (Num a) => a
+pixelFormatIndex4MSB :: (Num a) => a
+pixelFormatIndex8 :: (Num a) => a
+pixelFormatRGB332 :: (Num a) => a
+pixelFormatRGB444 :: (Num a) => a
+pixelFormatRGB555 :: (Num a) => a
+pixelFormatBGR555 :: (Num a) => a
+pixelFormatARGB4444 :: (Num a) => a
+pixelFormatRGBA4444 :: (Num a) => a
+pixelFormatABGR4444 :: (Num a) => a
+pixelFormatBGRA4444 :: (Num a) => a
+pixelFormatARGB1555 :: (Num a) => a
+pixelFormatRGBA5551 :: (Num a) => a
+pixelFormatABGR1555 :: (Num a) => a
+pixelFormatBGRA5551 :: (Num a) => a
+pixelFormatRGB565 :: (Num a) => a
+pixelFormatBGR565 :: (Num a) => a
+pixelFormatRGB24 :: (Num a) => a
+pixelFormatBGR24 :: (Num a) => a
+pixelFormatRGB888 :: (Num a) => a
+pixelFormatRGBX8888 :: (Num a) => a
+pixelFormatBGR888 :: (Num a) => a
+pixelFormatBGRX8888 :: (Num a) => a
+pixelFormatARGB8888 :: (Num a) => a
+pixelFormatRGBA8888 :: (Num a) => a
+pixelFormatABGR8888 :: (Num a) => a
+pixelFormatBGRA8888 :: (Num a) => a
+pixelFormatARGB2101010 :: (Num a) => a
+pixelFormatYV12 :: (Num a) => a
+pixelFormatIYUV :: (Num a) => a
+pixelFormatYUY2 :: (Num a) => a
+pixelFormatUYVY :: (Num a) => a
+pixelFormatYVYU :: (Num a) => a
+
+pixelFormatUnknown = (#const SDL_PIXELFORMAT_UNKNOWN)
+pixelFormatIndex1LSB = (#const SDL_PIXELFORMAT_INDEX1LSB)
+pixelFormatIndex1MSB = (#const SDL_PIXELFORMAT_INDEX1MSB)
+pixelFormatIndex4LSB = (#const SDL_PIXELFORMAT_INDEX4LSB)
+pixelFormatIndex4MSB = (#const SDL_PIXELFORMAT_INDEX4MSB)
+pixelFormatIndex8 = (#const SDL_PIXELFORMAT_INDEX8)
+pixelFormatRGB332 = (#const SDL_PIXELFORMAT_RGB332)
+pixelFormatRGB444 = (#const SDL_PIXELFORMAT_RGB444)
+pixelFormatRGB555 = (#const SDL_PIXELFORMAT_RGB555)
+pixelFormatBGR555 = (#const SDL_PIXELFORMAT_BGR555)
+pixelFormatARGB4444 = (#const SDL_PIXELFORMAT_ARGB4444)
+pixelFormatRGBA4444 = (#const SDL_PIXELFORMAT_RGBA4444)
+pixelFormatABGR4444 = (#const SDL_PIXELFORMAT_ABGR4444)
+pixelFormatBGRA4444 = (#const SDL_PIXELFORMAT_BGRA4444)
+pixelFormatARGB1555 = (#const SDL_PIXELFORMAT_ARGB1555)
+pixelFormatRGBA5551 = (#const SDL_PIXELFORMAT_RGBA5551)
+pixelFormatABGR1555 = (#const SDL_PIXELFORMAT_ABGR1555)
+pixelFormatBGRA5551 = (#const SDL_PIXELFORMAT_BGRA5551)
+pixelFormatRGB565 = (#const SDL_PIXELFORMAT_RGB565)
+pixelFormatBGR565 = (#const SDL_PIXELFORMAT_BGR565)
+pixelFormatRGB24 = (#const SDL_PIXELFORMAT_RGB24)
+pixelFormatBGR24 = (#const SDL_PIXELFORMAT_BGR24)
+pixelFormatRGB888 = (#const SDL_PIXELFORMAT_RGB888)
+pixelFormatRGBX8888 = (#const SDL_PIXELFORMAT_RGBX8888)
+pixelFormatBGR888 = (#const SDL_PIXELFORMAT_BGR888)
+pixelFormatBGRX8888 = (#const SDL_PIXELFORMAT_BGRX8888)
+pixelFormatARGB8888 = (#const SDL_PIXELFORMAT_ARGB8888)
+pixelFormatRGBA8888 = (#const SDL_PIXELFORMAT_RGBA8888)
+pixelFormatABGR8888 = (#const SDL_PIXELFORMAT_ABGR8888)
+pixelFormatBGRA8888 = (#const SDL_PIXELFORMAT_BGRA8888)
+pixelFormatARGB2101010 = (#const SDL_PIXELFORMAT_ARGB2101010)
+pixelFormatYV12 = (#const SDL_PIXELFORMAT_YV12)
+pixelFormatIYUV = (#const SDL_PIXELFORMAT_IYUV)
+pixelFormatYUY2 = (#const SDL_PIXELFORMAT_YUY2)
+pixelFormatUYVY = (#const SDL_PIXELFORMAT_UYVY)
+pixelFormatYVYU = (#const SDL_PIXELFORMAT_YVYU)
 
 rendererFlagSoftware :: (Num a) => a
 rendererFlagAccelerated :: (Num a) => a

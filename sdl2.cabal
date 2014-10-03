@@ -1,6 +1,6 @@
 name:                sdl2
-version:             1.1.0
-synopsis:            Bindings to SDL2
+version:             1.1.1
+synopsis:            Low-level bindings to SDL2
 description:         Low-level bindings to the SDL2 library, version 2.0.3.
 license:             BSD3
 license-file:        LICENSE
@@ -26,7 +26,9 @@ library
     Graphics.UI.SDL.Event
     Graphics.UI.SDL.Filesystem
     Graphics.UI.SDL.Haptic
+    Graphics.UI.SDL.Platform
     Graphics.UI.SDL.Power
+    Graphics.UI.SDL.Thread
     Graphics.UI.SDL.Timer
     Graphics.UI.SDL.Types
     Graphics.UI.SDL.Video

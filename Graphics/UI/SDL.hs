@@ -1,3 +1,4 @@
+-- | Raw low-level FFI bindings to the sdl2 C library.
 module Graphics.UI.SDL (
 	module Graphics.UI.SDL.Audio,
 	module Graphics.UI.SDL.Basic,
@@ -5,7 +6,9 @@ module Graphics.UI.SDL (
 	module Graphics.UI.SDL.Event,
 	module Graphics.UI.SDL.Filesystem,
 	module Graphics.UI.SDL.Haptic,
+	module Graphics.UI.SDL.Platform,
 	module Graphics.UI.SDL.Power,
+	module Graphics.UI.SDL.Thread,
 	module Graphics.UI.SDL.Timer,
 	module Graphics.UI.SDL.Types,
 	module Graphics.UI.SDL.Video
@@ -17,7 +20,9 @@ import Graphics.UI.SDL.Enum
 import Graphics.UI.SDL.Event
 import Graphics.UI.SDL.Filesystem
 import Graphics.UI.SDL.Haptic
+import Graphics.UI.SDL.Platform
 import Graphics.UI.SDL.Power
+import Graphics.UI.SDL.Thread
 import Graphics.UI.SDL.Timer
 import Graphics.UI.SDL.Types
 import Graphics.UI.SDL.Video

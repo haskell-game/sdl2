@@ -51,7 +51,6 @@ module Graphics.UI.SDL.Video (
 	getWindowSize,
 	getWindowSurface,
 	getWindowTitle,
-	-- getWindowWMInfo,
 	hideWindow,
 	isScreenSaverEnabled,
 	maximizeWindow,
@@ -187,7 +186,7 @@ module Graphics.UI.SDL.Video (
 	unlockSurface,
 
 	-- * Platform-specific Window Management
-	-- getWindowWMInfo,
+	getWindowWMInfo,
 
 	-- * Clipboard Handling
 	getClipboardText,
@@ -368,12 +367,10 @@ foreign import ccall "SDL.h SDL_GetColorKey" getColorKey :: Ptr Surface -> Ptr W
 foreign import ccall "SDL.h SDL_GetSurfaceAlphaMod" getSurfaceAlphaMod :: Ptr Surface -> Ptr Word8 -> IO CInt
 foreign import ccall "SDL.h SDL_GetSurfaceBlendMode" getSurfaceBlendMode :: Ptr Surface -> BlendMode -> IO CInt
 foreign import ccall "SDL.h SDL_GetSurfaceColorMod" getSurfaceColorMod :: Ptr Surface -> Ptr Word8 -> Ptr Word8 -> Ptr Word8 -> IO CInt
--- foreign import ccall "SDL.h SDL_LoadBMP" loadBMP :: CString -> IO (Ptr Surface)
 foreign import ccall "SDL.h SDL_LoadBMP_RW" loadBMP_RW :: Ptr RWops -> CInt -> IO (Ptr Surface)
 foreign import ccall "SDL.h SDL_LockSurface" lockSurface :: Ptr Surface -> IO CInt
 foreign import ccall "SDL.h SDL_LowerBlit" lowerBlit :: Ptr Surface -> Ptr Rect -> Ptr Surface -> Ptr Rect -> IO CInt
 foreign import ccall "SDL.h SDL_LowerBlitScaled" lowerBlitScaled :: Ptr Surface -> Ptr Rect -> Ptr Surface -> Ptr Rect -> IO CInt
--- foreign import ccall "SDL.h SDL_SaveBMP" saveBMP :: Ptr Surface -> CString -> IO CInt
 foreign import ccall "SDL.h SDL_SaveBMP_RW" saveBMP_RW :: Ptr Surface -> Ptr RWops -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_SetClipRect" setClipRect :: Ptr Surface -> Ptr Rect -> IO Bool
 foreign import ccall "SDL.h SDL_SetColorKey" setColorKey :: Ptr Surface -> CInt -> Word32 -> IO CInt
@@ -383,6 +380,8 @@ foreign import ccall "SDL.h SDL_SetSurfaceColorMod" setSurfaceColorMod :: Ptr Su
 foreign import ccall "SDL.h SDL_SetSurfacePalette" setSurfacePalette :: Ptr Surface -> Ptr Palette -> IO CInt
 foreign import ccall "SDL.h SDL_SetSurfaceRLE" setSurfaceRLE :: Ptr Surface -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_UnlockSurface" unlockSurface :: Ptr Surface -> IO ()
+
+foreign import ccall "SDL.h SDL_GetWindowWMInfo" getWindowWMInfo :: Window -> SysWMinfo -> IO Bool
 
 foreign import ccall "SDL.h SDL_GetClipboardText" getClipboardText :: IO CString
 foreign import ccall "SDL.h SDL_HasClipboardText" hasClipboardText :: IO Bool
