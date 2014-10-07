@@ -15,6 +15,15 @@ extra-source-files:
   cbits/sdlhelper.c,
   include/sdlhelper.h
 
+source-repository head
+  type:     git
+  location: git://github.com/polarina/sdl2.git
+
+source-repository this
+  type:     git
+  location: git://github.com/polarina/sdl2.git
+  tag:      v1.1.2
+
 library
   ghc-options: -Wall
 
