@@ -1,5 +1,5 @@
 name:                sdl2
-version:             1.1.1
+version:             1.1.2
 synopsis:            Low-level bindings to SDL2
 description:         Low-level bindings to the SDL2 library, version 2.0.3.
 license:             BSD3
