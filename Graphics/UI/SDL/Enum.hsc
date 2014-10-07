@@ -385,7 +385,7 @@ module Graphics.UI.SDL.Enum (
 	systemCursorHand,
 	systemCursorNum,
 
-	-- * Thread Priority
+	-- ** Thread Priority
 	ThreadPriority,
 	threadPriorityLow,
 	threadPriorityNormal,
@@ -590,7 +590,7 @@ module Graphics.UI.SDL.Enum (
 	windowFlagForeign,
 	windowFlagAllowHighDPI,
 
-	-- * Window Positioning
+	-- ** Window Positioning
 	windowPosUndefined,
 	windowPosCentered
 ) where
