@@ -399,6 +399,10 @@ data Event = WindowEvent {
            , eventTimestamp :: Word32
            , dropEventFile :: CString
            }
+           | ClipboardUpdateEvent {
+             eventType :: Word32
+           , eventTimestamp :: Word32
+           }
            deriving (Eq, Show)
 
 instance Storable Event where
@@ -491,6 +495,8 @@ instance Storable Event where
 				y <- (#peek SDL_Event, mgesture.y) ptr
 				numFingers <- (#peek SDL_Event, mgesture.numFingers) ptr
 				return $! MultiGestureEvent typ timestamp touchId dTheta dDist x y numFingers
+			(#const SDL_CLIPBOARDUPDATE) ->
+				return $! ClipboardUpdateEvent typ timestamp
 			(#const SDL_DROPFILE) -> do
 				file <- (#peek SDL_Event, drop.file) ptr
 				return $! DropEvent typ timestamp file
@@ -698,6 +704,9 @@ instance Storable Event where
 			(#poke SDL_Event, dgesture.error) ptr err
 			(#poke SDL_Event, dgesture.x) ptr x
 			(#poke SDL_Event, dgesture.y) ptr y
+		ClipboardUpdateEvent typ timestamp -> do
+			(#poke SDL_Event, common.type) ptr typ
+			(#poke SDL_Event, common.timestamp) ptr timestamp
 		DropEvent typ timestamp file -> do
 			(#poke SDL_Event, common.type) ptr typ
 			(#poke SDL_Event, common.timestamp) ptr timestamp
