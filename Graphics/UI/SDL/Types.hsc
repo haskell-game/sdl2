@@ -403,6 +403,10 @@ data Event = WindowEvent {
              eventType :: Word32
            , eventTimestamp :: Word32
            }
+           | UnknownEvent {
+             eventType :: Word32
+           , eventTimestamp :: Word32
+           }
            deriving (Eq, Show)
 
 instance Storable Event where
@@ -506,7 +510,7 @@ instance Storable Event where
 				data1 <- (#peek SDL_Event, user.data1) ptr
 				data2 <- (#peek SDL_Event, user.data2) ptr
 				return $! UserEvent typ timestamp wid code data1 data2
-			_ -> error $ "Unknown type " ++ show typ ++ " for SDL_Event"
+			_ -> return $! UnknownEvent typ timestamp
 		where
 		key f = do
 			wid <- (#peek SDL_Event, key.windowID) ptr
@@ -711,6 +715,9 @@ instance Storable Event where
 			(#poke SDL_Event, common.type) ptr typ
 			(#poke SDL_Event, common.timestamp) ptr timestamp
 			(#poke SDL_Event, drop.file) ptr file
+		UnknownEvent typ timestamp -> do
+			(#poke SDL_Event, common.type) ptr typ
+			(#poke SDL_Event, common.timestamp) ptr timestamp
 
 data Finger = Finger {
               fingerID :: FingerID
