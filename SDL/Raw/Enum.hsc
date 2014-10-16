@@ -7,6 +7,12 @@ module SDL.Raw.Enum (
 	audioStatusPlaying,
 	audioStatusPaused,
 
+        -- ** Audio Allowed Changes
+        audioAllowFrequencyChange,
+        audioAllowFormatChange,
+        audioAllowChannelsChange,
+        audioAllowAnyChange,
+
 	-- ** Blend Mode
 	BlendMode,
 	blendModeNone,
@@ -609,6 +615,16 @@ audioStatusPaused :: AudioStatus
 audioStatusStopped = (#const SDL_AUDIO_STOPPED)
 audioStatusPlaying = (#const SDL_AUDIO_PLAYING)
 audioStatusPaused = (#const SDL_AUDIO_PAUSED)
+
+audioAllowFrequencyChange :: Num a => a
+audioAllowFormatChange :: Num a => a
+audioAllowChannelsChange :: Num a => a
+audioAllowAnyChange :: Num a => a
+
+audioAllowFrequencyChange = (#const SDL_AUDIO_ALLOW_FREQUENCY_CHANGE)
+audioAllowFormatChange = (#const SDL_AUDIO_ALLOW_FORMAT_CHANGE)
+audioAllowChannelsChange = (#const SDL_AUDIO_ALLOW_CHANNELS_CHANGE)
+audioAllowAnyChange = (#const SDL_AUDIO_ALLOW_ANY_CHANGE)
 
 type BlendMode = (#type SDL_BlendMode)
 
