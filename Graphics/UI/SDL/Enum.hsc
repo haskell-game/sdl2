@@ -633,6 +633,12 @@ module Graphics.UI.SDL.Enum (
 	-- * Miscellaneous Enumerations
 	-- | These enumerations are not used directly by any SDL function, thus they have a polymorphic type.
 
+	-- ** Audio Allowed Changes
+	audioAllowFrequencyChange,
+	audioAllowFormatChange,
+	audioAllowChannelsChange,
+	audioAllowAnyChange,
+
 	-- ** Button
 	buttonLeft,
 	buttonMiddle,
@@ -2066,6 +2072,16 @@ threadPriorityHigh :: ThreadPriority
 threadPriorityLow = (#const SDL_THREAD_PRIORITY_LOW)
 threadPriorityNormal = (#const SDL_THREAD_PRIORITY_NORMAL)
 threadPriorityHigh = (#const SDL_THREAD_PRIORITY_HIGH)
+
+audioAllowFrequencyChange :: Num a => a
+audioAllowFormatChange :: Num a => a
+audioAllowChannelsChange :: Num a => a
+audioAllowAnyChange :: Num a => a
+
+audioAllowFrequencyChange = (#const SDL_AUDIO_ALLOW_FREQUENCY_CHANGE)
+audioAllowFormatChange = (#const SDL_AUDIO_ALLOW_FORMAT_CHANGE)
+audioAllowChannelsChange = (#const SDL_AUDIO_ALLOW_CHANNELS_CHANGE)
+audioAllowAnyChange = (#const SDL_AUDIO_ALLOW_ANY_CHANGE)
 
 buttonLeft :: (Num a) => a
 buttonMiddle :: (Num a) => a
