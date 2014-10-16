@@ -1,4 +1,4 @@
-module Graphics.UI.SDL.Filesystem (
+module SDL.Raw.Filesystem (
 	-- * Filesystem Paths
 	getBasePath,
 	getPrefPath,
@@ -34,7 +34,7 @@ import Data.Word
 import Foreign.C.String
 import Foreign.C.Types
 import Foreign.Ptr
-import Graphics.UI.SDL.Types
+import SDL.Raw.Types
 
 foreign import ccall "SDL.h SDL_GetBasePath" getBasePath :: IO CString
 foreign import ccall "SDL.h SDL_GetPrefPath" getPrefPath :: CString -> CString -> IO CString

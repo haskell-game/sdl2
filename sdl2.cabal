@@ -4,8 +4,8 @@ synopsis:            Low-level bindings to SDL2
 description:         Low-level bindings to the SDL2 library, version 2.0.3.
 license:             BSD3
 license-file:        LICENSE
-author:              Gabríel Arthúr Pétursson
-maintainer:          gabriel@system.is
+author:              Gabríel Arthúr Pétursson, Oliver Charles
+maintainer:          gabriel@system.is, ollie@ocharles.org.uk
 copyright:           Copyright © 2013, 2014  Gabríel Arthúr Pétursson
 category:            Graphics
 build-type:          Simple
@@ -28,19 +28,19 @@ library
   ghc-options: -Wall
 
   exposed-modules:
-    Graphics.UI.SDL
-    Graphics.UI.SDL.Audio
-    Graphics.UI.SDL.Basic
-    Graphics.UI.SDL.Enum
-    Graphics.UI.SDL.Event
-    Graphics.UI.SDL.Filesystem
-    Graphics.UI.SDL.Haptic
-    Graphics.UI.SDL.Platform
-    Graphics.UI.SDL.Power
-    Graphics.UI.SDL.Thread
-    Graphics.UI.SDL.Timer
-    Graphics.UI.SDL.Types
-    Graphics.UI.SDL.Video
+    SDL.Raw
+    SDL.Raw.Audio
+    SDL.Raw.Basic
+    SDL.Raw.Enum
+    SDL.Raw.Event
+    SDL.Raw.Filesystem
+    SDL.Raw.Haptic
+    SDL.Raw.Platform
+    SDL.Raw.Power
+    SDL.Raw.Thread
+    SDL.Raw.Timer
+    SDL.Raw.Types
+    SDL.Raw.Video
 
   c-sources:
     cbits/sdlhelper.c

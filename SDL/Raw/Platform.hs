@@ -1,4 +1,4 @@
-module Graphics.UI.SDL.Platform (
+module SDL.Raw.Platform (
 	-- * Platform Detection
 	getPlatform
 ) where

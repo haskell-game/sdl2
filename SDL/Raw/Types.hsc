@@ -1,4 +1,4 @@
-module Graphics.UI.SDL.Types (
+module SDL.Raw.Types (
 	-- * Type Aliases
 	AudioCallback,
 	AudioDeviceID,
@@ -68,7 +68,7 @@ import Foreign.C.Types
 import Foreign.Marshal.Array
 import Foreign.Ptr
 import Foreign.Storable
-import Graphics.UI.SDL.Enum
+import SDL.Raw.Enum
 
 type AudioCallback = FunPtr (Ptr () -> Ptr Word8 -> CInt -> IO ())
 type AudioDeviceID = Word32

@@ -1,4 +1,4 @@
-module Graphics.UI.SDL.Haptic (
+module SDL.Raw.Haptic (
 	-- * Force Feedback Support
 	hapticClose,
 	hapticDestroyEffect,
@@ -36,7 +36,7 @@ import Data.Word
 import Foreign.C.String
 import Foreign.C.Types
 import Foreign.Ptr
-import Graphics.UI.SDL.Types
+import SDL.Raw.Types
 
 foreign import ccall "SDL.h SDL_HapticClose" hapticClose :: Haptic -> IO ()
 foreign import ccall "SDL.h SDL_HapticDestroyEffect" hapticDestroyEffect :: Haptic -> CInt -> IO ()

@@ -1,4 +1,4 @@
-module Graphics.UI.SDL.Thread (
+module SDL.Raw.Thread (
 	-- * Thread Management
 	createThread,
 	detachThread,
@@ -50,8 +50,8 @@ import Data.Word
 import Foreign.C.String
 import Foreign.C.Types
 import Foreign.Ptr
-import Graphics.UI.SDL.Enum
-import Graphics.UI.SDL.Types
+import SDL.Raw.Enum
+import SDL.Raw.Types
 
 foreign import ccall "SDL.h CreateThread" createThread :: ThreadFunction -> CString -> IO (Ptr ())
 foreign import ccall "SDL.h DetachThread" detachThread :: Ptr Thread -> IO ()

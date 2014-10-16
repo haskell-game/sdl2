@@ -1,4 +1,4 @@
-module Graphics.UI.SDL.Basic (
+module SDL.Raw.Basic (
 	-- * Initialization and Shutdown
 	init,
 	initSubSystem,
@@ -49,8 +49,8 @@ import Data.Word
 import Foreign.C.String
 import Foreign.C.Types
 import Foreign.Ptr
-import Graphics.UI.SDL.Enum
-import Graphics.UI.SDL.Types
+import SDL.Raw.Enum
+import SDL.Raw.Types
 import Prelude hiding (init, log)
 
 foreign import ccall "SDL.h SDL_Init" init :: Word32 -> IO CInt

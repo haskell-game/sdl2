@@ -1,4 +1,4 @@
-module Graphics.UI.SDL.Enum (
+module SDL.Raw.Enum (
 	-- * Enumerations
 
 	-- ** Audio Status

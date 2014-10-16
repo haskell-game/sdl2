@@ -1,4 +1,4 @@
-module Graphics.UI.SDL.Timer (
+module SDL.Raw.Timer (
 	-- * Timer Support
 	addTimer,
 	delay,
@@ -11,7 +11,7 @@ module Graphics.UI.SDL.Timer (
 import Data.Word
 import Foreign.C.Types
 import Foreign.Ptr
-import Graphics.UI.SDL.Types
+import SDL.Raw.Types
 
 foreign import ccall "SDL.h SDL_AddTimer" addTimer :: Word32 -> TimerCallback -> Ptr () -> IO TimerID
 foreign import ccall "SDL.h SDL_Delay" delay :: Word32 -> IO ()

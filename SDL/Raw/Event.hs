@@ -1,4 +1,4 @@
-module Graphics.UI.SDL.Event (
+module SDL.Raw.Event (
 	-- * Event Handling
 	addEventWatch,
 	delEventWatch,
@@ -116,9 +116,9 @@ import Foreign.C.Types
 import Foreign.Marshal.Alloc
 import Foreign.Ptr
 import Foreign.Storable
-import Graphics.UI.SDL.Enum
-import Graphics.UI.SDL.Filesystem
-import Graphics.UI.SDL.Types
+import SDL.Raw.Enum
+import SDL.Raw.Filesystem
+import SDL.Raw.Types
 
 foreign import ccall "SDL.h SDL_AddEventWatch" addEventWatch :: EventFilter -> Ptr () -> IO ()
 foreign import ccall "SDL.h SDL_DelEventWatch" delEventWatch :: EventFilter -> Ptr () -> IO ()

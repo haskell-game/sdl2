@@ -1,4 +1,4 @@
-module Graphics.UI.SDL.Audio (
+module SDL.Raw.Audio (
 	-- * Audio Device Management, Playing and Recording
 	audioInit,
 	audioQuit,
@@ -32,9 +32,9 @@ import Data.Word
 import Foreign.C.String
 import Foreign.C.Types
 import Foreign.Ptr
-import Graphics.UI.SDL.Enum
-import Graphics.UI.SDL.Filesystem
-import Graphics.UI.SDL.Types
+import SDL.Raw.Enum
+import SDL.Raw.Filesystem
+import SDL.Raw.Types
 
 foreign import ccall "SDL.h SDL_AudioInit" audioInit :: CString -> IO CInt
 foreign import ccall "SDL.h SDL_AudioQuit" audioQuit :: IO ()
@@ -52,7 +52,7 @@ foreign import ccall "SDL.h SDL_GetNumAudioDevices" getNumAudioDevices :: CInt -
 foreign import ccall "SDL.h SDL_GetNumAudioDrivers" getNumAudioDrivers :: IO CInt
 foreign import ccall "SDL.h SDL_LoadWAV_RW" loadWAV_RW :: Ptr RWops -> CInt -> Ptr AudioSpec -> Ptr (Ptr Word8) -> Ptr Word32 -> IO (Ptr AudioSpec)
 foreign import ccall "SDL.h SDL_LockAudio" lockAudio :: IO ()
-foreign import ccall "SDL.h SDL_LockAudioDevice" lockAudioDevice :: AudioDeviceID -> IO () 
+foreign import ccall "SDL.h SDL_LockAudioDevice" lockAudioDevice :: AudioDeviceID -> IO ()
 foreign import ccall "SDL.h SDL_MixAudio" mixAudio :: Ptr Word8 -> Ptr Word8 -> Word32 -> CInt -> IO ()
 foreign import ccall "SDL.h SDL_MixAudioFormat" mixAudioFormat :: Ptr Word8 -> Ptr Word8 -> AudioFormat -> Word32 -> CInt -> IO ()
 foreign import ccall "SDL.h SDL_OpenAudio" openAudio :: Ptr AudioSpec -> Ptr AudioSpec -> IO CInt
