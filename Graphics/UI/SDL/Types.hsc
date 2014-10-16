@@ -84,7 +84,6 @@ type Haptic = Ptr ()
 type HintCallback = FunPtr (Ptr () -> CString -> CString -> CString -> IO ())
 type Joystick = Ptr ()
 type JoystickID = Int32
-type Keycode = Int32
 type LogOutputFunction = FunPtr (Ptr () -> CInt -> LogPriority -> CString -> IO ())
 type Mutex = Ptr ()
 type Renderer = Ptr ()
