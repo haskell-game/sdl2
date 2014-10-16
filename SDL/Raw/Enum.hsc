@@ -84,6 +84,11 @@ module SDL.Raw.Enum (
 	glAttrShareWithCurrentContext,
 	glAttrFramebufferSRGBCapable,
 
+        -- ** OpenGL Swap Interval
+        swapIntervalImmediate,
+        swapIntervalVsync,
+        swapIntervalLateSwapTearing,
+
 	-- ** Hint Priority
 	HintPriority,
 	hintPriorityDefault,
@@ -757,6 +762,14 @@ glAttrContextFlags = (#const SDL_GL_CONTEXT_FLAGS)
 glAttrContextProfileMask = (#const SDL_GL_CONTEXT_PROFILE_MASK)
 glAttrShareWithCurrentContext = (#const SDL_GL_SHARE_WITH_CURRENT_CONTEXT)
 glAttrFramebufferSRGBCapable = (#const SDL_GL_FRAMEBUFFER_SRGB_CAPABLE)
+
+swapIntervalImmediate :: Num a => a
+swapIntervalVsync :: Num a => a
+swapIntervalLateSwapTearing :: Num a => a
+
+swapIntervalImmediate = 0
+swapIntervalVsync = 1
+swapIntervalLateSwapTearing = -1
 
 type HintPriority = (#type SDL_HintPriority)
 
