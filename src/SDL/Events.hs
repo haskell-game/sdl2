@@ -1,11 +1,19 @@
-module SDL.Events (Event(..), EventPayload(..)) where
+{-# LANGUAGE OverloadedStrings #-}
+module SDL.Events
+  ( Event(..)
+  , EventPayload(..)
+  , pollEvent
+  , waitEvent
+  ) where
 
+import Control.Applicative
 import Foreign
 import Foreign.C
 import Linear
 import Linear.Affine (Point(P))
 import SDL.Raw.Types hiding (Event(..), Point)
 
+import qualified SDL.Exception as SDLEx
 import qualified SDL.Raw as Raw
 
 data Event = Event
@@ -112,3 +120,16 @@ convertRaw (Raw.DollarGestureEvent _ ts a b c d e f) = Event ts (DollarGestureEv
 convertRaw (Raw.DropEvent _ ts a) = Event ts (DropEvent a)
 convertRaw (Raw.ClipboardUpdateEvent _ ts) = Event ts ClipboardUpdateEvent
 convertRaw (Raw.UnknownEvent t ts) = Event ts (UnknownEvent t)
+
+pollEvent :: IO (Maybe Event)
+pollEvent = alloca $ \e -> do
+  n <- Raw.pollEvent e
+  if n == 0
+     then return Nothing
+     else Just . convertRaw <$> peek e
+
+waitEvent :: IO Event
+waitEvent = alloca $ \e -> do
+  SDLEx.throwIfNeg_ "SDL.Events.waitEvent" "SDL_WaitEvent" $
+    Raw.waitEvent e
+  convertRaw <$> peek e
