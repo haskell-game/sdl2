@@ -84,6 +84,18 @@ module Graphics.UI.SDL.Enum (
 	hintPriorityNormal,
 	hintPriorityOverride,
 
+	-- ** Initialization Flag
+	InitFlag,
+	initFlagTimer,
+	initFlagAudio,
+	initFlagVideo,
+	initFlagJoystick,
+	initFlagHaptic,
+	initFlagGameController,
+	initFlagEvents,
+	initFlagNoParachute,
+	initFlagEverything,
+
 	-- ** Keycode
 	Keycode,
 	keycodeUnknown,
@@ -698,17 +710,6 @@ module Graphics.UI.SDL.Enum (
 	eventTypeUserEvent,
 	eventTypeLastEvent,
 
-	-- ** Initialization Flag
-	initFlagTimer,
-	initFlagAudio,
-	initFlagVideo,
-	initFlagJoystick,
-	initFlagHaptic,
-	initFlagGameController,
-	initFlagEvents,
-	initFlagNoParachute,
-	initFlagEverything,
-
 	-- ** Joystick Hat Position
 	joystickHatCentered,
 	joystickHatUp,
@@ -1000,6 +1001,28 @@ hintPriorityOverride :: HintPriority
 hintPriorityDefault = (#const SDL_HINT_DEFAULT)
 hintPriorityNormal = (#const SDL_HINT_NORMAL)
 hintPriorityOverride = (#const SDL_HINT_OVERRIDE)
+
+type InitFlag = Word32
+
+initFlagTimer :: InitFlag
+initFlagAudio :: InitFlag
+initFlagVideo :: InitFlag
+initFlagJoystick :: InitFlag
+initFlagHaptic :: InitFlag
+initFlagGameController :: InitFlag
+initFlagEvents :: InitFlag
+initFlagNoParachute :: InitFlag
+initFlagEverything :: InitFlag
+
+initFlagTimer = (#const SDL_INIT_TIMER)
+initFlagAudio = (#const SDL_INIT_AUDIO)
+initFlagVideo = (#const SDL_INIT_VIDEO)
+initFlagJoystick = (#const SDL_INIT_JOYSTICK)
+initFlagHaptic = (#const SDL_INIT_HAPTIC)
+initFlagGameController = (#const SDL_INIT_GAMECONTROLLER)
+initFlagEvents = (#const SDL_INIT_EVENTS)
+initFlagNoParachute = (#const SDL_INIT_NOPARACHUTE)
+initFlagEverything = (#const SDL_INIT_EVERYTHING)
 
 type Keycode = (#type SDL_Keycode)
 
@@ -2200,26 +2223,6 @@ eventTypeClipboardUpdate = (#const SDL_CLIPBOARDUPDATE)
 eventTypeDropFile = (#const SDL_DROPFILE)
 eventTypeUserEvent = (#const SDL_USEREVENT)
 eventTypeLastEvent = (#const SDL_LASTEVENT)
-
-initFlagTimer :: (Num a) => a
-initFlagAudio :: (Num a) => a
-initFlagVideo :: (Num a) => a
-initFlagJoystick :: (Num a) => a
-initFlagHaptic :: (Num a) => a
-initFlagGameController :: (Num a) => a
-initFlagEvents :: (Num a) => a
-initFlagNoParachute :: (Num a) => a
-initFlagEverything :: (Num a) => a
-
-initFlagTimer = (#const SDL_INIT_TIMER)
-initFlagAudio = (#const SDL_INIT_AUDIO)
-initFlagVideo = (#const SDL_INIT_VIDEO)
-initFlagJoystick = (#const SDL_INIT_JOYSTICK)
-initFlagHaptic = (#const SDL_INIT_HAPTIC)
-initFlagGameController = (#const SDL_INIT_GAMECONTROLLER)
-initFlagEvents = (#const SDL_INIT_EVENTS)
-initFlagNoParachute = (#const SDL_INIT_NOPARACHUTE)
-initFlagEverything = (#const SDL_INIT_EVERYTHING)
 
 joystickHatCentered :: (Num a) => a
 joystickHatUp :: (Num a) => a

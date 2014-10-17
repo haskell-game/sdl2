@@ -53,12 +53,12 @@ import Graphics.UI.SDL.Enum
 import Graphics.UI.SDL.Types
 import Prelude hiding (init, log)
 
-foreign import ccall "SDL.h SDL_Init" init :: Word32 -> IO CInt
-foreign import ccall "SDL.h SDL_InitSubSystem" initSubSystem :: Word32 -> IO CInt
+foreign import ccall "SDL.h SDL_Init" init :: InitFlag -> IO CInt
+foreign import ccall "SDL.h SDL_InitSubSystem" initSubSystem :: InitFlag -> IO CInt
 foreign import ccall "SDL.h SDL_Quit" quit :: IO ()
-foreign import ccall "SDL.h SDL_QuitSubSystem" quitSubSystem :: Word32 -> IO ()
+foreign import ccall "SDL.h SDL_QuitSubSystem" quitSubSystem :: InitFlag -> IO ()
 foreign import ccall "SDL.h SDL_SetMainReady" setMainReady :: IO ()
-foreign import ccall "SDL.h SDL_WasInit" wasInit :: Word32 -> IO Word32
+foreign import ccall "SDL.h SDL_WasInit" wasInit :: InitFlag -> IO Word32
 
 foreign import ccall "SDL.h SDL_AddHintCallback" addHintCallback :: CString -> HintCallback -> Ptr () -> IO ()
 foreign import ccall "SDL.h SDL_ClearHints" clearHints :: IO ()
