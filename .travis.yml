@@ -9,4 +9,12 @@ script:
   - cabal configure && cabal build
 
 notifications:
-  irc: "irc.freenode.org#haskell-game"
+  irc:
+    channels:
+      - "irc.freenode.org#haskell-game"
+    template:
+      - "%{repository}#%{build_number} - %{commit} on %{branch} by %{author}: %{message}"
+      - "Build details: %{build_url} - Change view: %{compare_url}"
+    skip_join: true
+    on_success: change
+    on_failure: always
