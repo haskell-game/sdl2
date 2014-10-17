@@ -45,6 +45,9 @@ library
     SDL.Raw.Types
     SDL.Raw.Video
 
+  hs-source-dirs:
+    src/
+
   c-sources:
     cbits/sdlhelper.c
 
