@@ -1,5 +1,5 @@
 name:                sdl2
-version:             1.1.2
+version:             2.0.0
 synopsis:            Low-level bindings to SDL2
 description:         Low-level bindings to the SDL2 library, version 2.0.3.
 license:             BSD3
@@ -17,12 +17,12 @@ extra-source-files:
 
 source-repository head
   type:     git
-  location: git://github.com/polarina/sdl2.git
+  location: git://github.com/haskell-game/sdl2.git
 
-source-repository this
-  type:     git
-  location: git://github.com/polarina/sdl2.git
-  tag:      v1.1.2
+-- source-repository this
+--   type:     git
+--   location: git://github.com/haskell-game/sdl2.git
+--  tag:      2.0.0
 
 library
   ghc-options: -Wall
