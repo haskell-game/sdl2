@@ -3,6 +3,7 @@ module SDL.Events
   ( Event(..)
   , EventPayload(..)
   , pollEvent
+  , Raw.pumpEvents
   , waitEvent
   ) where
 
