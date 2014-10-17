@@ -1,5 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings #-}
 module SDL.Audio
   ( -- * 'AudioFormat'
     AudioFormat
@@ -51,7 +52,7 @@ import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
 import qualified Data.Vector as V
 import qualified Data.Vector.Storable as SV
-
+import qualified SDL.Exception as SDLEx
 import qualified SDL.Raw.Audio as Raw
 import qualified SDL.Raw.Enum as Raw
 import qualified SDL.Raw.Types as Raw
@@ -117,7 +118,8 @@ getAudioDeviceNames usage = do
     then return Nothing
     else fmap (Just . V.fromList) $
          for [0 .. (n - 1)] $ \i -> do
-           cstr <- Raw.getAudioDeviceName i usage'
+           cstr <- SDLEx.throwIfNull "SDL.Audio.getAudioDeviceNames" "SDL_GetAudioDeviceName" $
+             Raw.getAudioDeviceName i usage'
            Text.decodeUtf8 <$> BS.packCString cstr
 
   where usage' = encodeUsage usage
@@ -165,12 +167,13 @@ openAudioDevice OpenDeviceSpec{..} =
         copyBytes buffer vPtr (min (fromIntegral len) (fromIntegral len'))
     with (desiredSpec cb) $ \desiredSpecPtr ->
       alloca $ \actualSpecPtr -> do
-        devId <- Raw.openAudioDevice cDevName (encodeUsage openDeviceUsage) desiredSpecPtr actualSpecPtr changes
+        devId <- SDLEx.throwIf0 "SDL.Audio.openAudioDevice" "SDL_OpenAudioDevice" $
+          Raw.openAudioDevice cDevName (encodeUsage openDeviceUsage) desiredSpecPtr actualSpecPtr changes
         actual <- peek actualSpecPtr
         let audioDevice = AudioDevice devId
             spec = AudioSpec { audioSpecFreq = Raw.audioSpecFreq actual
                              , audioSpecFormat = AudioFormat (Raw.audioSpecFormat actual)
-                             , audioSpecChannels = unsafeReadChannels (Raw.audioSpecChannels actual)
+                             , audioSpecChannels = SDLEx.fromC "SDL.Audio.openAudioDevice" "audioSpecChannels" readChannels (Raw.audioSpecChannels actual)
                              , _audioSpecSilence = Raw.audioSpecSilence actual
                              , _audioSpecSize = Raw.audioSpecSize actual
                              , audioSpecSamples = Raw.audioSpecSamples actual
@@ -189,11 +192,11 @@ openAudioDevice OpenDeviceSpec{..} =
   channelsToWord8 Quad = 4
   channelsToWord8 FivePointOne = 6
 
-  unsafeReadChannels 1 = Mono
-  unsafeReadChannels 2 = Stereo
-  unsafeReadChannels 4 = Quad
-  unsafeReadChannels 6 = FivePointOne
-  unsafeReadChannels _ = error "openAudioDevice.unsafeReadChannels: Unexpected argument"
+  readChannels 1 = Just Mono
+  readChannels 2 = Just Stereo
+  readChannels 4 = Just Quad
+  readChannels 6 = Just FivePointOne
+  readChannels _ = Nothing
 
   desiredSpec cb = Raw.AudioSpec
     { Raw.audioSpecFreq = unpackChangeable openDeviceFreq
@@ -224,13 +227,13 @@ setAudioDevicePlaybackState (AudioDevice d) Play = Raw.pauseAudioDevice d 0
 data AudioDeviceStatus = Playing | Paused | Stopped
 
 audioDeviceStatus :: AudioDevice -> IO AudioDeviceStatus
-audioDeviceStatus (AudioDevice d) = unsafeReadStatus <$> Raw.getAudioDeviceStatus d
+audioDeviceStatus (AudioDevice d) = SDLEx.fromC "SDL.Audio.audioDeviceStatus" "SDL_AudioStatus" readStatus <$> Raw.getAudioDeviceStatus d
   where
-  unsafeReadStatus n
-    | n == Raw.audioStatusPlaying = Playing
-    | n == Raw.audioStatusStopped = Stopped
-    | n == Raw.audioStatusPaused = Paused
-    | otherwise = error "audioDeviceStatus: Unknown argument"
+  readStatus n
+    | n == Raw.audioStatusPlaying = Just Playing
+    | n == Raw.audioStatusStopped = Just Stopped
+    | n == Raw.audioStatusPaused = Just Paused
+    | otherwise = Nothing
 
 -- clearQueuedAudio :: AudioDevice -> IO ()
 -- clearQueuedAudio (AudioDevice d) = Raw.clearQueuedAudio d
@@ -245,11 +248,13 @@ getAudioDrivers = do
   n <- Raw.getNumAudioDrivers
   fmap V.fromList $
     for [0 .. (n - 1)] $ \i -> do
+      -- TODO This could return null if i is invalid, but it's not an SDL_Error.
       cstr <- Raw.getAudioDriver i
       AudioDriver . Text.decodeUtf8 <$> BS.packCString cstr
 
-audioInit :: AudioDriver -> IO CInt
-audioInit (AudioDriver n) = BS.useAsCString (Text.encodeUtf8 n) Raw.audioInit
+audioInit :: AudioDriver -> IO ()
+audioInit (AudioDriver n) = BS.useAsCString (Text.encodeUtf8 n) $
+  SDLEx.throwIfNeg_ "SDL.Audio.audioInit" "SDL_AudioInit" . Raw.audioInit
 
 currentAudioDriver :: IO (Maybe Text)
 currentAudioDriver =

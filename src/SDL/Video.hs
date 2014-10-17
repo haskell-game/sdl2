@@ -100,7 +100,7 @@ createWindowAndRenderer w h flags =
   alloca $ \wPtr ->
     alloca $ \rPtr ->
       do
-        SDLEx.throwIfNeg "SDL.Video.createWindowAndRenderer" $
+        SDLEx.throwIfNeg_ "SDL.Video.createWindowAndRenderer" "createWindowAndRenderer" $
           Raw.createWindowAndRenderer w
                                       h
                                       (foldWindowFlags flags)
@@ -167,7 +167,7 @@ glAttributeToC GLContextEGL = Raw.glAttrContextEGL
 
 glSetAttribute :: GLAttribute -> CInt -> IO ()
 glSetAttribute attribute value =
-  SDLEx.throwIfNeg "SDL.Video.glSetAttribute" $
+  SDLEx.throwIfNeg_ "SDL.Video.glSetAttribute" "SDL_GL_SetAttribute" $
     Raw.glSetAttribute (glAttributeToC attribute) value
 
 glSwapWindow :: Window -> IO ()
@@ -190,7 +190,7 @@ swapIntervalToC LateSwapTearing = Raw.swapIntervalLateSwapTearing
 
 glSetSwapInterval :: SwapInterval -> IO ()
 glSetSwapInterval swapInterval =
-  SDLEx.throwIfNeg "SDL.Video.glSetSwapInterval" $
+  SDLEx.throwIfNeg_ "SDL.Video.glSetSwapInterval" "SDL_GL_SetSwapInterval" $
     Raw.glSetSwapInterval (swapIntervalToC swapInterval)
 
 hideWindow :: Window -> IO ()
@@ -213,7 +213,7 @@ showWindow (Window w) = Raw.showWindow w
 
 setWindowBrightness :: Window -> CFloat -> IO ()
 setWindowBrightness (Window w) b =
-  SDLEx.throwIfNeg "SDL.Video.setWindowBrightness" $
+  SDLEx.throwIfNeg_ "SDL.Video.setWindowBrightness" "SDL_SetWindowBrightness" $
     Raw.setWindowBrightness w b
 
 setWindowGammaRamp :: Window -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> IO ()
@@ -227,7 +227,7 @@ setWindowGammaRamp (Window w) r g b = do
   withChan r $ \rPtr ->
     withChan b $ \bPtr ->
       withChan g $ \gPtr ->
-        SDLEx.throwIfNeg "SDL.Video.setWindowGammaRamp" $
+        SDLEx.throwIfNeg_ "SDL.Video.setWindowGammaRamp" "SDL_SetWindowGammaRamp" $
           Raw.setWindowGammaRamp w rPtr gPtr bPtr
 
 {-
