@@ -95,17 +95,272 @@ module SDL.Raw.Enum (
 	hintPriorityNormal,
 	hintPriorityOverride,
 
+	-- ** Initialization Flag
+	InitFlag,
+	initFlagTimer,
+	initFlagAudio,
+	initFlagVideo,
+	initFlagJoystick,
+	initFlagHaptic,
+	initFlagGameController,
+	initFlagEvents,
+	initFlagNoParachute,
+	initFlagEverything,
+
+	-- ** Keycode
+	Keycode,
+	keycodeUnknown,
+	keycodeReturn,
+	keycodeEscape,
+	keycodeBackspace,
+	keycodeTab,
+	keycodeSpace,
+	keycodeExclaim,
+	keycodeQuoteDbl,
+	keycodeHash,
+	keycodePercent,
+	keycodeDollar,
+	keycodeAmpersand,
+	keycodeQuote,
+	keycodeLeftParen,
+	keycodeRightParen,
+	keycodeAsterisk,
+	keycodePlus,
+	keycodeComma,
+	keycodeMinus,
+	keycodePeriod,
+	keycodeSlash,
+	keycode0,
+	keycode1,
+	keycode2,
+	keycode3,
+	keycode4,
+	keycode5,
+	keycode6,
+	keycode7,
+	keycode8,
+	keycode9,
+	keycodeColon,
+	keycodeSemicolon,
+	keycodeLess,
+	keycodeEquals,
+	keycodeGreater,
+	keycodeQuestion,
+	keycodeAt,
+	keycodeLeftBracket,
+	keycodeBackslash,
+	keycodeRightBracket,
+	keycodeCaret,
+	keycodeUnderscore,
+	keycodeBackquote,
+	keycodeA,
+	keycodeB,
+	keycodeC,
+	keycodeD,
+	keycodeE,
+	keycodeF,
+	keycodeG,
+	keycodeH,
+	keycodeI,
+	keycodeJ,
+	keycodeK,
+	keycodeL,
+	keycodeM,
+	keycodeN,
+	keycodeO,
+	keycodeP,
+	keycodeQ,
+	keycodeR,
+	keycodeS,
+	keycodeT,
+	keycodeU,
+	keycodeV,
+	keycodeW,
+	keycodeX,
+	keycodeY,
+	keycodeZ,
+	keycodeCapsLock,
+	keycodeF1,
+	keycodeF2,
+	keycodeF3,
+	keycodeF4,
+	keycodeF5,
+	keycodeF6,
+	keycodeF7,
+	keycodeF8,
+	keycodeF9,
+	keycodeF10,
+	keycodeF11,
+	keycodeF12,
+	keycodePrintScreen,
+	keycodeScrollLock,
+	keycodePause,
+	keycodeInsert,
+	keycodeHome,
+	keycodePageUp,
+	keycodeDelete,
+	keycodeEnd,
+	keycodePageDown,
+	keycodeRight,
+	keycodeLeft,
+	keycodeDown,
+	keycodeUp,
+	keycodeNumLockClear,
+	keycodeKPDivide,
+	keycodeKPMultiply,
+	keycodeKPMinus,
+	keycodeKPPlus,
+	keycodeKPEnter,
+	keycodeKP1,
+	keycodeKP2,
+	keycodeKP3,
+	keycodeKP4,
+	keycodeKP5,
+	keycodeKP6,
+	keycodeKP7,
+	keycodeKP8,
+	keycodeKP9,
+	keycodeKP0,
+	keycodeKPPeriod,
+	keycodeApplication,
+	keycodePower,
+	keycodeKPEquals,
+	keycodeF13,
+	keycodeF14,
+	keycodeF15,
+	keycodeF16,
+	keycodeF17,
+	keycodeF18,
+	keycodeF19,
+	keycodeF20,
+	keycodeF21,
+	keycodeF22,
+	keycodeF23,
+	keycodeF24,
+	keycodeExecute,
+	keycodeHelp,
+	keycodeMenu,
+	keycodeSelect,
+	keycodeStop,
+	keycodeAgain,
+	keycodeUndo,
+	keycodeCut,
+	keycodeCopy,
+	keycodePaste,
+	keycodeFind,
+	keycodeMute,
+	keycodeVolumeUp,
+	keycodeVolumeDown,
+	keycodeKPComma,
+	keycodeKPEqualsAS400,
+	keycodeAltErase,
+	keycodeSysReq,
+	keycodeCancel,
+	keycodeClear,
+	keycodePrior,
+	keycodeReturn2,
+	keycodeSeparator,
+	keycodeOut,
+	keycodeOper,
+	keycodeClearAgain,
+	keycodeCrSel,
+	keycodeExSel,
+	keycodeKP00,
+	keycodeKP000,
+	keycodeThousandsSeparator,
+	keycodeDecimalSeparator,
+	keycodeCurrencyUnit,
+	keycodeCurrencySubunit,
+	keycodeKPLeftParen,
+	keycodeKPRightParen,
+	keycodeKPLeftBrace,
+	keycodeKPRightBrace,
+	keycodeKPTab,
+	keycodeKPBackspace,
+	keycodeKPA,
+	keycodeKPB,
+	keycodeKPC,
+	keycodeKPD,
+	keycodeKPE,
+	keycodeKPF,
+	keycodeKPXor,
+	keycodeKPPower,
+	keycodeKPPercent,
+	keycodeKPLess,
+	keycodeKPGreater,
+	keycodeKPAmpersand,
+	keycodeKPDblAmpersand,
+	keycodeKPVecticalBar,
+	keycodeKPDblVerticalBar,
+	keycodeKPColon,
+	keycodeKPHash,
+	keycodeKPSpace,
+	keycodeKPAt,
+	keycodeKPExclam,
+	keycodeKPMemStore,
+	keycodeKPMemRecall,
+	keycodeKPMemClear,
+	keycodeKPMemAdd,
+	keycodeKPMemSubtract,
+	keycodeKPMemMultiply,
+	keycodeKPMemDivide,
+	keycodeKPPlusMinus,
+	keycodeKPClear,
+	keycodeKPClearEntry,
+	keycodeKPBinary,
+	keycodeKPOctal,
+	keycodeKPDecimal,
+	keycodeKPHexadecimal,
+	keycodeLCtrl,
+	keycodeLShift,
+	keycodeLAlt,
+	keycodeLGUI,
+	keycodeRCtrl,
+	keycodeRShift,
+	keycodeRAlt,
+	keycodeRGUI,
+	keycodeMode,
+	keycodeAudioNext,
+	keycodeAudioPrev,
+	keycodeAudioStop,
+	keycodeAudioPlay,
+	keycodeAudioMute,
+	keycodeMediaSelect,
+	keycodeWWW,
+	keycodeMail,
+	keycodeCalculator,
+	keycodeComputer,
+	keycodeACSearch,
+	keycodeACHome,
+	keycodeACBack,
+	keycodeACForward,
+	keycodeACStop,
+	keycodeACRefresh,
+	keycodeACBookmarks,
+	keycodeBrightnessDown,
+	keycodeBrightnessUp,
+	keycodeDisplaySwitch,
+	keycodeKbdIllumToggle,
+	keycodeKbdIllumDown,
+	keycodeKbdIllumUp,
+	keycodeEject,
+	keycodeSleep,
+
 	-- ** Key Modifier
 	Keymod,
 	keymodNone,
 	keymodLShift,
 	keymodRShift,
+	keymodShift,
 	keymodLCtrl,
 	keymodRCtrl,
+	keymodCtrl,
 	keymodLAlt,
 	keymodRAlt,
+	keymodAlt,
 	keymodLGUI,
 	keymodRGUI,
+	keymodGUI,
 	keymodNum,
 	keymodCaps,
 	keymodMode,
@@ -405,6 +660,12 @@ module SDL.Raw.Enum (
 	-- * Miscellaneous Enumerations
 	-- | These enumerations are not used directly by any SDL function, thus they have a polymorphic type.
 
+	-- ** Audio Allowed Changes
+	audioAllowFrequencyChange,
+	audioAllowFormatChange,
+	audioAllowChannelsChange,
+	audioAllowAnyChange,
+
 	-- ** Button
 	buttonLeft,
 	buttonMiddle,
@@ -459,17 +720,6 @@ module SDL.Raw.Enum (
 	eventTypeDropFile,
 	eventTypeUserEvent,
 	eventTypeLastEvent,
-
-	-- ** Initialization Flag
-	initFlagTimer,
-	initFlagAudio,
-	initFlagVideo,
-	initFlagJoystick,
-	initFlagHaptic,
-	initFlagGameController,
-	initFlagEvents,
-	initFlagNoParachute,
-	initFlagEverything,
 
 	-- ** Joystick Hat Position
 	joystickHatCentered,
@@ -781,31 +1031,537 @@ hintPriorityDefault = (#const SDL_HINT_DEFAULT)
 hintPriorityNormal = (#const SDL_HINT_NORMAL)
 hintPriorityOverride = (#const SDL_HINT_OVERRIDE)
 
+type InitFlag = Word32
+
+initFlagTimer :: InitFlag
+initFlagAudio :: InitFlag
+initFlagVideo :: InitFlag
+initFlagJoystick :: InitFlag
+initFlagHaptic :: InitFlag
+initFlagGameController :: InitFlag
+initFlagEvents :: InitFlag
+initFlagNoParachute :: InitFlag
+initFlagEverything :: InitFlag
+
+initFlagTimer = (#const SDL_INIT_TIMER)
+initFlagAudio = (#const SDL_INIT_AUDIO)
+initFlagVideo = (#const SDL_INIT_VIDEO)
+initFlagJoystick = (#const SDL_INIT_JOYSTICK)
+initFlagHaptic = (#const SDL_INIT_HAPTIC)
+initFlagGameController = (#const SDL_INIT_GAMECONTROLLER)
+initFlagEvents = (#const SDL_INIT_EVENTS)
+initFlagNoParachute = (#const SDL_INIT_NOPARACHUTE)
+initFlagEverything = (#const SDL_INIT_EVERYTHING)
+
+type Keycode = (#type SDL_Keycode)
+
+keycodeUnknown :: Keycode
+keycodeReturn :: Keycode
+keycodeEscape :: Keycode
+keycodeBackspace :: Keycode
+keycodeTab :: Keycode
+keycodeSpace :: Keycode
+keycodeExclaim :: Keycode
+keycodeQuoteDbl :: Keycode
+keycodeHash :: Keycode
+keycodePercent :: Keycode
+keycodeDollar :: Keycode
+keycodeAmpersand :: Keycode
+keycodeQuote :: Keycode
+keycodeLeftParen :: Keycode
+keycodeRightParen :: Keycode
+keycodeAsterisk :: Keycode
+keycodePlus :: Keycode
+keycodeComma :: Keycode
+keycodeMinus :: Keycode
+keycodePeriod :: Keycode
+keycodeSlash :: Keycode
+keycode0 :: Keycode
+keycode1 :: Keycode
+keycode2 :: Keycode
+keycode3 :: Keycode
+keycode4 :: Keycode
+keycode5 :: Keycode
+keycode6 :: Keycode
+keycode7 :: Keycode
+keycode8 :: Keycode
+keycode9 :: Keycode
+keycodeColon :: Keycode
+keycodeSemicolon :: Keycode
+keycodeLess :: Keycode
+keycodeEquals :: Keycode
+keycodeGreater :: Keycode
+keycodeQuestion :: Keycode
+keycodeAt :: Keycode
+keycodeLeftBracket :: Keycode
+keycodeBackslash :: Keycode
+keycodeRightBracket :: Keycode
+keycodeCaret :: Keycode
+keycodeUnderscore :: Keycode
+keycodeBackquote :: Keycode
+keycodeA :: Keycode
+keycodeB :: Keycode
+keycodeC :: Keycode
+keycodeD :: Keycode
+keycodeE :: Keycode
+keycodeF :: Keycode
+keycodeG :: Keycode
+keycodeH :: Keycode
+keycodeI :: Keycode
+keycodeJ :: Keycode
+keycodeK :: Keycode
+keycodeL :: Keycode
+keycodeM :: Keycode
+keycodeN :: Keycode
+keycodeO :: Keycode
+keycodeP :: Keycode
+keycodeQ :: Keycode
+keycodeR :: Keycode
+keycodeS :: Keycode
+keycodeT :: Keycode
+keycodeU :: Keycode
+keycodeV :: Keycode
+keycodeW :: Keycode
+keycodeX :: Keycode
+keycodeY :: Keycode
+keycodeZ :: Keycode
+keycodeCapsLock :: Keycode
+keycodeF1 :: Keycode
+keycodeF2 :: Keycode
+keycodeF3 :: Keycode
+keycodeF4 :: Keycode
+keycodeF5 :: Keycode
+keycodeF6 :: Keycode
+keycodeF7 :: Keycode
+keycodeF8 :: Keycode
+keycodeF9 :: Keycode
+keycodeF10 :: Keycode
+keycodeF11 :: Keycode
+keycodeF12 :: Keycode
+keycodePrintScreen :: Keycode
+keycodeScrollLock :: Keycode
+keycodePause :: Keycode
+keycodeInsert :: Keycode
+keycodeHome :: Keycode
+keycodePageUp :: Keycode
+keycodeDelete :: Keycode
+keycodeEnd :: Keycode
+keycodePageDown :: Keycode
+keycodeRight :: Keycode
+keycodeLeft :: Keycode
+keycodeDown :: Keycode
+keycodeUp :: Keycode
+keycodeNumLockClear :: Keycode
+keycodeKPDivide :: Keycode
+keycodeKPMultiply :: Keycode
+keycodeKPMinus :: Keycode
+keycodeKPPlus :: Keycode
+keycodeKPEnter :: Keycode
+keycodeKP1 :: Keycode
+keycodeKP2 :: Keycode
+keycodeKP3 :: Keycode
+keycodeKP4 :: Keycode
+keycodeKP5 :: Keycode
+keycodeKP6 :: Keycode
+keycodeKP7 :: Keycode
+keycodeKP8 :: Keycode
+keycodeKP9 :: Keycode
+keycodeKP0 :: Keycode
+keycodeKPPeriod :: Keycode
+keycodeApplication :: Keycode
+keycodePower :: Keycode
+keycodeKPEquals :: Keycode
+keycodeF13 :: Keycode
+keycodeF14 :: Keycode
+keycodeF15 :: Keycode
+keycodeF16 :: Keycode
+keycodeF17 :: Keycode
+keycodeF18 :: Keycode
+keycodeF19 :: Keycode
+keycodeF20 :: Keycode
+keycodeF21 :: Keycode
+keycodeF22 :: Keycode
+keycodeF23 :: Keycode
+keycodeF24 :: Keycode
+keycodeExecute :: Keycode
+keycodeHelp :: Keycode
+keycodeMenu :: Keycode
+keycodeSelect :: Keycode
+keycodeStop :: Keycode
+keycodeAgain :: Keycode
+keycodeUndo :: Keycode
+keycodeCut :: Keycode
+keycodeCopy :: Keycode
+keycodePaste :: Keycode
+keycodeFind :: Keycode
+keycodeMute :: Keycode
+keycodeVolumeUp :: Keycode
+keycodeVolumeDown :: Keycode
+keycodeKPComma :: Keycode
+keycodeKPEqualsAS400 :: Keycode
+keycodeAltErase :: Keycode
+keycodeSysReq :: Keycode
+keycodeCancel :: Keycode
+keycodeClear :: Keycode
+keycodePrior :: Keycode
+keycodeReturn2 :: Keycode
+keycodeSeparator :: Keycode
+keycodeOut :: Keycode
+keycodeOper :: Keycode
+keycodeClearAgain :: Keycode
+keycodeCrSel :: Keycode
+keycodeExSel :: Keycode
+keycodeKP00 :: Keycode
+keycodeKP000 :: Keycode
+keycodeThousandsSeparator :: Keycode
+keycodeDecimalSeparator :: Keycode
+keycodeCurrencyUnit :: Keycode
+keycodeCurrencySubunit :: Keycode
+keycodeKPLeftParen :: Keycode
+keycodeKPRightParen :: Keycode
+keycodeKPLeftBrace :: Keycode
+keycodeKPRightBrace :: Keycode
+keycodeKPTab :: Keycode
+keycodeKPBackspace :: Keycode
+keycodeKPA :: Keycode
+keycodeKPB :: Keycode
+keycodeKPC :: Keycode
+keycodeKPD :: Keycode
+keycodeKPE :: Keycode
+keycodeKPF :: Keycode
+keycodeKPXor :: Keycode
+keycodeKPPower :: Keycode
+keycodeKPPercent :: Keycode
+keycodeKPLess :: Keycode
+keycodeKPGreater :: Keycode
+keycodeKPAmpersand :: Keycode
+keycodeKPDblAmpersand :: Keycode
+keycodeKPVecticalBar :: Keycode
+keycodeKPDblVerticalBar :: Keycode
+keycodeKPColon :: Keycode
+keycodeKPHash :: Keycode
+keycodeKPSpace :: Keycode
+keycodeKPAt :: Keycode
+keycodeKPExclam :: Keycode
+keycodeKPMemStore :: Keycode
+keycodeKPMemRecall :: Keycode
+keycodeKPMemClear :: Keycode
+keycodeKPMemAdd :: Keycode
+keycodeKPMemSubtract :: Keycode
+keycodeKPMemMultiply :: Keycode
+keycodeKPMemDivide :: Keycode
+keycodeKPPlusMinus :: Keycode
+keycodeKPClear :: Keycode
+keycodeKPClearEntry :: Keycode
+keycodeKPBinary :: Keycode
+keycodeKPOctal :: Keycode
+keycodeKPDecimal :: Keycode
+keycodeKPHexadecimal :: Keycode
+keycodeLCtrl :: Keycode
+keycodeLShift :: Keycode
+keycodeLAlt :: Keycode
+keycodeLGUI :: Keycode
+keycodeRCtrl :: Keycode
+keycodeRShift :: Keycode
+keycodeRAlt :: Keycode
+keycodeRGUI :: Keycode
+keycodeMode :: Keycode
+keycodeAudioNext :: Keycode
+keycodeAudioPrev :: Keycode
+keycodeAudioStop :: Keycode
+keycodeAudioPlay :: Keycode
+keycodeAudioMute :: Keycode
+keycodeMediaSelect :: Keycode
+keycodeWWW :: Keycode
+keycodeMail :: Keycode
+keycodeCalculator :: Keycode
+keycodeComputer :: Keycode
+keycodeACSearch :: Keycode
+keycodeACHome :: Keycode
+keycodeACBack :: Keycode
+keycodeACForward :: Keycode
+keycodeACStop :: Keycode
+keycodeACRefresh :: Keycode
+keycodeACBookmarks :: Keycode
+keycodeBrightnessDown :: Keycode
+keycodeBrightnessUp :: Keycode
+keycodeDisplaySwitch :: Keycode
+keycodeKbdIllumToggle :: Keycode
+keycodeKbdIllumDown :: Keycode
+keycodeKbdIllumUp :: Keycode
+keycodeEject :: Keycode
+keycodeSleep :: Keycode
+
+keycodeUnknown = (#const SDLK_UNKNOWN)
+keycodeReturn = (#const SDLK_RETURN)
+keycodeEscape = (#const SDLK_ESCAPE)
+keycodeBackspace = (#const SDLK_BACKSPACE)
+keycodeTab = (#const SDLK_TAB)
+keycodeSpace = (#const SDLK_SPACE)
+keycodeExclaim = (#const SDLK_EXCLAIM)
+keycodeQuoteDbl = (#const SDLK_QUOTEDBL)
+keycodeHash = (#const SDLK_HASH)
+keycodePercent = (#const SDLK_PERCENT)
+keycodeDollar = (#const SDLK_DOLLAR)
+keycodeAmpersand = (#const SDLK_AMPERSAND)
+keycodeQuote = (#const SDLK_QUOTE)
+keycodeLeftParen = (#const SDLK_LEFTPAREN)
+keycodeRightParen = (#const SDLK_RIGHTPAREN)
+keycodeAsterisk = (#const SDLK_ASTERISK)
+keycodePlus = (#const SDLK_PLUS)
+keycodeComma = (#const SDLK_COMMA)
+keycodeMinus = (#const SDLK_MINUS)
+keycodePeriod = (#const SDLK_PERIOD)
+keycodeSlash = (#const SDLK_SLASH)
+keycode0 = (#const SDLK_0)
+keycode1 = (#const SDLK_1)
+keycode2 = (#const SDLK_2)
+keycode3 = (#const SDLK_3)
+keycode4 = (#const SDLK_4)
+keycode5 = (#const SDLK_5)
+keycode6 = (#const SDLK_6)
+keycode7 = (#const SDLK_7)
+keycode8 = (#const SDLK_8)
+keycode9 = (#const SDLK_9)
+keycodeColon = (#const SDLK_COLON)
+keycodeSemicolon = (#const SDLK_SEMICOLON)
+keycodeLess = (#const SDLK_LESS)
+keycodeEquals = (#const SDLK_EQUALS)
+keycodeGreater = (#const SDLK_GREATER)
+keycodeQuestion = (#const SDLK_QUESTION)
+keycodeAt = (#const SDLK_AT)
+keycodeLeftBracket = (#const SDLK_LEFTBRACKET)
+keycodeBackslash = (#const SDLK_BACKSLASH)
+keycodeRightBracket = (#const SDLK_RIGHTBRACKET)
+keycodeCaret = (#const SDLK_CARET)
+keycodeUnderscore = (#const SDLK_UNDERSCORE)
+keycodeBackquote = (#const SDLK_BACKQUOTE)
+keycodeA = (#const SDLK_a)
+keycodeB = (#const SDLK_b)
+keycodeC = (#const SDLK_c)
+keycodeD = (#const SDLK_d)
+keycodeE = (#const SDLK_e)
+keycodeF = (#const SDLK_f)
+keycodeG = (#const SDLK_g)
+keycodeH = (#const SDLK_h)
+keycodeI = (#const SDLK_i)
+keycodeJ = (#const SDLK_j)
+keycodeK = (#const SDLK_k)
+keycodeL = (#const SDLK_l)
+keycodeM = (#const SDLK_m)
+keycodeN = (#const SDLK_n)
+keycodeO = (#const SDLK_o)
+keycodeP = (#const SDLK_p)
+keycodeQ = (#const SDLK_q)
+keycodeR = (#const SDLK_r)
+keycodeS = (#const SDLK_s)
+keycodeT = (#const SDLK_t)
+keycodeU = (#const SDLK_u)
+keycodeV = (#const SDLK_v)
+keycodeW = (#const SDLK_w)
+keycodeX = (#const SDLK_x)
+keycodeY = (#const SDLK_y)
+keycodeZ = (#const SDLK_z)
+keycodeCapsLock = (#const SDLK_CAPSLOCK)
+keycodeF1 = (#const SDLK_F1)
+keycodeF2 = (#const SDLK_F2)
+keycodeF3 = (#const SDLK_F3)
+keycodeF4 = (#const SDLK_F4)
+keycodeF5 = (#const SDLK_F5)
+keycodeF6 = (#const SDLK_F6)
+keycodeF7 = (#const SDLK_F7)
+keycodeF8 = (#const SDLK_F8)
+keycodeF9 = (#const SDLK_F9)
+keycodeF10 = (#const SDLK_F10)
+keycodeF11 = (#const SDLK_F11)
+keycodeF12 = (#const SDLK_F12)
+keycodePrintScreen = (#const SDLK_PRINTSCREEN)
+keycodeScrollLock = (#const SDLK_SCROLLLOCK)
+keycodePause = (#const SDLK_PAUSE)
+keycodeInsert = (#const SDLK_INSERT)
+keycodeHome = (#const SDLK_HOME)
+keycodePageUp = (#const SDLK_PAGEUP)
+keycodeDelete = (#const SDLK_DELETE)
+keycodeEnd = (#const SDLK_END)
+keycodePageDown = (#const SDLK_PAGEDOWN)
+keycodeRight = (#const SDLK_RIGHT)
+keycodeLeft = (#const SDLK_LEFT)
+keycodeDown = (#const SDLK_DOWN)
+keycodeUp = (#const SDLK_UP)
+keycodeNumLockClear = (#const SDLK_NUMLOCKCLEAR)
+keycodeKPDivide = (#const SDLK_KP_DIVIDE)
+keycodeKPMultiply = (#const SDLK_KP_MULTIPLY)
+keycodeKPMinus = (#const SDLK_KP_MINUS)
+keycodeKPPlus = (#const SDLK_KP_PLUS)
+keycodeKPEnter = (#const SDLK_KP_ENTER)
+keycodeKP1 = (#const SDLK_KP_1)
+keycodeKP2 = (#const SDLK_KP_2)
+keycodeKP3 = (#const SDLK_KP_3)
+keycodeKP4 = (#const SDLK_KP_4)
+keycodeKP5 = (#const SDLK_KP_5)
+keycodeKP6 = (#const SDLK_KP_6)
+keycodeKP7 = (#const SDLK_KP_7)
+keycodeKP8 = (#const SDLK_KP_8)
+keycodeKP9 = (#const SDLK_KP_9)
+keycodeKP0 = (#const SDLK_KP_0)
+keycodeKPPeriod = (#const SDLK_KP_PERIOD)
+keycodeApplication = (#const SDLK_APPLICATION)
+keycodePower = (#const SDLK_POWER)
+keycodeKPEquals = (#const SDLK_KP_EQUALS)
+keycodeF13 = (#const SDLK_F13)
+keycodeF14 = (#const SDLK_F14)
+keycodeF15 = (#const SDLK_F15)
+keycodeF16 = (#const SDLK_F16)
+keycodeF17 = (#const SDLK_F17)
+keycodeF18 = (#const SDLK_F18)
+keycodeF19 = (#const SDLK_F19)
+keycodeF20 = (#const SDLK_F20)
+keycodeF21 = (#const SDLK_F21)
+keycodeF22 = (#const SDLK_F22)
+keycodeF23 = (#const SDLK_F23)
+keycodeF24 = (#const SDLK_F24)
+keycodeExecute = (#const SDLK_EXECUTE)
+keycodeHelp = (#const SDLK_HELP)
+keycodeMenu = (#const SDLK_MENU)
+keycodeSelect = (#const SDLK_SELECT)
+keycodeStop = (#const SDLK_STOP)
+keycodeAgain = (#const SDLK_AGAIN)
+keycodeUndo = (#const SDLK_UNDO)
+keycodeCut = (#const SDLK_CUT)
+keycodeCopy = (#const SDLK_COPY)
+keycodePaste = (#const SDLK_PASTE)
+keycodeFind = (#const SDLK_FIND)
+keycodeMute = (#const SDLK_MUTE)
+keycodeVolumeUp = (#const SDLK_VOLUMEUP)
+keycodeVolumeDown = (#const SDLK_VOLUMEDOWN)
+keycodeKPComma = (#const SDLK_KP_COMMA)
+keycodeKPEqualsAS400 = (#const SDLK_KP_EQUALSAS400)
+keycodeAltErase = (#const SDLK_ALTERASE)
+keycodeSysReq = (#const SDLK_SYSREQ)
+keycodeCancel = (#const SDLK_CANCEL)
+keycodeClear = (#const SDLK_CLEAR)
+keycodePrior = (#const SDLK_PRIOR)
+keycodeReturn2 = (#const SDLK_RETURN2)
+keycodeSeparator = (#const SDLK_SEPARATOR)
+keycodeOut = (#const SDLK_OUT)
+keycodeOper = (#const SDLK_OPER)
+keycodeClearAgain = (#const SDLK_CLEARAGAIN)
+keycodeCrSel = (#const SDLK_CRSEL)
+keycodeExSel = (#const SDLK_EXSEL)
+keycodeKP00 = (#const SDLK_KP_00)
+keycodeKP000 = (#const SDLK_KP_000)
+keycodeThousandsSeparator = (#const SDLK_THOUSANDSSEPARATOR)
+keycodeDecimalSeparator = (#const SDLK_DECIMALSEPARATOR)
+keycodeCurrencyUnit = (#const SDLK_CURRENCYUNIT)
+keycodeCurrencySubunit = (#const SDLK_CURRENCYSUBUNIT)
+keycodeKPLeftParen = (#const SDLK_KP_LEFTPAREN)
+keycodeKPRightParen = (#const SDLK_KP_RIGHTPAREN)
+keycodeKPLeftBrace = (#const SDLK_KP_LEFTBRACE)
+keycodeKPRightBrace = (#const SDLK_KP_RIGHTBRACE)
+keycodeKPTab = (#const SDLK_KP_TAB)
+keycodeKPBackspace = (#const SDLK_KP_BACKSPACE)
+keycodeKPA = (#const SDLK_KP_A)
+keycodeKPB = (#const SDLK_KP_B)
+keycodeKPC = (#const SDLK_KP_C)
+keycodeKPD = (#const SDLK_KP_D)
+keycodeKPE = (#const SDLK_KP_E)
+keycodeKPF = (#const SDLK_KP_F)
+keycodeKPXor = (#const SDLK_KP_XOR)
+keycodeKPPower = (#const SDLK_KP_POWER)
+keycodeKPPercent = (#const SDLK_KP_PERCENT)
+keycodeKPLess = (#const SDLK_KP_LESS)
+keycodeKPGreater = (#const SDLK_KP_GREATER)
+keycodeKPAmpersand = (#const SDLK_KP_AMPERSAND)
+keycodeKPDblAmpersand = (#const SDLK_KP_DBLAMPERSAND)
+keycodeKPVecticalBar = (#const SDLK_KP_VERTICALBAR)
+keycodeKPDblVerticalBar = (#const SDLK_KP_DBLVERTICALBAR)
+keycodeKPColon = (#const SDLK_KP_COLON)
+keycodeKPHash = (#const SDLK_KP_HASH)
+keycodeKPSpace = (#const SDLK_KP_SPACE)
+keycodeKPAt = (#const SDLK_KP_AT)
+keycodeKPExclam = (#const SDLK_KP_EXCLAM)
+keycodeKPMemStore = (#const SDLK_KP_MEMSTORE)
+keycodeKPMemRecall = (#const SDLK_KP_MEMRECALL)
+keycodeKPMemClear = (#const SDLK_KP_MEMCLEAR)
+keycodeKPMemAdd = (#const SDLK_KP_MEMADD)
+keycodeKPMemSubtract = (#const SDLK_KP_MEMSUBTRACT)
+keycodeKPMemMultiply = (#const SDLK_KP_MEMMULTIPLY)
+keycodeKPMemDivide = (#const SDLK_KP_MEMDIVIDE)
+keycodeKPPlusMinus = (#const SDLK_KP_PLUSMINUS)
+keycodeKPClear = (#const SDLK_KP_CLEAR)
+keycodeKPClearEntry = (#const SDLK_KP_CLEARENTRY)
+keycodeKPBinary = (#const SDLK_KP_BINARY)
+keycodeKPOctal = (#const SDLK_KP_OCTAL)
+keycodeKPDecimal = (#const SDLK_KP_DECIMAL)
+keycodeKPHexadecimal = (#const SDLK_KP_HEXADECIMAL)
+keycodeLCtrl = (#const SDLK_LCTRL)
+keycodeLShift = (#const SDLK_LSHIFT)
+keycodeLAlt = (#const SDLK_LALT)
+keycodeLGUI = (#const SDLK_LGUI)
+keycodeRCtrl = (#const SDLK_RCTRL)
+keycodeRShift = (#const SDLK_RSHIFT)
+keycodeRAlt = (#const SDLK_RALT)
+keycodeRGUI = (#const SDLK_RGUI)
+keycodeMode = (#const SDLK_MODE)
+keycodeAudioNext = (#const SDLK_AUDIONEXT)
+keycodeAudioPrev = (#const SDLK_AUDIONEXT)
+keycodeAudioStop = (#const SDLK_AUDIOSTOP)
+keycodeAudioPlay = (#const SDLK_AUDIOPLAY)
+keycodeAudioMute = (#const SDLK_AUDIOMUTE)
+keycodeMediaSelect = (#const SDLK_MEDIASELECT)
+keycodeWWW = (#const SDLK_WWW)
+keycodeMail = (#const SDLK_MAIL)
+keycodeCalculator = (#const SDLK_CALCULATOR)
+keycodeComputer = (#const SDLK_COMPUTER)
+keycodeACSearch = (#const SDLK_AC_SEARCH)
+keycodeACHome = (#const SDLK_AC_HOME)
+keycodeACBack = (#const SDLK_AC_BACK)
+keycodeACForward = (#const SDLK_AC_FORWARD)
+keycodeACStop = (#const SDLK_AC_STOP)
+keycodeACRefresh = (#const SDLK_AC_REFRESH)
+keycodeACBookmarks = (#const SDLK_AC_BOOKMARKS)
+keycodeBrightnessDown = (#const SDLK_BRIGHTNESSDOWN)
+keycodeBrightnessUp = (#const SDLK_BRIGHTNESSUP)
+keycodeDisplaySwitch = (#const SDLK_DISPLAYSWITCH)
+keycodeKbdIllumToggle = (#const SDLK_KBDILLUMTOGGLE)
+keycodeKbdIllumDown = (#const SDLK_KBDILLUMDOWN)
+keycodeKbdIllumUp = (#const SDLK_KBDILLUMUP)
+keycodeEject = (#const SDLK_EJECT)
+keycodeSleep = (#const SDLK_SLEEP)
+
 type Keymod = (#type SDL_Keymod)
 
-keymodNone :: Keymod
-keymodLShift :: Keymod
-keymodRShift :: Keymod
-keymodLCtrl :: Keymod
-keymodRCtrl :: Keymod
-keymodLAlt :: Keymod
-keymodRAlt :: Keymod
-keymodLGUI :: Keymod
-keymodRGUI :: Keymod
-keymodNum :: Keymod
-keymodCaps :: Keymod
-keymodMode :: Keymod
-keymodReserved :: Keymod
+keymodNone :: Num a => a
+keymodLShift :: Num a => a
+keymodRShift :: Num a => a
+keymodShift :: Num a => a
+keymodLCtrl :: Num a => a
+keymodRCtrl :: Num a => a
+keymodCtrl :: Num a => a
+keymodLAlt :: Num a => a
+keymodRAlt :: Num a => a
+keymodAlt :: Num a => a
+keymodLGUI :: Num a => a
+keymodRGUI :: Num a => a
+keymodGUI :: Num a => a
+keymodNum :: Num a => a
+keymodCaps :: Num a => a
+keymodMode :: Num a => a
+keymodReserved :: Num a => a
 
 keymodNone = (#const KMOD_NONE)
 keymodLShift = (#const KMOD_LSHIFT)
 keymodRShift = (#const KMOD_RSHIFT)
+keymodShift = (#const KMOD_SHIFT)
 keymodLCtrl = (#const KMOD_LCTRL)
 keymodRCtrl = (#const KMOD_RCTRL)
+keymodCtrl = (#const KMOD_CTRL)
 keymodLAlt = (#const KMOD_LALT)
 keymodRAlt = (#const KMOD_RALT)
+keymodAlt = (#const KMOD_ALT)
 keymodLGUI = (#const KMOD_LGUI)
 keymodRGUI = (#const KMOD_RGUI)
+keymodGUI = (#const KMOD_GUI)
 keymodNum = (#const KMOD_NUM)
 keymodCaps = (#const KMOD_CAPS)
 keymodMode = (#const KMOD_MODE)
@@ -1381,6 +2137,16 @@ threadPriorityLow = (#const SDL_THREAD_PRIORITY_LOW)
 threadPriorityNormal = (#const SDL_THREAD_PRIORITY_NORMAL)
 threadPriorityHigh = (#const SDL_THREAD_PRIORITY_HIGH)
 
+audioAllowFrequencyChange :: Num a => a
+audioAllowFormatChange :: Num a => a
+audioAllowChannelsChange :: Num a => a
+audioAllowAnyChange :: Num a => a
+
+audioAllowFrequencyChange = (#const SDL_AUDIO_ALLOW_FREQUENCY_CHANGE)
+audioAllowFormatChange = (#const SDL_AUDIO_ALLOW_FORMAT_CHANGE)
+audioAllowChannelsChange = (#const SDL_AUDIO_ALLOW_CHANNELS_CHANGE)
+audioAllowAnyChange = (#const SDL_AUDIO_ALLOW_ANY_CHANGE)
+
 buttonLeft :: (Num a) => a
 buttonMiddle :: (Num a) => a
 buttonRight :: (Num a) => a
@@ -1486,26 +2252,6 @@ eventTypeClipboardUpdate = (#const SDL_CLIPBOARDUPDATE)
 eventTypeDropFile = (#const SDL_DROPFILE)
 eventTypeUserEvent = (#const SDL_USEREVENT)
 eventTypeLastEvent = (#const SDL_LASTEVENT)
-
-initFlagTimer :: (Num a) => a
-initFlagAudio :: (Num a) => a
-initFlagVideo :: (Num a) => a
-initFlagJoystick :: (Num a) => a
-initFlagHaptic :: (Num a) => a
-initFlagGameController :: (Num a) => a
-initFlagEvents :: (Num a) => a
-initFlagNoParachute :: (Num a) => a
-initFlagEverything :: (Num a) => a
-
-initFlagTimer = (#const SDL_INIT_TIMER)
-initFlagAudio = (#const SDL_INIT_AUDIO)
-initFlagVideo = (#const SDL_INIT_VIDEO)
-initFlagJoystick = (#const SDL_INIT_JOYSTICK)
-initFlagHaptic = (#const SDL_INIT_HAPTIC)
-initFlagGameController = (#const SDL_INIT_GAMECONTROLLER)
-initFlagEvents = (#const SDL_INIT_EVENTS)
-initFlagNoParachute = (#const SDL_INIT_NOPARACHUTE)
-initFlagEverything = (#const SDL_INIT_EVERYTHING)
 
 joystickHatCentered :: (Num a) => a
 joystickHatUp :: (Num a) => a
