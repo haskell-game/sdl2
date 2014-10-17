@@ -42,6 +42,9 @@ library
     Graphics.UI.SDL.Types
     Graphics.UI.SDL.Video
 
+  if impl(ghc>=7.8)
+    exposed-modules: Graphics.UI.SDL.Enum.Pattern
+
   c-sources:
     cbits/sdlhelper.c
 

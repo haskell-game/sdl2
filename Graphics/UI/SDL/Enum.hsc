@@ -1,8 +1,3 @@
-#if defined(__GLASGOW_HASKELL__) && __GLASGOW_HASKELL__ >= 707
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE PatternSynonyms #-}
-#define PROVIDE_PATTERNS
-#endif
 module Graphics.UI.SDL.Enum (
 	-- * Enumerations
 
@@ -12,25 +7,12 @@ module Graphics.UI.SDL.Enum (
 	audioStatusPlaying,
 	audioStatusPaused,
 
-#ifdef PROVIDE_PATTERNS
-	pattern AudioStatusStopped,
-	pattern AudioStatusPlaying,
-	pattern AudioStatusPaused,
-#endif
-
 	-- ** Blend Mode
 	BlendMode,
 	blendModeNone,
 	blendModeBlend,
 	blendModeAdd,
 	blendModeMod,
-
-#ifdef PROVIDE_PATTERNS
-	pattern BlendModeNone,
-	pattern BlendModeBlend,
-	pattern BlendModeAdd,
-	pattern BlendModeMod,
-#endif
 
 	-- ** Event Action
 	EventAction,
@@ -882,12 +864,6 @@ audioStatusStopped = (#const SDL_AUDIO_STOPPED)
 audioStatusPlaying = (#const SDL_AUDIO_PLAYING)
 audioStatusPaused = (#const SDL_AUDIO_PAUSED)
 
-#ifdef PROVIDE_PATTERNS
-pattern AudioStatusStopped = (#const SDL_AUDIO_STOPPED) :: AudioStatus
-pattern AudioStatusPlaying = (#const SDL_AUDIO_PLAYING) :: AudioStatus
-pattern AudioStatusPaused = (#const SDL_AUDIO_PAUSED) :: AudioStatus
-#endif
-
 type BlendMode = (#type SDL_BlendMode)
 
 blendModeNone :: BlendMode
@@ -899,13 +875,6 @@ blendModeNone = (#const SDL_BLENDMODE_NONE)
 blendModeBlend = (#const SDL_BLENDMODE_BLEND)
 blendModeAdd = (#const SDL_BLENDMODE_ADD)
 blendModeMod = (#const SDL_BLENDMODE_MOD)
-
-#ifdef PROVIDE_PATTERNS
-pattern BlendModeNone = (#const SDL_BLENDMODE_NONE) :: BlendMode
-pattern BlendModeBlend = (#const SDL_BLENDMODE_BLEND) :: BlendMode
-pattern BlendModeAdd = (#const SDL_BLENDMODE_ADD) :: BlendMode
-pattern BlendModeMod = (#const SDL_BLENDMODE_MOD) :: BlendMode
-#endif
 
 type EventAction = (#type SDL_eventaction)
 
