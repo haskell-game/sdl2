@@ -10,6 +10,8 @@ in pkgs.myEnvFun {
      name = haskellPackages.sdl2.name;
      buildInputs = [
        pkgs.curl
+       pkgs.git
+       pkgs.openssh
        pkgs.pkgconfig
        pkgs.SDL2
        (haskellPackages.ghcWithPackages (hs: ([
