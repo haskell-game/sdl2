@@ -328,12 +328,16 @@ module Graphics.UI.SDL.Enum (
 	keymodNone,
 	keymodLShift,
 	keymodRShift,
+	keymodShift,
 	keymodLCtrl,
 	keymodRCtrl,
+	keymodCtrl,
 	keymodLAlt,
 	keymodRAlt,
+	keymodAlt,
 	keymodLGUI,
 	keymodRGUI,
+	keymodGUI,
 	keymodNum,
 	keymodCaps,
 	keymodMode,
@@ -1478,12 +1482,16 @@ type Keymod = (#type SDL_Keymod)
 keymodNone :: Keymod
 keymodLShift :: Keymod
 keymodRShift :: Keymod
+keymodShift :: Keymod
 keymodLCtrl :: Keymod
 keymodRCtrl :: Keymod
+keymodCtrl :: Keymod
 keymodLAlt :: Keymod
 keymodRAlt :: Keymod
+keymodAlt :: Keymod
 keymodLGUI :: Keymod
 keymodRGUI :: Keymod
+keymodGUI :: Keymod
 keymodNum :: Keymod
 keymodCaps :: Keymod
 keymodMode :: Keymod
@@ -1492,12 +1500,16 @@ keymodReserved :: Keymod
 keymodNone = (#const KMOD_NONE)
 keymodLShift = (#const KMOD_LSHIFT)
 keymodRShift = (#const KMOD_RSHIFT)
+keymodShift = (#const KMOD_SHIFT)
 keymodLCtrl = (#const KMOD_LCTRL)
 keymodRCtrl = (#const KMOD_RCTRL)
+keymodCtrl = (#const KMOD_CTRL)
 keymodLAlt = (#const KMOD_LALT)
 keymodRAlt = (#const KMOD_RALT)
+keymodAlt = (#const KMOD_ALT)
 keymodLGUI = (#const KMOD_LGUI)
 keymodRGUI = (#const KMOD_RGUI)
+keymodGUI = (#const KMOD_GUI)
 keymodNum = (#const KMOD_NUM)
 keymodCaps = (#const KMOD_CAPS)
 keymodMode = (#const KMOD_MODE)
