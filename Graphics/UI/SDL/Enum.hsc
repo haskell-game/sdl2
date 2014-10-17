@@ -1502,23 +1502,23 @@ keycodeSleep = (#const SDLK_SLEEP)
 
 type Keymod = (#type SDL_Keymod)
 
-keymodNone :: Keymod
-keymodLShift :: Keymod
-keymodRShift :: Keymod
-keymodShift :: Keymod
-keymodLCtrl :: Keymod
-keymodRCtrl :: Keymod
-keymodCtrl :: Keymod
-keymodLAlt :: Keymod
-keymodRAlt :: Keymod
-keymodAlt :: Keymod
-keymodLGUI :: Keymod
-keymodRGUI :: Keymod
-keymodGUI :: Keymod
-keymodNum :: Keymod
-keymodCaps :: Keymod
-keymodMode :: Keymod
-keymodReserved :: Keymod
+keymodNone :: Num a => a
+keymodLShift :: Num a => a
+keymodRShift :: Num a => a
+keymodShift :: Num a => a
+keymodLCtrl :: Num a => a
+keymodRCtrl :: Num a => a
+keymodCtrl :: Num a => a
+keymodLAlt :: Num a => a
+keymodRAlt :: Num a => a
+keymodAlt :: Num a => a
+keymodLGUI :: Num a => a
+keymodRGUI :: Num a => a
+keymodGUI :: Num a => a
+keymodNum :: Num a => a
+keymodCaps :: Num a => a
+keymodMode :: Num a => a
+keymodReserved :: Num a => a
 
 keymodNone = (#const KMOD_NONE)
 keymodLShift = (#const KMOD_LSHIFT)
