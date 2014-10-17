@@ -1,4 +1,10 @@
-module SDL.Event (Event(..)) where
+module SDL.Events (Event(..), EventPayload(..)) where
+
+import Foreign
+import Foreign.C
+import Linear
+import Linear.Affine (Point)
+import SDL.Raw.Types hiding (Event(..), Point)
 
 data Event = Event
   { eventTimestamp :: Word32
@@ -22,17 +28,17 @@ data EventPayload
   | MouseMotionEvent {mouseMotionEventWindowID :: Word32
                      ,mouseMotionEventWhich :: Word32
                      ,mouseMotionEventState :: Word32
-                     ,mouseMotionEventPos :: P V2 Int32
+                     ,mouseMotionEventPos :: Point V2 Int32
                      ,mouseMotionEventRelMotion :: V2 Int32}
   | MouseButtonEvent {mouseButtonEventWindowID :: Word32
                      ,mouseButtonEventWhich :: Word32
                      ,mouseButtonEventButton :: Word8
                      ,mouseButtonEventState :: Word8
                      ,mouseButtonEventClicks :: Word8
-                     ,mouseButtonEventPos :: P V2 Int32}
+                     ,mouseButtonEventPos :: Point V2 Int32}
   | MouseWheelEvent {mouseWheelEventWindowID :: Word32
                     ,mouseWheelEventWhich :: Word32
-                    ,mouseWheelEventPos :: P V2 Int32}
+                    ,mouseWheelEventPos :: Point V2 Int32}
   | JoyAxisEvent {joyAxisEventWhich :: JoystickID
                  ,joyAxisEventAxis :: Word8
                  ,joyAxisEventValue :: Int16}
@@ -61,19 +67,19 @@ data EventPayload
   | SysWMEvent {sysWMEventMsg :: SysWMmsg}
   | TouchFingerEvent {touchFingerEventTouchID :: TouchID
                      ,touchFingerEventFingerID :: FingerID
-                     ,touchFingerEventPos :: P V2 CFloat
+                     ,touchFingerEventPos :: Point V2 CFloat
                      ,touchFingerEventRelMotion :: V2 CFloat
                      ,touchFingerEventPressure :: CFloat}
   | MultiGestureEvent {multiGestureEventTouchID :: TouchID
                       ,multiGestureEventDTheta :: CFloat
                       ,multiGestureEventDDist :: CFloat
-                      ,multiGestureEventPos :: P V2 CFloat
+                      ,multiGestureEventPos :: Point V2 CFloat
                       ,multiGestureEventNumFingers :: Word16}
   | DollarGestureEvent {dollarGestureEventTouchID :: TouchID
                        ,dollarGestureEventGestureID :: GestureID
                        ,dollarGestureEventNumFingers :: Word32
                        ,dollarGestureEventError :: CFloat
-                       ,dollagGestureEventPos :: P V2 CFloat}
+                       ,dollagGestureEventPos :: Point V2 CFloat}
   | DropEvent {dropEventFile :: CString}
   | ClipboardUpdateEvent
   | UnknownEvent {unknownEventType :: Word32}
