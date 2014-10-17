@@ -9,9 +9,4 @@ script:
   - cabal configure && cabal build
 
 notifications:
-  irc:
-    channels:
-      - "irc.freenode.net#haskell-game"
-    skip_join: true
-    template:
-      - "\x0313sdl2\x03/\x0306%{branch}\x03 \x0314%{commit}\x03 %{build_url} %{message}"
+  irc: "irc.freenode.org#haskell-game"
