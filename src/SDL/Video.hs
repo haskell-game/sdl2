@@ -86,6 +86,7 @@ createWindow :: Foldable f => Text -> CInt -> CInt -> CInt -> CInt -> f WindowFl
 createWindow title x y w h flags =
   BS.useAsCString (Text.encodeUtf8 title) $ \cstr ->
     fmap Window $
+    SDLEx.throwIfNull "SDL.Video.createWindow" "SDL_CreateWindow" $
     Raw.createWindow cstr
                      x
                      y
@@ -176,10 +177,10 @@ glSwapWindow (Window w) = Raw.glSwapWindow w
 newtype GLContext = GLContext (Raw.GLContext)
 
 glCreateContext :: Window -> IO GLContext
-glCreateContext (Window w) = GLContext <$> Raw.glCreateContext w
+glCreateContext (Window w) = fmap GLContext $ SDLEx.throwIfNull "SDL.Video.glCreateContext" "SDL_GL_CreateContext" $ Raw.glCreateContext w
 
 glGetCurrentContext :: IO GLContext
-glGetCurrentContext = GLContext <$> Raw.glGetCurrentContext
+glGetCurrentContext = fmap GLContext $ SDLEx.throwIfNull "SDL.Video.glGetCurrentContext" "SDL_GL_GetCurrentContext" Raw.glGetCurrentContext
 
 data SwapInterval = ImmediateUpdates | SynchronizedUpdates | LateSwapTearing
 
