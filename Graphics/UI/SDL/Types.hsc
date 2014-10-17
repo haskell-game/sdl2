@@ -14,7 +14,6 @@ module Graphics.UI.SDL.Types (
 	HintCallback,
 	Joystick,
 	JoystickID,
-	Keycode,
 	LogOutputFunction,
 	Mutex,
 	Renderer,
