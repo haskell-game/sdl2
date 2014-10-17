@@ -697,6 +697,7 @@ module Graphics.UI.SDL.Enum.Pattern (
 	pattern EventTypeLastEvent,
 
 	-- ** Initialization Flag
+	InitFlag,
 	pattern InitFlagTimer,
 	pattern InitFlagAudio,
 	pattern InitFlagVideo,
@@ -1534,15 +1535,17 @@ pattern EventTypeDropFile = (#const SDL_DROPFILE)
 pattern EventTypeUserEvent = (#const SDL_USEREVENT)
 pattern EventTypeLastEvent = (#const SDL_LASTEVENT)
 
-pattern InitFlagTimer = (#const SDL_INIT_TIMER)
-pattern InitFlagAudio = (#const SDL_INIT_AUDIO)
-pattern InitFlagVideo = (#const SDL_INIT_VIDEO)
-pattern InitFlagJoystick = (#const SDL_INIT_JOYSTICK)
-pattern InitFlagHaptic = (#const SDL_INIT_HAPTIC)
-pattern InitFlagGameController = (#const SDL_INIT_GAMECONTROLLER)
-pattern InitFlagEvents = (#const SDL_INIT_EVENTS)
-pattern InitFlagNoParachute = (#const SDL_INIT_NOPARACHUTE)
-pattern InitFlagEverything = (#const SDL_INIT_EVERYTHING)
+type InitFlag = Word32
+
+pattern InitFlagTimer = (#const SDL_INIT_TIMER) :: InitFlag
+pattern InitFlagAudio = (#const SDL_INIT_AUDIO) :: InitFlag
+pattern InitFlagVideo = (#const SDL_INIT_VIDEO) :: InitFlag
+pattern InitFlagJoystick = (#const SDL_INIT_JOYSTICK) :: InitFlag
+pattern InitFlagHaptic = (#const SDL_INIT_HAPTIC) :: InitFlag
+pattern InitFlagGameController = (#const SDL_INIT_GAMECONTROLLER) :: InitFlag
+pattern InitFlagEvents = (#const SDL_INIT_EVENTS) :: InitFlag
+pattern InitFlagNoParachute = (#const SDL_INIT_NOPARACHUTE) :: InitFlag
+pattern InitFlagEverything = (#const SDL_INIT_EVERYTHING) :: InitFlag
 
 pattern JoystickHatCentered = (#const SDL_HAT_CENTERED)
 pattern JoystickHatUp = (#const SDL_HAT_UP)
