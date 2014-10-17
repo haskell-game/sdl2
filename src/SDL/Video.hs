@@ -1,4 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings #-}
 module SDL.Video
   ( Window
   , WindowFlag(..)
@@ -38,8 +39,9 @@ import Foreign.C
 
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
-import qualified SDL.Raw as Raw
 import qualified Data.Vector.Storable as SV
+import qualified SDL.Exception as SDLEx
+import qualified SDL.Raw as Raw
 
 data WindowFlag
   = WindowFullscreen          -- ^ fullscreen window
@@ -98,11 +100,12 @@ createWindowAndRenderer w h flags =
   alloca $ \wPtr ->
     alloca $ \rPtr ->
       do
-        Raw.createWindowAndRenderer w
-                                    h
-                                    (foldWindowFlags flags)
-                                    wPtr
-                                    rPtr
+        SDLEx.throwIfNeg "SDL.Video.createWindowAndRenderer" $
+          Raw.createWindowAndRenderer w
+                                      h
+                                      (foldWindowFlags flags)
+                                      wPtr
+                                      rPtr
         (,) <$> (Window <$> peek wPtr) <*> (Renderer <$> peek rPtr)
 
 setWindowTitle :: Window -> Text -> IO ()
@@ -163,9 +166,9 @@ glAttributeToC GLFramebufferSRGBCapable = Raw.glAttrFramebufferSRGBCapable
 glAttributeToC GLContextEGL = Raw.glAttrContextEGL
 
 glSetAttribute :: GLAttribute -> CInt -> IO ()
-glSetAttribute attribute value = do
-  Raw.glSetAttribute (glAttributeToC attribute) value
-  return ()
+glSetAttribute attribute value =
+  SDLEx.throwIfNeg "SDL.Video.glSetAttribute" $
+    Raw.glSetAttribute (glAttributeToC attribute) value
 
 glSwapWindow :: Window -> IO ()
 glSwapWindow (Window w) = Raw.glSwapWindow w
@@ -186,9 +189,9 @@ swapIntervalToC SynchronizedUpdates = Raw.swapIntervalVsync
 swapIntervalToC LateSwapTearing = Raw.swapIntervalLateSwapTearing
 
 glSetSwapInterval :: SwapInterval -> IO ()
-glSetSwapInterval swapInterval = do
-  Raw.glSetSwapInterval (swapIntervalToC swapInterval)
-  return ()
+glSetSwapInterval swapInterval =
+  SDLEx.throwIfNeg "SDL.Video.glSetSwapInterval" $
+    Raw.glSetSwapInterval (swapIntervalToC swapInterval)
 
 hideWindow :: Window -> IO ()
 hideWindow (Window w) = Raw.hideWindow w
@@ -209,9 +212,9 @@ showWindow :: Window -> IO ()
 showWindow (Window w) = Raw.showWindow w
 
 setWindowBrightness :: Window -> CFloat -> IO ()
-setWindowBrightness (Window w) b = do
-  Raw.setWindowBrightness w b
-  return ()
+setWindowBrightness (Window w) b =
+  SDLEx.throwIfNeg "SDL.Video.setWindowBrightness" $
+    Raw.setWindowBrightness w b
 
 setWindowGammaRamp :: Window -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> IO ()
 setWindowGammaRamp (Window w) r g b = do
@@ -223,9 +226,9 @@ setWindowGammaRamp (Window w) r g b = do
 
   withChan r $ \rPtr ->
     withChan b $ \bPtr ->
-      withChan g $ \gPtr -> do
-        Raw.setWindowGammaRamp w rPtr gPtr bPtr
-        return ()
+      withChan g $ \gPtr ->
+        SDLEx.throwIfNeg "SDL.Video.setWindowGammaRamp" $
+          Raw.setWindowGammaRamp w rPtr gPtr bPtr
 
 {-
 

@@ -29,6 +29,7 @@ library
 
   exposed-modules:
     SDL.Audio
+    SDL.Exception
     SDL.Video
 
     SDL.Raw
