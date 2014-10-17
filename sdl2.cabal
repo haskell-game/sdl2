@@ -28,9 +28,15 @@ library
   ghc-options: -Wall
 
   exposed-modules:
+    SDL
     SDL.Audio
-    SDL.Exception
+    SDL.Events
+    SDL.Haptic
+    SDL.Power
+    SDL.Joystick
+    SDL.Timers
     SDL.Video
+    SDL.Window
 
     SDL.Raw
     SDL.Raw.Audio

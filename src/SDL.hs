@@ -8,14 +8,16 @@ module SDL
   ,module SDL.Video
   ,module SDL.Window
   ,module SDL.Haptic
-  ,module SDL.Power)
+  ,module SDL.Power
+  ,module SDL.Exception)
   where
 
 import SDL.Audio
 import SDL.Events
+import SDL.Exception
 import SDL.Haptic
-import SDL.Power
 import SDL.Joystick
+import SDL.Power
 import SDL.Timers
 import SDL.Video
 import SDL.Window
