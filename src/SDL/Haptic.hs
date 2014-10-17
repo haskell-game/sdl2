@@ -1,0 +1,3 @@
+-- |
+
+module SDL.Haptic where

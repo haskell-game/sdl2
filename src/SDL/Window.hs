@@ -1,0 +1,3 @@
+-- |
+
+module SDL.Window where
