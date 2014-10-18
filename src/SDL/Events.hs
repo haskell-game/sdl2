@@ -20,13 +20,18 @@ import qualified SDL.Raw as Raw
 data Event = Event
   { eventTimestamp :: Word32
   , eventPayload :: EventPayload}
+  deriving (Eq, Show)
+
+data KeyMotion = KeyUp | KeyDown
+  deriving (Eq,Show)
 
 data EventPayload
   = WindowEvent {indowEventWindowID :: Word32
                 ,windowEventEvent :: Word8
                 ,windowEventData1 :: Int32
                 ,windowEventData2 :: Int32}
-  | KeyboardEvent {keyboardEventWindowID :: Word32
+  | KeyboardEvent {keyboardEventKeyMotion :: KeyMotion
+                  ,keyboardEventWindowID :: Word32
                   ,keyboardEventState :: Word8
                   ,keyboardEventRepeat :: Word8
                   ,keyboardEventKeysym :: Keysym}
@@ -98,7 +103,9 @@ data EventPayload
 
 convertRaw :: Raw.Event -> Event
 convertRaw (Raw.WindowEvent _ ts a b c d) = Event ts (WindowEvent a b c d)
-convertRaw (Raw.KeyboardEvent _ ts a b c d) = Event ts (KeyboardEvent a b c d)
+convertRaw (Raw.KeyboardEvent t ts a b c d)
+  | t == Raw.eventTypeKeyDown = Event ts (KeyboardEvent KeyDown a b c d)
+  | t == Raw.eventTypeKeyUp = Event ts (KeyboardEvent KeyUp a b c d)
 convertRaw (Raw.TextEditingEvent _ ts a b c d) = Event ts (TextEditingEvent a b c d)
 convertRaw (Raw.TextInputEvent _ ts a b) = Event ts (TextInputEvent a b)
 convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) = Event ts (MouseMotionEvent a b c (P (V2 d e)) (V2 f g))
