@@ -4,6 +4,8 @@ module SDL.Events
   ( Event(..)
   , EventPayload(..)
   , KeyMotion(..)
+  , MouseButton(..)
+  , MouseMotion(..)
   , WindowEvent(..)
   , pollEvent
   , Raw.pumpEvents
@@ -49,11 +51,17 @@ data WindowEvent
   | WindowClosed
   deriving (Eq,Show)
 
+data MouseMotion = MouseButtonUp | MouseButtonDown
+  deriving (Eq,Show)
+
+data MouseButton = ButtonLeft | ButtonMiddle | ButtonRight | ButtonX1 | ButtonX2
+  deriving (Eq,Show)
+
 data EventPayload
   = WindowEvent {windowEventWindowID :: WindowID
                 ,windowEventEvent :: WindowEvent}
-  | KeyboardEvent {keyboardEventKeyMotion :: KeyMotion
-                  ,keyboardEventWindowID :: WindowID
+  | KeyboardEvent {keyboardEventWindowID :: WindowID
+                  ,keyboardEventKeyMotion :: KeyMotion
                   ,keyboardEventState :: Word8
                   ,keyboardEventRepeat :: Word8
                   ,keyboardEventKeysym :: Keysym}
@@ -69,8 +77,9 @@ data EventPayload
                      ,mouseMotionEventPos :: Point V2 Int32
                      ,mouseMotionEventRelMotion :: V2 Int32}
   | MouseButtonEvent {mouseButtonEventWindowID :: WindowID
+                     ,mouseButtonEventMotion :: MouseMotion
                      ,mouseButtonEventWhich :: Word32
-                     ,mouseButtonEventButton :: Word8
+                     ,mouseButtonEventButton :: MouseButton
                      ,mouseButtonEventState :: Word8
                      ,mouseButtonEventClicks :: Word8
                      ,mouseButtonEventPos :: Point V2 Int32}
@@ -144,12 +153,21 @@ convertRaw (Raw.WindowEvent _ ts a b c d)
        | b == Raw.windowEventFocusLost -> WindowLostKeyboardFocus
        | b == Raw.windowEventClose -> WindowClosed
 convertRaw (Raw.KeyboardEvent t ts a b c d)
-  | t == Raw.eventTypeKeyDown = Event ts (KeyboardEvent KeyDown (WindowID a) b c d)
-  | t == Raw.eventTypeKeyUp = Event ts (KeyboardEvent KeyUp (WindowID a) b c d)
+  = let motion | t == Raw.eventTypeKeyDown = KeyDown
+               | t == Raw.eventTypeKeyUp = KeyUp
+    in Event ts (KeyboardEvent (WindowID a) motion b c d)
 convertRaw (Raw.TextEditingEvent _ ts a b c d) = Event ts (TextEditingEvent (WindowID a) (ccharStringToText b) c d)
 convertRaw (Raw.TextInputEvent _ ts a b) = Event ts (TextInputEvent (WindowID a) (ccharStringToText b))
 convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) = Event ts (MouseMotionEvent (WindowID a) b c (P (V2 d e)) (V2 f g))
-convertRaw (Raw.MouseButtonEvent _ ts a b c d e f g) = Event ts (MouseButtonEvent (WindowID a) b c d e (P (V2 f g)))
+convertRaw (Raw.MouseButtonEvent t ts a b c d e f g)
+  = let motion | t == Raw.eventTypeMouseButtonUp = MouseButtonUp
+               | t == Raw.eventTypeMouseButtonDown = MouseButtonDown
+        button | c == Raw.buttonLeft = ButtonLeft
+               | c == Raw.buttonMiddle = ButtonMiddle
+               | c == Raw.buttonRight = ButtonRight
+               | c == Raw.buttonX1 = ButtonX1
+               | c == Raw.buttonX2 = ButtonX2
+    in Event ts (MouseButtonEvent (WindowID a) motion b button d e (P (V2 f g)))
 convertRaw (Raw.MouseWheelEvent _ ts a b c d) = Event ts (MouseWheelEvent (WindowID a) b (P (V2 c d)))
 convertRaw (Raw.JoyAxisEvent _ ts a b c) = Event ts (JoyAxisEvent a b c)
 convertRaw (Raw.JoyBallEvent _ ts a b c d) = Event ts (JoyBallEvent a b (V2 c d))
