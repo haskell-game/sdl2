@@ -48,12 +48,12 @@ data WindowFlag
   = WindowFullscreen          -- ^ fullscreen window
   | WindowFullscreenDesktop   -- ^ fullscreen window at the current desktop resolution
   | WindowOpenGL              -- ^ window usable with OpenGL context
-  | WindowShown               -- ^ window is visible
-  | WindowHidden              -- ^ window is not visible
+  | WindowInitiallyShown      -- ^ window is visible
+  | WindowInitiallyHidden     -- ^ window is not visible
   | WindowBorderless          -- ^ no window decoration
   | WindowResizable           -- ^ window can be resized
-  | WindowMinimized           -- ^ window is minimized
-  | WindowMaximized           -- ^ window is maximized
+  | WindowInitiallyMinimized  -- ^ window is minimized
+  | WindowInitiallyMaximized  -- ^ window is maximized
   | WindowInputGrabbed        -- ^ window has grabbed input focus
   | WindowInputFocus          -- ^ window has input focus
   | WindowMouseFocus          -- ^ window has mouse focus
@@ -64,12 +64,12 @@ windowFlagToC :: Num a => WindowFlag -> a
 windowFlagToC WindowFullscreen = Raw.windowFlagFullscreen
 windowFlagToC WindowFullscreenDesktop = Raw.windowFlagFullscreenDesktop
 windowFlagToC WindowOpenGL = Raw.windowFlagOpenGL
-windowFlagToC WindowShown = Raw.windowFlagShown
-windowFlagToC WindowHidden = Raw.windowFlagHidden
+windowFlagToC WindowInitiallyShown = Raw.windowFlagShown
+windowFlagToC WindowInitiallyHidden = Raw.windowFlagHidden
 windowFlagToC WindowBorderless = Raw.windowFlagBorderless
 windowFlagToC WindowResizable = Raw.windowFlagResizable
-windowFlagToC WindowMinimized = Raw.windowFlagMinimized
-windowFlagToC WindowMaximized = Raw.windowFlagMaximized
+windowFlagToC WindowInitiallyMinimized = Raw.windowFlagMinimized
+windowFlagToC WindowInitiallyMaximized = Raw.windowFlagMaximized
 windowFlagToC WindowInputGrabbed = Raw.windowFlagInputGrabbed
 windowFlagToC WindowInputFocus = Raw.windowFlagInputFocus
 windowFlagToC WindowMouseFocus = Raw.windowFlagMouseFocus

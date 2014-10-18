@@ -1,8 +1,10 @@
+{-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Events
   ( Event(..)
   , EventPayload(..)
   , KeyMotion(..)
+  , WindowEvent(..)
   , pollEvent
   , Raw.pumpEvents
   , waitEvent
@@ -26,11 +28,26 @@ data Event = Event
 data KeyMotion = KeyUp | KeyDown
   deriving (Eq,Show)
 
+data WindowEvent
+  = WindowShown
+  | WindowHidden
+  | WindowExposed
+  | WindowMoved (Point V2 Int32)
+  | WindowResized (V2 Int32)
+  | WindowSizeChanged
+  | WindowMinimized
+  | WindowMaximized
+  | WindowRestored
+  | WindowGainedMouseFocus
+  | WindowLostMouseFocus
+  | WindowGainedKeyboardFocus
+  | WindowLostKeyboardFocus
+  | WindowClosed
+  deriving (Eq,Show)
+
 data EventPayload
   = WindowEvent {windowEventWindowID :: Word32
-                ,windowEventEvent :: Word8
-                ,windowEventData1 :: Int32
-                ,windowEventData2 :: Int32}
+                ,windowEventEvent :: WindowEvent}
   | KeyboardEvent {keyboardEventKeyMotion :: KeyMotion
                   ,keyboardEventWindowID :: Word32
                   ,keyboardEventState :: Word8
@@ -103,7 +120,22 @@ data EventPayload
   deriving (Eq,Show)
 
 convertRaw :: Raw.Event -> Event
-convertRaw (Raw.WindowEvent _ ts a b c d) = Event ts (WindowEvent a b c d)
+convertRaw (Raw.WindowEvent _ ts a b c d)
+  = Event ts $ WindowEvent a $
+    if | b == Raw.windowEventShown -> WindowShown
+       | b == Raw.windowEventHidden -> WindowHidden
+       | b == Raw.windowEventExposed -> WindowExposed
+       | b == Raw.windowEventMoved -> WindowMoved (P (V2 c d))
+       | b == Raw.windowEventResized -> WindowResized (V2 c d)
+       | b == Raw.windowEventSizeChanged -> WindowSizeChanged
+       | b == Raw.windowEventMinimized -> WindowMinimized
+       | b == Raw.windowEventMaximized -> WindowMaximized
+       | b == Raw.windowEventRestored -> WindowRestored
+       | b == Raw.windowEventEnter -> WindowGainedMouseFocus
+       | b == Raw.windowEventLeave -> WindowLostMouseFocus
+       | b == Raw.windowEventFocusGained -> WindowGainedKeyboardFocus
+       | b == Raw.windowEventFocusLost -> WindowLostKeyboardFocus
+       | b == Raw.windowEventClose -> WindowClosed
 convertRaw (Raw.KeyboardEvent t ts a b c d)
   | t == Raw.eventTypeKeyDown = Event ts (KeyboardEvent KeyDown a b c d)
   | t == Raw.eventTypeKeyUp = Event ts (KeyboardEvent KeyUp a b c d)
