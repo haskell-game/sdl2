@@ -97,11 +97,11 @@ createWindow :: Text -> WindowConfig -> IO Window
 createWindow title config =
   BS.useAsCString (Text.encodeUtf8 title) $ \title' -> do
     let create = Raw.createWindow title'
-    let create' = case windowPosition config of
-          Centered -> create Raw.windowPosCentered Raw.windowPosCentered
-          Wherever -> create Raw.windowPosUndefined Raw.windowPosUndefined
-          Absolute x y -> create x y
-    uncurry create' (windowSize config) flags >>= return . Window
+    let create' (V2 w h) = case windowPosition config of
+          Centered -> create Raw.windowPosCentered Raw.windowPosCentered w h
+          Wherever -> create Raw.windowPosUndefined Raw.windowPosUndefined w h
+          Absolute (P (V2 x y)) -> create x y w h
+    create' (windowSize config) flags >>= return . Window
   where
     flags = foldr (.|.) 0
       [ if windowBorder config then 0 else Raw.windowFlagBorderless
@@ -123,7 +123,7 @@ defaultWindow = WindowConfig
   , windowOpenGL       = False
   , windowPosition     = Wherever
   , windowResizable    = False
-  , windowSize         = (800, 600)
+  , windowSize         = V2 800 600
   }
 
 data WindowConfig = WindowConfig
@@ -134,7 +134,7 @@ data WindowConfig = WindowConfig
   , windowOpenGL       :: Bool           -- ^ Defaults to 'False'. Can not be changed after window creation.
   , windowPosition     :: WindowPosition -- ^ Defaults to 'Wherever'.
   , windowResizable    :: Bool           -- ^ Defaults to 'False'. Whether the window can be resized by the user. It is still possible to programatically change the size with 'setWindowSize'.
-  , windowSize         :: (CInt, CInt)   -- ^ Defaults to @(800, 600)@.
+  , windowSize         :: V2 CInt        -- ^ Defaults to @(800, 600)@.
   } deriving (Eq, Show)
 
 data WindowMode
@@ -156,7 +156,7 @@ windowModeCtT n' = case n' of
 data WindowPosition
   = Centered
   | Wherever -- ^ Let the window mananger decide where it's best to place the window.
-  | Absolute CInt CInt
+  | Absolute (Point V2 CInt)
   deriving (Eq, Show)
 
 -- | Destroy the given window. The 'Window' handler may not be used
@@ -200,12 +200,12 @@ setWindowPosition :: Window -> WindowPosition -> IO ()
 setWindowPosition (Window w) pos = case pos of
   Centered -> let u = Raw.windowPosCentered in Raw.setWindowPosition w u u
   Wherever -> let u = Raw.windowPosUndefined in Raw.setWindowPosition w u u
-  Absolute x y -> Raw.setWindowPosition w x y
+  Absolute (P (V2 x y)) -> Raw.setWindowPosition w x y
 
 -- | Set the size of the window. Values beyond the maximum supported size are
 -- clamped.
-setWindowSize :: Window -> CInt -> CInt -> IO ()
-setWindowSize (Window w) = Raw.setWindowSize w
+setWindowSize :: Window -> V2 CInt -> IO ()
+setWindowSize (Window win) (V2 w h) = Raw.setWindowSize win w h
 
 -- | Set the title of the window.
 setWindowTitle :: Window -> Text -> IO ()
