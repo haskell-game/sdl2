@@ -63,6 +63,10 @@ module SDL.Video
   , disableScreenSaver
   , enableScreenSaver
   , isScreenSaverEnabled
+
+  -- * Message Box
+  , showSimpleMessageBox
+  , MessageKind(..)
   ) where
 
 import Prelude hiding (all, foldl, foldr)
@@ -526,6 +530,33 @@ renderDrawRects (Renderer r) rects =
     Raw.renderDrawRects r
                         (castPtr rp)
                         (fromIntegral (SV.length rects))
+
+-- | Show a simple message box with the given title and a message. Consider
+-- writing your messages to @stderr@ too.
+--
+-- Throws 'SDLException' if there are no available video targets.
+showSimpleMessageBox :: Maybe Window -> MessageKind -> Text -> Text -> IO ()
+showSimpleMessageBox window kind title message =
+  throwIfNot0_ "SDL.Video.showSimpleMessageBox" "SDL_ShowSimpleMessageBox" $ do
+    BS.useAsCString (Text.encodeUtf8 title) $ \title' ->
+      BS.useAsCString (Text.encodeUtf8 message) $ \message' ->
+        Raw.showSimpleMessageBox (messageKindToC kind) title' message' $
+          windowId window
+  where
+    windowId (Just (Window w)) = w
+    windowId Nothing = nullPtr
+
+data MessageKind
+  = Error
+  | Warning
+  | Information
+  deriving (Eq, Show)
+
+messageKindToC :: Num a => MessageKind -> a
+messageKindToC kind = case kind of
+  Error -> Raw.messageBoxFlagError
+  Warning -> Raw.messageBoxFlagWarning
+  Information -> Raw.messageBoxFlagInformation
 
 {-
 
