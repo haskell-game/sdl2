@@ -33,11 +33,19 @@ initFlagToC InitEvents = Raw.initFlagEvents
 initFlagToC InitEverything = Raw.initFlagEverything
 initFlagToC InitNoParachute = Raw.initFlagNoParachute
 
+-- | Initializes SDL and the given subsystems. Do not call any SDL functions
+-- prior to this one, unless otherwise documented that you may do so.
+--
+-- Throws 'SDLEx.SDLException' if initialization fails.
 init :: Foldable f => f InitFlag -> IO ()
 init flags =
   SDLEx.throwIfNeg_ "SDL.Init.init" "SDL_Init" $
     Raw.init (foldFlags initFlagToC flags)
 
+-- | Initialize individual subsystems. SDL needs to be initializied prior
+-- to calls to this function.
+--
+-- Throws 'SDLEx.SDLException' if initialization fails.
 initSubSystem :: Foldable f => f InitFlag -> IO ()
 initSubSystem flags =
   SDLEx.throwIfNeg_ "SDL.Init.initSubSystem" "SDL_InitSubSystem" $
