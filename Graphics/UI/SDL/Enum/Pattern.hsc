@@ -1,5 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE PatternSynonyms #-}
+-- | This module is analogous to "Graphics.UI.SDL.Enum", providing pattern
+-- synonyms for all enumerators.
 module Graphics.UI.SDL.Enum.Pattern (
 	-- * Enumerations
 
