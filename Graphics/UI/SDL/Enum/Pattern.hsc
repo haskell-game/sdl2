@@ -849,29 +849,20 @@ module Graphics.UI.SDL.Enum.Pattern (
 
 #include "SDL.h"
 
-import Data.Int
-import Data.Word
-
-type AudioStatus = (#type SDL_AudioStatus)
+import Graphics.UI.SDL.Enum.Internal
 
 pattern AudioStatusStopped = (#const SDL_AUDIO_STOPPED) :: AudioStatus
 pattern AudioStatusPlaying = (#const SDL_AUDIO_PLAYING) :: AudioStatus
 pattern AudioStatusPaused = (#const SDL_AUDIO_PAUSED) :: AudioStatus
-
-type BlendMode = (#type SDL_BlendMode)
 
 pattern BlendModeNone = (#const SDL_BLENDMODE_NONE) :: BlendMode
 pattern BlendModeBlend = (#const SDL_BLENDMODE_BLEND) :: BlendMode
 pattern BlendModeAdd = (#const SDL_BLENDMODE_ADD) :: BlendMode
 pattern BlendModeMod = (#const SDL_BLENDMODE_MOD) :: BlendMode
 
-type EventAction = (#type SDL_eventaction)
-
 pattern EventActionAddEvent = (#const SDL_ADDEVENT) :: EventAction
 pattern EventActionPeekEvent = (#const SDL_PEEKEVENT) :: EventAction
 pattern EventActionGetEvent = (#const SDL_GETEVENT) :: EventAction
-
-type GameControllerAxis = (#type SDL_GameControllerAxis)
 
 pattern GameControllerAxisInvalid = (#const SDL_CONTROLLER_AXIS_INVALID) :: GameControllerAxis
 pattern GameControllerAxisLeftX = (#const SDL_CONTROLLER_AXIS_LEFTX) :: GameControllerAxis
@@ -881,8 +872,6 @@ pattern GameControllerAxisRightY = (#const SDL_CONTROLLER_AXIS_RIGHTY) :: GameCo
 pattern GameControllerAxisTriggerLeft = (#const SDL_CONTROLLER_AXIS_TRIGGERLEFT) :: GameControllerAxis
 pattern GameControllerAxisTriggerRight = (#const SDL_CONTROLLER_AXIS_TRIGGERRIGHT) :: GameControllerAxis
 pattern GameControllerAxisMax = (#const SDL_CONTROLLER_AXIS_MAX) :: GameControllerAxis
-
-type GameControllerButton = (#type SDL_GameControllerButton)
 
 pattern GameControllerButtonInvalid = (#const SDL_CONTROLLER_BUTTON_INVALID) :: GameControllerButton
 pattern GameControllerButtonA = (#const SDL_CONTROLLER_BUTTON_A) :: GameControllerButton
@@ -901,8 +890,6 @@ pattern GameControllerButtonDPadDown = (#const SDL_CONTROLLER_BUTTON_DPAD_DOWN) 
 pattern GameControllerButtonDPadLeft = (#const SDL_CONTROLLER_BUTTON_DPAD_LEFT) :: GameControllerButton
 pattern GameControllerButtonDPadRight = (#const SDL_CONTROLLER_BUTTON_DPAD_RIGHT) :: GameControllerButton
 pattern GameControllerButtonMax = (#const SDL_CONTROLLER_BUTTON_MAX) :: GameControllerButton
-
-type GLattr = (#type SDL_GLattr)
 
 pattern GLAttrRedSize = (#const SDL_GL_RED_SIZE) :: GLattr
 pattern GLAttrGreenSize = (#const SDL_GL_GREEN_SIZE) :: GLattr
@@ -929,13 +916,9 @@ pattern GLAttrContextProfileMask = (#const SDL_GL_CONTEXT_PROFILE_MASK) :: GLatt
 pattern GLAttrShareWithCurrentContext = (#const SDL_GL_SHARE_WITH_CURRENT_CONTEXT) :: GLattr
 pattern GLAttrFramebufferSRGBCapable = (#const SDL_GL_FRAMEBUFFER_SRGB_CAPABLE) :: GLattr
 
-type HintPriority = (#type SDL_HintPriority)
-
 pattern HintPriorityDefault = (#const SDL_HINT_DEFAULT) :: HintPriority
 pattern HintPriorityNormal = (#const SDL_HINT_NORMAL) :: HintPriority
 pattern HintPriorityOverride = (#const SDL_HINT_OVERRIDE) :: HintPriority
-
-type Keycode = (#type SDL_Keycode)
 
 pattern KeycodeUnknown = (#const SDLK_UNKNOWN) :: Keycode
 pattern KeycodeReturn = (#const SDLK_RETURN) :: Keycode
@@ -1174,8 +1157,6 @@ pattern KeycodeKbdIllumUp = (#const SDLK_KBDILLUMUP) :: Keycode
 pattern KeycodeEject = (#const SDLK_EJECT) :: Keycode
 pattern KeycodeSleep = (#const SDLK_SLEEP) :: Keycode
 
-type Keymod = (#type SDL_Keymod)
-
 pattern KeymodNone = (#const KMOD_NONE)
 pattern KeymodLShift = (#const KMOD_LSHIFT)
 pattern KeymodRShift = (#const KMOD_RSHIFT)
@@ -1194,8 +1175,6 @@ pattern KeymodCaps = (#const KMOD_CAPS)
 pattern KeymodMode = (#const KMOD_MODE)
 pattern KeymodReserved = (#const KMOD_RESERVED)
 
-type LogPriority = (#type SDL_LogPriority)
-
 pattern LogPriorityVerbose = (#const SDL_LOG_PRIORITY_VERBOSE) :: LogPriority
 pattern LogPriorityDebug = (#const SDL_LOG_PRIORITY_DEBUG) :: LogPriority
 pattern LogPriorityInfo = (#const SDL_LOG_PRIORITY_INFO) :: LogPriority
@@ -1204,21 +1183,15 @@ pattern LogPriorityError = (#const SDL_LOG_PRIORITY_ERROR) :: LogPriority
 pattern LogPriorityCritical = (#const SDL_LOG_PRIORITY_CRITICAL) :: LogPriority
 pattern LogPriorityPriorities = (#const SDL_NUM_LOG_PRIORITIES) :: LogPriority
 
-type PowerState = (#type SDL_PowerState)
-
 pattern PowerStateUnknown = (#const SDL_POWERSTATE_UNKNOWN) :: PowerState
 pattern PowerStateOnBattery = (#const SDL_POWERSTATE_ON_BATTERY) :: PowerState
 pattern PowerStateNoBattery = (#const SDL_POWERSTATE_NO_BATTERY) :: PowerState
 pattern PowerStateCharging = (#const SDL_POWERSTATE_CHARGING) :: PowerState
 pattern PowerStateCharged = (#const SDL_POWERSTATE_CHARGED) :: PowerState
 
-type RendererFlip = (#type SDL_RendererFlip)
-
 pattern RendererFlipNone = (#const SDL_FLIP_NONE) :: RendererFlip
 pattern RendererFlipHorizontal = (#const SDL_FLIP_HORIZONTAL) :: RendererFlip
 pattern RendererFlipVertical = (#const SDL_FLIP_VERTICAL) :: RendererFlip
-
-type Scancode = (#type SDL_Scancode)
 
 pattern ScancodeUnknown = (#const SDL_SCANCODE_UNKNOWN) :: Scancode
 pattern ScancodeA = (#const SDL_SCANCODE_A) :: Scancode
@@ -1463,8 +1436,6 @@ pattern ScancodeApp1 = (#const SDL_SCANCODE_APP1) :: Scancode
 pattern ScancodeApp2 = (#const SDL_SCANCODE_APP2) :: Scancode
 pattern ScancodeNum = (#const SDL_NUM_SCANCODES) :: Scancode
 
-type SystemCursor = (#type SDL_SystemCursor)
-
 pattern SystemCursorArrow = (#const SDL_SYSTEM_CURSOR_ARROW) :: SystemCursor
 pattern SystemCursorIBeam = (#const SDL_SYSTEM_CURSOR_IBEAM) :: SystemCursor
 pattern SystemCursorWait = (#const SDL_SYSTEM_CURSOR_WAIT) :: SystemCursor
@@ -1478,8 +1449,6 @@ pattern SystemCursorSizeAll = (#const SDL_SYSTEM_CURSOR_SIZEALL) :: SystemCursor
 pattern SystemCursorNo = (#const SDL_SYSTEM_CURSOR_NO) :: SystemCursor
 pattern SystemCursorHand = (#const SDL_SYSTEM_CURSOR_HAND) :: SystemCursor
 pattern SystemCursorNum = (#const SDL_NUM_SYSTEM_CURSORS) :: SystemCursor
-
-type ThreadPriority = (#type SDL_ThreadPriority)
 
 pattern ThreadPriorityLow = (#const SDL_THREAD_PRIORITY_LOW) :: ThreadPriority
 pattern ThreadPriorityNormal = (#const SDL_THREAD_PRIORITY_NORMAL) :: ThreadPriority
@@ -1542,8 +1511,6 @@ pattern EventTypeClipboardUpdate = (#const SDL_CLIPBOARDUPDATE)
 pattern EventTypeDropFile = (#const SDL_DROPFILE)
 pattern EventTypeUserEvent = (#const SDL_USEREVENT)
 pattern EventTypeLastEvent = (#const SDL_LASTEVENT)
-
-type InitFlag = Word32
 
 pattern InitFlagTimer = (#const SDL_INIT_TIMER) :: InitFlag
 pattern InitFlagAudio = (#const SDL_INIT_AUDIO) :: InitFlag

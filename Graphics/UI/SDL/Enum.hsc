@@ -851,10 +851,7 @@ module Graphics.UI.SDL.Enum (
 
 #include "SDL.h"
 
-import Data.Int
-import Data.Word
-
-type AudioStatus = (#type SDL_AudioStatus)
+import Graphics.UI.SDL.Enum.Internal
 
 audioStatusStopped :: AudioStatus
 audioStatusPlaying :: AudioStatus
@@ -863,8 +860,6 @@ audioStatusPaused :: AudioStatus
 audioStatusStopped = (#const SDL_AUDIO_STOPPED)
 audioStatusPlaying = (#const SDL_AUDIO_PLAYING)
 audioStatusPaused = (#const SDL_AUDIO_PAUSED)
-
-type BlendMode = (#type SDL_BlendMode)
 
 blendModeNone :: BlendMode
 blendModeBlend :: BlendMode
@@ -876,8 +871,6 @@ blendModeBlend = (#const SDL_BLENDMODE_BLEND)
 blendModeAdd = (#const SDL_BLENDMODE_ADD)
 blendModeMod = (#const SDL_BLENDMODE_MOD)
 
-type EventAction = (#type SDL_eventaction)
-
 eventActionAddEvent :: EventAction
 eventActionPeekEvent :: EventAction
 eventActionGetEvent :: EventAction
@@ -885,8 +878,6 @@ eventActionGetEvent :: EventAction
 eventActionAddEvent = (#const SDL_ADDEVENT)
 eventActionPeekEvent = (#const SDL_PEEKEVENT)
 eventActionGetEvent = (#const SDL_GETEVENT)
-
-type GameControllerAxis = (#type SDL_GameControllerAxis)
 
 gameControllerAxisInvalid :: GameControllerAxis
 gameControllerAxisLeftX :: GameControllerAxis
@@ -905,8 +896,6 @@ gameControllerAxisRightY = (#const SDL_CONTROLLER_AXIS_RIGHTY)
 gameControllerAxisTriggerLeft = (#const SDL_CONTROLLER_AXIS_TRIGGERLEFT)
 gameControllerAxisTriggerRight = (#const SDL_CONTROLLER_AXIS_TRIGGERRIGHT)
 gameControllerAxisMax = (#const SDL_CONTROLLER_AXIS_MAX)
-
-type GameControllerButton = (#type SDL_GameControllerButton)
 
 gameControllerButtonInvalid :: GameControllerButton
 gameControllerButtonA :: GameControllerButton
@@ -943,8 +932,6 @@ gameControllerButtonDPadDown = (#const SDL_CONTROLLER_BUTTON_DPAD_DOWN)
 gameControllerButtonDPadLeft = (#const SDL_CONTROLLER_BUTTON_DPAD_LEFT)
 gameControllerButtonDPadRight = (#const SDL_CONTROLLER_BUTTON_DPAD_RIGHT)
 gameControllerButtonMax = (#const SDL_CONTROLLER_BUTTON_MAX)
-
-type GLattr = (#type SDL_GLattr)
 
 glAttrRedSize :: GLattr
 glAttrGreenSize :: GLattr
@@ -996,8 +983,6 @@ glAttrContextProfileMask = (#const SDL_GL_CONTEXT_PROFILE_MASK)
 glAttrShareWithCurrentContext = (#const SDL_GL_SHARE_WITH_CURRENT_CONTEXT)
 glAttrFramebufferSRGBCapable = (#const SDL_GL_FRAMEBUFFER_SRGB_CAPABLE)
 
-type HintPriority = (#type SDL_HintPriority)
-
 hintPriorityDefault :: HintPriority
 hintPriorityNormal :: HintPriority
 hintPriorityOverride :: HintPriority
@@ -1005,8 +990,6 @@ hintPriorityOverride :: HintPriority
 hintPriorityDefault = (#const SDL_HINT_DEFAULT)
 hintPriorityNormal = (#const SDL_HINT_NORMAL)
 hintPriorityOverride = (#const SDL_HINT_OVERRIDE)
-
-type InitFlag = Word32
 
 initFlagTimer :: InitFlag
 initFlagAudio :: InitFlag
@@ -1027,8 +1010,6 @@ initFlagGameController = (#const SDL_INIT_GAMECONTROLLER)
 initFlagEvents = (#const SDL_INIT_EVENTS)
 initFlagNoParachute = (#const SDL_INIT_NOPARACHUTE)
 initFlagEverything = (#const SDL_INIT_EVERYTHING)
-
-type Keycode = (#type SDL_Keycode)
 
 keycodeUnknown :: Keycode
 keycodeReturn :: Keycode
@@ -1504,8 +1485,6 @@ keycodeKbdIllumUp = (#const SDLK_KBDILLUMUP)
 keycodeEject = (#const SDLK_EJECT)
 keycodeSleep = (#const SDLK_SLEEP)
 
-type Keymod = (#type SDL_Keymod)
-
 keymodNone :: Num a => a
 keymodLShift :: Num a => a
 keymodRShift :: Num a => a
@@ -1542,8 +1521,6 @@ keymodCaps = (#const KMOD_CAPS)
 keymodMode = (#const KMOD_MODE)
 keymodReserved = (#const KMOD_RESERVED)
 
-type LogPriority = (#type SDL_LogPriority)
-
 logPriorityVerbose :: LogPriority
 logPriorityDebug :: LogPriority
 logPriorityInfo :: LogPriority
@@ -1560,8 +1537,6 @@ logPriorityError = (#const SDL_LOG_PRIORITY_ERROR)
 logPriorityCritical = (#const SDL_LOG_PRIORITY_CRITICAL)
 logPriorityPriorities = (#const SDL_NUM_LOG_PRIORITIES)
 
-type PowerState = (#type SDL_PowerState)
-
 powerStateUnknown :: PowerState
 powerStateOnBattery :: PowerState
 powerStateNoBattery :: PowerState
@@ -1574,8 +1549,6 @@ powerStateNoBattery = (#const SDL_POWERSTATE_NO_BATTERY)
 powerStateCharging = (#const SDL_POWERSTATE_CHARGING)
 powerStateCharged = (#const SDL_POWERSTATE_CHARGED)
 
-type RendererFlip = (#type SDL_RendererFlip)
-
 rendererFlipNone :: RendererFlip
 rendererFlipHorizontal :: RendererFlip
 rendererFlipVertical :: RendererFlip
@@ -1583,8 +1556,6 @@ rendererFlipVertical :: RendererFlip
 rendererFlipNone = (#const SDL_FLIP_NONE)
 rendererFlipHorizontal = (#const SDL_FLIP_HORIZONTAL)
 rendererFlipVertical = (#const SDL_FLIP_VERTICAL)
-
-type Scancode = (#type SDL_Scancode)
 
 scancodeUnknown :: Scancode
 scancodeA :: Scancode
@@ -2072,8 +2043,6 @@ scancodeApp1 = (#const SDL_SCANCODE_APP1)
 scancodeApp2 = (#const SDL_SCANCODE_APP2)
 scancodeNum = (#const SDL_NUM_SCANCODES)
 
-type SystemCursor = (#type SDL_SystemCursor)
-
 systemCursorArrow :: SystemCursor
 systemCursorIBeam :: SystemCursor
 systemCursorWait :: SystemCursor
@@ -2101,8 +2070,6 @@ systemCursorSizeAll = (#const SDL_SYSTEM_CURSOR_SIZEALL)
 systemCursorNo = (#const SDL_SYSTEM_CURSOR_NO)
 systemCursorHand = (#const SDL_SYSTEM_CURSOR_HAND)
 systemCursorNum = (#const SDL_NUM_SYSTEM_CURSORS)
-
-type ThreadPriority = (#type SDL_ThreadPriority)
 
 threadPriorityLow :: ThreadPriority
 threadPriorityNormal :: ThreadPriority
