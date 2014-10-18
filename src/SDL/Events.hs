@@ -27,7 +27,7 @@ data KeyMotion = KeyUp | KeyDown
   deriving (Eq,Show)
 
 data EventPayload
-  = WindowEvent {indowEventWindowID :: Word32
+  = WindowEvent {windowEventWindowID :: Word32
                 ,windowEventEvent :: Word8
                 ,windowEventData1 :: Int32
                 ,windowEventData2 :: Int32}
