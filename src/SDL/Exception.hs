@@ -6,6 +6,7 @@ module SDL.Exception
   , throwIf
   , throwIf_
   , throwIf0
+  , throwIfNeg
   , throwIfNeg_
   , throwIfNull
   ) where
@@ -47,6 +48,9 @@ throwIf f caller funName m = do
 
 throwIf_ :: (a -> Bool) -> Text -> Text -> IO a -> IO ()
 throwIf_ f caller funName m = void (throwIf f caller funName m)
+
+throwIfNeg :: (Num a, Ord a) => Text -> Text -> IO a -> IO a
+throwIfNeg = throwIf (< 0)
 
 throwIfNeg_ :: (Num a, Ord a) => Text -> Text -> IO a -> IO ()
 throwIfNeg_ = throwIf_ (< 0)
