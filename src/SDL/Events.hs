@@ -11,6 +11,7 @@ module SDL.Events
   ) where
 
 import Control.Applicative
+import Data.Text (Text)
 import Foreign
 import Foreign.C
 import Linear
@@ -18,6 +19,8 @@ import Linear.Affine (Point(P))
 import SDL.Raw.Types hiding (Event(..), Point)
 import SDL.Internal.Types (WindowID(WindowID))
 
+import qualified Data.ByteString.Char8 as BSC8
+import qualified Data.Text.Encoding as Text
 import qualified SDL.Exception as SDLEx
 import qualified SDL.Raw as Raw
 
@@ -55,11 +58,11 @@ data EventPayload
                   ,keyboardEventRepeat :: Word8
                   ,keyboardEventKeysym :: Keysym}
   | TextEditingEvent {textEditingEventWindowID :: WindowID
-                     ,textEditingEventText :: [CChar]
+                     ,textEditingEventText :: Text
                      ,textEditingEventStart :: Int32
                      ,textEditingEventLength :: Int32}
   | TextInputEvent {textInputEventWindowID :: WindowID
-                   ,textInputEventText :: [CChar]}
+                   ,textInputEventText :: Text}
   | MouseMotionEvent {mouseMotionEventWindowID :: WindowID
                      ,mouseMotionEventWhich :: Word32
                      ,mouseMotionEventState :: Word32
@@ -120,6 +123,9 @@ data EventPayload
   | UnknownEvent {unknownEventType :: Word32}
   deriving (Eq,Show)
 
+ccharStringToText :: [CChar] -> Text
+ccharStringToText = Text.decodeUtf8 . BSC8.pack . map castCCharToChar
+
 convertRaw :: Raw.Event -> Event
 convertRaw (Raw.WindowEvent _ ts a b c d)
   = Event ts $ WindowEvent (WindowID a) $
@@ -140,8 +146,8 @@ convertRaw (Raw.WindowEvent _ ts a b c d)
 convertRaw (Raw.KeyboardEvent t ts a b c d)
   | t == Raw.eventTypeKeyDown = Event ts (KeyboardEvent KeyDown (WindowID a) b c d)
   | t == Raw.eventTypeKeyUp = Event ts (KeyboardEvent KeyUp (WindowID a) b c d)
-convertRaw (Raw.TextEditingEvent _ ts a b c d) = Event ts (TextEditingEvent (WindowID a) b c d)
-convertRaw (Raw.TextInputEvent _ ts a b) = Event ts (TextInputEvent (WindowID a) b)
+convertRaw (Raw.TextEditingEvent _ ts a b c d) = Event ts (TextEditingEvent (WindowID a) (ccharStringToText b) c d)
+convertRaw (Raw.TextInputEvent _ ts a b) = Event ts (TextInputEvent (WindowID a) (ccharStringToText b))
 convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) = Event ts (MouseMotionEvent (WindowID a) b c (P (V2 d e)) (V2 f g))
 convertRaw (Raw.MouseButtonEvent _ ts a b c d e f g) = Event ts (MouseButtonEvent (WindowID a) b c d e (P (V2 f g)))
 convertRaw (Raw.MouseWheelEvent _ ts a b c d) = Event ts (MouseWheelEvent (WindowID a) b (P (V2 c d)))
