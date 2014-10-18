@@ -66,8 +66,8 @@ throwIf0 = throwIf (== 0)
 throwIfNot0 :: (Eq a, Num a) => Text -> Text -> IO a -> IO a
 throwIfNot0 = throwIf (/= 0)
 
-throwIfNot0_ :: (Eq a, Num a) => Text -> Text -> IO a -> IO a
-throwIfNot0_ = throwIf (/= 0)
+throwIfNot0_ :: (Eq a, Num a) => Text -> Text -> IO a -> IO ()
+throwIfNot0_ = throwIf_ (/= 0)
 
 fromC :: Show a => Text -> Text -> (a -> Maybe b) -> a -> b
 fromC caller funName f x =
