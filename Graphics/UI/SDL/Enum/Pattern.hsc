@@ -723,6 +723,10 @@ module Graphics.UI.SDL.Enum.Pattern (
 	pattern JoystickHatLeftUp,
 	pattern JoystickHatLeftDown,
 
+	-- ** Key States
+	pattern KeyPressed,
+	pattern KeyReleased,
+
 	-- ** Log Category
 	pattern LogCategoryApplication,
 	pattern LogCategoryError,
@@ -1531,6 +1535,9 @@ pattern JoystickHatRightUp = (#const SDL_HAT_RIGHTUP)
 pattern JoystickHatRightDown = (#const SDL_HAT_RIGHTDOWN)
 pattern JoystickHatLeftUp = (#const SDL_HAT_LEFTUP)
 pattern JoystickHatLeftDown = (#const SDL_HAT_LEFTDOWN)
+
+pattern KeyPressed = (#const SDL_PRESSED)
+pattern KeyReleased = (#const SDL_RELEASED)
 
 pattern LogCategoryApplication = (#const SDL_LOG_CATEGORY_APPLICATION)
 pattern LogCategoryError = (#const SDL_LOG_CATEGORY_ERROR)
