@@ -31,6 +31,7 @@ import Prelude hiding (all, foldl)
 
 import Control.Applicative
 import Control.Monad (unless)
+import Data.Bitmask (foldFlags)
 import Data.Foldable
 import Data.Maybe (catMaybes)
 import Data.Text (Text)
@@ -78,9 +79,6 @@ foldWindowFlags :: (Bits b, Foldable f, Num b) => f WindowFlag -> b
 foldWindowFlags = foldFlags windowFlagToC
 
 newtype Window = Window (Raw.Window)
-
-foldFlags :: (Bits b, Foldable f, Num b) => (flag -> b) -> f flag -> b
-foldFlags f = foldl (\a b -> a .|. f b) 0
 
 createWindow :: Foldable f => Text -> CInt -> CInt -> CInt -> CInt -> f WindowFlag -> IO Window
 createWindow title x y w h flags =

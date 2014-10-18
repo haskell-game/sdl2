@@ -32,6 +32,7 @@ library
     SDL.Audio
     SDL.Events
     SDL.Haptic
+    SDL.Init
     SDL.Power
     SDL.Joystick
     SDL.Timers
@@ -51,6 +52,9 @@ library
     SDL.Raw.Timer
     SDL.Raw.Types
     SDL.Raw.Video
+
+  other-modules:
+    Data.Bitmask
 
   hs-source-dirs:
     src/
