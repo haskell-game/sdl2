@@ -85,7 +85,7 @@ data EventPayload
                      ,mouseButtonEventPos :: Point V2 Int32}
   | MouseWheelEvent {mouseWheelEventWindowID :: WindowID
                     ,mouseWheelEventWhich :: Word32
-                    ,mouseWheelEventPos :: Point V2 Int32}
+                    ,mouseWheelEventPos :: V2 Int32}
   | JoyAxisEvent {joyAxisEventWhich :: JoystickID
                  ,joyAxisEventAxis :: Word8
                  ,joyAxisEventValue :: Int16}
@@ -168,7 +168,7 @@ convertRaw (Raw.MouseButtonEvent t ts a b c d e f g)
                | c == Raw.buttonX1 = ButtonX1
                | c == Raw.buttonX2 = ButtonX2
     in Event ts (MouseButtonEvent (WindowID a) motion b button d e (P (V2 f g)))
-convertRaw (Raw.MouseWheelEvent _ ts a b c d) = Event ts (MouseWheelEvent (WindowID a) b (P (V2 c d)))
+convertRaw (Raw.MouseWheelEvent _ ts a b c d) = Event ts (MouseWheelEvent (WindowID a) b (V2 c d))
 convertRaw (Raw.JoyAxisEvent _ ts a b c) = Event ts (JoyAxisEvent a b c)
 convertRaw (Raw.JoyBallEvent _ ts a b c d) = Event ts (JoyBallEvent a b (V2 c d))
 convertRaw (Raw.JoyHatEvent _ ts a b c) = Event ts (JoyHatEvent a b c)
