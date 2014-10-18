@@ -19,6 +19,9 @@ module SDL.Video
   , renderDrawLines
   , renderDrawPoint
   , renderDrawPoints
+  , Rectangle(..)
+  , renderDrawRect
+  , renderDrawRects
 
   -- * Display
   , getDisplays
@@ -446,6 +449,32 @@ getDisplays = do
       , displayBoundsSize = (w, h)
       , displayModes = modes
     }
+
+data Rectangle a = Rectangle (Point V2 a) (V2 a)
+
+instance Storable a => Storable (Rectangle a) where
+  sizeOf ~(Rectangle o s) = sizeOf o + sizeOf s
+  alignment _ = 0
+  peek ptr = do
+    o <- peek (castPtr ptr)
+    s <- peek (castPtr (ptr `plusPtr` sizeOf o))
+    return (Rectangle o s)
+  poke ptr (Rectangle o s) = do
+    poke (castPtr ptr) o
+    poke (castPtr (ptr `plusPtr` sizeOf o)) s
+
+renderDrawRect :: Renderer -> Rectangle CInt -> IO ()
+renderDrawRect (Renderer r) rect =
+  SDLEx.throwIfNeg_ "SDL.Video.renderDrawRect" "SDL_RenderDrawRect" $
+  with rect (Raw.renderDrawRect r . castPtr)
+
+renderDrawRects :: Renderer -> SV.Vector (Rectangle CInt) -> IO ()
+renderDrawRects (Renderer r) rects =
+  SDLEx.throwIfNeg_ "SDL.Video.renderDrawRects" "SDL_RenderDrawRects" $
+  SV.unsafeWith rects $ \rp ->
+    Raw.renderDrawRects r
+                        (castPtr rp)
+                        (fromIntegral (SV.length rects))
 
 {-
 
