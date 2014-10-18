@@ -20,8 +20,8 @@ module SDL.Video
   , raiseWindow
   , showWindow
   , restoreWindow
-  , Raw.disableScreenSaver
-  , Raw.enableScreenSaver
+  , disableScreenSaver
+  , enableScreenSaver
   , Raw.isScreenSaverEnabled
   , setWindowBrightness
   , setWindowGammaRamp
@@ -88,6 +88,9 @@ foldWindowFlags = foldFlags windowFlagToC
 
 newtype Window = Window (Raw.Window)
 
+-- | Create a window with the given title and configuration.
+--
+-- Throws 'SDLEx.SDLException' on failure.
 createWindow :: Foldable f => Text -> CInt -> CInt -> CInt -> CInt -> f WindowFlag -> IO Window
 createWindow title x y w h flags =
   BS.useAsCString (Text.encodeUtf8 title) $ \cstr ->
@@ -115,6 +118,7 @@ createWindowAndRenderer w h flags =
                                       rPtr
         (,) <$> (Window <$> peek wPtr) <*> (Renderer <$> peek rPtr)
 
+-- | Set the title of the window.
 setWindowTitle :: Window -> Text -> IO ()
 setWindowTitle (Window w) title =
   BS.useAsCString (Text.encodeUtf8 title) $
@@ -177,11 +181,19 @@ glSetAttribute attribute value =
   SDLEx.throwIfNeg_ "SDL.Video.glSetAttribute" "SDL_GL_SetAttribute" $
     Raw.glSetAttribute (glAttributeToC attribute) value
 
+-- | Replace the contents of the front buffer with the back buffer's. The
+-- contents of the back buffer are undefined, clear them with @glClear@ or
+-- equivalent before drawing to them again.
 glSwapWindow :: Window -> IO ()
 glSwapWindow (Window w) = Raw.glSwapWindow w
 
 newtype GLContext = GLContext (Raw.GLContext)
 
+-- | Create a new OpenGL context and makes it the current context for the
+-- window.
+--
+-- Throws 'SDLEx.SDLException' if the window wasn't configured with OpenGL
+-- support, or if context creation fails.
 glCreateContext :: Window -> IO GLContext
 glCreateContext (Window w) = fmap GLContext $ SDLEx.throwIfNull "SDL.Video.glCreateContext" "SDL_GL_CreateContext" $ Raw.glCreateContext w
 
@@ -209,11 +221,20 @@ maximizeWindow (Window w) = Raw.maximizeWindow w
 minimizeWindow :: Window -> IO ()
 minimizeWindow (Window w) = Raw.minimizeWindow w
 
+-- | Raise the window above other windows and set the input focus.
 raiseWindow :: Window -> IO ()
 raiseWindow (Window w) = Raw.raiseWindow w
 
 restoreWindow :: Window -> IO ()
 restoreWindow (Window w) = Raw.restoreWindow w
+
+-- | Disable screen savers.
+disableScreenSaver :: IO ()
+disableScreenSaver = Raw.disableScreenSaver
+
+-- | Enable screen savers.
+enableScreenSaver :: IO ()
+enableScreenSaver = Raw.enableScreenSaver
 
 showWindow :: Window -> IO ()
 showWindow (Window w) = Raw.showWindow w
