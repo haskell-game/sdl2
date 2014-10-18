@@ -25,6 +25,7 @@ module SDL.Video
   , Raw.isScreenSaverEnabled
   , setWindowBrightness
   , setWindowGammaRamp
+  , WindowID
   ) where
 
 import Prelude hiding (all, foldl)
@@ -37,6 +38,7 @@ import Data.Maybe (catMaybes)
 import Data.Text (Text)
 import Foreign hiding (void)
 import Foreign.C
+import SDL.Internal.Types (WindowID)
 
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text

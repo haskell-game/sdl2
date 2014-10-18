@@ -16,6 +16,7 @@ import Foreign.C
 import Linear
 import Linear.Affine (Point(P))
 import SDL.Raw.Types hiding (Event(..), Point)
+import SDL.Internal.Types (WindowID(WindowID))
 
 import qualified SDL.Exception as SDLEx
 import qualified SDL.Raw as Raw
@@ -46,31 +47,31 @@ data WindowEvent
   deriving (Eq,Show)
 
 data EventPayload
-  = WindowEvent {windowEventWindowID :: Word32
+  = WindowEvent {windowEventWindowID :: WindowID
                 ,windowEventEvent :: WindowEvent}
   | KeyboardEvent {keyboardEventKeyMotion :: KeyMotion
-                  ,keyboardEventWindowID :: Word32
+                  ,keyboardEventWindowID :: WindowID
                   ,keyboardEventState :: Word8
                   ,keyboardEventRepeat :: Word8
                   ,keyboardEventKeysym :: Keysym}
-  | TextEditingEvent {textEditingEventWindowID :: Word32
+  | TextEditingEvent {textEditingEventWindowID :: WindowID
                      ,textEditingEventText :: [CChar]
                      ,textEditingEventStart :: Int32
                      ,textEditingEventLength :: Int32}
-  | TextInputEvent {textInputEventWindowID :: Word32
+  | TextInputEvent {textInputEventWindowID :: WindowID
                    ,textInputEventText :: [CChar]}
-  | MouseMotionEvent {mouseMotionEventWindowID :: Word32
+  | MouseMotionEvent {mouseMotionEventWindowID :: WindowID
                      ,mouseMotionEventWhich :: Word32
                      ,mouseMotionEventState :: Word32
                      ,mouseMotionEventPos :: Point V2 Int32
                      ,mouseMotionEventRelMotion :: V2 Int32}
-  | MouseButtonEvent {mouseButtonEventWindowID :: Word32
+  | MouseButtonEvent {mouseButtonEventWindowID :: WindowID
                      ,mouseButtonEventWhich :: Word32
                      ,mouseButtonEventButton :: Word8
                      ,mouseButtonEventState :: Word8
                      ,mouseButtonEventClicks :: Word8
                      ,mouseButtonEventPos :: Point V2 Int32}
-  | MouseWheelEvent {mouseWheelEventWindowID :: Word32
+  | MouseWheelEvent {mouseWheelEventWindowID :: WindowID
                     ,mouseWheelEventWhich :: Word32
                     ,mouseWheelEventPos :: Point V2 Int32}
   | JoyAxisEvent {joyAxisEventWhich :: JoystickID
@@ -94,7 +95,7 @@ data EventPayload
                           ,controllerButtonEventState :: Word8}
   | ControllerDeviceEvent {controllerDeviceEventWhich :: Int32}
   | QuitEvent
-  | UserEvent {userEventWindowID :: Word32
+  | UserEvent {userEventWindowID :: WindowID
               ,userEventCode :: Int32
               ,userEventData1 :: Ptr ()
               ,userEventData2 :: Ptr ()}
@@ -121,7 +122,7 @@ data EventPayload
 
 convertRaw :: Raw.Event -> Event
 convertRaw (Raw.WindowEvent _ ts a b c d)
-  = Event ts $ WindowEvent a $
+  = Event ts $ WindowEvent (WindowID a) $
     if | b == Raw.windowEventShown -> WindowShown
        | b == Raw.windowEventHidden -> WindowHidden
        | b == Raw.windowEventExposed -> WindowExposed
@@ -137,13 +138,13 @@ convertRaw (Raw.WindowEvent _ ts a b c d)
        | b == Raw.windowEventFocusLost -> WindowLostKeyboardFocus
        | b == Raw.windowEventClose -> WindowClosed
 convertRaw (Raw.KeyboardEvent t ts a b c d)
-  | t == Raw.eventTypeKeyDown = Event ts (KeyboardEvent KeyDown a b c d)
-  | t == Raw.eventTypeKeyUp = Event ts (KeyboardEvent KeyUp a b c d)
-convertRaw (Raw.TextEditingEvent _ ts a b c d) = Event ts (TextEditingEvent a b c d)
-convertRaw (Raw.TextInputEvent _ ts a b) = Event ts (TextInputEvent a b)
-convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) = Event ts (MouseMotionEvent a b c (P (V2 d e)) (V2 f g))
-convertRaw (Raw.MouseButtonEvent _ ts a b c d e f g) = Event ts (MouseButtonEvent a b c d e (P (V2 f g)))
-convertRaw (Raw.MouseWheelEvent _ ts a b c d) = Event ts (MouseWheelEvent a b (P (V2 c d)))
+  | t == Raw.eventTypeKeyDown = Event ts (KeyboardEvent KeyDown (WindowID a) b c d)
+  | t == Raw.eventTypeKeyUp = Event ts (KeyboardEvent KeyUp (WindowID a) b c d)
+convertRaw (Raw.TextEditingEvent _ ts a b c d) = Event ts (TextEditingEvent (WindowID a) b c d)
+convertRaw (Raw.TextInputEvent _ ts a b) = Event ts (TextInputEvent (WindowID a) b)
+convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) = Event ts (MouseMotionEvent (WindowID a) b c (P (V2 d e)) (V2 f g))
+convertRaw (Raw.MouseButtonEvent _ ts a b c d e f g) = Event ts (MouseButtonEvent (WindowID a) b c d e (P (V2 f g)))
+convertRaw (Raw.MouseWheelEvent _ ts a b c d) = Event ts (MouseWheelEvent (WindowID a) b (P (V2 c d)))
 convertRaw (Raw.JoyAxisEvent _ ts a b c) = Event ts (JoyAxisEvent a b c)
 convertRaw (Raw.JoyBallEvent _ ts a b c d) = Event ts (JoyBallEvent a b (V2 c d))
 convertRaw (Raw.JoyHatEvent _ ts a b c) = Event ts (JoyHatEvent a b c)
@@ -153,7 +154,7 @@ convertRaw (Raw.ControllerAxisEvent _ ts a b c) = Event ts (ControllerAxisEvent 
 convertRaw (Raw.ControllerButtonEvent _ ts a b c) = Event ts (ControllerButtonEvent a b c)
 convertRaw (Raw.ControllerDeviceEvent _ ts a) = Event ts (ControllerDeviceEvent a)
 convertRaw (Raw.QuitEvent _ ts) = Event ts QuitEvent
-convertRaw (Raw.UserEvent _ ts a b c d) = Event ts (UserEvent a b c d)
+convertRaw (Raw.UserEvent _ ts a b c d) = Event ts (UserEvent (WindowID a) b c d)
 convertRaw (Raw.SysWMEvent _ ts a) = Event ts (SysWMEvent a)
 convertRaw (Raw.TouchFingerEvent _ ts a b c d e f g) = Event ts (TouchFingerEvent a b (P (V2 c d)) (V2 e f) g)
 convertRaw (Raw.MultiGestureEvent _ ts a b c d e f) = Event ts (MultiGestureEvent a b c (P (V2 d e)) f)
