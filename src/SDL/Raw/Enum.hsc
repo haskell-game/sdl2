@@ -726,6 +726,10 @@ module SDL.Raw.Enum (
 	joystickHatLeftUp,
 	joystickHatLeftDown,
 
+	-- ** Key States
+	keyPressed,
+	keyReleased,
+
 	-- ** Log Category
 	logCategoryApplication,
 	logCategoryError,
@@ -2256,6 +2260,12 @@ joystickHatRightUp = (#const SDL_HAT_RIGHTUP)
 joystickHatRightDown = (#const SDL_HAT_RIGHTDOWN)
 joystickHatLeftUp = (#const SDL_HAT_LEFTUP)
 joystickHatLeftDown = (#const SDL_HAT_LEFTDOWN)
+
+keyPressed :: (Num a) => a
+keyReleased :: (Num a) => a
+
+keyPressed = (#const SDL_PRESSED)
+keyReleased = (#const SDL_RELEASED)
 
 logCategoryApplication :: (Num a) => a
 logCategoryError :: (Num a) => a
