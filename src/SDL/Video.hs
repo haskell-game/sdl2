@@ -20,6 +20,13 @@ module SDL.Video
   , renderDrawPoint
   , renderDrawPoints
 
+  -- * Display
+  , getDisplays
+  , Display(..)
+  , DisplayMode(..)
+  , VideoDriver(..)
+  , PixelFormat(..)
+
   -- * OpenGL
   , GLAttribute(..)
   , glSetAttribute
@@ -47,7 +54,7 @@ module SDL.Video
 import Prelude hiding (all, foldl)
 
 import Control.Applicative
-import Control.Monad (unless)
+import Control.Monad (forM, unless)
 import Data.Bitmask (foldFlags)
 import Data.Foldable
 import Data.Maybe (catMaybes)
@@ -299,6 +306,147 @@ renderDrawPoints (Renderer r) points =
     Raw.renderDrawPoints r
                          (castPtr cp)
                          (fromIntegral (SV.length points))
+
+data Display = Display {
+               displayName           :: String
+             , displayBoundsPosition :: (CInt, CInt)
+                 -- ^ Position of the desktop area represented by the display,
+                 -- with the primary display located at @(0, 0)@.
+             , displayBoundsSize     :: (CInt, CInt)
+                 -- ^ Size of the desktop area represented by the display.
+             , displayModes          :: [DisplayMode]
+             }
+             deriving (Eq, Show)
+
+data DisplayMode = DisplayMode {
+                   displayModeFormat      :: PixelFormat
+                 , displayModeSize        :: (CInt, CInt)
+                 , displayModeRefreshRate :: CInt -- ^ Display's refresh rate in hertz, or @0@ if unspecified.
+                 }
+                 deriving (Eq, Show)
+
+data VideoDriver = VideoDriver {
+                   videoDriverName :: String
+                 }
+                 deriving (Eq, Show)
+
+data PixelFormat = Unknown
+                 | Index1LSB
+                 | Index1MSB
+                 | Index4LSB
+                 | Index4MSB
+                 | Index8
+                 | RGB332
+                 | RGB444
+                 | RGB555
+                 | BGR555
+                 | ARGB4444
+                 | RGBA4444
+                 | ABGR4444
+                 | BGRA4444
+                 | ARGB1555
+                 | RGBA5551
+                 | ABGR1555
+                 | BGRA5551
+                 | RGB565
+                 | BGR565
+                 | RGB24
+                 | BGR24
+                 | RGB888
+                 | RGBX8888
+                 | BGR888
+                 | BGRX8888
+                 | ARGB8888
+                 | RGBA8888
+                 | ABGR8888
+                 | BGRA8888
+                 | ARGB2101010
+                 | YV12
+                 | IYUV
+                 | YUY2
+                 | UYVY
+                 | YVYU
+                 deriving (Eq, Show)
+
+pixelFormatCtT :: (Num a, Eq a) => a -> PixelFormat
+pixelFormatCtT n' = case n' of
+  n | n == Raw.pixelFormatUnknown -> Unknown
+  n | n == Raw.pixelFormatIndex1LSB -> Index1LSB
+  n | n == Raw.pixelFormatIndex1MSB -> Index1MSB
+  n | n == Raw.pixelFormatIndex4LSB -> Index4LSB
+  n | n == Raw.pixelFormatIndex4MSB -> Index4MSB
+  n | n == Raw.pixelFormatIndex8 -> Index8
+  n | n == Raw.pixelFormatRGB332 -> RGB332
+  n | n == Raw.pixelFormatRGB444 -> RGB444
+  n | n == Raw.pixelFormatRGB555 -> RGB555
+  n | n == Raw.pixelFormatBGR555 -> BGR555
+  n | n == Raw.pixelFormatARGB4444 -> ARGB4444
+  n | n == Raw.pixelFormatRGBA4444 -> RGBA4444
+  n | n == Raw.pixelFormatABGR4444 -> ABGR4444
+  n | n == Raw.pixelFormatBGRA4444 -> BGRA4444
+  n | n == Raw.pixelFormatARGB1555 -> ARGB1555
+  n | n == Raw.pixelFormatRGBA5551 -> RGBA5551
+  n | n == Raw.pixelFormatABGR1555 -> ABGR1555
+  n | n == Raw.pixelFormatBGRA5551 -> BGRA5551
+  n | n == Raw.pixelFormatRGB565 -> RGB565
+  n | n == Raw.pixelFormatBGR565 -> BGR565
+  n | n == Raw.pixelFormatRGB24 -> RGB24
+  n | n == Raw.pixelFormatBGR24 -> BGR24
+  n | n == Raw.pixelFormatRGB888 -> RGB888
+  n | n == Raw.pixelFormatRGBX8888 -> RGBX8888
+  n | n == Raw.pixelFormatBGR888 -> BGR888
+  n | n == Raw.pixelFormatBGRX8888 -> BGRX8888
+  n | n == Raw.pixelFormatARGB8888 -> ARGB8888
+  n | n == Raw.pixelFormatRGBA8888 -> RGBA8888
+  n | n == Raw.pixelFormatABGR8888 -> ABGR8888
+  n | n == Raw.pixelFormatBGRA8888 -> BGRA8888
+  n | n == Raw.pixelFormatARGB2101010 -> ARGB2101010
+  n | n == Raw.pixelFormatYV12 -> YV12
+  n | n == Raw.pixelFormatIYUV -> IYUV
+  n | n == Raw.pixelFormatYUY2 -> YUY2
+  n | n == Raw.pixelFormatUYVY -> UYVY
+  n | n == Raw.pixelFormatYVYU -> YVYU
+  _ -> error "pixelFormatCtT: unknown pixel format"
+
+-- | Throws 'SDLException' on failure.
+getDisplays :: IO [Display]
+getDisplays = do
+  numDisplays <- SDLEx.throwIfNeg "SDL.Video.getDisplays" "SDL_GetNumVideoDisplays"
+    Raw.getNumVideoDisplays
+
+  forM [0..numDisplays - 1] $ \displayId -> do
+    name <- SDLEx.throwIfNull "SDL.Video.getDisplays" "SDL_GetDisplayName" $
+        Raw.getDisplayName displayId
+
+    name' <- peekCString name
+
+    Raw.Rect x y w h <- alloca $ \rect -> do
+      SDLEx.throwIfNot0_ "SDL.Video.getDisplays" "SDL_GetDisplayBounds" $
+        Raw.getDisplayBounds displayId rect
+      peek rect
+
+    numModes <- SDLEx.throwIfNeg "SDL.Video.getDisplays" "SDL_GetNumDisplayModes" $
+      Raw.getNumDisplayModes displayId
+
+    modes <- forM [0..numModes - 1] $ \modeId -> do
+      Raw.DisplayMode format w' h' refreshRate _ <- alloca $ \mode -> do
+        SDLEx.throwIfNot0_ "SDL.Video.getDisplays" "SDL_GetDisplayMode" $
+          Raw.getDisplayMode displayId modeId mode
+        peek mode
+
+      return $ DisplayMode {
+          displayModeFormat = pixelFormatCtT format
+        , displayModeSize = (w', h')
+        , displayModeRefreshRate = refreshRate
+      }
+
+    return $ Display {
+        displayName = name'
+      , displayBoundsPosition = (x, y)
+      , displayBoundsSize = (w, h)
+      , displayModes = modes
+    }
+
 {-
 
 --------------------------------------------------------------------------------
