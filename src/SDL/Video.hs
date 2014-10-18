@@ -312,10 +312,10 @@ renderDrawPoints (Renderer r) points =
 
 data Display = Display {
                displayName           :: String
-             , displayBoundsPosition :: (CInt, CInt)
+             , displayBoundsPosition :: Point V2 CInt
                  -- ^ Position of the desktop area represented by the display,
                  -- with the primary display located at @(0, 0)@.
-             , displayBoundsSize     :: (CInt, CInt)
+             , displayBoundsSize     :: V2 CInt
                  -- ^ Size of the desktop area represented by the display.
              , displayModes          :: [DisplayMode]
              }
@@ -323,7 +323,7 @@ data Display = Display {
 
 data DisplayMode = DisplayMode {
                    displayModeFormat      :: PixelFormat
-                 , displayModeSize        :: (CInt, CInt)
+                 , displayModeSize        :: V2 CInt
                  , displayModeRefreshRate :: CInt -- ^ Display's refresh rate in hertz, or @0@ if unspecified.
                  }
                  deriving (Eq, Show)
@@ -439,14 +439,14 @@ getDisplays = do
 
       return $ DisplayMode {
           displayModeFormat = pixelFormatCtT format
-        , displayModeSize = (w', h')
+        , displayModeSize = V2 w' h'
         , displayModeRefreshRate = refreshRate
       }
 
     return $ Display {
         displayName = name'
-      , displayBoundsPosition = (x, y)
-      , displayBoundsSize = (w, h)
+      , displayBoundsPosition = P (V2 x y)
+      , displayBoundsSize = V2 w h
       , displayModes = modes
     }
 
