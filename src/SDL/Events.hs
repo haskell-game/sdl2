@@ -2,6 +2,7 @@
 module SDL.Events
   ( Event(..)
   , EventPayload(..)
+  , KeyMotion(..)
   , pollEvent
   , Raw.pumpEvents
   , waitEvent
