@@ -26,6 +26,10 @@ module SDL.Video
   , setWindowBrightness
   , setWindowGammaRamp
   , WindowID
+  , renderDrawLine
+  , renderDrawLines
+  , renderDrawPoint
+  , renderDrawPoints
   ) where
 
 import Prelude hiding (all, foldl)
@@ -38,6 +42,8 @@ import Data.Maybe (catMaybes)
 import Data.Text (Text)
 import Foreign hiding (void)
 import Foreign.C
+import Linear
+import Linear.Affine (Point(P))
 import SDL.Internal.Types (WindowID)
 
 import qualified Data.ByteString as BS
@@ -231,6 +237,31 @@ setWindowGammaRamp (Window w) r g b = do
         SDLEx.throwIfNeg_ "SDL.Video.setWindowGammaRamp" "SDL_SetWindowGammaRamp" $
           Raw.setWindowGammaRamp w rPtr gPtr bPtr
 
+renderDrawLine :: Renderer -> Point V2 CInt -> Point V2 CInt -> IO ()
+renderDrawLine (Renderer r) (P (V2 x y)) (P (V2 x' y')) =
+  SDLEx.throwIfNeg_ "SDL.Video.renderDrawLine" "SDL_RenderDrawLine" $
+  Raw.renderDrawLine r x y x' y'
+
+renderDrawLines :: Renderer -> SV.Vector (Point V2 CInt) -> IO ()
+renderDrawLines (Renderer r) points =
+  SDLEx.throwIfNeg_ "SDL.Video.renderDrawLines" "SDL_RenderDrawLines" $
+  SV.unsafeWith points $ \cp ->
+    Raw.renderDrawLines r
+                        (castPtr cp)
+                        (fromIntegral (SV.length points))
+
+renderDrawPoint :: Renderer -> Point V2 CInt -> IO ()
+renderDrawPoint (Renderer r) (P (V2 x y)) =
+  SDLEx.throwIfNeg_ "SDL.Video.renderDrawPoint" "SDL_RenderDrawPoint" $
+  Raw.renderDrawPoint r x y
+
+renderDrawPoints :: Renderer -> SV.Vector (Point V2 CInt) -> IO ()
+renderDrawPoints (Renderer r) points =
+  SDLEx.throwIfNeg_ "SDL.Video.renderDrawPoints" "SDL_RenderDrawPoints" $
+  SV.unsafeWith points $ \cp ->
+    Raw.renderDrawPoints r
+                         (castPtr cp)
+                         (fromIntegral (SV.length points))
 {-
 
 --------------------------------------------------------------------------------
