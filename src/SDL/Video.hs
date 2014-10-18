@@ -6,23 +6,12 @@ module SDL.Video
   , createWindow
   , createWindowAndRenderer
   , setWindowTitle
-  , GLAttribute(..)
-  , glSetAttribute
-  , glSwapWindow
-  , glGetCurrentContext
-  , glCreateContext
-  , SwapInterval(..)
-  , glSetSwapInterval
-  , Raw.glResetAttributes
   , hideWindow
   , maximizeWindow
   , minimizeWindow
   , raiseWindow
   , showWindow
   , restoreWindow
-  , disableScreenSaver
-  , enableScreenSaver
-  , Raw.isScreenSaverEnabled
   , setWindowBrightness
   , setWindowGammaRamp
   , WindowID
@@ -30,6 +19,29 @@ module SDL.Video
   , renderDrawLines
   , renderDrawPoint
   , renderDrawPoints
+
+  -- * OpenGL
+  , GLAttribute(..)
+  , glSetAttribute
+  , glSwapWindow
+  , glGetCurrentContext
+  , glCreateContext
+  , Raw.glGetProcAddress
+  , SwapInterval(..)
+  , glSetSwapInterval
+  , Raw.glResetAttributes
+
+  -- * Screen Savers
+  -- | Screen savers should be disabled when the sudden enablement of the
+  -- monitor's power saving features would be inconvenient for when the user
+  -- hasn't provided any input for some period of time, such as during video
+  -- playback.
+  --
+  -- Screen savers are disabled by default upon the initialization of the
+  -- video subsystem.
+  , disableScreenSaver
+  , enableScreenSaver
+  , isScreenSaverEnabled
   ) where
 
 import Prelude hiding (all, foldl)
@@ -235,6 +247,10 @@ disableScreenSaver = Raw.disableScreenSaver
 -- | Enable screen savers.
 enableScreenSaver :: IO ()
 enableScreenSaver = Raw.enableScreenSaver
+
+-- | Check whether screen savers are enabled.
+isScreenSaverEnabled :: IO Bool
+isScreenSaverEnabled = Raw.isScreenSaverEnabled
 
 showWindow :: Window -> IO ()
 showWindow (Window w) = Raw.showWindow w
