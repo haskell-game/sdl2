@@ -57,6 +57,10 @@ library
   other-modules:
     Data.Bitmask
     SDL.Internal.Types
+    SDL.Raw.Enum.Internal
+
+  if impl(ghc>=7.8)
+    exposed-modules: SDL.Raw.Enum.Pattern
 
   hs-source-dirs:
     src/

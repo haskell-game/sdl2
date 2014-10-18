@@ -191,9 +191,9 @@ glGetCurrentContext = fmap GLContext $ SDLEx.throwIfNull "SDL.Video.glGetCurrent
 data SwapInterval = ImmediateUpdates | SynchronizedUpdates | LateSwapTearing
 
 swapIntervalToC :: SwapInterval -> CInt
-swapIntervalToC ImmediateUpdates = Raw.swapIntervalImmediate
-swapIntervalToC SynchronizedUpdates = Raw.swapIntervalVsync
-swapIntervalToC LateSwapTearing = Raw.swapIntervalLateSwapTearing
+swapIntervalToC ImmediateUpdates = 0
+swapIntervalToC SynchronizedUpdates = 1
+swapIntervalToC LateSwapTearing = -1
 
 glSetSwapInterval :: SwapInterval -> IO ()
 glSetSwapInterval swapInterval =
