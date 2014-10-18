@@ -330,12 +330,16 @@ module Graphics.UI.SDL.Enum.Pattern (
 	pattern KeymodNone,
 	pattern KeymodLShift,
 	pattern KeymodRShift,
+	pattern KeymodShift,
 	pattern KeymodLCtrl,
 	pattern KeymodRCtrl,
+	pattern KeymodCtrl,
 	pattern KeymodLAlt,
 	pattern KeymodRAlt,
+	pattern KeymodAlt,
 	pattern KeymodLGUI,
 	pattern KeymodRGUI,
+	pattern KeymodGUI,
 	pattern KeymodNum,
 	pattern KeymodCaps,
 	pattern KeymodMode,
@@ -1175,12 +1179,16 @@ type Keymod = (#type SDL_Keymod)
 pattern KeymodNone = (#const KMOD_NONE) :: Keymod
 pattern KeymodLShift = (#const KMOD_LSHIFT) :: Keymod
 pattern KeymodRShift = (#const KMOD_RSHIFT) :: Keymod
+pattern KeymodShift = (#const KMOD_SHIFT) :: Keymod
 pattern KeymodLCtrl = (#const KMOD_LCTRL) :: Keymod
 pattern KeymodRCtrl = (#const KMOD_RCTRL) :: Keymod
+pattern KeymodCtrl = (#const KMOD_CTRL) :: Keymod
 pattern KeymodLAlt = (#const KMOD_LALT) :: Keymod
 pattern KeymodRAlt = (#const KMOD_RALT) :: Keymod
+pattern KeymodAlt = (#const KMOD_ALT) :: Keymod
 pattern KeymodLGUI = (#const KMOD_LGUI) :: Keymod
 pattern KeymodRGUI = (#const KMOD_RGUI) :: Keymod
+pattern KeymodGUI = (#const KMOD_GUI) :: Keymod
 pattern KeymodNum = (#const KMOD_NUM) :: Keymod
 pattern KeymodCaps = (#const KMOD_CAPS) :: Keymod
 pattern KeymodMode = (#const KMOD_MODE) :: Keymod
