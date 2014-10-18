@@ -88,6 +88,18 @@ module Graphics.UI.SDL.Enum.Pattern (
 	pattern HintPriorityNormal,
 	pattern HintPriorityOverride,
 
+	-- ** Initialization Flag
+	InitFlag,
+	pattern InitFlagTimer,
+	pattern InitFlagAudio,
+	pattern InitFlagVideo,
+	pattern InitFlagJoystick,
+	pattern InitFlagHaptic,
+	pattern InitFlagGameController,
+	pattern InitFlagEvents,
+	pattern InitFlagNoParachute,
+	pattern InitFlagEverything,
+
 	-- ** Keycode
 	Keycode,
 	pattern KeycodeUnknown,
@@ -702,18 +714,6 @@ module Graphics.UI.SDL.Enum.Pattern (
 	pattern EventTypeUserEvent,
 	pattern EventTypeLastEvent,
 
-	-- ** Initialization Flag
-	InitFlag,
-	pattern InitFlagTimer,
-	pattern InitFlagAudio,
-	pattern InitFlagVideo,
-	pattern InitFlagJoystick,
-	pattern InitFlagHaptic,
-	pattern InitFlagGameController,
-	pattern InitFlagEvents,
-	pattern InitFlagNoParachute,
-	pattern InitFlagEverything,
-
 	-- ** Joystick Hat Position
 	pattern JoystickHatCentered,
 	pattern JoystickHatUp,
@@ -925,6 +925,16 @@ pattern GLAttrFramebufferSRGBCapable = (#const SDL_GL_FRAMEBUFFER_SRGB_CAPABLE) 
 pattern HintPriorityDefault = (#const SDL_HINT_DEFAULT) :: HintPriority
 pattern HintPriorityNormal = (#const SDL_HINT_NORMAL) :: HintPriority
 pattern HintPriorityOverride = (#const SDL_HINT_OVERRIDE) :: HintPriority
+
+pattern InitFlagTimer = (#const SDL_INIT_TIMER) :: InitFlag
+pattern InitFlagAudio = (#const SDL_INIT_AUDIO) :: InitFlag
+pattern InitFlagVideo = (#const SDL_INIT_VIDEO) :: InitFlag
+pattern InitFlagJoystick = (#const SDL_INIT_JOYSTICK) :: InitFlag
+pattern InitFlagHaptic = (#const SDL_INIT_HAPTIC) :: InitFlag
+pattern InitFlagGameController = (#const SDL_INIT_GAMECONTROLLER) :: InitFlag
+pattern InitFlagEvents = (#const SDL_INIT_EVENTS) :: InitFlag
+pattern InitFlagNoParachute = (#const SDL_INIT_NOPARACHUTE) :: InitFlag
+pattern InitFlagEverything = (#const SDL_INIT_EVERYTHING) :: InitFlag
 
 pattern KeycodeUnknown = (#const SDLK_UNKNOWN) :: Keycode
 pattern KeycodeReturn = (#const SDLK_RETURN) :: Keycode
@@ -1517,16 +1527,6 @@ pattern EventTypeClipboardUpdate = (#const SDL_CLIPBOARDUPDATE)
 pattern EventTypeDropFile = (#const SDL_DROPFILE)
 pattern EventTypeUserEvent = (#const SDL_USEREVENT)
 pattern EventTypeLastEvent = (#const SDL_LASTEVENT)
-
-pattern InitFlagTimer = (#const SDL_INIT_TIMER) :: InitFlag
-pattern InitFlagAudio = (#const SDL_INIT_AUDIO) :: InitFlag
-pattern InitFlagVideo = (#const SDL_INIT_VIDEO) :: InitFlag
-pattern InitFlagJoystick = (#const SDL_INIT_JOYSTICK) :: InitFlag
-pattern InitFlagHaptic = (#const SDL_INIT_HAPTIC) :: InitFlag
-pattern InitFlagGameController = (#const SDL_INIT_GAMECONTROLLER) :: InitFlag
-pattern InitFlagEvents = (#const SDL_INIT_EVENTS) :: InitFlag
-pattern InitFlagNoParachute = (#const SDL_INIT_NOPARACHUTE) :: InitFlag
-pattern InitFlagEverything = (#const SDL_INIT_EVERYTHING) :: InitFlag
 
 pattern JoystickHatCentered = (#const SDL_HAT_CENTERED)
 pattern JoystickHatUp = (#const SDL_HAT_UP)
