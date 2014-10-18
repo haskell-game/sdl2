@@ -1176,23 +1176,23 @@ pattern KeycodeSleep = (#const SDLK_SLEEP) :: Keycode
 
 type Keymod = (#type SDL_Keymod)
 
-pattern KeymodNone = (#const KMOD_NONE) :: Keymod
-pattern KeymodLShift = (#const KMOD_LSHIFT) :: Keymod
-pattern KeymodRShift = (#const KMOD_RSHIFT) :: Keymod
-pattern KeymodShift = (#const KMOD_SHIFT) :: Keymod
-pattern KeymodLCtrl = (#const KMOD_LCTRL) :: Keymod
-pattern KeymodRCtrl = (#const KMOD_RCTRL) :: Keymod
-pattern KeymodCtrl = (#const KMOD_CTRL) :: Keymod
-pattern KeymodLAlt = (#const KMOD_LALT) :: Keymod
-pattern KeymodRAlt = (#const KMOD_RALT) :: Keymod
-pattern KeymodAlt = (#const KMOD_ALT) :: Keymod
-pattern KeymodLGUI = (#const KMOD_LGUI) :: Keymod
-pattern KeymodRGUI = (#const KMOD_RGUI) :: Keymod
-pattern KeymodGUI = (#const KMOD_GUI) :: Keymod
-pattern KeymodNum = (#const KMOD_NUM) :: Keymod
-pattern KeymodCaps = (#const KMOD_CAPS) :: Keymod
-pattern KeymodMode = (#const KMOD_MODE) :: Keymod
-pattern KeymodReserved = (#const KMOD_RESERVED) :: Keymod
+pattern KeymodNone = (#const KMOD_NONE)
+pattern KeymodLShift = (#const KMOD_LSHIFT)
+pattern KeymodRShift = (#const KMOD_RSHIFT)
+pattern KeymodShift = (#const KMOD_SHIFT)
+pattern KeymodLCtrl = (#const KMOD_LCTRL)
+pattern KeymodRCtrl = (#const KMOD_RCTRL)
+pattern KeymodCtrl = (#const KMOD_CTRL)
+pattern KeymodLAlt = (#const KMOD_LALT)
+pattern KeymodRAlt = (#const KMOD_RALT)
+pattern KeymodAlt = (#const KMOD_ALT)
+pattern KeymodLGUI = (#const KMOD_LGUI)
+pattern KeymodRGUI = (#const KMOD_RGUI)
+pattern KeymodGUI = (#const KMOD_GUI)
+pattern KeymodNum = (#const KMOD_NUM)
+pattern KeymodCaps = (#const KMOD_CAPS)
+pattern KeymodMode = (#const KMOD_MODE)
+pattern KeymodReserved = (#const KMOD_RESERVED)
 
 type LogPriority = (#type SDL_LogPriority)
 
