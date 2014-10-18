@@ -1,27 +1,38 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video
-  ( Window
-  , WindowFlag(..)
+  ( -- * Window Management
+    Window
   , createWindow
-  , createWindowAndRenderer
-  , setWindowTitle
+  , defaultWindow
+  , WindowConfig(..)
+  , WindowMode(..)
+  , WindowPosition(..)
+  , destroyWindow
+
+  -- * Window Actions
   , hideWindow
-  , maximizeWindow
-  , minimizeWindow
   , raiseWindow
   , showWindow
-  , restoreWindow
+
+  -- * Window Attributes
+  , setWindowBordered
   , setWindowBrightness
   , setWindowGammaRamp
-  , WindowID
+  , setWindowGrab
+  , setWindowMode
+  , setWindowPosition
+  , setWindowSize
+  , setWindowTitle
+
+  -- * Drawing Primitives
   , renderDrawLine
   , renderDrawLines
   , renderDrawPoint
   , renderDrawPoints
-  , Rectangle(..)
   , renderDrawRect
   , renderDrawRects
+  , Rectangle(..)
 
   -- * Display
   , getDisplays
@@ -54,97 +65,151 @@ module SDL.Video
   , isScreenSaverEnabled
   ) where
 
-import Prelude hiding (all, foldl)
+import Prelude hiding (all, foldl, foldr)
 
 import Control.Applicative
 import Control.Monad (forM, unless)
-import Data.Bitmask (foldFlags)
 import Data.Foldable
 import Data.Maybe (catMaybes)
 import Data.Text (Text)
-import Foreign hiding (void)
+import Foreign hiding (void, throwIfNull, throwIfNeg, throwIfNeg_)
 import Foreign.C
 import Linear
 import Linear.Affine (Point(P))
-import SDL.Internal.Types (WindowID)
+import SDL.Exception
 
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
 import qualified Data.Vector.Storable as SV
-import qualified SDL.Exception as SDLEx
 import qualified SDL.Raw as Raw
 
-data WindowFlag
-  = WindowFullscreen          -- ^ fullscreen window
-  | WindowFullscreenDesktop   -- ^ fullscreen window at the current desktop resolution
-  | WindowOpenGL              -- ^ window usable with OpenGL context
-  | WindowInitiallyShown      -- ^ window is visible
-  | WindowInitiallyHidden     -- ^ window is not visible
-  | WindowBorderless          -- ^ no window decoration
-  | WindowResizable           -- ^ window can be resized
-  | WindowInitiallyMinimized  -- ^ window is minimized
-  | WindowInitiallyMaximized  -- ^ window is maximized
-  | WindowInputGrabbed        -- ^ window has grabbed input focus
-  | WindowInputFocus          -- ^ window has input focus
-  | WindowMouseFocus          -- ^ window has mouse focus
-  | WindowForeign             -- ^ window not created by SDL
-  deriving (Eq,Ord,Read,Show,Bounded,Enum)
-
-windowFlagToC :: Num a => WindowFlag -> a
-windowFlagToC WindowFullscreen = Raw.windowFlagFullscreen
-windowFlagToC WindowFullscreenDesktop = Raw.windowFlagFullscreenDesktop
-windowFlagToC WindowOpenGL = Raw.windowFlagOpenGL
-windowFlagToC WindowInitiallyShown = Raw.windowFlagShown
-windowFlagToC WindowInitiallyHidden = Raw.windowFlagHidden
-windowFlagToC WindowBorderless = Raw.windowFlagBorderless
-windowFlagToC WindowResizable = Raw.windowFlagResizable
-windowFlagToC WindowInitiallyMinimized = Raw.windowFlagMinimized
-windowFlagToC WindowInitiallyMaximized = Raw.windowFlagMaximized
-windowFlagToC WindowInputGrabbed = Raw.windowFlagInputGrabbed
-windowFlagToC WindowInputFocus = Raw.windowFlagInputFocus
-windowFlagToC WindowMouseFocus = Raw.windowFlagMouseFocus
-windowFlagToC WindowForeign = Raw.windowFlagForeign
-
-foldWindowFlags :: (Bits b, Foldable f, Num b) => f WindowFlag -> b
-foldWindowFlags = foldFlags windowFlagToC
-
 newtype Window = Window (Raw.Window)
+  deriving (Eq)
 
 -- | Create a window with the given title and configuration.
 --
--- Throws 'SDLEx.SDLException' on failure.
-createWindow :: Foldable f => Text -> CInt -> CInt -> CInt -> CInt -> f WindowFlag -> IO Window
-createWindow title x y w h flags =
-  BS.useAsCString (Text.encodeUtf8 title) $ \cstr ->
-    fmap Window $
-    SDLEx.throwIfNull "SDL.Video.createWindow" "SDL_CreateWindow" $
-    Raw.createWindow cstr
-                     x
-                     y
-                     w
-                     h
-                     (foldWindowFlags flags)
+-- Throws 'SDLException' on failure.
+createWindow :: Text -> WindowConfig -> IO Window
+createWindow title config =
+  BS.useAsCString (Text.encodeUtf8 title) $ \title' -> do
+    let create = Raw.createWindow title'
+    let create' = case windowPosition config of
+          Centered -> create Raw.windowPosCentered Raw.windowPosCentered
+          Wherever -> create Raw.windowPosUndefined Raw.windowPosUndefined
+          Absolute x y -> create x y
+    uncurry create' (windowSize config) flags >>= return . Window
+  where
+    flags = foldr (.|.) 0
+      [ if windowBorder config then 0 else Raw.windowFlagBorderless
+      , if windowHighDPI config then Raw.windowFlagAllowHighDPI else 0
+      , if windowInputGrabbed config then Raw.windowFlagInputGrabbed else 0
+      , windowModeCtT $ windowMode config
+      , if windowOpenGL config then Raw.windowFlagOpenGL else 0
+      , if windowResizable config then Raw.windowFlagResizable else 0
+      ]
 
-newtype Renderer = Renderer Raw.Renderer
+-- | Default configuration for windows. Use the record update syntax to
+-- override any of the defaults.
+defaultWindow :: WindowConfig
+defaultWindow = WindowConfig
+  { windowBorder       = True
+  , windowHighDPI      = False
+  , windowInputGrabbed = False
+  , windowMode         = Windowed
+  , windowOpenGL       = False
+  , windowPosition     = Wherever
+  , windowResizable    = False
+  , windowSize         = (800, 600)
+  }
 
-createWindowAndRenderer :: Foldable f => CInt -> CInt -> f WindowFlag -> IO (Window, Renderer)
-createWindowAndRenderer w h flags =
-  alloca $ \wPtr ->
-    alloca $ \rPtr ->
-      do
-        SDLEx.throwIfNeg_ "SDL.Video.createWindowAndRenderer" "createWindowAndRenderer" $
-          Raw.createWindowAndRenderer w
-                                      h
-                                      (foldWindowFlags flags)
-                                      wPtr
-                                      rPtr
-        (,) <$> (Window <$> peek wPtr) <*> (Renderer <$> peek rPtr)
+data WindowConfig = WindowConfig
+  { windowBorder       :: Bool           -- ^ Defaults to 'True'.
+  , windowHighDPI      :: Bool           -- ^ Defaults to 'False'. Can not be changed after window creation.
+  , windowInputGrabbed :: Bool           -- ^ Defaults to 'False'. Whether the mouse shall be confined to the window.
+  , windowMode         :: WindowMode     -- ^ Defaults to 'Windowed'.
+  , windowOpenGL       :: Bool           -- ^ Defaults to 'False'. Can not be changed after window creation.
+  , windowPosition     :: WindowPosition -- ^ Defaults to 'Wherever'.
+  , windowResizable    :: Bool           -- ^ Defaults to 'False'. Whether the window can be resized by the user. It is still possible to programatically change the size with 'setWindowSize'.
+  , windowSize         :: (CInt, CInt)   -- ^ Defaults to @(800, 600)@.
+  } deriving (Eq, Show)
+
+data WindowMode
+  = Fullscreen        -- ^ Real fullscreen with a video mode change
+  | FullscreenDesktop -- ^ Fake fullscreen that takes the size of the desktop
+  | Maximized
+  | Minimized
+  | Windowed
+  deriving (Eq, Show)
+
+windowModeCtT :: Num a => WindowMode -> a
+windowModeCtT n' = case n' of
+  Fullscreen -> Raw.windowFlagFullscreen
+  FullscreenDesktop -> Raw.windowFlagFullscreenDesktop
+  Maximized -> Raw.windowFlagMaximized
+  Minimized -> Raw.windowFlagMinimized
+  Windowed -> 0
+
+data WindowPosition
+  = Centered
+  | Wherever -- ^ Let the window mananger decide where it's best to place the window.
+  | Absolute CInt CInt
+  deriving (Eq, Show)
+
+-- | Destroy the given window. The 'Window' handler may not be used
+-- afterwards.
+destroyWindow :: Window -> IO ()
+destroyWindow (Window w) = Raw.destroyWindow w
+
+-- | Set whether the window should have a border or not.
+setWindowBordered :: Window -> Bool -> IO ()
+setWindowBordered (Window w) = Raw.setWindowBordered w
+
+-- | Set the window's brightness, where 0.0 is completely dark and 1.0 is
+-- normal brightness.
+--
+-- Throws 'SDLException' if the hardware does not support gamma
+-- correction, or if the system has run out of memory.
+setWindowBrightness :: Window -> Float -> IO ()
+setWindowBrightness (Window w) brightness = do
+  throwIfNot0_ "SDL.Video.setWindowBrightness" "SDL_SetWindowBrightness" $
+    Raw.setWindowBrightness w $ realToFrac brightness
+
+-- | Set whether the mouse shall be confined to the window.
+setWindowGrab :: Window -> Bool -> IO ()
+setWindowGrab (Window w) = Raw.setWindowGrab w
+
+-- | Change between window modes.
+--
+-- Throws 'SDLException' on failure.
+setWindowMode :: Window -> WindowMode -> IO ()
+setWindowMode (Window w) mode =
+  throwIfNot0_ "SDL.Video.setWindowMode" "SDL_SetWindowFullscreen" $
+    case mode of
+      Fullscreen -> Raw.setWindowFullscreen w Raw.windowFlagFullscreen
+      FullscreenDesktop -> Raw.setWindowFullscreen w Raw.windowFlagFullscreenDesktop
+      Maximized -> Raw.setWindowFullscreen w 0 <* Raw.maximizeWindow w
+      Minimized -> Raw.minimizeWindow w >> return 0
+      Windowed -> Raw.restoreWindow w >> return 0
+
+-- | Set the position of the window.
+setWindowPosition :: Window -> WindowPosition -> IO ()
+setWindowPosition (Window w) pos = case pos of
+  Centered -> let u = Raw.windowPosCentered in Raw.setWindowPosition w u u
+  Wherever -> let u = Raw.windowPosUndefined in Raw.setWindowPosition w u u
+  Absolute x y -> Raw.setWindowPosition w x y
+
+-- | Set the size of the window. Values beyond the maximum supported size are
+-- clamped.
+setWindowSize :: Window -> CInt -> CInt -> IO ()
+setWindowSize (Window w) = Raw.setWindowSize w
 
 -- | Set the title of the window.
 setWindowTitle :: Window -> Text -> IO ()
 setWindowTitle (Window w) title =
   BS.useAsCString (Text.encodeUtf8 title) $
     Raw.setWindowTitle w
+
+newtype Renderer = Renderer Raw.Renderer
 
 data GLAttribute
   = GLRedSize
@@ -200,7 +265,7 @@ glAttributeToC GLContextEGL = Raw.glAttrContextEGL
 
 glSetAttribute :: GLAttribute -> CInt -> IO ()
 glSetAttribute attribute value =
-  SDLEx.throwIfNeg_ "SDL.Video.glSetAttribute" "SDL_GL_SetAttribute" $
+  throwIfNeg_ "SDL.Video.glSetAttribute" "SDL_GL_SetAttribute" $
     Raw.glSetAttribute (glAttributeToC attribute) value
 
 -- | Replace the contents of the front buffer with the back buffer's. The
@@ -214,13 +279,13 @@ newtype GLContext = GLContext (Raw.GLContext)
 -- | Create a new OpenGL context and makes it the current context for the
 -- window.
 --
--- Throws 'SDLEx.SDLException' if the window wasn't configured with OpenGL
+-- Throws 'SDLException' if the window wasn't configured with OpenGL
 -- support, or if context creation fails.
 glCreateContext :: Window -> IO GLContext
-glCreateContext (Window w) = fmap GLContext $ SDLEx.throwIfNull "SDL.Video.glCreateContext" "SDL_GL_CreateContext" $ Raw.glCreateContext w
+glCreateContext (Window w) = fmap GLContext $ throwIfNull "SDL.Video.glCreateContext" "SDL_GL_CreateContext" $ Raw.glCreateContext w
 
 glGetCurrentContext :: IO GLContext
-glGetCurrentContext = fmap GLContext $ SDLEx.throwIfNull "SDL.Video.glGetCurrentContext" "SDL_GL_GetCurrentContext" Raw.glGetCurrentContext
+glGetCurrentContext = fmap GLContext $ throwIfNull "SDL.Video.glGetCurrentContext" "SDL_GL_GetCurrentContext" Raw.glGetCurrentContext
 
 data SwapInterval = ImmediateUpdates | SynchronizedUpdates | LateSwapTearing
 
@@ -231,24 +296,15 @@ swapIntervalToC LateSwapTearing = -1
 
 glSetSwapInterval :: SwapInterval -> IO ()
 glSetSwapInterval swapInterval =
-  SDLEx.throwIfNeg_ "SDL.Video.glSetSwapInterval" "SDL_GL_SetSwapInterval" $
+  throwIfNeg_ "SDL.Video.glSetSwapInterval" "SDL_GL_SetSwapInterval" $
     Raw.glSetSwapInterval (swapIntervalToC swapInterval)
 
 hideWindow :: Window -> IO ()
 hideWindow (Window w) = Raw.hideWindow w
 
-maximizeWindow :: Window -> IO ()
-maximizeWindow (Window w) = Raw.maximizeWindow w
-
-minimizeWindow :: Window -> IO ()
-minimizeWindow (Window w) = Raw.minimizeWindow w
-
 -- | Raise the window above other windows and set the input focus.
 raiseWindow :: Window -> IO ()
 raiseWindow (Window w) = Raw.raiseWindow w
-
-restoreWindow :: Window -> IO ()
-restoreWindow (Window w) = Raw.restoreWindow w
 
 -- | Disable screen savers.
 disableScreenSaver :: IO ()
@@ -265,11 +321,6 @@ isScreenSaverEnabled = Raw.isScreenSaverEnabled
 showWindow :: Window -> IO ()
 showWindow (Window w) = Raw.showWindow w
 
-setWindowBrightness :: Window -> CFloat -> IO ()
-setWindowBrightness (Window w) b =
-  SDLEx.throwIfNeg_ "SDL.Video.setWindowBrightness" "SDL_SetWindowBrightness" $
-    Raw.setWindowBrightness w b
-
 setWindowGammaRamp :: Window -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> IO ()
 setWindowGammaRamp (Window w) r g b = do
   unless (all ((== 256) . SV.length) $ catMaybes [r,g,b]) $
@@ -281,17 +332,17 @@ setWindowGammaRamp (Window w) r g b = do
   withChan r $ \rPtr ->
     withChan b $ \bPtr ->
       withChan g $ \gPtr ->
-        SDLEx.throwIfNeg_ "SDL.Video.setWindowGammaRamp" "SDL_SetWindowGammaRamp" $
+        throwIfNeg_ "SDL.Video.setWindowGammaRamp" "SDL_SetWindowGammaRamp" $
           Raw.setWindowGammaRamp w rPtr gPtr bPtr
 
 renderDrawLine :: Renderer -> Point V2 CInt -> Point V2 CInt -> IO ()
 renderDrawLine (Renderer r) (P (V2 x y)) (P (V2 x' y')) =
-  SDLEx.throwIfNeg_ "SDL.Video.renderDrawLine" "SDL_RenderDrawLine" $
+  throwIfNeg_ "SDL.Video.renderDrawLine" "SDL_RenderDrawLine" $
   Raw.renderDrawLine r x y x' y'
 
 renderDrawLines :: Renderer -> SV.Vector (Point V2 CInt) -> IO ()
 renderDrawLines (Renderer r) points =
-  SDLEx.throwIfNeg_ "SDL.Video.renderDrawLines" "SDL_RenderDrawLines" $
+  throwIfNeg_ "SDL.Video.renderDrawLines" "SDL_RenderDrawLines" $
   SV.unsafeWith points $ \cp ->
     Raw.renderDrawLines r
                         (castPtr cp)
@@ -299,12 +350,12 @@ renderDrawLines (Renderer r) points =
 
 renderDrawPoint :: Renderer -> Point V2 CInt -> IO ()
 renderDrawPoint (Renderer r) (P (V2 x y)) =
-  SDLEx.throwIfNeg_ "SDL.Video.renderDrawPoint" "SDL_RenderDrawPoint" $
+  throwIfNeg_ "SDL.Video.renderDrawPoint" "SDL_RenderDrawPoint" $
   Raw.renderDrawPoint r x y
 
 renderDrawPoints :: Renderer -> SV.Vector (Point V2 CInt) -> IO ()
 renderDrawPoints (Renderer r) points =
-  SDLEx.throwIfNeg_ "SDL.Video.renderDrawPoints" "SDL_RenderDrawPoints" $
+  throwIfNeg_ "SDL.Video.renderDrawPoints" "SDL_RenderDrawPoints" $
   SV.unsafeWith points $ \cp ->
     Raw.renderDrawPoints r
                          (castPtr cp)
@@ -414,26 +465,26 @@ pixelFormatCtT n' = case n' of
 -- | Throws 'SDLException' on failure.
 getDisplays :: IO [Display]
 getDisplays = do
-  numDisplays <- SDLEx.throwIfNeg "SDL.Video.getDisplays" "SDL_GetNumVideoDisplays"
+  numDisplays <- throwIfNeg "SDL.Video.getDisplays" "SDL_GetNumVideoDisplays"
     Raw.getNumVideoDisplays
 
   forM [0..numDisplays - 1] $ \displayId -> do
-    name <- SDLEx.throwIfNull "SDL.Video.getDisplays" "SDL_GetDisplayName" $
+    name <- throwIfNull "SDL.Video.getDisplays" "SDL_GetDisplayName" $
         Raw.getDisplayName displayId
 
     name' <- peekCString name
 
     Raw.Rect x y w h <- alloca $ \rect -> do
-      SDLEx.throwIfNot0_ "SDL.Video.getDisplays" "SDL_GetDisplayBounds" $
+      throwIfNot0_ "SDL.Video.getDisplays" "SDL_GetDisplayBounds" $
         Raw.getDisplayBounds displayId rect
       peek rect
 
-    numModes <- SDLEx.throwIfNeg "SDL.Video.getDisplays" "SDL_GetNumDisplayModes" $
+    numModes <- throwIfNeg "SDL.Video.getDisplays" "SDL_GetNumDisplayModes" $
       Raw.getNumDisplayModes displayId
 
     modes <- forM [0..numModes - 1] $ \modeId -> do
       Raw.DisplayMode format w' h' refreshRate _ <- alloca $ \mode -> do
-        SDLEx.throwIfNot0_ "SDL.Video.getDisplays" "SDL_GetDisplayMode" $
+        throwIfNot0_ "SDL.Video.getDisplays" "SDL_GetDisplayMode" $
           Raw.getDisplayMode displayId modeId mode
         peek mode
 
@@ -465,12 +516,12 @@ instance Storable a => Storable (Rectangle a) where
 
 renderDrawRect :: Renderer -> Rectangle CInt -> IO ()
 renderDrawRect (Renderer r) rect =
-  SDLEx.throwIfNeg_ "SDL.Video.renderDrawRect" "SDL_RenderDrawRect" $
+  throwIfNeg_ "SDL.Video.renderDrawRect" "SDL_RenderDrawRect" $
   with rect (Raw.renderDrawRect r . castPtr)
 
 renderDrawRects :: Renderer -> SV.Vector (Rectangle CInt) -> IO ()
 renderDrawRects (Renderer r) rects =
-  SDLEx.throwIfNeg_ "SDL.Video.renderDrawRects" "SDL_RenderDrawRects" $
+  throwIfNeg_ "SDL.Video.renderDrawRects" "SDL_RenderDrawRects" $
   SV.unsafeWith rects $ \rp ->
     Raw.renderDrawRects r
                         (castPtr rp)
