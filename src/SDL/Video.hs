@@ -32,6 +32,7 @@ module SDL.Video
 
   -- * Drawing Primitives
   , renderClear
+  , renderCopy
   , renderDrawLine
   , renderDrawLines
   , renderDrawPoint
@@ -49,6 +50,7 @@ module SDL.Video
   , setRenderDrawColor
   , BlendMode(..)
   , Rectangle(..)
+  , Texture
 
   -- * Display
   , getDisplays
@@ -657,3 +659,12 @@ renderSetViewport (Renderer r) rect =
 
 renderPresent :: Renderer -> IO ()
 renderPresent (Renderer r) = Raw.renderPresent r
+
+newtype Texture = Texture Raw.Texture
+
+renderCopy :: Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> IO ()
+renderCopy (Renderer r) (Texture t) srcRect dstRect =
+  throwIfNeg_ "SDL.Video.renderCopy" "SDL_RenderCopy" $
+  maybeWith with srcRect $ \src ->
+  maybeWith with dstRect $ \dst ->
+  Raw.renderCopy r t (castPtr src) (castPtr dst)
