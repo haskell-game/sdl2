@@ -40,7 +40,9 @@ module SDL.Video
   , renderDrawRects
   , renderFillRect
   , renderFillRects
+  , setRenderDrawBlendMode
   , setRenderDrawColor
+  , BlendMode(..)
   , Rectangle(..)
 
   -- * Display
@@ -613,3 +615,17 @@ renderClear :: Renderer -> IO ()
 renderClear (Renderer r) =
   throwIfNeg_ "SDL.Video.renderClear" "SDL_RenderClear" $
   Raw.renderClear r
+
+data BlendMode = BlendNone | BlendAlphaBlend | BlendAdditive | BlendMod
+  deriving (Eq,Show)
+
+blendModeToC :: BlendMode -> Word32
+blendModeToC BlendNone = Raw.blendModeNone
+blendModeToC BlendAlphaBlend = Raw.blendModeBlend
+blendModeToC BlendAdditive = Raw.blendModeAdd
+blendModeToC BlendMod = Raw.blendModeAdd
+
+setRenderDrawBlendMode :: Renderer -> BlendMode -> IO ()
+setRenderDrawBlendMode (Renderer r) bm =
+  throwIfNeg_ "SDL.Video.setRenderDrawBlendMode" "SDL_RenderDrawBlendMode" $
+  Raw.setRenderDrawBlendMode r (blendModeToC bm)
