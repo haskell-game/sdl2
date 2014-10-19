@@ -40,6 +40,7 @@ module SDL.Video
   , renderDrawRects
   , renderFillRect
   , renderFillRects
+  , renderSetScale
   , setRenderDrawBlendMode
   , setRenderDrawColor
   , BlendMode(..)
@@ -629,3 +630,8 @@ setRenderDrawBlendMode :: Renderer -> BlendMode -> IO ()
 setRenderDrawBlendMode (Renderer r) bm =
   throwIfNeg_ "SDL.Video.setRenderDrawBlendMode" "SDL_RenderDrawBlendMode" $
   Raw.setRenderDrawBlendMode r (blendModeToC bm)
+
+renderSetScale :: Renderer -> V2 CFloat -> IO ()
+renderSetScale (Renderer r) (V2 x y) =
+  throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
+  Raw.renderSetScale r x y
