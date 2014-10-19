@@ -115,7 +115,7 @@ updateWindowSurface (Window w) =
 data BlendMode = BlendNone | BlendAlphaBlend | BlendAdditive | BlendMod
   deriving (Eq,Show)
 
-instance Numbered BlendMode Word32 where
+instance ToNumber BlendMode Word32 where
   toNumber BlendNone = Raw.blendModeNone
   toNumber BlendAlphaBlend = Raw.blendModeBlend
   toNumber BlendAdditive = Raw.blendModeAdd

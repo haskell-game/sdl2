@@ -140,7 +140,7 @@ data WindowMode
   | Windowed
   deriving (Eq, Show)
 
-instance Numbered WindowMode Word32 where
+instance ToNumber WindowMode Word32 where
   toNumber Fullscreen = Raw.windowFlagFullscreen
   toNumber FullscreenDesktop = Raw.windowFlagFullscreenDesktop
   toNumber Maximized = Raw.windowFlagMaximized
@@ -325,45 +325,45 @@ data PixelFormat = Unknown
                  | YVYU
                  deriving (Eq, Show)
 
-pixelFormatCtT :: (Num a, Eq a) => a -> PixelFormat
-pixelFormatCtT n' = case n' of
-  n | n == Raw.pixelFormatUnknown -> Unknown
-  n | n == Raw.pixelFormatIndex1LSB -> Index1LSB
-  n | n == Raw.pixelFormatIndex1MSB -> Index1MSB
-  n | n == Raw.pixelFormatIndex4LSB -> Index4LSB
-  n | n == Raw.pixelFormatIndex4MSB -> Index4MSB
-  n | n == Raw.pixelFormatIndex8 -> Index8
-  n | n == Raw.pixelFormatRGB332 -> RGB332
-  n | n == Raw.pixelFormatRGB444 -> RGB444
-  n | n == Raw.pixelFormatRGB555 -> RGB555
-  n | n == Raw.pixelFormatBGR555 -> BGR555
-  n | n == Raw.pixelFormatARGB4444 -> ARGB4444
-  n | n == Raw.pixelFormatRGBA4444 -> RGBA4444
-  n | n == Raw.pixelFormatABGR4444 -> ABGR4444
-  n | n == Raw.pixelFormatBGRA4444 -> BGRA4444
-  n | n == Raw.pixelFormatARGB1555 -> ARGB1555
-  n | n == Raw.pixelFormatRGBA5551 -> RGBA5551
-  n | n == Raw.pixelFormatABGR1555 -> ABGR1555
-  n | n == Raw.pixelFormatBGRA5551 -> BGRA5551
-  n | n == Raw.pixelFormatRGB565 -> RGB565
-  n | n == Raw.pixelFormatBGR565 -> BGR565
-  n | n == Raw.pixelFormatRGB24 -> RGB24
-  n | n == Raw.pixelFormatBGR24 -> BGR24
-  n | n == Raw.pixelFormatRGB888 -> RGB888
-  n | n == Raw.pixelFormatRGBX8888 -> RGBX8888
-  n | n == Raw.pixelFormatBGR888 -> BGR888
-  n | n == Raw.pixelFormatBGRX8888 -> BGRX8888
-  n | n == Raw.pixelFormatARGB8888 -> ARGB8888
-  n | n == Raw.pixelFormatRGBA8888 -> RGBA8888
-  n | n == Raw.pixelFormatABGR8888 -> ABGR8888
-  n | n == Raw.pixelFormatBGRA8888 -> BGRA8888
-  n | n == Raw.pixelFormatARGB2101010 -> ARGB2101010
-  n | n == Raw.pixelFormatYV12 -> YV12
-  n | n == Raw.pixelFormatIYUV -> IYUV
-  n | n == Raw.pixelFormatYUY2 -> YUY2
-  n | n == Raw.pixelFormatUYVY -> UYVY
-  n | n == Raw.pixelFormatYVYU -> YVYU
-  _ -> error "pixelFormatCtT: unknown pixel format"
+instance FromNumber PixelFormat Word32 where
+  fromNumber n' = case n' of
+    n | n == Raw.pixelFormatUnknown -> Unknown
+    n | n == Raw.pixelFormatIndex1LSB -> Index1LSB
+    n | n == Raw.pixelFormatIndex1MSB -> Index1MSB
+    n | n == Raw.pixelFormatIndex4LSB -> Index4LSB
+    n | n == Raw.pixelFormatIndex4MSB -> Index4MSB
+    n | n == Raw.pixelFormatIndex8 -> Index8
+    n | n == Raw.pixelFormatRGB332 -> RGB332
+    n | n == Raw.pixelFormatRGB444 -> RGB444
+    n | n == Raw.pixelFormatRGB555 -> RGB555
+    n | n == Raw.pixelFormatBGR555 -> BGR555
+    n | n == Raw.pixelFormatARGB4444 -> ARGB4444
+    n | n == Raw.pixelFormatRGBA4444 -> RGBA4444
+    n | n == Raw.pixelFormatABGR4444 -> ABGR4444
+    n | n == Raw.pixelFormatBGRA4444 -> BGRA4444
+    n | n == Raw.pixelFormatARGB1555 -> ARGB1555
+    n | n == Raw.pixelFormatRGBA5551 -> RGBA5551
+    n | n == Raw.pixelFormatABGR1555 -> ABGR1555
+    n | n == Raw.pixelFormatBGRA5551 -> BGRA5551
+    n | n == Raw.pixelFormatRGB565 -> RGB565
+    n | n == Raw.pixelFormatBGR565 -> BGR565
+    n | n == Raw.pixelFormatRGB24 -> RGB24
+    n | n == Raw.pixelFormatBGR24 -> BGR24
+    n | n == Raw.pixelFormatRGB888 -> RGB888
+    n | n == Raw.pixelFormatRGBX8888 -> RGBX8888
+    n | n == Raw.pixelFormatBGR888 -> BGR888
+    n | n == Raw.pixelFormatBGRX8888 -> BGRX8888
+    n | n == Raw.pixelFormatARGB8888 -> ARGB8888
+    n | n == Raw.pixelFormatRGBA8888 -> RGBA8888
+    n | n == Raw.pixelFormatABGR8888 -> ABGR8888
+    n | n == Raw.pixelFormatBGRA8888 -> BGRA8888
+    n | n == Raw.pixelFormatARGB2101010 -> ARGB2101010
+    n | n == Raw.pixelFormatYV12 -> YV12
+    n | n == Raw.pixelFormatIYUV -> IYUV
+    n | n == Raw.pixelFormatYUY2 -> YUY2
+    n | n == Raw.pixelFormatUYVY -> UYVY
+    n | n == Raw.pixelFormatYVYU -> YVYU
+    _ -> error "fromNumber: not numbered"
 
 -- | Throws 'SDLException' on failure.
 getDisplays :: IO [Display]
@@ -392,7 +392,7 @@ getDisplays = do
         peek mode
 
       return $ DisplayMode {
-          displayModeFormat = pixelFormatCtT format
+          displayModeFormat = fromNumber format
         , displayModeSize = V2 w' h'
         , displayModeRefreshRate = refreshRate
       }
@@ -413,7 +413,7 @@ showSimpleMessageBox window kind title message =
   throwIfNot0_ "SDL.Video.showSimpleMessageBox" "SDL_ShowSimpleMessageBox" $ do
     BS.useAsCString (Text.encodeUtf8 title) $ \title' ->
       BS.useAsCString (Text.encodeUtf8 message) $ \message' ->
-        Raw.showSimpleMessageBox (messageKindToC kind) title' message' $
+        Raw.showSimpleMessageBox (toNumber kind) title' message' $
           windowId window
   where
     windowId (Just (Window w)) = w
@@ -425,11 +425,10 @@ data MessageKind
   | Information
   deriving (Eq, Show)
 
-messageKindToC :: Num a => MessageKind -> a
-messageKindToC kind = case kind of
-  Error -> Raw.messageBoxFlagError
-  Warning -> Raw.messageBoxFlagWarning
-  Information -> Raw.messageBoxFlagInformation
+instance ToNumber MessageKind Word32 where
+  toNumber Error = Raw.messageBoxFlagError
+  toNumber Warning = Raw.messageBoxFlagWarning
+  toNumber Information = Raw.messageBoxFlagInformation
 
 setWindowMaximumSize :: Window -> V2 CInt -> IO ()
 setWindowMaximumSize (Window win) (V2 w h) = Raw.setWindowMaximumSize win w h

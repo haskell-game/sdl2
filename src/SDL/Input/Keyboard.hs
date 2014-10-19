@@ -32,7 +32,7 @@ import qualified SDL.Raw.Types as Raw
 
 -- | Get the current key modifier state for the keyboard.
 getModState :: IO KeyModifier
-getModState = fromNumberKeyModifier <$> Raw.getModState
+getModState = fromNumber <$> Raw.getModState
 
 data KeyModifier = KeyModifier
   { keyModifierLeftShift  :: Bool
@@ -48,7 +48,22 @@ data KeyModifier = KeyModifier
   , keyModifierAltGr      :: Bool
   } deriving (Eq, Show)
 
-instance Numbered KeyModifier Word32 where
+instance FromNumber KeyModifier Word32 where
+  fromNumber m' = let m = m' in KeyModifier
+    { keyModifierLeftShift  = m .&. Raw.keymodLShift > 0
+    , keyModifierRightShift = m .&. Raw.keymodRShift > 0
+    , keyModifierLeftCtrl   = m .&. Raw.keymodLCtrl  > 0
+    , keyModifierRightCtrl  = m .&. Raw.keymodRCtrl  > 0
+    , keyModifierLeftAlt    = m .&. Raw.keymodLAlt   > 0
+    , keyModifierRightAlt   = m .&. Raw.keymodRAlt   > 0
+    , keyModifierLeftGUI    = m .&. Raw.keymodLGUI   > 0
+    , keyModifierRightGUI   = m .&. Raw.keymodRGUI   > 0
+    , keyModifierNumLock    = m .&. Raw.keymodNum    > 0
+    , keyModifierCapsLock   = m .&. Raw.keymodCaps   > 0
+    , keyModifierAltGr      = m .&. Raw.keymodMode   > 0
+    }
+
+instance ToNumber KeyModifier Word32 where
   toNumber m = foldr (.|.) 0
     [ if keyModifierLeftShift m  then Raw.keymodLShift else 0
     , if keyModifierRightShift m then Raw.keymodRShift else 0
@@ -62,21 +77,6 @@ instance Numbered KeyModifier Word32 where
     , if keyModifierCapsLock m   then Raw.keymodCaps   else 0
     , if keyModifierAltGr m      then Raw.keymodMode   else 0
     ]
-
-fromNumberKeyModifier :: Word32 -> KeyModifier
-fromNumberKeyModifier m' = let m = m' in KeyModifier
-  { keyModifierLeftShift  = m .&. Raw.keymodLShift > 0
-  , keyModifierRightShift = m .&. Raw.keymodRShift > 0
-  , keyModifierLeftCtrl   = m .&. Raw.keymodLCtrl  > 0
-  , keyModifierRightCtrl  = m .&. Raw.keymodRCtrl  > 0
-  , keyModifierLeftAlt    = m .&. Raw.keymodLAlt   > 0
-  , keyModifierRightAlt   = m .&. Raw.keymodRAlt   > 0
-  , keyModifierLeftGUI    = m .&. Raw.keymodLGUI   > 0
-  , keyModifierRightGUI   = m .&. Raw.keymodRGUI   > 0
-  , keyModifierNumLock    = m .&. Raw.keymodNum    > 0
-  , keyModifierCapsLock   = m .&. Raw.keymodCaps   > 0
-  , keyModifierAltGr      = m .&. Raw.keymodMode   > 0
-  }
 
 -- | Set the rectangle used to type text inputs and start accepting text input
 -- events.
@@ -349,7 +349,253 @@ data Scancode
   | ScancodeNum
   deriving (Eq, Show)
 
-instance Numbered Scancode Word32 where
+instance FromNumber Scancode Word32 where
+  fromNumber n' = case n' of
+    n | n == Raw.scancodeUnknown -> ScancodeUnknown
+    n | n == Raw.scancodeA -> ScancodeA
+    n | n == Raw.scancodeB -> ScancodeB
+    n | n == Raw.scancodeC -> ScancodeC
+    n | n == Raw.scancodeD -> ScancodeD
+    n | n == Raw.scancodeE -> ScancodeE
+    n | n == Raw.scancodeF -> ScancodeF
+    n | n == Raw.scancodeG -> ScancodeG
+    n | n == Raw.scancodeH -> ScancodeH
+    n | n == Raw.scancodeI -> ScancodeI
+    n | n == Raw.scancodeJ -> ScancodeJ
+    n | n == Raw.scancodeK -> ScancodeK
+    n | n == Raw.scancodeL -> ScancodeL
+    n | n == Raw.scancodeM -> ScancodeM
+    n | n == Raw.scancodeN -> ScancodeN
+    n | n == Raw.scancodeO -> ScancodeO
+    n | n == Raw.scancodeP -> ScancodeP
+    n | n == Raw.scancodeQ -> ScancodeQ
+    n | n == Raw.scancodeR -> ScancodeR
+    n | n == Raw.scancodeS -> ScancodeS
+    n | n == Raw.scancodeT -> ScancodeT
+    n | n == Raw.scancodeU -> ScancodeU
+    n | n == Raw.scancodeV -> ScancodeV
+    n | n == Raw.scancodeW -> ScancodeW
+    n | n == Raw.scancodeX -> ScancodeX
+    n | n == Raw.scancodeY -> ScancodeY
+    n | n == Raw.scancodeZ -> ScancodeZ
+    n | n == Raw.scancode1 -> Scancode1
+    n | n == Raw.scancode2 -> Scancode2
+    n | n == Raw.scancode3 -> Scancode3
+    n | n == Raw.scancode4 -> Scancode4
+    n | n == Raw.scancode5 -> Scancode5
+    n | n == Raw.scancode6 -> Scancode6
+    n | n == Raw.scancode7 -> Scancode7
+    n | n == Raw.scancode8 -> Scancode8
+    n | n == Raw.scancode9 -> Scancode9
+    n | n == Raw.scancode0 -> Scancode0
+    n | n == Raw.scancodeReturn -> ScancodeReturn
+    n | n == Raw.scancodeEscape -> ScancodeEscape
+    n | n == Raw.scancodeBackspace -> ScancodeBackspace
+    n | n == Raw.scancodeTab -> ScancodeTab
+    n | n == Raw.scancodeSpace -> ScancodeSpace
+    n | n == Raw.scancodeMinus -> ScancodeMinus
+    n | n == Raw.scancodeEquals -> ScancodeEquals
+    n | n == Raw.scancodeLeftBracket -> ScancodeLeftBracket
+    n | n == Raw.scancodeRightBracket -> ScancodeRightBracket
+    n | n == Raw.scancodeBackslash -> ScancodeBackslash
+    n | n == Raw.scancodeNonUSHash -> ScancodeNonUSHash
+    n | n == Raw.scancodeSemicolon -> ScancodeSemicolon
+    n | n == Raw.scancodeApostrophe -> ScancodeApostrophe
+    n | n == Raw.scancodeGrave -> ScancodeGrave
+    n | n == Raw.scancodeComma -> ScancodeComma
+    n | n == Raw.scancodePeriod -> ScancodePeriod
+    n | n == Raw.scancodeSlash -> ScancodeSlash
+    n | n == Raw.scancodeCapsLock -> ScancodeCapsLock
+    n | n == Raw.scancodeF1 -> ScancodeF1
+    n | n == Raw.scancodeF2 -> ScancodeF2
+    n | n == Raw.scancodeF3 -> ScancodeF3
+    n | n == Raw.scancodeF4 -> ScancodeF4
+    n | n == Raw.scancodeF5 -> ScancodeF5
+    n | n == Raw.scancodeF6 -> ScancodeF6
+    n | n == Raw.scancodeF7 -> ScancodeF7
+    n | n == Raw.scancodeF8 -> ScancodeF8
+    n | n == Raw.scancodeF9 -> ScancodeF9
+    n | n == Raw.scancodeF10 -> ScancodeF10
+    n | n == Raw.scancodeF11 -> ScancodeF11
+    n | n == Raw.scancodeF12 -> ScancodeF12
+    n | n == Raw.scancodePrintScreen -> ScancodePrintScreen
+    n | n == Raw.scancodeScrollLock -> ScancodeScrollLock
+    n | n == Raw.scancodePause -> ScancodePause
+    n | n == Raw.scancodeInsert -> ScancodeInsert
+    n | n == Raw.scancodeHome -> ScancodeHome
+    n | n == Raw.scancodePageUp -> ScancodePageUp
+    n | n == Raw.scancodeDelete -> ScancodeDelete
+    n | n == Raw.scancodeEnd -> ScancodeEnd
+    n | n == Raw.scancodePageDown -> ScancodePageDown
+    n | n == Raw.scancodeRight -> ScancodeRight
+    n | n == Raw.scancodeLeft -> ScancodeLeft
+    n | n == Raw.scancodeDown -> ScancodeDown
+    n | n == Raw.scancodeUp -> ScancodeUp
+    n | n == Raw.scancodeNumLockClear -> ScancodeNumLockClear
+    n | n == Raw.scancodeKPDivide -> ScancodeKPDivide
+    n | n == Raw.scancodeKPMultiply -> ScancodeKPMultiply
+    n | n == Raw.scancodeKPMinus -> ScancodeKPMinus
+    n | n == Raw.scancodeKPPlus -> ScancodeKPPlus
+    n | n == Raw.scancodeKPEnter -> ScancodeKPEnter
+    n | n == Raw.scancodeKP1 -> ScancodeKP1
+    n | n == Raw.scancodeKP2 -> ScancodeKP2
+    n | n == Raw.scancodeKP3 -> ScancodeKP3
+    n | n == Raw.scancodeKP4 -> ScancodeKP4
+    n | n == Raw.scancodeKP5 -> ScancodeKP5
+    n | n == Raw.scancodeKP6 -> ScancodeKP6
+    n | n == Raw.scancodeKP7 -> ScancodeKP7
+    n | n == Raw.scancodeKP8 -> ScancodeKP8
+    n | n == Raw.scancodeKP9 -> ScancodeKP9
+    n | n == Raw.scancodeKP0 -> ScancodeKP0
+    n | n == Raw.scancodeKPPeriod -> ScancodeKPPeriod
+    n | n == Raw.scancodeNonUSBackslash -> ScancodeNonUSBackslash
+    n | n == Raw.scancodeApplication -> ScancodeApplication
+    n | n == Raw.scancodePower -> ScancodePower
+    n | n == Raw.scancodeKPEquals -> ScancodeKPEquals
+    n | n == Raw.scancodeF13 -> ScancodeF13
+    n | n == Raw.scancodeF14 -> ScancodeF14
+    n | n == Raw.scancodeF15 -> ScancodeF15
+    n | n == Raw.scancodeF16 -> ScancodeF16
+    n | n == Raw.scancodeF17 -> ScancodeF17
+    n | n == Raw.scancodeF18 -> ScancodeF18
+    n | n == Raw.scancodeF19 -> ScancodeF19
+    n | n == Raw.scancodeF20 -> ScancodeF20
+    n | n == Raw.scancodeF21 -> ScancodeF21
+    n | n == Raw.scancodeF22 -> ScancodeF22
+    n | n == Raw.scancodeF23 -> ScancodeF23
+    n | n == Raw.scancodeF24 -> ScancodeF24
+    n | n == Raw.scancodeExecute -> ScancodeExecute
+    n | n == Raw.scancodeHelp -> ScancodeHelp
+    n | n == Raw.scancodeMenu -> ScancodeMenu
+    n | n == Raw.scancodeSelect -> ScancodeSelect
+    n | n == Raw.scancodeStop -> ScancodeStop
+    n | n == Raw.scancodeAgain -> ScancodeAgain
+    n | n == Raw.scancodeUndo -> ScancodeUndo
+    n | n == Raw.scancodeCut -> ScancodeCut
+    n | n == Raw.scancodeCopy -> ScancodeCopy
+    n | n == Raw.scancodePaste -> ScancodePaste
+    n | n == Raw.scancodeFind -> ScancodeFind
+    n | n == Raw.scancodeMute -> ScancodeMute
+    n | n == Raw.scancodeVolumeUp -> ScancodeVolumeUp
+    n | n == Raw.scancodeVolumeDown -> ScancodeVolumeDown
+    n | n == Raw.scancodeKPComma -> ScancodeKPComma
+    n | n == Raw.scancodeEqualsAs400 -> ScancodeEqualsAs400
+    n | n == Raw.scancodeInternational1 -> ScancodeInternational1
+    n | n == Raw.scancodeInternational2 -> ScancodeInternational2
+    n | n == Raw.scancodeInternational3 -> ScancodeInternational3
+    n | n == Raw.scancodeInternational4 -> ScancodeInternational4
+    n | n == Raw.scancodeInternational5 -> ScancodeInternational5
+    n | n == Raw.scancodeInternational6 -> ScancodeInternational6
+    n | n == Raw.scancodeInternational7 -> ScancodeInternational7
+    n | n == Raw.scancodeInternational8 -> ScancodeInternational8
+    n | n == Raw.scancodeInternational9 -> ScancodeInternational9
+    n | n == Raw.scancodeLang1 -> ScancodeLang1
+    n | n == Raw.scancodeLang2 -> ScancodeLang2
+    n | n == Raw.scancodeLang3 -> ScancodeLang3
+    n | n == Raw.scancodeLang4 -> ScancodeLang4
+    n | n == Raw.scancodeLang5 -> ScancodeLang5
+    n | n == Raw.scancodeLang6 -> ScancodeLang6
+    n | n == Raw.scancodeLang7 -> ScancodeLang7
+    n | n == Raw.scancodeLang8 -> ScancodeLang8
+    n | n == Raw.scancodeLang9 -> ScancodeLang9
+    n | n == Raw.scancodeAltErase -> ScancodeAltErase
+    n | n == Raw.scancodeSysReq -> ScancodeSysReq
+    n | n == Raw.scancodeCancel -> ScancodeCancel
+    n | n == Raw.scancodeClear -> ScancodeClear
+    n | n == Raw.scancodePrior -> ScancodePrior
+    n | n == Raw.scancodeReturn2 -> ScancodeReturn2
+    n | n == Raw.scancodeSeparator -> ScancodeSeparator
+    n | n == Raw.scancodeOut -> ScancodeOut
+    n | n == Raw.scancodeOper -> ScancodeOper
+    n | n == Raw.scancodeClearAgain -> ScancodeClearAgain
+    n | n == Raw.scancodeCrSel -> ScancodeCrSel
+    n | n == Raw.scancodeExSel -> ScancodeExSel
+    n | n == Raw.scancodeKP00 -> ScancodeKP00
+    n | n == Raw.scancodeKP000 -> ScancodeKP000
+    n | n == Raw.scancodeThousandsSeparator -> ScancodeThousandsSeparator
+    n | n == Raw.scancodeDecimalSeparator -> ScancodeDecimalSeparator
+    n | n == Raw.scancodeCurrencyUnit -> ScancodeCurrencyUnit
+    n | n == Raw.scancodeCurrencySubunit -> ScancodeCurrencySubunit
+    n | n == Raw.scancodeLeftParen -> ScancodeLeftParen
+    n | n == Raw.scancodeRightParen -> ScancodeRightParen
+    n | n == Raw.scancodeLeftBrace -> ScancodeLeftBrace
+    n | n == Raw.scancodeRightBrace -> ScancodeRightBrace
+    n | n == Raw.scancodeKPTab -> ScancodeKPTab
+    n | n == Raw.scancodeKPBackspace -> ScancodeKPBackspace
+    n | n == Raw.scancodeKPA -> ScancodeKPA
+    n | n == Raw.scancodeKPB -> ScancodeKPB
+    n | n == Raw.scancodeKPC -> ScancodeKPC
+    n | n == Raw.scancodeKPD -> ScancodeKPD
+    n | n == Raw.scancodeKPE -> ScancodeKPE
+    n | n == Raw.scancodeKPF -> ScancodeKPF
+    n | n == Raw.scancodeKPXOR -> ScancodeKPXOR
+    n | n == Raw.scancodeKPPower -> ScancodeKPPower
+    n | n == Raw.scancodeKPPercent -> ScancodeKPPercent
+    n | n == Raw.scancodeKPLess -> ScancodeKPLess
+    n | n == Raw.scancodeKPGreater -> ScancodeKPGreater
+    n | n == Raw.scancodeKPAmpersand -> ScancodeKPAmpersand
+    n | n == Raw.scancodeKPDBLAmpersand -> ScancodeKPDBLAmpersand
+    n | n == Raw.scancodeKPVerticalBar -> ScancodeKPVerticalBar
+    n | n == Raw.scancodeKPDBLVerticalBar -> ScancodeKPDBLVerticalBar
+    n | n == Raw.scancodeKPColon -> ScancodeKPColon
+    n | n == Raw.scancodeKPHash -> ScancodeKPHash
+    n | n == Raw.scancodeKPSpace -> ScancodeKPSpace
+    n | n == Raw.scancodeKPAt -> ScancodeKPAt
+    n | n == Raw.scancodeKPExclam -> ScancodeKPExclam
+    n | n == Raw.scancodeKPMemStore -> ScancodeKPMemStore
+    n | n == Raw.scancodeKPMemRecall -> ScancodeKPMemRecall
+    n | n == Raw.scancodeKPMemClear -> ScancodeKPMemClear
+    n | n == Raw.scancodeKPMemAdd -> ScancodeKPMemAdd
+    n | n == Raw.scancodeKPMemSubtract -> ScancodeKPMemSubtract
+    n | n == Raw.scancodeKPMemMultiply -> ScancodeKPMemMultiply
+    n | n == Raw.scancodeKPMemDivide -> ScancodeKPMemDivide
+    n | n == Raw.scancodeKPPlusMinus -> ScancodeKPPlusMinus
+    n | n == Raw.scancodeKPClear -> ScancodeKPClear
+    n | n == Raw.scancodeKPClearEntry -> ScancodeKPClearEntry
+    n | n == Raw.scancodeKPBinary -> ScancodeKPBinary
+    n | n == Raw.scancodeKPOctal -> ScancodeKPOctal
+    n | n == Raw.scancodeKPDecimal -> ScancodeKPDecimal
+    n | n == Raw.scancodeKPHexadecimal -> ScancodeKPHexadecimal
+    n | n == Raw.scancodeLCtrl -> ScancodeLCtrl
+    n | n == Raw.scancodeLShift -> ScancodeLShift
+    n | n == Raw.scancodeLAlt -> ScancodeLAlt
+    n | n == Raw.scancodeLGUI -> ScancodeLGUI
+    n | n == Raw.scancodeRCtrl -> ScancodeRCtrl
+    n | n == Raw.scancodeRShift -> ScancodeRShift
+    n | n == Raw.scancodeRAlt -> ScancodeRAlt
+    n | n == Raw.scancodeRGUI -> ScancodeRGUI
+    n | n == Raw.scancodeMode -> ScancodeMode
+    n | n == Raw.scancodeAudioNext -> ScancodeAudioNext
+    n | n == Raw.scancodeAudioPrev -> ScancodeAudioPrev
+    n | n == Raw.scancodeAudioStop -> ScancodeAudioStop
+    n | n == Raw.scancodeAudioPlay -> ScancodeAudioPlay
+    n | n == Raw.scancodeAudioMute -> ScancodeAudioMute
+    n | n == Raw.scancodeMediaSelect -> ScancodeMediaSelect
+    n | n == Raw.scancodeWWW -> ScancodeWWW
+    n | n == Raw.scancodeMail -> ScancodeMail
+    n | n == Raw.scancodeCalculator -> ScancodeCalculator
+    n | n == Raw.scancodeComputer -> ScancodeComputer
+    n | n == Raw.scancodeACSearch -> ScancodeACSearch
+    n | n == Raw.scancodeACHome -> ScancodeACHome
+    n | n == Raw.scancodeACBack -> ScancodeACBack
+    n | n == Raw.scancodeACForward -> ScancodeACForward
+    n | n == Raw.scancodeACStop -> ScancodeACStop
+    n | n == Raw.scancodeACRefresh -> ScancodeACRefresh
+    n | n == Raw.scancodeACBookmarks -> ScancodeACBookmarks
+    n | n == Raw.scancodeBrightnessDown -> ScancodeBrightnessDown
+    n | n == Raw.scancodeBrightnessUp -> ScancodeBrightnessUp
+    n | n == Raw.scancodeDisplaySwitch -> ScancodeDisplaySwitch
+    n | n == Raw.scancodeKBDIllumToggle -> ScancodeKBDIllumToggle
+    n | n == Raw.scancodeKBDIllumDown -> ScancodeKBDIllumDown
+    n | n == Raw.scancodeKBDIllumUp -> ScancodeKBDIllumUp
+    n | n == Raw.scancodeEject -> ScancodeEject
+    n | n == Raw.scancodeSleep -> ScancodeSleep
+    n | n == Raw.scancodeApp1 -> ScancodeApp1
+    n | n == Raw.scancodeApp2 -> ScancodeApp2
+    n | n == Raw.scancodeNum -> ScancodeNum
+    _ -> error "fromNumber: not numbered"
+
+instance ToNumber Scancode Word32 where
   toNumber ScancodeUnknown = Raw.scancodeUnknown
   toNumber ScancodeA = Raw.scancodeA
   toNumber ScancodeB = Raw.scancodeB
@@ -592,249 +838,3 @@ instance Numbered Scancode Word32 where
   toNumber ScancodeApp1 = Raw.scancodeApp1
   toNumber ScancodeApp2 = Raw.scancodeApp2
   toNumber ScancodeNum = Raw.scancodeNum
-
-fromNumberScancode :: Raw.Scancode -> Scancode
-fromNumberScancode n' = case n' of
-  n | n == Raw.scancodeUnknown -> ScancodeUnknown
-  n | n == Raw.scancodeA -> ScancodeA
-  n | n == Raw.scancodeB -> ScancodeB
-  n | n == Raw.scancodeC -> ScancodeC
-  n | n == Raw.scancodeD -> ScancodeD
-  n | n == Raw.scancodeE -> ScancodeE
-  n | n == Raw.scancodeF -> ScancodeF
-  n | n == Raw.scancodeG -> ScancodeG
-  n | n == Raw.scancodeH -> ScancodeH
-  n | n == Raw.scancodeI -> ScancodeI
-  n | n == Raw.scancodeJ -> ScancodeJ
-  n | n == Raw.scancodeK -> ScancodeK
-  n | n == Raw.scancodeL -> ScancodeL
-  n | n == Raw.scancodeM -> ScancodeM
-  n | n == Raw.scancodeN -> ScancodeN
-  n | n == Raw.scancodeO -> ScancodeO
-  n | n == Raw.scancodeP -> ScancodeP
-  n | n == Raw.scancodeQ -> ScancodeQ
-  n | n == Raw.scancodeR -> ScancodeR
-  n | n == Raw.scancodeS -> ScancodeS
-  n | n == Raw.scancodeT -> ScancodeT
-  n | n == Raw.scancodeU -> ScancodeU
-  n | n == Raw.scancodeV -> ScancodeV
-  n | n == Raw.scancodeW -> ScancodeW
-  n | n == Raw.scancodeX -> ScancodeX
-  n | n == Raw.scancodeY -> ScancodeY
-  n | n == Raw.scancodeZ -> ScancodeZ
-  n | n == Raw.scancode1 -> Scancode1
-  n | n == Raw.scancode2 -> Scancode2
-  n | n == Raw.scancode3 -> Scancode3
-  n | n == Raw.scancode4 -> Scancode4
-  n | n == Raw.scancode5 -> Scancode5
-  n | n == Raw.scancode6 -> Scancode6
-  n | n == Raw.scancode7 -> Scancode7
-  n | n == Raw.scancode8 -> Scancode8
-  n | n == Raw.scancode9 -> Scancode9
-  n | n == Raw.scancode0 -> Scancode0
-  n | n == Raw.scancodeReturn -> ScancodeReturn
-  n | n == Raw.scancodeEscape -> ScancodeEscape
-  n | n == Raw.scancodeBackspace -> ScancodeBackspace
-  n | n == Raw.scancodeTab -> ScancodeTab
-  n | n == Raw.scancodeSpace -> ScancodeSpace
-  n | n == Raw.scancodeMinus -> ScancodeMinus
-  n | n == Raw.scancodeEquals -> ScancodeEquals
-  n | n == Raw.scancodeLeftBracket -> ScancodeLeftBracket
-  n | n == Raw.scancodeRightBracket -> ScancodeRightBracket
-  n | n == Raw.scancodeBackslash -> ScancodeBackslash
-  n | n == Raw.scancodeNonUSHash -> ScancodeNonUSHash
-  n | n == Raw.scancodeSemicolon -> ScancodeSemicolon
-  n | n == Raw.scancodeApostrophe -> ScancodeApostrophe
-  n | n == Raw.scancodeGrave -> ScancodeGrave
-  n | n == Raw.scancodeComma -> ScancodeComma
-  n | n == Raw.scancodePeriod -> ScancodePeriod
-  n | n == Raw.scancodeSlash -> ScancodeSlash
-  n | n == Raw.scancodeCapsLock -> ScancodeCapsLock
-  n | n == Raw.scancodeF1 -> ScancodeF1
-  n | n == Raw.scancodeF2 -> ScancodeF2
-  n | n == Raw.scancodeF3 -> ScancodeF3
-  n | n == Raw.scancodeF4 -> ScancodeF4
-  n | n == Raw.scancodeF5 -> ScancodeF5
-  n | n == Raw.scancodeF6 -> ScancodeF6
-  n | n == Raw.scancodeF7 -> ScancodeF7
-  n | n == Raw.scancodeF8 -> ScancodeF8
-  n | n == Raw.scancodeF9 -> ScancodeF9
-  n | n == Raw.scancodeF10 -> ScancodeF10
-  n | n == Raw.scancodeF11 -> ScancodeF11
-  n | n == Raw.scancodeF12 -> ScancodeF12
-  n | n == Raw.scancodePrintScreen -> ScancodePrintScreen
-  n | n == Raw.scancodeScrollLock -> ScancodeScrollLock
-  n | n == Raw.scancodePause -> ScancodePause
-  n | n == Raw.scancodeInsert -> ScancodeInsert
-  n | n == Raw.scancodeHome -> ScancodeHome
-  n | n == Raw.scancodePageUp -> ScancodePageUp
-  n | n == Raw.scancodeDelete -> ScancodeDelete
-  n | n == Raw.scancodeEnd -> ScancodeEnd
-  n | n == Raw.scancodePageDown -> ScancodePageDown
-  n | n == Raw.scancodeRight -> ScancodeRight
-  n | n == Raw.scancodeLeft -> ScancodeLeft
-  n | n == Raw.scancodeDown -> ScancodeDown
-  n | n == Raw.scancodeUp -> ScancodeUp
-  n | n == Raw.scancodeNumLockClear -> ScancodeNumLockClear
-  n | n == Raw.scancodeKPDivide -> ScancodeKPDivide
-  n | n == Raw.scancodeKPMultiply -> ScancodeKPMultiply
-  n | n == Raw.scancodeKPMinus -> ScancodeKPMinus
-  n | n == Raw.scancodeKPPlus -> ScancodeKPPlus
-  n | n == Raw.scancodeKPEnter -> ScancodeKPEnter
-  n | n == Raw.scancodeKP1 -> ScancodeKP1
-  n | n == Raw.scancodeKP2 -> ScancodeKP2
-  n | n == Raw.scancodeKP3 -> ScancodeKP3
-  n | n == Raw.scancodeKP4 -> ScancodeKP4
-  n | n == Raw.scancodeKP5 -> ScancodeKP5
-  n | n == Raw.scancodeKP6 -> ScancodeKP6
-  n | n == Raw.scancodeKP7 -> ScancodeKP7
-  n | n == Raw.scancodeKP8 -> ScancodeKP8
-  n | n == Raw.scancodeKP9 -> ScancodeKP9
-  n | n == Raw.scancodeKP0 -> ScancodeKP0
-  n | n == Raw.scancodeKPPeriod -> ScancodeKPPeriod
-  n | n == Raw.scancodeNonUSBackslash -> ScancodeNonUSBackslash
-  n | n == Raw.scancodeApplication -> ScancodeApplication
-  n | n == Raw.scancodePower -> ScancodePower
-  n | n == Raw.scancodeKPEquals -> ScancodeKPEquals
-  n | n == Raw.scancodeF13 -> ScancodeF13
-  n | n == Raw.scancodeF14 -> ScancodeF14
-  n | n == Raw.scancodeF15 -> ScancodeF15
-  n | n == Raw.scancodeF16 -> ScancodeF16
-  n | n == Raw.scancodeF17 -> ScancodeF17
-  n | n == Raw.scancodeF18 -> ScancodeF18
-  n | n == Raw.scancodeF19 -> ScancodeF19
-  n | n == Raw.scancodeF20 -> ScancodeF20
-  n | n == Raw.scancodeF21 -> ScancodeF21
-  n | n == Raw.scancodeF22 -> ScancodeF22
-  n | n == Raw.scancodeF23 -> ScancodeF23
-  n | n == Raw.scancodeF24 -> ScancodeF24
-  n | n == Raw.scancodeExecute -> ScancodeExecute
-  n | n == Raw.scancodeHelp -> ScancodeHelp
-  n | n == Raw.scancodeMenu -> ScancodeMenu
-  n | n == Raw.scancodeSelect -> ScancodeSelect
-  n | n == Raw.scancodeStop -> ScancodeStop
-  n | n == Raw.scancodeAgain -> ScancodeAgain
-  n | n == Raw.scancodeUndo -> ScancodeUndo
-  n | n == Raw.scancodeCut -> ScancodeCut
-  n | n == Raw.scancodeCopy -> ScancodeCopy
-  n | n == Raw.scancodePaste -> ScancodePaste
-  n | n == Raw.scancodeFind -> ScancodeFind
-  n | n == Raw.scancodeMute -> ScancodeMute
-  n | n == Raw.scancodeVolumeUp -> ScancodeVolumeUp
-  n | n == Raw.scancodeVolumeDown -> ScancodeVolumeDown
-  n | n == Raw.scancodeKPComma -> ScancodeKPComma
-  n | n == Raw.scancodeEqualsAs400 -> ScancodeEqualsAs400
-  n | n == Raw.scancodeInternational1 -> ScancodeInternational1
-  n | n == Raw.scancodeInternational2 -> ScancodeInternational2
-  n | n == Raw.scancodeInternational3 -> ScancodeInternational3
-  n | n == Raw.scancodeInternational4 -> ScancodeInternational4
-  n | n == Raw.scancodeInternational5 -> ScancodeInternational5
-  n | n == Raw.scancodeInternational6 -> ScancodeInternational6
-  n | n == Raw.scancodeInternational7 -> ScancodeInternational7
-  n | n == Raw.scancodeInternational8 -> ScancodeInternational8
-  n | n == Raw.scancodeInternational9 -> ScancodeInternational9
-  n | n == Raw.scancodeLang1 -> ScancodeLang1
-  n | n == Raw.scancodeLang2 -> ScancodeLang2
-  n | n == Raw.scancodeLang3 -> ScancodeLang3
-  n | n == Raw.scancodeLang4 -> ScancodeLang4
-  n | n == Raw.scancodeLang5 -> ScancodeLang5
-  n | n == Raw.scancodeLang6 -> ScancodeLang6
-  n | n == Raw.scancodeLang7 -> ScancodeLang7
-  n | n == Raw.scancodeLang8 -> ScancodeLang8
-  n | n == Raw.scancodeLang9 -> ScancodeLang9
-  n | n == Raw.scancodeAltErase -> ScancodeAltErase
-  n | n == Raw.scancodeSysReq -> ScancodeSysReq
-  n | n == Raw.scancodeCancel -> ScancodeCancel
-  n | n == Raw.scancodeClear -> ScancodeClear
-  n | n == Raw.scancodePrior -> ScancodePrior
-  n | n == Raw.scancodeReturn2 -> ScancodeReturn2
-  n | n == Raw.scancodeSeparator -> ScancodeSeparator
-  n | n == Raw.scancodeOut -> ScancodeOut
-  n | n == Raw.scancodeOper -> ScancodeOper
-  n | n == Raw.scancodeClearAgain -> ScancodeClearAgain
-  n | n == Raw.scancodeCrSel -> ScancodeCrSel
-  n | n == Raw.scancodeExSel -> ScancodeExSel
-  n | n == Raw.scancodeKP00 -> ScancodeKP00
-  n | n == Raw.scancodeKP000 -> ScancodeKP000
-  n | n == Raw.scancodeThousandsSeparator -> ScancodeThousandsSeparator
-  n | n == Raw.scancodeDecimalSeparator -> ScancodeDecimalSeparator
-  n | n == Raw.scancodeCurrencyUnit -> ScancodeCurrencyUnit
-  n | n == Raw.scancodeCurrencySubunit -> ScancodeCurrencySubunit
-  n | n == Raw.scancodeLeftParen -> ScancodeLeftParen
-  n | n == Raw.scancodeRightParen -> ScancodeRightParen
-  n | n == Raw.scancodeLeftBrace -> ScancodeLeftBrace
-  n | n == Raw.scancodeRightBrace -> ScancodeRightBrace
-  n | n == Raw.scancodeKPTab -> ScancodeKPTab
-  n | n == Raw.scancodeKPBackspace -> ScancodeKPBackspace
-  n | n == Raw.scancodeKPA -> ScancodeKPA
-  n | n == Raw.scancodeKPB -> ScancodeKPB
-  n | n == Raw.scancodeKPC -> ScancodeKPC
-  n | n == Raw.scancodeKPD -> ScancodeKPD
-  n | n == Raw.scancodeKPE -> ScancodeKPE
-  n | n == Raw.scancodeKPF -> ScancodeKPF
-  n | n == Raw.scancodeKPXOR -> ScancodeKPXOR
-  n | n == Raw.scancodeKPPower -> ScancodeKPPower
-  n | n == Raw.scancodeKPPercent -> ScancodeKPPercent
-  n | n == Raw.scancodeKPLess -> ScancodeKPLess
-  n | n == Raw.scancodeKPGreater -> ScancodeKPGreater
-  n | n == Raw.scancodeKPAmpersand -> ScancodeKPAmpersand
-  n | n == Raw.scancodeKPDBLAmpersand -> ScancodeKPDBLAmpersand
-  n | n == Raw.scancodeKPVerticalBar -> ScancodeKPVerticalBar
-  n | n == Raw.scancodeKPDBLVerticalBar -> ScancodeKPDBLVerticalBar
-  n | n == Raw.scancodeKPColon -> ScancodeKPColon
-  n | n == Raw.scancodeKPHash -> ScancodeKPHash
-  n | n == Raw.scancodeKPSpace -> ScancodeKPSpace
-  n | n == Raw.scancodeKPAt -> ScancodeKPAt
-  n | n == Raw.scancodeKPExclam -> ScancodeKPExclam
-  n | n == Raw.scancodeKPMemStore -> ScancodeKPMemStore
-  n | n == Raw.scancodeKPMemRecall -> ScancodeKPMemRecall
-  n | n == Raw.scancodeKPMemClear -> ScancodeKPMemClear
-  n | n == Raw.scancodeKPMemAdd -> ScancodeKPMemAdd
-  n | n == Raw.scancodeKPMemSubtract -> ScancodeKPMemSubtract
-  n | n == Raw.scancodeKPMemMultiply -> ScancodeKPMemMultiply
-  n | n == Raw.scancodeKPMemDivide -> ScancodeKPMemDivide
-  n | n == Raw.scancodeKPPlusMinus -> ScancodeKPPlusMinus
-  n | n == Raw.scancodeKPClear -> ScancodeKPClear
-  n | n == Raw.scancodeKPClearEntry -> ScancodeKPClearEntry
-  n | n == Raw.scancodeKPBinary -> ScancodeKPBinary
-  n | n == Raw.scancodeKPOctal -> ScancodeKPOctal
-  n | n == Raw.scancodeKPDecimal -> ScancodeKPDecimal
-  n | n == Raw.scancodeKPHexadecimal -> ScancodeKPHexadecimal
-  n | n == Raw.scancodeLCtrl -> ScancodeLCtrl
-  n | n == Raw.scancodeLShift -> ScancodeLShift
-  n | n == Raw.scancodeLAlt -> ScancodeLAlt
-  n | n == Raw.scancodeLGUI -> ScancodeLGUI
-  n | n == Raw.scancodeRCtrl -> ScancodeRCtrl
-  n | n == Raw.scancodeRShift -> ScancodeRShift
-  n | n == Raw.scancodeRAlt -> ScancodeRAlt
-  n | n == Raw.scancodeRGUI -> ScancodeRGUI
-  n | n == Raw.scancodeMode -> ScancodeMode
-  n | n == Raw.scancodeAudioNext -> ScancodeAudioNext
-  n | n == Raw.scancodeAudioPrev -> ScancodeAudioPrev
-  n | n == Raw.scancodeAudioStop -> ScancodeAudioStop
-  n | n == Raw.scancodeAudioPlay -> ScancodeAudioPlay
-  n | n == Raw.scancodeAudioMute -> ScancodeAudioMute
-  n | n == Raw.scancodeMediaSelect -> ScancodeMediaSelect
-  n | n == Raw.scancodeWWW -> ScancodeWWW
-  n | n == Raw.scancodeMail -> ScancodeMail
-  n | n == Raw.scancodeCalculator -> ScancodeCalculator
-  n | n == Raw.scancodeComputer -> ScancodeComputer
-  n | n == Raw.scancodeACSearch -> ScancodeACSearch
-  n | n == Raw.scancodeACHome -> ScancodeACHome
-  n | n == Raw.scancodeACBack -> ScancodeACBack
-  n | n == Raw.scancodeACForward -> ScancodeACForward
-  n | n == Raw.scancodeACStop -> ScancodeACStop
-  n | n == Raw.scancodeACRefresh -> ScancodeACRefresh
-  n | n == Raw.scancodeACBookmarks -> ScancodeACBookmarks
-  n | n == Raw.scancodeBrightnessDown -> ScancodeBrightnessDown
-  n | n == Raw.scancodeBrightnessUp -> ScancodeBrightnessUp
-  n | n == Raw.scancodeDisplaySwitch -> ScancodeDisplaySwitch
-  n | n == Raw.scancodeKBDIllumToggle -> ScancodeKBDIllumToggle
-  n | n == Raw.scancodeKBDIllumDown -> ScancodeKBDIllumDown
-  n | n == Raw.scancodeKBDIllumUp -> ScancodeKBDIllumUp
-  n | n == Raw.scancodeEject -> ScancodeEject
-  n | n == Raw.scancodeSleep -> ScancodeSleep
-  n | n == Raw.scancodeApp1 -> ScancodeApp1
-  n | n == Raw.scancodeApp2 -> ScancodeApp2
-  n | n == Raw.scancodeNum -> ScancodeNum
-  _ -> error "fromNumber: not numbered"

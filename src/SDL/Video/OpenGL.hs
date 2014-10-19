@@ -46,31 +46,31 @@ data GLAttribute
   | GLFramebufferSRGBCapable
   | GLContextEGL
 
-instance Numbered GLAttribute Word32 where
-	toNumber GLRedSize = Raw.glAttrRedSize
-	toNumber GLGreenSize = Raw.glAttrGreenSize
-	toNumber GLBlueSize = Raw.glAttrBlueSize
-	toNumber GLAlphaSize = Raw.glAttrAlphaSize
-	toNumber GLBufferSize = Raw.glAttrBufferSize
-	toNumber GLDoubleBuffer = Raw.glAttrDoubleBuffer
-	toNumber GLDepthSize = Raw.glAttrDepthSize
-	toNumber GLStencilSize = Raw.glAttrStencilSize
-	toNumber GLAccumRedSize = Raw.glAttrAccumRedSize
-	toNumber GLAccumGreenSize = Raw.glAttrAccumGreenSize
-	toNumber GLAccumBlueSize = Raw.glAttrAccumBlueSize
-	toNumber GLAccumAlphaSize = Raw.glAttrAccumAlphaSize
-	toNumber GLStereo = Raw.glAttrStereo
-	toNumber GLMultiSampleBuffers = Raw.glAttrMultiSampleBuffers
-	toNumber GLMultiSampleSamples = Raw.glAttrMultiSampleSamples
-	toNumber GLAcceleratedVisual = Raw.glAttrAcceleratedVisual
-	toNumber GLRetainedBacking = Raw.glAttrRetainedBacking
-	toNumber GLContextMajorVersion = Raw.glAttrContextMajorVersion
-	toNumber GLContextMinorVersion = Raw.glAttrContextMinorVersion
-	toNumber GLContextFlags = Raw.glAttrContextFlags
-	toNumber GLContextProfileMask = Raw.glAttrContextProfileMask
-	toNumber GLShareWithCurrentContext = Raw.glAttrShareWithCurrentContext
-	toNumber GLFramebufferSRGBCapable = Raw.glAttrFramebufferSRGBCapable
-	toNumber GLContextEGL = Raw.glAttrContextEGL
+instance ToNumber GLAttribute Word32 where
+  toNumber GLRedSize = Raw.glAttrRedSize
+  toNumber GLGreenSize = Raw.glAttrGreenSize
+  toNumber GLBlueSize = Raw.glAttrBlueSize
+  toNumber GLAlphaSize = Raw.glAttrAlphaSize
+  toNumber GLBufferSize = Raw.glAttrBufferSize
+  toNumber GLDoubleBuffer = Raw.glAttrDoubleBuffer
+  toNumber GLDepthSize = Raw.glAttrDepthSize
+  toNumber GLStencilSize = Raw.glAttrStencilSize
+  toNumber GLAccumRedSize = Raw.glAttrAccumRedSize
+  toNumber GLAccumGreenSize = Raw.glAttrAccumGreenSize
+  toNumber GLAccumBlueSize = Raw.glAttrAccumBlueSize
+  toNumber GLAccumAlphaSize = Raw.glAttrAccumAlphaSize
+  toNumber GLStereo = Raw.glAttrStereo
+  toNumber GLMultiSampleBuffers = Raw.glAttrMultiSampleBuffers
+  toNumber GLMultiSampleSamples = Raw.glAttrMultiSampleSamples
+  toNumber GLAcceleratedVisual = Raw.glAttrAcceleratedVisual
+  toNumber GLRetainedBacking = Raw.glAttrRetainedBacking
+  toNumber GLContextMajorVersion = Raw.glAttrContextMajorVersion
+  toNumber GLContextMinorVersion = Raw.glAttrContextMinorVersion
+  toNumber GLContextFlags = Raw.glAttrContextFlags
+  toNumber GLContextProfileMask = Raw.glAttrContextProfileMask
+  toNumber GLShareWithCurrentContext = Raw.glAttrShareWithCurrentContext
+  toNumber GLFramebufferSRGBCapable = Raw.glAttrFramebufferSRGBCapable
+  toNumber GLContextEGL = Raw.glAttrContextEGL
 
 glSetAttribute :: GLAttribute -> CInt -> IO ()
 glSetAttribute attribute value =
