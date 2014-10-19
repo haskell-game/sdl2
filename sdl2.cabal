@@ -46,6 +46,8 @@ library
     SDL.Filesystem
     SDL.Haptic
     SDL.Init
+    SDL.Input
+    SDL.Input.Keyboard
     SDL.Power
     SDL.Joystick
     SDL.Time

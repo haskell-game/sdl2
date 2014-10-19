@@ -6,6 +6,7 @@ module SDL
   , module SDL.Filesystem
   , module SDL.Haptic
   , module SDL.Init
+  , module SDL.Input
   , module SDL.Joystick
   , module SDL.Power
   , module SDL.Time
@@ -19,6 +20,7 @@ import SDL.Exception
 import SDL.Filesystem
 import SDL.Haptic
 import SDL.Init
+import SDL.Input
 import SDL.Joystick
 import SDL.Power
 import SDL.Time
