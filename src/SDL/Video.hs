@@ -41,6 +41,7 @@ module SDL.Video
   , renderFillRect
   , renderFillRects
   , renderSetScale
+  , renderSetLogicalSize
   , setRenderDrawBlendMode
   , setRenderDrawColor
   , BlendMode(..)
@@ -635,3 +636,8 @@ renderSetScale :: Renderer -> V2 CFloat -> IO ()
 renderSetScale (Renderer r) (V2 x y) =
   throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
   Raw.renderSetScale r x y
+
+renderSetLogicalSize :: Renderer -> V2 CInt -> IO ()
+renderSetLogicalSize (Renderer r) (V2 x y) =
+  throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $
+  Raw.renderSetLogicalSize r x y
