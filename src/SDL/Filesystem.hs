@@ -1,0 +1,46 @@
+{-# LANGUAGE OverloadedStrings #-}
+module SDL.Filesystem
+  ( -- * Filesystem Paths
+    getBasePath
+  , getPrefPath
+) where
+
+import Control.Applicative
+import Control.Exception
+import Data.Text (Text)
+import Foreign.Marshal.Alloc
+import SDL.Exception
+
+import qualified Data.ByteString as BS
+import qualified Data.Text.Encoding as Text
+import qualified SDL.Raw.Filesystem as Raw
+
+-- | An absolute path to the application data directory.
+--
+-- The path is guaranteed to end with a path separator.
+--
+-- Throws 'SDLException' on failure, or if the platform does not implement this
+-- functionality.
+getBasePath :: IO Text
+getBasePath = mask_ $ do
+  cpath <- throwIfNull "SDL.Filesystem.getBasePath" "SDL_GetBasePath"
+    Raw.getBasePath
+  finally (Text.decodeUtf8 <$> BS.packCString cpath) (free cpath)
+
+-- | A path to a unique per user and per application directory for the given
+-- organization and application name, intended for writing preferences and
+-- other personal files.
+--
+-- The path is guaranteed to end with a path separator.
+--
+-- You should assume the path returned by this function is the only safe place
+-- to write files to.
+--
+-- Throws 'SDLException' on failure.
+getPrefPath :: Text -> Text -> IO Text
+getPrefPath organization application = mask_ $ do
+  cpath <- throwIfNull "SDL.Filesystem.getPrefPath" "SDL_GetPrefPath" $
+    BS.useAsCString (Text.encodeUtf8 organization) $ \org ->
+      BS.useAsCString (Text.encodeUtf8 application) $ \app ->
+        Raw.getPrefPath org app
+  finally (Text.decodeUtf8 <$> BS.packCString cpath) (free cpath)
