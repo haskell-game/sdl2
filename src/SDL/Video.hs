@@ -16,11 +16,15 @@ module SDL.Video
   , showWindow
 
   -- * Window Attributes
+  , getWindowMinimumSize
+  , getWindowMaximumSize
   , setWindowBordered
   , setWindowBrightness
   , setWindowGammaRamp
   , setWindowGrab
   , setWindowMode
+  , setWindowMaximumSize
+  , setWindowMinimumSize
   , setWindowPosition
   , setWindowSize
   , setWindowTitle
@@ -685,3 +689,23 @@ createTextureFromSurface (Renderer r) (Surface s) =
   fmap Texture $
   throwIfNull "SDL.Video.createTextureFromSurface" "SDL_CreateTextureFromSurface" $
   Raw.createTextureFromSurface r s
+
+setWindowMaximumSize :: Window -> V2 CInt -> IO ()
+setWindowMaximumSize (Window win) (V2 w h) = Raw.setWindowMaximumSize win w h
+
+setWindowMinimumSize :: Window -> V2 CInt -> IO ()
+setWindowMinimumSize (Window win) (V2 w h) = Raw.setWindowMinimumSize win w h
+
+getWindowMaximumSize :: Window -> IO (V2 CInt)
+getWindowMaximumSize (Window w) =
+  alloca $ \wptr ->
+  alloca $ \hptr -> do
+    Raw.getWindowMaximumSize w wptr hptr
+    V2 <$> peek wptr <*> peek hptr
+
+getWindowMinimumSize :: Window -> IO (V2 CInt)
+getWindowMinimumSize (Window w) =
+  alloca $ \wptr ->
+  alloca $ \hptr -> do
+    Raw.getWindowMinimumSize w wptr hptr
+    V2 <$> peek wptr <*> peek hptr
