@@ -40,8 +40,9 @@ module SDL.Video
   , renderDrawRects
   , renderFillRect
   , renderFillRects
-  , renderSetScale
+  , renderSetClipRect
   , renderSetLogicalSize
+  , renderSetScale
   , setRenderDrawBlendMode
   , setRenderDrawColor
   , BlendMode(..)
@@ -641,3 +642,8 @@ renderSetLogicalSize :: Renderer -> V2 CInt -> IO ()
 renderSetLogicalSize (Renderer r) (V2 x y) =
   throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $
   Raw.renderSetLogicalSize r x y
+
+renderSetClipRect :: Renderer -> Rectangle CInt -> IO ()
+renderSetClipRect (Renderer r) rect =
+  throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
+  with rect $ Raw.renderSetClipRect r . castPtr
