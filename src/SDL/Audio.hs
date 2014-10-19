@@ -20,9 +20,9 @@ module SDL.Audio
   , openAudioDevice
   , closeAudioDevice
   , LockState(..)
-  , setAudioDeviceLocked
+  , audioDeviceLocked
   , PlaybackState(..)
-  , setAudioDevicePlaybackState
+  , audioDevicePlaybackState
   -- , clearQueuedAudio
   , AudioDeviceStatus(..)
   , audioDeviceStatus
@@ -45,6 +45,7 @@ import Control.Applicative
 import Data.Traversable (for)
 import Foreign
 import Foreign.C
+import Data.StateVar
 import Data.Text (Text)
 import Data.Vector.Storable (Vector)
 
@@ -214,15 +215,19 @@ closeAudioDevice (AudioDevice d) = Raw.closeAudioDevice d
 
 data LockState = Locked | Unlocked
 
-setAudioDeviceLocked :: AudioDevice -> LockState -> IO ()
-setAudioDeviceLocked (AudioDevice d) Locked = Raw.lockAudioDevice d
-setAudioDeviceLocked (AudioDevice d) Unlocked = Raw.unlockAudioDevice d
+audioDeviceLocked :: AudioDevice -> SettableStateVar LockState
+audioDeviceLocked (AudioDevice d) = makeSettableStateVar $ \ls ->
+  case ls of
+    Locked -> Raw.lockAudioDevice d
+    Unlocked -> Raw.unlockAudioDevice d
 
 data PlaybackState = Pause | Play
 
-setAudioDevicePlaybackState :: AudioDevice -> PlaybackState -> IO ()
-setAudioDevicePlaybackState (AudioDevice d) Pause = Raw.pauseAudioDevice d 1
-setAudioDevicePlaybackState (AudioDevice d) Play = Raw.pauseAudioDevice d 0
+audioDevicePlaybackState :: AudioDevice -> SettableStateVar PlaybackState
+audioDevicePlaybackState (AudioDevice d) = makeSettableStateVar $ \ps ->
+  case ps of
+    Pause -> Raw.pauseAudioDevice d 1
+    Play -> Raw.pauseAudioDevice d 0
 
 data AudioDeviceStatus = Playing | Paused | Stopped
 
