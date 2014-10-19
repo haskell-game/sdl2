@@ -51,6 +51,7 @@ library
     SDL.Time
     SDL.Video
     SDL.Video.OpenGL
+    SDL.Video.Renderer
     SDL.Window
 
     SDL.Raw

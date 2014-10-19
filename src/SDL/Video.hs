@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video
   ( module SDL.Video.OpenGL
+  , module SDL.Video.Renderer
 
   -- * Window Management
   , Window
@@ -20,7 +21,6 @@ module SDL.Video
   -- * Window Attributes
   , getWindowMinimumSize
   , getWindowMaximumSize
-  , getWindowSurface
   , setWindowBordered
   , setWindowBrightness
   , setWindowGammaRamp
@@ -31,41 +31,11 @@ module SDL.Video
   , setWindowPosition
   , setWindowSize
   , setWindowTitle
-  , updateWindowSurface
 
   -- * Clipboard Handling
   , getClipboardText
   , hasClipboardText
   , setClipboardText
-
-  -- * Drawing Primitives
-  , blitSurface
-  , createTextureFromSurface
-  , fillRect
-  , freeSurface
-  , loadBMP
-  , mapRGB
-  , renderClear
-  , renderCopy
-  , renderDrawLine
-  , renderDrawLines
-  , renderDrawPoint
-  , renderDrawPoints
-  , renderDrawRect
-  , renderDrawRects
-  , renderFillRect
-  , renderFillRects
-  , renderPresent
-  , renderSetClipRect
-  , renderSetLogicalSize
-  , renderSetScale
-  , renderSetViewport
-  , setRenderDrawBlendMode
-  , setRenderDrawColor
-  , BlendMode(..)
-  , Rectangle(..)
-  , Surface
-  , Texture
 
   -- * Display
   , getDisplays
@@ -106,6 +76,7 @@ import Linear.Affine (Point(P))
 import SDL.Exception
 import SDL.Internal.Types
 import SDL.Video.OpenGL
+import SDL.Video.Renderer
 
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
@@ -256,8 +227,6 @@ setClipboardText str = do
   throwIfNot0_ "SDL.Video.setClipboardText" "SDL_SetClipboardText" $
     BS.useAsCString (Text.encodeUtf8 str) Raw.setClipboardText
 
-newtype Renderer = Renderer Raw.Renderer
-
 hideWindow :: Window -> IO ()
 hideWindow (Window w) = Raw.hideWindow w
 
@@ -293,32 +262,6 @@ setWindowGammaRamp (Window w) r g b = do
       withChan g $ \gPtr ->
         throwIfNeg_ "SDL.Video.setWindowGammaRamp" "SDL_SetWindowGammaRamp" $
           Raw.setWindowGammaRamp w rPtr gPtr bPtr
-
-renderDrawLine :: Renderer -> Point V2 CInt -> Point V2 CInt -> IO ()
-renderDrawLine (Renderer r) (P (V2 x y)) (P (V2 x' y')) =
-  throwIfNeg_ "SDL.Video.renderDrawLine" "SDL_RenderDrawLine" $
-  Raw.renderDrawLine r x y x' y'
-
-renderDrawLines :: Renderer -> SV.Vector (Point V2 CInt) -> IO ()
-renderDrawLines (Renderer r) points =
-  throwIfNeg_ "SDL.Video.renderDrawLines" "SDL_RenderDrawLines" $
-  SV.unsafeWith points $ \cp ->
-    Raw.renderDrawLines r
-                        (castPtr cp)
-                        (fromIntegral (SV.length points))
-
-renderDrawPoint :: Renderer -> Point V2 CInt -> IO ()
-renderDrawPoint (Renderer r) (P (V2 x y)) =
-  throwIfNeg_ "SDL.Video.renderDrawPoint" "SDL_RenderDrawPoint" $
-  Raw.renderDrawPoint r x y
-
-renderDrawPoints :: Renderer -> SV.Vector (Point V2 CInt) -> IO ()
-renderDrawPoints (Renderer r) points =
-  throwIfNeg_ "SDL.Video.renderDrawPoints" "SDL_RenderDrawPoints" $
-  SV.unsafeWith points $ \cp ->
-    Raw.renderDrawPoints r
-                         (castPtr cp)
-                         (fromIntegral (SV.length points))
 
 data Display = Display {
                displayName           :: String
@@ -460,52 +403,6 @@ getDisplays = do
       , displayModes = modes
     }
 
-data Rectangle a = Rectangle (Point V2 a) (V2 a)
-
-instance Storable a => Storable (Rectangle a) where
-  sizeOf ~(Rectangle o s) = sizeOf o + sizeOf s
-  alignment _ = 0
-  peek ptr = do
-    o <- peek (castPtr ptr)
-    s <- peek (castPtr (ptr `plusPtr` sizeOf o))
-    return (Rectangle o s)
-  poke ptr (Rectangle o s) = do
-    poke (castPtr ptr) o
-    poke (castPtr (ptr `plusPtr` sizeOf o)) s
-
-renderDrawRect :: Renderer -> Rectangle CInt -> IO ()
-renderDrawRect (Renderer r) rect =
-  throwIfNeg_ "SDL.Video.renderDrawRect" "SDL_RenderDrawRect" $
-  with rect (Raw.renderDrawRect r . castPtr)
-
-renderDrawRects :: Renderer -> SV.Vector (Rectangle CInt) -> IO ()
-renderDrawRects (Renderer r) rects =
-  throwIfNeg_ "SDL.Video.renderDrawRects" "SDL_RenderDrawRects" $
-  SV.unsafeWith rects $ \rp ->
-    Raw.renderDrawRects r
-                        (castPtr rp)
-                        (fromIntegral (SV.length rects))
-
-setRenderDrawColor :: Renderer -> V4 Word8 -> IO ()
-setRenderDrawColor (Renderer re) (V4 r g b a) =
-  throwIfNeg_ "SDL.Video.setRenderDrawColor" "SDL_SetRenderDrawColor" $
-  Raw.setRenderDrawColor re r g b a
-
-renderFillRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
-renderFillRect (Renderer r) rect = do
-  throwIfNeg_ "SDL.Video.renderFillRect" "SDL_RenderFillRect" $
-    maybeWith with rect $ \rPtr ->
-      Raw.renderFillRect r
-                         (castPtr rPtr)
-
-renderFillRects :: Renderer -> SV.Vector (Rectangle CInt) -> IO ()
-renderFillRects (Renderer r) rects = do
-  throwIfNeg_ "SDL.Video.renderFillRects" "SDL_RenderFillRects" $
-    SV.unsafeWith rects $ \rp ->
-      Raw.renderFillRects r
-                          (castPtr rp)
-                          (fromIntegral (SV.length rects))
-
 -- | Show a simple message box with the given title and a message. Consider
 -- writing your messages to @stderr@ too.
 --
@@ -533,71 +430,6 @@ messageKindToC kind = case kind of
   Warning -> Raw.messageBoxFlagWarning
   Information -> Raw.messageBoxFlagInformation
 
-renderClear :: Renderer -> IO ()
-renderClear (Renderer r) =
-  throwIfNeg_ "SDL.Video.renderClear" "SDL_RenderClear" $
-  Raw.renderClear r
-
-data BlendMode = BlendNone | BlendAlphaBlend | BlendAdditive | BlendMod
-  deriving (Eq,Show)
-
-blendModeToC :: BlendMode -> Word32
-blendModeToC BlendNone = Raw.blendModeNone
-blendModeToC BlendAlphaBlend = Raw.blendModeBlend
-blendModeToC BlendAdditive = Raw.blendModeAdd
-blendModeToC BlendMod = Raw.blendModeAdd
-
-setRenderDrawBlendMode :: Renderer -> BlendMode -> IO ()
-setRenderDrawBlendMode (Renderer r) bm =
-  throwIfNeg_ "SDL.Video.setRenderDrawBlendMode" "SDL_RenderDrawBlendMode" $
-  Raw.setRenderDrawBlendMode r (blendModeToC bm)
-
-renderSetScale :: Renderer -> V2 CFloat -> IO ()
-renderSetScale (Renderer r) (V2 x y) =
-  throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
-  Raw.renderSetScale r x y
-
-renderSetLogicalSize :: Renderer -> V2 CInt -> IO ()
-renderSetLogicalSize (Renderer r) (V2 x y) =
-  throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $
-  Raw.renderSetLogicalSize r x y
-
-renderSetClipRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
-renderSetClipRect (Renderer r) rect =
-  throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
-  maybeWith with rect $ Raw.renderSetClipRect r . castPtr
-
-renderSetViewport :: Renderer -> Maybe (Rectangle CInt) -> IO ()
-renderSetViewport (Renderer r) rect =
-  throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
-  maybeWith with rect $ Raw.renderSetViewport r . castPtr
-
-renderPresent :: Renderer -> IO ()
-renderPresent (Renderer r) = Raw.renderPresent r
-
-newtype Texture = Texture Raw.Texture
-
-renderCopy :: Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> IO ()
-renderCopy (Renderer r) (Texture t) srcRect dstRect =
-  throwIfNeg_ "SDL.Video.renderCopy" "SDL_RenderCopy" $
-  maybeWith with srcRect $ \src ->
-  maybeWith with dstRect $ \dst ->
-  Raw.renderCopy r t (castPtr src) (castPtr dst)
-
-newtype Surface = Surface (Ptr Raw.Surface)
-
-loadBMP :: FilePath -> IO Surface
-loadBMP filePath =
-  fmap Surface $
-  throwIfNull "SDL.Video.loadBMP" "SDL_LoadBMP" $
-  withCString filePath $ Raw.loadBMP
-
-createTextureFromSurface :: Renderer -> Surface -> IO Texture
-createTextureFromSurface (Renderer r) (Surface s) =
-  fmap Texture $
-  throwIfNull "SDL.Video.createTextureFromSurface" "SDL_CreateTextureFromSurface" $
-  Raw.createTextureFromSurface r s
-
 setWindowMaximumSize :: Window -> V2 CInt -> IO ()
 setWindowMaximumSize (Window win) (V2 w h) = Raw.setWindowMaximumSize win w h
 
@@ -617,38 +449,3 @@ getWindowMinimumSize (Window w) =
   alloca $ \hptr -> do
     Raw.getWindowMinimumSize w wptr hptr
     V2 <$> peek wptr <*> peek hptr
-
--- It's possible we could use unsafePerformIO here, but I'm not
--- sure. surface->format is immutable, but do we need to guarantee that pointers
--- aren't reused by *different* surfaces?
-mapRGB :: Surface -> Word8 -> Word8 -> Word8 -> IO Word32
-mapRGB (Surface s) r g b = do
-  format <- Raw.surfaceFormat <$> peek s
-  Raw.mapRGB format r g b
-
-getWindowSurface :: Window -> IO Surface
-getWindowSurface (Window w) =
-  fmap Surface $
-  throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
-  Raw.getWindowSurface w
-
-updateWindowSurface :: Window -> IO ()
-updateWindowSurface (Window w) =
-  throwIfNeg_ "SDL.Video.updateWindowSurface" "SDL_UpdateWindowSurface" $
-  Raw.updateWindowSurface w
-
-fillRect :: Surface -> Maybe (Rectangle CInt) -> Word32 -> IO ()
-fillRect (Surface s) rect col =
-  throwIfNeg_ "SDL.Video.fillRect" "SDL_FillRect" $
-  maybeWith with rect $ \rectPtr ->
-  Raw.fillRect s (castPtr rectPtr) col
-
-blitSurface :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
-blitSurface (Surface src) srcRect (Surface dst) dstRect =
-  throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
-  maybeWith with srcRect $ \srcPtr ->
-  maybeWith with dstRect $ \dstPtr ->
-  Raw.blitSurface src (castPtr srcPtr) dst (castPtr dstPtr)
-
-freeSurface :: Surface -> IO ()
-freeSurface (Surface s) = Raw.freeSurface s
