@@ -24,7 +24,7 @@ cd -
 
 cabal configure --builddir=/tmp/sdl2-gh-pages/
 
-cabal haddock --hoogle --hyperlink-source --html-location='https://hackage.haskell.org/package/$pkg-$version/docs' --contents-location='https://hackage.haskell.org/package/$pkg-$version' --builddir=/tmp/sdl2-gh-pages/
+cabal haddock --hoogle --hyperlink-source --html-location='https://hackage.haskell.org/package/$pkg-$version/docs' --builddir=/tmp/sdl2-gh-pages/
 
 commit_hash=$(git rev-parse HEAD | echo -n)
 
