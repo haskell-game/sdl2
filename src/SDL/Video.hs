@@ -31,6 +31,8 @@ module SDL.Video
   , setClipboardText
 
   -- * Drawing Primitives
+  , createTextureFromSurface
+  , loadBMP
   , renderClear
   , renderCopy
   , renderDrawLine
@@ -677,3 +679,9 @@ loadBMP filePath =
   fmap Surface $
   throwIfNull "SDL.Video.loadBMP" "SDL_LoadBMP" $
   withCString filePath $ Raw.loadBMP
+
+createTextureFromSurface :: Renderer -> Surface -> IO Texture
+createTextureFromSurface (Renderer r) (Surface s) =
+  fmap Texture $
+  throwIfNull "SDL.Video.createTextureFromSurface" "SDL_CreateTextureFromSurface" $
+  Raw.createTextureFromSurface r s
