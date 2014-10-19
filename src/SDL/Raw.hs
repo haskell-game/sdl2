@@ -1,4 +1,5 @@
--- | Raw low-level FFI bindings to the sdl2 C library.
+-- | Raw low-level FFI bindings to the sdl2 C library. Ease of use is not a
+-- design factor, use "SDL" instead if you can.
 module SDL.Raw (
 	module SDL.Raw.Audio,
 	module SDL.Raw.Basic,
