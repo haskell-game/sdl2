@@ -2029,7 +2029,10 @@ hasClipboardText :: IO Bool
 --   
 --   Throws <a>SDLException</a> on failure.
 setClipboardText :: Text -> IO ()
+createTextureFromSurface :: Renderer -> Surface -> IO Texture
+loadBMP :: FilePath -> IO Surface
 renderClear :: Renderer -> IO ()
+renderCopy :: Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> IO ()
 renderDrawLine :: Renderer -> Point V2 CInt -> Point V2 CInt -> IO ()
 renderDrawLines :: Renderer -> Vector (Point V2 CInt) -> IO ()
 renderDrawPoint :: Renderer -> Point V2 CInt -> IO ()
@@ -2038,6 +2041,11 @@ renderDrawRect :: Renderer -> Rectangle CInt -> IO ()
 renderDrawRects :: Renderer -> Vector (Rectangle CInt) -> IO ()
 renderFillRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
 renderFillRects :: Renderer -> Vector (Rectangle CInt) -> IO ()
+renderPresent :: Renderer -> IO ()
+renderSetClipRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
+renderSetLogicalSize :: Renderer -> V2 CInt -> IO ()
+renderSetScale :: Renderer -> V2 CFloat -> IO ()
+renderSetViewport :: Renderer -> Maybe (Rectangle CInt) -> IO ()
 setRenderDrawBlendMode :: Renderer -> BlendMode -> IO ()
 setRenderDrawColor :: Renderer -> V4 Word8 -> IO ()
 data BlendMode
@@ -2047,6 +2055,8 @@ BlendAdditive :: BlendMode
 BlendMod :: BlendMode
 data Rectangle a
 Rectangle :: (Point V2 a) -> (V2 a) -> Rectangle a
+data Surface
+data Texture
 
 -- | Throws <a>SDLException</a> on failure.
 getDisplays :: IO [Display]
