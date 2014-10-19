@@ -25,6 +25,11 @@ module SDL.Video
   , setWindowSize
   , setWindowTitle
 
+  -- * Clipboard Handling
+  , getClipboardText
+  , hasClipboardText
+  , setClipboardText
+
   -- * Drawing Primitives
   , renderDrawLine
   , renderDrawLines
@@ -72,6 +77,7 @@ module SDL.Video
 import Prelude hiding (all, foldl, foldr)
 
 import Control.Applicative
+import Control.Exception
 import Control.Monad (forM, unless)
 import Data.Foldable
 import Data.Maybe (catMaybes)
@@ -212,6 +218,27 @@ setWindowTitle :: Window -> Text -> IO ()
 setWindowTitle (Window w) title =
   BS.useAsCString (Text.encodeUtf8 title) $
     Raw.setWindowTitle w
+
+-- | Get the text from the clipboard.
+--
+-- Throws 'SDLException' on failure.
+getClipboardText :: IO Text
+getClipboardText = mask_ $ do
+  cstr <- throwIfNull "SDL.Video.getClipboardText" "SDL_GetClipboardText"
+    Raw.getClipboardText
+  finally (Text.decodeUtf8 <$> BS.packCString cstr) (free cstr)
+
+-- | Checks if the clipboard exists, and has some text in it.
+hasClipboardText :: IO Bool
+hasClipboardText = Raw.hasClipboardText
+
+-- | Replace the contents of the clipboard with the given text.
+--
+-- Throws 'SDLException' on failure.
+setClipboardText :: Text -> IO ()
+setClipboardText str = do
+  throwIfNot0_ "SDL.Video.setClipboardText" "SDL_SetClipboardText" $
+    BS.useAsCString (Text.encodeUtf8 str) Raw.setClipboardText
 
 newtype Renderer = Renderer Raw.Renderer
 
