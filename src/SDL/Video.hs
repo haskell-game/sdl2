@@ -645,15 +645,15 @@ renderSetLogicalSize (Renderer r) (V2 x y) =
   throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $
   Raw.renderSetLogicalSize r x y
 
-renderSetClipRect :: Renderer -> Rectangle CInt -> IO ()
+renderSetClipRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
 renderSetClipRect (Renderer r) rect =
   throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
-  with rect $ Raw.renderSetClipRect r . castPtr
+  maybeWith with rect $ Raw.renderSetClipRect r . castPtr
 
-renderSetViewport :: Renderer -> Rectangle CInt -> IO ()
+renderSetViewport :: Renderer -> Maybe (Rectangle CInt) -> IO ()
 renderSetViewport (Renderer r) rect =
   throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
-  with rect $ Raw.renderSetViewport r . castPtr
+  maybeWith with rect $ Raw.renderSetViewport r . castPtr
 
 renderPresent :: Renderer -> IO ()
 renderPresent (Renderer r) = Raw.renderPresent r
