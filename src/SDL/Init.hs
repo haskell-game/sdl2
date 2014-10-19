@@ -1,5 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
-module SDL.Init (init, initSubSystem, InitFlag(..)) where
+module SDL.Init
+  ( init
+  , initSubSystem
+  , InitFlag(..)
+  , quit
+  ) where
 
 import Prelude hiding (init)
 
@@ -50,3 +55,6 @@ initSubSystem :: Foldable f => f InitFlag -> IO ()
 initSubSystem flags =
   SDLEx.throwIfNeg_ "SDL.Init.initSubSystem" "SDL_InitSubSystem" $
     Raw.initSubSystem (foldFlags initFlagToC flags)
+
+quit :: IO ()
+quit = Raw.quit

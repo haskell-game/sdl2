@@ -18,6 +18,7 @@ module SDL.Video
   -- * Window Attributes
   , getWindowMinimumSize
   , getWindowMaximumSize
+  , getWindowSurface
   , setWindowBordered
   , setWindowBrightness
   , setWindowGammaRamp
@@ -28,6 +29,7 @@ module SDL.Video
   , setWindowPosition
   , setWindowSize
   , setWindowTitle
+  , updateWindowSurface
 
   -- * Clipboard Handling
   , getClipboardText
@@ -36,7 +38,9 @@ module SDL.Video
 
   -- * Drawing Primitives
   , createTextureFromSurface
+  , fillRect
   , loadBMP
+  , mapRGB
   , renderClear
   , renderCopy
   , renderDrawLine
@@ -709,3 +713,28 @@ getWindowMinimumSize (Window w) =
   alloca $ \hptr -> do
     Raw.getWindowMinimumSize w wptr hptr
     V2 <$> peek wptr <*> peek hptr
+
+-- It's possible we could use unsafePerformIO here, but I'm not
+-- sure. surface->format is immutable, but do we need to guarantee that pointers
+-- aren't reused by *different* surfaces?
+mapRGB :: Surface -> Word8 -> Word8 -> Word8 -> IO Word32
+mapRGB (Surface s) r g b = do
+  format <- Raw.surfaceFormat <$> peek s
+  Raw.mapRGB format r g b
+
+getWindowSurface :: Window -> IO Surface
+getWindowSurface (Window w) =
+  fmap Surface $
+  throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
+  Raw.getWindowSurface w
+
+updateWindowSurface :: Window -> IO ()
+updateWindowSurface (Window w) =
+  throwIfNeg_ "SDL.Video.updateWindowSurface" "SDL_UpdateWindowSurface" $
+  Raw.updateWindowSurface w
+
+fillRect :: Surface -> Maybe (Rectangle CInt) -> Word32 -> IO ()
+fillRect (Surface s) rect col =
+  throwIfNeg_ "SDL.Video.fillRect" "SDL_FillRect" $
+  maybeWith with rect $ \rectPtr ->
+  Raw.fillRect s (castPtr rectPtr) col
