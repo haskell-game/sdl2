@@ -1,7 +1,18 @@
 name:                sdl2
 version:             2.0.0
-synopsis:            Low-level bindings to SDL2
-description:         Low-level bindings to the SDL2 library, version 2.0.3.
+synopsis:            Both high- and low-level bindings to the SDL library (version 2.0.3).
+description:
+  This package contains bindings to the SDL 2 library, in both high- and
+  low-level forms:
+  .
+  The 'SDL' namespace contains high-level bindings, where enumerations are split
+  into sum types, and we perform automatic error-checking.
+  .
+  The 'SDL.Raw' namespace contains an almost 1-1 translation of the C API into
+  Haskell FFI calls. As such, this does not contain sum types nor error
+  checking. Thus this namespace is suitable for building your own abstraction
+  over SDL, but is not recommended for day-to-day programming.
+
 license:             BSD3
 license-file:        LICENSE
 author:              Gabríel Arthúr Pétursson, Oliver Charles
