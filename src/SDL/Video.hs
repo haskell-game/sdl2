@@ -50,6 +50,7 @@ module SDL.Video
   , setRenderDrawColor
   , BlendMode(..)
   , Rectangle(..)
+  , Surface
   , Texture
 
   -- * Display
@@ -668,3 +669,11 @@ renderCopy (Renderer r) (Texture t) srcRect dstRect =
   maybeWith with srcRect $ \src ->
   maybeWith with dstRect $ \dst ->
   Raw.renderCopy r t (castPtr src) (castPtr dst)
+
+newtype Surface = Surface (Ptr Raw.Surface)
+
+loadBMP :: FilePath -> IO Surface
+loadBMP filePath =
+  fmap Surface $
+  throwIfNull "SDL.Video.loadBMP" "SDL_LoadBMP" $
+  withCString filePath $ Raw.loadBMP
