@@ -40,6 +40,7 @@ module SDL.Video
   , renderDrawRects
   , renderFillRect
   , renderFillRects
+  , renderPresent
   , renderSetClipRect
   , renderSetLogicalSize
   , renderSetScale
@@ -653,3 +654,6 @@ renderSetViewport :: Renderer -> Rectangle CInt -> IO ()
 renderSetViewport (Renderer r) rect =
   throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
   with rect $ Raw.renderSetViewport r . castPtr
+
+renderPresent :: Renderer -> IO ()
+renderPresent (Renderer r) = Raw.renderPresent r
