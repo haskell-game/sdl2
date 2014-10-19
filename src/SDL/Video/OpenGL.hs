@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video.OpenGL
   ( -- * OpenGL
@@ -15,6 +16,7 @@ module SDL.Video.OpenGL
 import Data.Word
 import Foreign.C.Types
 import SDL.Exception
+import SDL.Internal.Numbered
 import SDL.Internal.Types
 import qualified SDL.Raw as Raw
 
@@ -44,36 +46,36 @@ data GLAttribute
   | GLFramebufferSRGBCapable
   | GLContextEGL
 
-glAttributeToC :: GLAttribute -> Word32
-glAttributeToC GLRedSize = Raw.glAttrRedSize
-glAttributeToC GLGreenSize = Raw.glAttrGreenSize
-glAttributeToC GLBlueSize = Raw.glAttrBlueSize
-glAttributeToC GLAlphaSize = Raw.glAttrAlphaSize
-glAttributeToC GLBufferSize = Raw.glAttrBufferSize
-glAttributeToC GLDoubleBuffer = Raw.glAttrDoubleBuffer
-glAttributeToC GLDepthSize = Raw.glAttrDepthSize
-glAttributeToC GLStencilSize = Raw.glAttrStencilSize
-glAttributeToC GLAccumRedSize = Raw.glAttrAccumRedSize
-glAttributeToC GLAccumGreenSize = Raw.glAttrAccumGreenSize
-glAttributeToC GLAccumBlueSize = Raw.glAttrAccumBlueSize
-glAttributeToC GLAccumAlphaSize = Raw.glAttrAccumAlphaSize
-glAttributeToC GLStereo = Raw.glAttrStereo
-glAttributeToC GLMultiSampleBuffers = Raw.glAttrMultiSampleBuffers
-glAttributeToC GLMultiSampleSamples = Raw.glAttrMultiSampleSamples
-glAttributeToC GLAcceleratedVisual = Raw.glAttrAcceleratedVisual
-glAttributeToC GLRetainedBacking = Raw.glAttrRetainedBacking
-glAttributeToC GLContextMajorVersion = Raw.glAttrContextMajorVersion
-glAttributeToC GLContextMinorVersion = Raw.glAttrContextMinorVersion
-glAttributeToC GLContextFlags = Raw.glAttrContextFlags
-glAttributeToC GLContextProfileMask = Raw.glAttrContextProfileMask
-glAttributeToC GLShareWithCurrentContext = Raw.glAttrShareWithCurrentContext
-glAttributeToC GLFramebufferSRGBCapable = Raw.glAttrFramebufferSRGBCapable
-glAttributeToC GLContextEGL = Raw.glAttrContextEGL
+instance Numbered GLAttribute Word32 where
+	toNumber GLRedSize = Raw.glAttrRedSize
+	toNumber GLGreenSize = Raw.glAttrGreenSize
+	toNumber GLBlueSize = Raw.glAttrBlueSize
+	toNumber GLAlphaSize = Raw.glAttrAlphaSize
+	toNumber GLBufferSize = Raw.glAttrBufferSize
+	toNumber GLDoubleBuffer = Raw.glAttrDoubleBuffer
+	toNumber GLDepthSize = Raw.glAttrDepthSize
+	toNumber GLStencilSize = Raw.glAttrStencilSize
+	toNumber GLAccumRedSize = Raw.glAttrAccumRedSize
+	toNumber GLAccumGreenSize = Raw.glAttrAccumGreenSize
+	toNumber GLAccumBlueSize = Raw.glAttrAccumBlueSize
+	toNumber GLAccumAlphaSize = Raw.glAttrAccumAlphaSize
+	toNumber GLStereo = Raw.glAttrStereo
+	toNumber GLMultiSampleBuffers = Raw.glAttrMultiSampleBuffers
+	toNumber GLMultiSampleSamples = Raw.glAttrMultiSampleSamples
+	toNumber GLAcceleratedVisual = Raw.glAttrAcceleratedVisual
+	toNumber GLRetainedBacking = Raw.glAttrRetainedBacking
+	toNumber GLContextMajorVersion = Raw.glAttrContextMajorVersion
+	toNumber GLContextMinorVersion = Raw.glAttrContextMinorVersion
+	toNumber GLContextFlags = Raw.glAttrContextFlags
+	toNumber GLContextProfileMask = Raw.glAttrContextProfileMask
+	toNumber GLShareWithCurrentContext = Raw.glAttrShareWithCurrentContext
+	toNumber GLFramebufferSRGBCapable = Raw.glAttrFramebufferSRGBCapable
+	toNumber GLContextEGL = Raw.glAttrContextEGL
 
 glSetAttribute :: GLAttribute -> CInt -> IO ()
 glSetAttribute attribute value =
   throwIfNeg_ "SDL.Video.glSetAttribute" "SDL_GL_SetAttribute" $
-    Raw.glSetAttribute (glAttributeToC attribute) value
+    Raw.glSetAttribute (toNumber attribute) value
 
 -- | Replace the contents of the front buffer with the back buffer's. The
 -- contents of the back buffer are undefined, clear them with @glClear@ or

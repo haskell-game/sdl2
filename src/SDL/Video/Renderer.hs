@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video.Renderer
   ( Renderer
@@ -46,6 +47,7 @@ import Foreign.Storable
 import Linear
 import Linear.Affine (Point(P))
 import SDL.Exception
+import SDL.Internal.Numbered
 import SDL.Internal.Types
 
 import qualified Data.Vector.Storable as SV
@@ -98,7 +100,7 @@ getWindowSurface (Window w) =
 setRenderDrawBlendMode :: Renderer -> BlendMode -> IO ()
 setRenderDrawBlendMode (Renderer r) bm =
   throwIfNeg_ "SDL.Video.setRenderDrawBlendMode" "SDL_RenderDrawBlendMode" $
-  Raw.setRenderDrawBlendMode r (blendModeToC bm)
+  Raw.setRenderDrawBlendMode r (toNumber bm)
 
 setRenderDrawColor :: Renderer -> V4 Word8 -> IO ()
 setRenderDrawColor (Renderer re) (V4 r g b a) =
@@ -113,11 +115,11 @@ updateWindowSurface (Window w) =
 data BlendMode = BlendNone | BlendAlphaBlend | BlendAdditive | BlendMod
   deriving (Eq,Show)
 
-blendModeToC :: BlendMode -> Word32
-blendModeToC BlendNone = Raw.blendModeNone
-blendModeToC BlendAlphaBlend = Raw.blendModeBlend
-blendModeToC BlendAdditive = Raw.blendModeAdd
-blendModeToC BlendMod = Raw.blendModeAdd
+instance Numbered BlendMode Word32 where
+  toNumber BlendNone = Raw.blendModeNone
+  toNumber BlendAlphaBlend = Raw.blendModeBlend
+  toNumber BlendAdditive = Raw.blendModeAdd
+  toNumber BlendMod = Raw.blendModeMod
 
 data Rectangle a = Rectangle (Point V2 a) (V2 a)
 

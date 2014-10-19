@@ -70,6 +70,7 @@ library
 
   other-modules:
     Data.Bitmask
+    SDL.Internal.Numbered
     SDL.Internal.Types
     SDL.Raw.Enum.Internal
 

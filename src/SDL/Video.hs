@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video
@@ -74,6 +75,7 @@ import Foreign.C
 import Linear
 import Linear.Affine (Point(P))
 import SDL.Exception
+import SDL.Internal.Numbered
 import SDL.Internal.Types
 import SDL.Video.OpenGL
 import SDL.Video.Renderer
@@ -100,7 +102,7 @@ createWindow title config =
       [ if windowBorder config then 0 else Raw.windowFlagBorderless
       , if windowHighDPI config then Raw.windowFlagAllowHighDPI else 0
       , if windowInputGrabbed config then Raw.windowFlagInputGrabbed else 0
-      , windowModeCtT $ windowMode config
+      , toNumber $ windowMode config
       , if windowOpenGL config then Raw.windowFlagOpenGL else 0
       , if windowResizable config then Raw.windowFlagResizable else 0
       ]
@@ -138,13 +140,12 @@ data WindowMode
   | Windowed
   deriving (Eq, Show)
 
-windowModeCtT :: Num a => WindowMode -> a
-windowModeCtT n' = case n' of
-  Fullscreen -> Raw.windowFlagFullscreen
-  FullscreenDesktop -> Raw.windowFlagFullscreenDesktop
-  Maximized -> Raw.windowFlagMaximized
-  Minimized -> Raw.windowFlagMinimized
-  Windowed -> 0
+instance Numbered WindowMode Word32 where
+  toNumber Fullscreen = Raw.windowFlagFullscreen
+  toNumber FullscreenDesktop = Raw.windowFlagFullscreenDesktop
+  toNumber Maximized = Raw.windowFlagMaximized
+  toNumber Minimized = Raw.windowFlagMinimized
+  toNumber Windowed = 0
 
 data WindowPosition
   = Centered
