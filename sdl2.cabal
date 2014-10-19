@@ -117,3 +117,17 @@ executable lazyfoo-lesson-01
     Lesson01.hs
 
   ghc-options: -main-is Lazyfoo.Lesson01
+
+executable lazyfoo-lesson-02
+  build-depends:
+    base >= 4.0 && < 4.8,
+    linear >= 1.10.1.2 && < 1.11,
+    sdl2
+
+  hs-source-dirs:
+    examples/lazyfoo
+
+  main-is:
+    Lesson02.hs
+
+  ghc-options: -main-is Lazyfoo.Lesson02
