@@ -10,6 +10,7 @@ import Data.Foldable
 import Data.Monoid
 import Data.Word
 import Foreign.C.Types
+import Foreign.Var
 import Linear
 import Linear.Affine
 import qualified SDL
@@ -38,7 +39,7 @@ renderTexture r (Texture t size) xy clip =
   in SDL.renderCopy r t clip (Just (SDL.Rectangle xy dstSize))
 
 setTextureColor :: Texture -> V3 Word8 -> IO ()
-setTextureColor (Texture t _) rgb = SDL.setTextureColorMod t rgb
+setTextureColor (Texture t _) rgb = SDL.textureColorMod t $= rgb
 
 main :: IO ()
 main = do
@@ -51,7 +52,7 @@ main = do
   window <-
     SDL.createWindow
       "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
+      SDL.defaultWindow {SDL.windowInitialSize = V2 screenWidth screenHeight}
   SDL.showWindow window
 
   renderer <-
@@ -65,7 +66,7 @@ main = do
          , SDL.rendererPresentVSync = False
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   modulatedTexture <- loadTexture renderer "examples/lazyfoo/colors.bmp"
 
@@ -95,7 +96,7 @@ main = do
                          _ -> mempty) $
               map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.renderClear renderer
 
         let color' = color + colorAdjustment

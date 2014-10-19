@@ -14,7 +14,7 @@ main = do
   SDL.initialize [ SDL.InitEverything ]
 
   let winConfig = SDL.defaultWindow { SDL.windowPosition = SDL.Absolute (P (V2 100 100))
-                                    , SDL.windowSize     = V2 640 480 }
+                                    , SDL.windowInitialSize     = V2 640 480 }
 
       rdrConfig = SDL.RendererConfig { SDL.rendererSoftware      = False
                                      , SDL.rendererAccelerated   = True

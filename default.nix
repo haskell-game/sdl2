@@ -1,9 +1,17 @@
-{ cabal, linear, vector, StateVar, text, SDL2 }:
-cabal.mkDerivation (self: {
+{ mkDerivation, base, bytestring, foreign-var, lens, linear, SDL2
+, stdenv, text, transformers, vector
+}:
+mkDerivation {
   pname = "sdl2";
-  version = "1.0.0";
+  version = "2.0.0";
   src = ./.;
-  buildDepends = [ linear vector StateVar text ];
+  isLibrary = true;
+  isExecutable = true;
+  buildDepends = [
+    base bytestring foreign-var lens linear text transformers vector
+  ];
   extraLibraries = [ SDL2 ];
   pkgconfigDepends = [ SDL2 ];
-})
+  description = "Both high- and low-level bindings to the SDL library (version 2.0.3).";
+  license = stdenv.lib.licenses.bsd3;
+}

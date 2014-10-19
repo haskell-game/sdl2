@@ -15,7 +15,6 @@ module SDL.Video.OpenGL
 
   , glSwapWindow
   , SwapInterval(..)
-  , glSetSwapInterval
 
   -- ** Function Loading
   , Raw.glGetProcAddress

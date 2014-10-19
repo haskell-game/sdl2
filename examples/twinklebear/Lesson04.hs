@@ -41,7 +41,7 @@ main :: IO ()
 main = do
   SDL.initialize [ SDL.InitVideo ]
 
-  let winConfig = SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
+  let winConfig = SDL.defaultWindow { SDL.windowInitialSize = V2 screenWidth screenHeight }
 
   window <- SDL.createWindow "Lesson 4" winConfig
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer

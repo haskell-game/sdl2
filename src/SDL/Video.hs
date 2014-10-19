@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -23,27 +24,24 @@ module SDL.Video
   , showWindow
 
   -- * Window Attributes
-  , getWindowMinimumSize
-  , getWindowMaximumSize
-  , setWindowBordered
-  , setWindowBrightness
-  , setWindowGammaRamp
-  , setWindowGrab
+  , windowBordered
+  , windowBrightness
+  , windowGammaRamp
+  , windowGrab
+  , windowMaximumSize
+  , windowMinimumSize
+  , windowSize
+  , windowTitle
   , setWindowMode
-  , setWindowMaximumSize
-  , setWindowMinimumSize
   , setWindowPosition
-  , setWindowSize
-  , setWindowTitle
 
   -- * Renderer Management
   , createRenderer
   , destroyRenderer
 
   -- * Clipboard Handling
-  , getClipboardText
+  , clipboardText
   , hasClipboardText
-  , setClipboardText
 
   -- * Display
   , getDisplays
@@ -59,9 +57,7 @@ module SDL.Video
   --
   -- Screen savers are disabled by default upon the initialization of the
   -- video subsystem.
-  , disableScreenSaver
-  , enableScreenSaver
-  , isScreenSaverEnabled
+  , screenSaverEnabled
 
   -- * Message Box
   , showSimpleMessageBox
@@ -72,17 +68,19 @@ import Prelude hiding (all, foldl, foldr, mapM_)
 
 import Control.Applicative
 import Control.Exception
-import Control.Monad (forM, unless)
+import Control.Monad (forM)
 import Data.Data (Data)
 import Data.Foldable
-import Data.Maybe (catMaybes, isJust)
+import Data.Maybe (fromMaybe, isJust)
 import Data.Text (Text)
 import Data.Typeable
 import Foreign hiding (void, throwIfNull, throwIfNeg, throwIfNeg_)
 import Foreign.C
+import Foreign.Var hiding (get)
 import GHC.Generics (Generic)
 import Linear
 import Linear.Affine (Point(P))
+import Linear.V
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
@@ -91,7 +89,7 @@ import SDL.Video.Renderer
 
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
-import qualified Data.Vector.Storable as SV
+import qualified Data.Vector as V
 import qualified SDL.Raw as Raw
 
 -- | Create a window with the given title and configuration.
@@ -109,7 +107,7 @@ createWindow title config = do
           Centered -> let u = Raw.SDL_WINDOWPOS_CENTERED in create u u w h
           Wherever -> let u = Raw.SDL_WINDOWPOS_UNDEFINED in create u u w h
           Absolute (P (V2 x y)) -> create x y w h
-    create' (windowSize config) flags >>= return . Window
+    create' (windowInitialSize config) flags >>= return . Window
   where
     flags = foldr (.|.) 0
       [ if windowBorder config then 0 else Raw.SDL_WINDOW_BORDERLESS
@@ -151,7 +149,7 @@ defaultWindow = WindowConfig
   , windowOpenGL       = Nothing
   , windowPosition     = Wherever
   , windowResizable    = False
-  , windowSize         = V2 800 600
+  , windowInitialSize  = V2 800 600
   }
 
 data WindowConfig = WindowConfig
@@ -162,7 +160,7 @@ data WindowConfig = WindowConfig
   , windowOpenGL       :: Maybe OpenGLConfig -- ^ Defaults to 'Nothing'. Can not be changed after window creation.
   , windowPosition     :: WindowPosition     -- ^ Defaults to 'Wherever'.
   , windowResizable    :: Bool               -- ^ Defaults to 'False'. Whether the window can be resized by the user. It is still possible to programatically change the size with 'setWindowSize'.
-  , windowSize         :: V2 CInt            -- ^ Defaults to @(800, 600)@.
+  , windowInitialSize  :: V2 CInt            -- ^ Defaults to @(800, 600)@.
   } deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 data WindowMode
@@ -192,22 +190,30 @@ destroyWindow :: Window -> IO ()
 destroyWindow (Window w) = Raw.destroyWindow w
 
 -- | Set whether the window should have a border or not.
-setWindowBordered :: Window -> Bool -> IO ()
-setWindowBordered (Window w) = Raw.setWindowBordered w
+windowBordered :: Window -> Var Bool
+windowBordered (Window w) = newVar get set
+  where
+  get = do
+    flags <- Raw.getWindowFlags w
+    return (flags .&. Raw.SDL_WINDOW_BORDERLESS /= 0)
+  set = Raw.setWindowBordered w
 
 -- | Set the window's brightness, where 0.0 is completely dark and 1.0 is
 -- normal brightness.
 --
 -- Throws 'SDLException' if the hardware does not support gamma
 -- correction, or if the system has run out of memory.
-setWindowBrightness :: Window -> Float -> IO ()
-setWindowBrightness (Window w) brightness = do
-  throwIfNot0_ "SDL.Video.setWindowBrightness" "SDL_SetWindowBrightness" $
-    Raw.setWindowBrightness w $ realToFrac brightness
+windowBrightness :: Window -> Var Float
+windowBrightness (Window w) = newVar get set
+  where
+  get = realToFrac <$> Raw.getWindowBrightness w
+  set = do
+    throwIfNot0_ "SDL.Video.setWindowBrightness" "SDL_SetWindowBrightness" .
+      Raw.setWindowBrightness w . realToFrac
 
 -- | Set whether the mouse shall be confined to the window.
-setWindowGrab :: Window -> Bool -> IO ()
-setWindowGrab (Window w) = Raw.setWindowGrab w
+windowGrab :: Window -> Var Bool
+windowGrab (Window w) = newVar (Raw.getWindowGrab w) (Raw.setWindowGrab w)
 
 -- | Change between window modes.
 --
@@ -231,35 +237,47 @@ setWindowPosition (Window w) pos = case pos of
 
 -- | Set the size of the window. Values beyond the maximum supported size are
 -- clamped.
-setWindowSize :: Window -> V2 CInt -> IO ()
-setWindowSize (Window win) (V2 w h) = Raw.setWindowSize win w h
+windowSize :: Window -> Var (V2 CInt)
+windowSize (Window win) = newVar get set
+  where
+  get =
+    alloca $ \w ->
+      alloca $ \h -> do
+        Raw.getWindowSize win w h
+        V2 <$> peek w <*> peek h
+
+  set (V2 w h) = Raw.setWindowSize win w h
 
 -- | Set the title of the window.
-setWindowTitle :: Window -> Text -> IO ()
-setWindowTitle (Window w) title =
-  BS.useAsCString (Text.encodeUtf8 title) $
-    Raw.setWindowTitle w
+windowTitle :: Window -> Var Text
+windowTitle (Window w) = newVar get set
+  where
+  get = do
+    cstr <- Raw.getWindowTitle w
+    Text.decodeUtf8 <$> BS.packCString cstr
+
+  set title =
+    BS.useAsCString (Text.encodeUtf8 title) $
+      Raw.setWindowTitle w
 
 -- | Get the text from the clipboard.
 --
 -- Throws 'SDLException' on failure.
-getClipboardText :: IO Text
-getClipboardText = mask_ $ do
-  cstr <- throwIfNull "SDL.Video.getClipboardText" "SDL_GetClipboardText"
-    Raw.getClipboardText
-  finally (Text.decodeUtf8 <$> BS.packCString cstr) (free cstr)
+clipboardText :: Var Text
+clipboardText = newVar get set
+  where
+  get = mask_ $ do
+    cstr <- throwIfNull "SDL.Video.getClipboardText" "SDL_GetClipboardText"
+      Raw.getClipboardText
+    finally (Text.decodeUtf8 <$> BS.packCString cstr) (free cstr)
+
+  set str = do
+    throwIfNot0_ "SDL.Video.setClipboardText" "SDL_SetClipboardText" $
+      BS.useAsCString (Text.encodeUtf8 str) Raw.setClipboardText
 
 -- | Checks if the clipboard exists, and has some text in it.
 hasClipboardText :: IO Bool
 hasClipboardText = Raw.hasClipboardText
-
--- | Replace the contents of the clipboard with the given text.
---
--- Throws 'SDLException' on failure.
-setClipboardText :: Text -> IO ()
-setClipboardText str = do
-  throwIfNot0_ "SDL.Video.setClipboardText" "SDL_SetClipboardText" $
-    BS.useAsCString (Text.encodeUtf8 str) Raw.setClipboardText
 
 hideWindow :: Window -> IO ()
 hideWindow (Window w) = Raw.hideWindow w
@@ -268,34 +286,47 @@ hideWindow (Window w) = Raw.hideWindow w
 raiseWindow :: Window -> IO ()
 raiseWindow (Window w) = Raw.raiseWindow w
 
--- | Disable screen savers.
-disableScreenSaver :: IO ()
-disableScreenSaver = Raw.disableScreenSaver
-
--- | Enable screen savers.
-enableScreenSaver :: IO ()
-enableScreenSaver = Raw.enableScreenSaver
-
--- | Check whether screen savers are enabled.
-isScreenSaverEnabled :: IO Bool
-isScreenSaverEnabled = Raw.isScreenSaverEnabled
+screenSaverEnabled :: Var Bool
+screenSaverEnabled = newVar Raw.isScreenSaverEnabled set
+  where
+  set True = Raw.enableScreenSaver
+  set False = Raw.disableScreenSaver
 
 showWindow :: Window -> IO ()
 showWindow (Window w) = Raw.showWindow w
 
-setWindowGammaRamp :: Window -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> IO ()
-setWindowGammaRamp (Window w) r g b = do
-  unless (all ((== 256) . SV.length) $ catMaybes [r,g,b]) $
-    error "setWindowGammaRamp requires 256 element in each colour channel"
+windowGammaRamp :: Window -> Var (V3 (Maybe (V 256 Word16)))
+windowGammaRamp (Window win) = newVar get set
+  where
+  set :: V3 (Maybe (V 256 Word16)) -> IO ()
+  set (V3 r g b) = do
+    let withChan :: Maybe (V 256 Word16) -> (Ptr Word16 -> IO ()) -> IO ()
+        withChan x f =
+          case x of
+            Just x' -> with x' (f . castPtr)
+            Nothing -> f nullPtr
 
-  let withChan x f = case x of Just x' -> SV.unsafeWith x' f
-                               Nothing -> f nullPtr
+    withChan r $ \rPtr ->
+      withChan b $ \bPtr ->
+        withChan g $ \gPtr ->
+          throwIfNeg_ "SDL.Video.windowGammaRamp" "SDL_SetWindowGammaRamp" $
+            Raw.setWindowGammaRamp win rPtr gPtr bPtr
 
-  withChan r $ \rPtr ->
-    withChan b $ \bPtr ->
-      withChan g $ \gPtr ->
-        throwIfNeg_ "SDL.Video.setWindowGammaRamp" "SDL_SetWindowGammaRamp" $
-          Raw.setWindowGammaRamp w rPtr gPtr bPtr
+  get :: IO (V3 (Maybe (V 256 Word16)))
+  get =
+    allocaArray 256 $ \rPtr ->
+    allocaArray 256 $ \bPtr ->
+    allocaArray 256 $ \gPtr -> do
+      throwIfNeg_ "SDL.Video.windowGammaRamp" "SDL_GetWindowGammaRamp" $
+        Raw.getWindowGammaRamp win rPtr gPtr bPtr
+
+      let peekChan :: Ptr Word16 -> IO (V 256 Word16)
+          peekChan ptr =
+            fmap (fromMaybe (error "SDL_GetWindowGammaRamp returned a non-256 element array") . fromVector . V.fromList) $
+            peekArray 256 ptr
+      V3 <$> (Just <$> peekChan rPtr)
+         <*> (Just <$> peekChan gPtr)
+         <*> (Just <$> peekChan bPtr)
 
 data Display = Display {
                displayName           :: String
@@ -385,25 +416,27 @@ instance ToNumber MessageKind Word32 where
   toNumber Warning = Raw.SDL_MESSAGEBOX_WARNING
   toNumber Information = Raw.SDL_MESSAGEBOX_INFORMATION
 
-setWindowMaximumSize :: Window -> V2 CInt -> IO ()
-setWindowMaximumSize (Window win) (V2 w h) = Raw.setWindowMaximumSize win w h
+windowMaximumSize :: Window -> Var (V2 CInt)
+windowMaximumSize (Window win) = newVar get set
+  where
+  get =
+    alloca $ \wptr ->
+    alloca $ \hptr -> do
+      Raw.getWindowMaximumSize win wptr hptr
+      V2 <$> peek wptr <*> peek hptr
 
-setWindowMinimumSize :: Window -> V2 CInt -> IO ()
-setWindowMinimumSize (Window win) (V2 w h) = Raw.setWindowMinimumSize win w h
+  set (V2 w h) = Raw.setWindowMaximumSize win w h
 
-getWindowMaximumSize :: Window -> IO (V2 CInt)
-getWindowMaximumSize (Window w) =
-  alloca $ \wptr ->
-  alloca $ \hptr -> do
-    Raw.getWindowMaximumSize w wptr hptr
-    V2 <$> peek wptr <*> peek hptr
+windowMinimumSize :: Window -> Var (V2 CInt)
+windowMinimumSize (Window win) = newVar get set
+  where
+  get =
+    alloca $ \wptr ->
+    alloca $ \hptr -> do
+      Raw.getWindowMinimumSize win wptr hptr
+      V2 <$> peek wptr <*> peek hptr
 
-getWindowMinimumSize :: Window -> IO (V2 CInt)
-getWindowMinimumSize (Window w) =
-  alloca $ \wptr ->
-  alloca $ \hptr -> do
-    Raw.getWindowMinimumSize w wptr hptr
-    V2 <$> peek wptr <*> peek hptr
+  set (V2 w h) = Raw.setWindowMinimumSize win w h
 
 createRenderer :: Window -> CInt -> RendererConfig -> IO Renderer
 createRenderer (Window w) driver config =

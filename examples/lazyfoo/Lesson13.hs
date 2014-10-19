@@ -10,6 +10,7 @@ import Data.Foldable
 import Data.Monoid
 import Data.Word
 import Foreign.C.Types
+import Foreign.Var
 import Linear
 import Linear.Affine
 import qualified SDL
@@ -38,10 +39,10 @@ renderTexture r (Texture t size) xy clip =
   in SDL.renderCopy r t clip (Just (SDL.Rectangle xy dstSize))
 
 setTextureAlpha :: Texture -> Word8 -> IO ()
-setTextureAlpha (Texture t _) = SDL.setTextureAlphaMod t
+setTextureAlpha (Texture t _) = (SDL.textureAlphaMod t $=)
 
 setTextureBlendMode :: Texture -> SDL.BlendMode -> IO ()
-setTextureBlendMode (Texture t _) = SDL.setTextureBlendMode t
+setTextureBlendMode (Texture t _) = (SDL.textureBlendMode t $=)
 
 main :: IO ()
 main = do
@@ -54,7 +55,7 @@ main = do
   window <-
     SDL.createWindow
       "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
+      SDL.defaultWindow {SDL.windowInitialSize = V2 screenWidth screenHeight}
   SDL.showWindow window
 
   renderer <-
@@ -68,7 +69,7 @@ main = do
          , SDL.rendererPresentVSync = False
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   modulatedTexture <- loadTexture renderer "examples/lazyfoo/fadeout.bmp"
   setTextureBlendMode modulatedTexture SDL.BlendAlphaBlend
@@ -97,7 +98,7 @@ main = do
                          _ -> mempty) $
               map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.renderClear renderer
 
         renderTexture renderer backgroundTexture 0 Nothing

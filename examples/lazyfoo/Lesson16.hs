@@ -11,6 +11,7 @@ import Data.Foldable
 import Data.Monoid
 import Data.Maybe
 import Foreign.C.Types
+import Foreign.Var
 import Linear
 import Linear.Affine
 import qualified SDL
@@ -91,7 +92,7 @@ main = do
   window <-
     SDL.createWindow
       "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
+      SDL.defaultWindow {SDL.windowInitialSize = V2 screenWidth screenHeight}
   SDL.showWindow window
 
   renderer <-
@@ -105,7 +106,7 @@ main = do
          , SDL.rendererPresentVSync = True
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   buttonSpriteSheet <- loadTexture renderer "examples/lazyfoo/button.bmp"
 
@@ -125,7 +126,7 @@ main = do
                          e -> (mempty, Endo (handleEvent mousePos e))) $
               map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.renderClear renderer
 
         let buttons' = map (\b -> updateButton b) buttons

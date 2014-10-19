@@ -10,6 +10,7 @@ import Control.Monad hiding (mapM_)
 import Data.Foldable
 import Data.Maybe
 import Foreign.C.Types
+import Foreign.Var
 import Linear
 import Linear.Affine
 import qualified SDL
@@ -35,8 +36,8 @@ renderTexture r (Texture t size) xy clip theta center flips =
                       (fromMaybe (pure False) flips)
 
 setAsRenderTarget :: SDL.Renderer -> Maybe Texture -> IO ()
-setAsRenderTarget r Nothing = SDL.setRenderTarget r Nothing
-setAsRenderTarget r (Just (Texture t _)) = SDL.setRenderTarget r (Just t)
+setAsRenderTarget r Nothing = SDL.renderTarget r $= Nothing
+setAsRenderTarget r (Just (Texture t _)) = SDL.renderTarget r $= Just t
 
 main :: IO ()
 main = do
@@ -49,7 +50,7 @@ main = do
   window <-
     SDL.createWindow
       "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
+      SDL.defaultWindow {SDL.windowInitialSize = V2 screenWidth screenHeight}
   SDL.showWindow window
 
   renderer <-
@@ -63,7 +64,7 @@ main = do
          , SDL.rendererPresentVSync = True
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   targetTexture <- createBlank renderer (V2 screenWidth screenHeight) SDL.TextureAccessTarget
 
@@ -82,21 +83,21 @@ main = do
 
       setAsRenderTarget renderer (Just targetTexture)
 
-      SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+      SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
       SDL.renderClear renderer
 
-      SDL.setRenderDrawColor renderer (V4 maxBound 0 0 maxBound)
+      SDL.renderDrawColor renderer $= V4 maxBound 0 0 maxBound
       SDL.renderFillRect renderer (Just $ SDL.Rectangle (P $ V2 (screenWidth `div` 4) (screenHeight `div` 4))
                                                         (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
 
-      SDL.setRenderDrawColor renderer (V4 0 0 maxBound maxBound)
+      SDL.renderDrawColor renderer $= V4 0 0 maxBound maxBound
       SDL.renderDrawRect renderer (SDL.Rectangle (P $ V2 (screenWidth `div` 6) (screenHeight `div` 6))
                                                  (V2 (screenWidth * 2 `div` 3) (screenHeight * 2 `div` 3)))
 
-      SDL.setRenderDrawColor renderer (V4 0 maxBound 0 maxBound)
+      SDL.renderDrawColor renderer $= V4 0 maxBound 0 maxBound
       SDL.renderDrawLine renderer (P (V2 0 (screenHeight `div` 2))) (P (V2 screenWidth (screenHeight `div` 2)))
 
-      SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+      SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
       for_ [0, 4 .. screenHeight] $ \i ->
         SDL.renderDrawPoint renderer (P (V2 (screenWidth `div` 2) i))
 

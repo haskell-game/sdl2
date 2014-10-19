@@ -1,22 +1,8 @@
-let
-  pkgs = import <nixpkgs> {};
-  haskellPackages = pkgs.haskellPackages.override {
-    extension = self: super: {
-      sdl2 = self.callPackage ./. {};
+with (import <nixpkgs> {}).pkgs;
+let modifiedHaskellPackages = haskellngPackages.override {
+      overrides = self: super: {
+        sdl2 = self.callPackage ./. {};
+        foreign-var = self.callPackage ../foreign-var {};
+      };
     };
-  };
-
-in pkgs.myEnvFun {
-     name = haskellPackages.sdl2.name;
-     buildInputs = [
-       pkgs.curl
-       pkgs.git
-       pkgs.openssh
-       pkgs.pkgconfig
-       pkgs.SDL2
-       (haskellPackages.ghcWithPackages (hs: ([
-         hs.cabalInstall
-         hs.hscolour
-       ] ++ hs.sdl2.propagatedNativeBuildInputs)))
-     ];
-   }
+in modifiedHaskellPackages.sdl2.env

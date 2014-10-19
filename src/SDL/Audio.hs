@@ -29,12 +29,12 @@ module SDL.Audio
 
     -- ** Working with Opened Devices
     -- *** Locking 'AudioDevice's
-  , setAudioDeviceLocked
+  , audioDeviceLocked
   , LockState(..)
 
     -- *** Switching Playback States
   , PlaybackState(..)
-  , setAudioDevicePlaybackState
+  , audioDevicePlaybackState
 
     -- *** Querying an 'AudioDevice's Status.
   , AudioDeviceStatus(..)
@@ -68,7 +68,6 @@ module SDL.Audio
 
 import Control.Applicative
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Data.Bits
 import Data.Data (Data)
 import Data.Foldable (Foldable)
 import Data.Text (Text)
@@ -76,12 +75,9 @@ import Data.Traversable (Traversable, for)
 import Data.Typeable
 import Data.Vector.Storable (Vector)
 import Data.Word
-import Foreign.C.Types
-import Foreign.ForeignPtr
-import Foreign.Marshal.Alloc
-import Foreign.Marshal.Utils
-import Foreign.Ptr
-import Foreign.Storable
+import Foreign hiding (throwIfNull, throwIfNeg_)
+import Foreign.C
+import Foreign.Var
 import GHC.Generics (Generic)
 import SDL.Exception
 
@@ -284,11 +280,11 @@ data LockState
   | Unlocked -- ^ Unlock the device, resuming calls to the callback.
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
--- | Lock an 'AudioDevice' such that its associated callback will not be called
--- until the device is unlocked.
-setAudioDeviceLocked :: MonadIO m => AudioDevice -> LockState -> m ()
-setAudioDeviceLocked (AudioDevice d) Locked = Raw.lockAudioDevice d
-setAudioDeviceLocked (AudioDevice d) Unlocked = Raw.unlockAudioDevice d
+audioDeviceLocked :: AudioDevice -> SettableVar LockState
+audioDeviceLocked (AudioDevice d) = SettableVar $ \ls ->
+  case ls of
+    Locked -> Raw.lockAudioDevice d
+    Unlocked -> Raw.unlockAudioDevice d
 
 -- | Whether to allow an 'AudioDevice' to play sound or remain paused.
 data PlaybackState
@@ -296,10 +292,11 @@ data PlaybackState
   | Play -- ^ Resume the 'AudioDevice'.
   deriving (Bounded, Enum, Eq, Ord, Read, Data, Generic, Show, Typeable)
 
--- | Change the playback state of an 'AudioDevice'.
-setAudioDevicePlaybackState :: MonadIO m => AudioDevice -> PlaybackState -> m ()
-setAudioDevicePlaybackState (AudioDevice d) Pause = Raw.pauseAudioDevice d 1
-setAudioDevicePlaybackState (AudioDevice d) Play = Raw.pauseAudioDevice d 0
+audioDevicePlaybackState :: AudioDevice -> SettableVar PlaybackState
+audioDevicePlaybackState (AudioDevice d) = SettableVar $ \ps ->
+  case ps of
+    Pause -> Raw.pauseAudioDevice d 1
+    Play -> Raw.pauseAudioDevice d 0
 
 -- | Opened devices are always 'Playing' or 'Paused' in normal circumstances. A
 -- failing device may change its status to 'Stopped' at any time, and closing a

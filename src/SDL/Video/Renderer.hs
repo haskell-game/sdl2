@@ -25,23 +25,14 @@ module SDL.Video.Renderer
   , getWindowSurface
   , setColorKey
 
-  , getRenderDrawBlendMode
-  , setRenderDrawBlendMode
+  , renderDrawBlendMode
+  , renderDrawColor
 
-  , getRenderDrawColor
-  , setRenderDrawColor
+  , renderTarget
 
-  , getRenderTarget
-  , setRenderTarget
-
-  , getTextureAlphaMod
-  , setTextureAlphaMod
-
-  , getTextureBlendMode
-  , setTextureBlendMode
-
-  , getTextureColorMod
-  , setTextureColorMod
+  , textureAlphaMod
+  , textureBlendMode
+  , textureColorMod
 
   , surfaceDimensions
   , surfaceFormat
@@ -76,8 +67,7 @@ module SDL.Video.Renderer
   , renderGetLogicalSize
   , renderSetLogicalSize
 
-  , renderGetScale
-  , renderSetScale
+  , renderScale
 
   , renderGetViewport
   , renderSetViewport
@@ -107,6 +97,7 @@ import Foreign.Marshal.Alloc
 import Foreign.Marshal.Utils
 import Foreign.Ptr
 import Foreign.Storable
+import Foreign.Var hiding (get)
 import GHC.Generics (Generic)
 import Linear
 import Linear.Affine (Point(P))
@@ -241,32 +232,34 @@ getWindowSurface (Window w) =
   throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
   Raw.getWindowSurface w
 
-getRenderDrawBlendMode :: (Functor m, MonadIO m) => Renderer -> m BlendMode
-getRenderDrawBlendMode (Renderer r) = liftIO $
-  alloca $ \bmPtr -> do
-    throwIfNeg_ "SDL.Video.Renderer.getRenderDrawBlendMode" "SDL_GetRenderDrawBlendMode" $
-      Raw.getRenderDrawBlendMode r bmPtr
-    fromNumber <$> peek bmPtr
+renderDrawBlendMode :: Renderer -> Var BlendMode
+renderDrawBlendMode (Renderer r) = newVar get set
+  where
+  get =
+    alloca $ \bmPtr -> do
+      throwIfNeg_ "SDL.Video.Renderer.getRenderDrawBlendMode" "SDL_GetRenderDrawBlendMode" $
+        Raw.getRenderDrawBlendMode r bmPtr
+      fromNumber <$> peek bmPtr
 
-setRenderDrawBlendMode :: (Functor m, MonadIO m) => Renderer -> BlendMode -> m ()
-setRenderDrawBlendMode (Renderer r) bm =
-  throwIfNeg_ "SDL.Video.Renderer.setRenderDrawBlendMode" "SDL_SetRenderDrawBlendMode" $
-  Raw.setRenderDrawBlendMode r (toNumber bm)
+  set bm =
+    throwIfNeg_ "SDL.Video.Renderer.setRenderDrawBlendMode" "SDL_SetRenderDrawBlendMode" $
+    Raw.setRenderDrawBlendMode r (toNumber bm)
 
-getRenderDrawColor :: (MonadIO m) => Renderer -> m (V4 Word8)
-getRenderDrawColor (Renderer re) = liftIO $
-  alloca $ \r ->
-  alloca $ \g ->
-  alloca $ \b ->
-  alloca $ \a -> do
-    throwIfNeg_ "SDL.Video.Renderer.getRenderDrawColor" "SDL_GetRenderDrawColor" $
-      Raw.getRenderDrawColor re r g b a
-    V4 <$> peek r <*> peek g <*> peek b <*> peek a
+renderDrawColor :: Renderer -> Var (V4 Word8)
+renderDrawColor (Renderer re) = newVar get set
+  where
+  get =
+    alloca $ \r ->
+    alloca $ \g ->
+    alloca $ \b ->
+    alloca $ \a -> do
+      throwIfNeg_ "SDL.Video.Renderer.getRenderDrawColor" "SDL_GetRenderDrawColor" $
+        Raw.getRenderDrawColor re r g b a
+      V4 <$> peek r <*> peek g <*> peek b <*> peek a
 
-setRenderDrawColor :: (Functor m, MonadIO m) => Renderer -> V4 Word8 -> m ()
-setRenderDrawColor (Renderer re) (V4 r g b a) =
-  throwIfNeg_ "SDL.Video.setRenderDrawColor" "SDL_SetRenderDrawColor" $
-  Raw.setRenderDrawColor re r g b a
+  set (V4 r g b a) =
+    throwIfNeg_ "SDL.Video.setRenderDrawColor" "SDL_SetRenderDrawColor" $
+    Raw.setRenderDrawColor re r g b a
 
 updateWindowSurface :: (Functor m, MonadIO m) => Window -> m ()
 updateWindowSurface (Window w) =
@@ -347,17 +340,18 @@ renderClear (Renderer r) =
   throwIfNeg_ "SDL.Video.renderClear" "SDL_RenderClear" $
   Raw.renderClear r
 
-renderSetScale :: (Functor m, MonadIO m) => Renderer -> V2 CFloat -> m ()
-renderSetScale (Renderer r) (V2 x y) =
-  throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
-  Raw.renderSetScale r x y
+renderScale :: Renderer -> Var (V2 CFloat)
+renderScale (Renderer r) = newVar get set
+  where
+  get =
+    alloca $ \w ->
+    alloca $ \h -> do
+      Raw.renderGetScale r w h
+      V2 <$> peek w <*> peek h
 
-renderGetScale :: (MonadIO m) => Renderer -> m (V2 CFloat)
-renderGetScale (Renderer r) = liftIO $
-  alloca $ \w ->
-  alloca $ \h -> do
-    Raw.renderGetScale r w h
-    V2 <$> peek w <*> peek h
+  set (V2 x y) =
+   throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
+     Raw.renderSetScale r x y
 
 renderSetLogicalSize :: (Functor m, MonadIO m) => Renderer -> V2 CInt -> m ()
 renderSetLogicalSize (Renderer r) (V2 x y) =
@@ -466,19 +460,20 @@ setColorKey (Surface s) key =
     Just key' -> do
       Raw.setColorKey s 1 key'
 
-getTextureColorMod :: (MonadIO m) => Texture -> m (V3 Word8)
-getTextureColorMod (Texture t) = liftIO $
-  alloca $ \r ->
-  alloca $ \g ->
-  alloca $ \b -> do
-    throwIfNeg_ "SDL.Video.Renderer.getTextureColorMod" "SDL_GetTextureColorMod" $
-      Raw.getTextureColorMod t r g b
-    V3 <$> peek r <*> peek g <*> peek b
+textureColorMod :: Texture -> Var (V3 Word8)
+textureColorMod (Texture t) = newVar get set
+  where
+  get =
+    alloca $ \r ->
+    alloca $ \g ->
+    alloca $ \b -> do
+      throwIfNeg_ "SDL.Video.Renderer.getTextureColorMod" "SDL_GetTextureColorMod" $
+        Raw.getTextureColorMod t r g b
+      V3 <$> peek r <*> peek g <*> peek b
 
-setTextureColorMod :: (Functor m, MonadIO m) => Texture -> V3 Word8 -> m ()
-setTextureColorMod (Texture t) (V3 r g b) =
-  throwIfNeg_ "SDL.Video.Renderer.setTextureColorMod" "SDL_SetTextureColorMod" $
-  Raw.setTextureColorMod t r g b
+  set (V3 r g b) =
+    throwIfNeg_ "SDL.Video.Renderer.setTextureColorMod" "SDL_SetTextureColorMod" $
+    Raw.setTextureColorMod t r g b
 
 data PixelFormat
   = Unknown
@@ -660,44 +655,47 @@ getRenderDriverInfo = liftIO $ do
                  Raw.getRenderDriverInfo idx rptr
                peek rptr >>= fromRawRendererInfo
 
-getTextureAlphaMod :: (MonadIO m) => Texture -> m Word8
-getTextureAlphaMod (Texture t) = liftIO $
-  alloca $ \x -> do
-    throwIfNeg_ "SDL.Video.Renderer.getTextureAlphaMod" "SDL_GetTextureAlphaMod" $
-      Raw.getTextureAlphaMod t x
-    peek x
+textureAlphaMod :: Texture -> Var Word8
+textureAlphaMod (Texture t) = newVar get set
+  where
+  get = liftIO $
+    alloca $ \x -> do
+      throwIfNeg_ "SDL.Video.Renderer.getTextureAlphaMod" "SDL_GetTextureAlphaMod" $
+        Raw.getTextureAlphaMod t x
+      peek x
 
-setTextureAlphaMod :: (Functor m, MonadIO m) => Texture -> Word8 -> m ()
-setTextureAlphaMod (Texture t) alpha =
-  throwIfNeg_ "SDL.Video.Renderer.setTextureAlphaMod" "SDL_SetTextureAlphaMod" $
-  Raw.setTextureAlphaMod t alpha
+  set alpha =
+    throwIfNeg_ "SDL.Video.Renderer.setTextureAlphaMod" "SDL_SetTextureAlphaMod" $
+    Raw.setTextureAlphaMod t alpha
 
-getTextureBlendMode :: (MonadIO m) => Texture -> m BlendMode
-getTextureBlendMode (Texture t) = liftIO $
-  alloca $ \x -> do
-    throwIfNeg_ "SDL.Video.Renderer.getTextureBlendMode" "SDL_GetTextureBlendMode" $
-      Raw.getTextureBlendMode t x
-    fromNumber <$> peek x
+textureBlendMode :: Texture -> Var BlendMode
+textureBlendMode (Texture t) = newVar get set
+  where
+  get =
+    alloca $ \x -> do
+      throwIfNeg_ "SDL.Video.Renderer.getTextureBlendMode" "SDL_GetTextureBlendMode" $
+        Raw.getTextureBlendMode t x
+      fromNumber <$> peek x
 
-setTextureBlendMode :: (Functor m, MonadIO m) => Texture -> BlendMode -> m ()
-setTextureBlendMode (Texture t) bm =
-  throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMoe" $
-  Raw.setTextureBlendMode t (toNumber bm)
+  set bm =
+    throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMoe" $
+    Raw.setTextureBlendMode t (toNumber bm)
 
-getRenderTarget :: (MonadIO m) => Renderer -> m (Maybe Texture)
-getRenderTarget (Renderer r) = do
-  t <- Raw.getRenderTarget r
-  return $
-    if t == nullPtr
-      then Nothing
-      else Just (Texture t)
+renderTarget :: Renderer -> Var (Maybe Texture)
+renderTarget (Renderer r) = newVar get set
+  where
+  get = do
+    t <- Raw.getRenderTarget r
+    return $
+      if t == nullPtr
+        then Nothing
+        else Just (Texture t)
 
-setRenderTarget :: (Functor m, MonadIO m) => Renderer -> Maybe Texture -> m ()
-setRenderTarget (Renderer r) texture =
-  throwIfNeg_ "SDL.Video.Renderer.setRenderTarget" "SDL_SetRenderTarget" $
-  case texture of
-    Nothing -> Raw.setRenderTarget r nullPtr
-    Just (Texture t) -> Raw.setRenderTarget r t
+  set texture =
+    throwIfNeg_ "SDL.Video.Renderer.setRenderTarget" "SDL_SetRenderTarget" $
+    case texture of
+      Nothing -> Raw.setRenderTarget r nullPtr
+      Just (Texture t) -> Raw.setRenderTarget r t
 
 renderGetClipRect :: (MonadIO m) => Renderer -> m (Maybe (Rectangle CInt))
 renderGetClipRect (Renderer r) = liftIO $
