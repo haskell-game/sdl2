@@ -20,9 +20,14 @@ ways you can help:
    exposed in the high-level bindings.
 
 2. The above can be somewhat laborious - an easier way to find out what's
-   missing is to write code. http://www.willusher.io/pages/sdl2/ is a collection
-   of tutorials for C++. These would be useful if they were translated to
-   Haskell, and we'd be happy to store this code in this repository.
+   missing is to write code.
+
+   * http://www.willusher.io/pages/sdl2/ is a collection of tutorials for C++.
+   * http://lazyfoo.net/tutorials/SDL/index.php is another collection of C++
+     tutorials.
+
+   Both of these would be useful if they were translated to Haskell, and we'd be
+   happy to store this code in this repository.
 
 3. Documentation is welcome, but may not be the best use of your time as we are
    currently in a period of rapid development as we find the most productive
