@@ -31,6 +31,7 @@ module SDL.Video
   , setClipboardText
 
   -- * Drawing Primitives
+  , renderClear
   , renderDrawLine
   , renderDrawLines
   , renderDrawPoint
@@ -607,3 +608,8 @@ messageKindToC kind = case kind of
   Error -> Raw.messageBoxFlagError
   Warning -> Raw.messageBoxFlagWarning
   Information -> Raw.messageBoxFlagInformation
+
+renderClear :: Renderer -> IO ()
+renderClear (Renderer r) =
+  throwIfNeg_ "SDL.Video.renderClear" "SDL_RenderClear" $
+  Raw.renderClear r
