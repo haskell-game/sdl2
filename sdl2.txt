@@ -1915,12 +1915,103 @@ InitGameController :: InitFlag
 InitEvents :: InitFlag
 InitEverything :: InitFlag
 InitNoParachute :: InitFlag
+quit :: IO ()
 instance Eq InitFlag
 instance Ord InitFlag
 instance Show InitFlag
 instance Read InitFlag
 instance Bounded InitFlag
 instance Enum InitFlag
+
+module SDL.Video.OpenGL
+data GLAttribute
+GLRedSize :: GLAttribute
+GLGreenSize :: GLAttribute
+GLBlueSize :: GLAttribute
+GLAlphaSize :: GLAttribute
+GLBufferSize :: GLAttribute
+GLDoubleBuffer :: GLAttribute
+GLDepthSize :: GLAttribute
+GLStencilSize :: GLAttribute
+GLAccumRedSize :: GLAttribute
+GLAccumGreenSize :: GLAttribute
+GLAccumBlueSize :: GLAttribute
+GLAccumAlphaSize :: GLAttribute
+GLStereo :: GLAttribute
+GLMultiSampleBuffers :: GLAttribute
+GLMultiSampleSamples :: GLAttribute
+GLAcceleratedVisual :: GLAttribute
+GLRetainedBacking :: GLAttribute
+GLContextMajorVersion :: GLAttribute
+GLContextMinorVersion :: GLAttribute
+GLContextFlags :: GLAttribute
+GLContextProfileMask :: GLAttribute
+GLShareWithCurrentContext :: GLAttribute
+GLFramebufferSRGBCapable :: GLAttribute
+GLContextEGL :: GLAttribute
+glSetAttribute :: GLAttribute -> CInt -> IO ()
+
+-- | Replace the contents of the front buffer with the back buffer's. The
+--   contents of the back buffer are undefined, clear them with
+--   <tt>glClear</tt> or equivalent before drawing to them again.
+glSwapWindow :: Window -> IO ()
+glGetCurrentContext :: IO GLContext
+
+-- | Create a new OpenGL context and makes it the current context for the
+--   window.
+--   
+--   Throws <a>SDLException</a> if the window wasn't configured with OpenGL
+--   support, or if context creation fails.
+glCreateContext :: Window -> IO GLContext
+glGetProcAddress :: CString -> IO (Ptr ())
+data SwapInterval
+ImmediateUpdates :: SwapInterval
+SynchronizedUpdates :: SwapInterval
+LateSwapTearing :: SwapInterval
+glSetSwapInterval :: SwapInterval -> IO ()
+glResetAttributes :: IO ()
+instance Numbered GLAttribute Word32
+
+module SDL.Video.Renderer
+data Renderer
+blitSurface :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
+createTextureFromSurface :: Renderer -> Surface -> IO Texture
+fillRect :: Surface -> Maybe (Rectangle CInt) -> Word32 -> IO ()
+freeSurface :: Surface -> IO ()
+loadBMP :: FilePath -> IO Surface
+mapRGB :: Surface -> Word8 -> Word8 -> Word8 -> IO Word32
+getWindowSurface :: Window -> IO Surface
+setRenderDrawBlendMode :: Renderer -> BlendMode -> IO ()
+setRenderDrawColor :: Renderer -> V4 Word8 -> IO ()
+updateWindowSurface :: Window -> IO ()
+data BlendMode
+BlendNone :: BlendMode
+BlendAlphaBlend :: BlendMode
+BlendAdditive :: BlendMode
+BlendMod :: BlendMode
+data Rectangle a
+Rectangle :: (Point V2 a) -> (V2 a) -> Rectangle a
+data Surface
+data Texture
+renderClear :: Renderer -> IO ()
+renderCopy :: Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> IO ()
+renderDrawLine :: Renderer -> Point V2 CInt -> Point V2 CInt -> IO ()
+renderDrawLines :: Renderer -> Vector (Point V2 CInt) -> IO ()
+renderDrawPoint :: Renderer -> Point V2 CInt -> IO ()
+renderDrawPoints :: Renderer -> Vector (Point V2 CInt) -> IO ()
+renderDrawRect :: Renderer -> Rectangle CInt -> IO ()
+renderDrawRects :: Renderer -> Vector (Rectangle CInt) -> IO ()
+renderFillRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
+renderFillRects :: Renderer -> Vector (Rectangle CInt) -> IO ()
+renderPresent :: Renderer -> IO ()
+renderSetClipRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
+renderSetLogicalSize :: Renderer -> V2 CInt -> IO ()
+renderSetScale :: Renderer -> V2 CFloat -> IO ()
+renderSetViewport :: Renderer -> Maybe (Rectangle CInt) -> IO ()
+instance Eq BlendMode
+instance Show BlendMode
+instance Storable a => Storable (Rectangle a)
+instance Numbered BlendMode Word32
 
 module SDL.Video
 data Window
@@ -1987,6 +2078,8 @@ hideWindow :: Window -> IO ()
 -- | Raise the window above other windows and set the input focus.
 raiseWindow :: Window -> IO ()
 showWindow :: Window -> IO ()
+getWindowMinimumSize :: Window -> IO (V2 CInt)
+getWindowMaximumSize :: Window -> IO (V2 CInt)
 
 -- | Set whether the window should have a border or not.
 setWindowBordered :: Window -> Bool -> IO ()
@@ -2006,6 +2099,8 @@ setWindowGrab :: Window -> Bool -> IO ()
 --   
 --   Throws <a>SDLException</a> on failure.
 setWindowMode :: Window -> WindowMode -> IO ()
+setWindowMaximumSize :: Window -> V2 CInt -> IO ()
+setWindowMinimumSize :: Window -> V2 CInt -> IO ()
 
 -- | Set the position of the window.
 setWindowPosition :: Window -> WindowPosition -> IO ()
@@ -2029,34 +2124,6 @@ hasClipboardText :: IO Bool
 --   
 --   Throws <a>SDLException</a> on failure.
 setClipboardText :: Text -> IO ()
-createTextureFromSurface :: Renderer -> Surface -> IO Texture
-loadBMP :: FilePath -> IO Surface
-renderClear :: Renderer -> IO ()
-renderCopy :: Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> IO ()
-renderDrawLine :: Renderer -> Point V2 CInt -> Point V2 CInt -> IO ()
-renderDrawLines :: Renderer -> Vector (Point V2 CInt) -> IO ()
-renderDrawPoint :: Renderer -> Point V2 CInt -> IO ()
-renderDrawPoints :: Renderer -> Vector (Point V2 CInt) -> IO ()
-renderDrawRect :: Renderer -> Rectangle CInt -> IO ()
-renderDrawRects :: Renderer -> Vector (Rectangle CInt) -> IO ()
-renderFillRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
-renderFillRects :: Renderer -> Vector (Rectangle CInt) -> IO ()
-renderPresent :: Renderer -> IO ()
-renderSetClipRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
-renderSetLogicalSize :: Renderer -> V2 CInt -> IO ()
-renderSetScale :: Renderer -> V2 CFloat -> IO ()
-renderSetViewport :: Renderer -> Maybe (Rectangle CInt) -> IO ()
-setRenderDrawBlendMode :: Renderer -> BlendMode -> IO ()
-setRenderDrawColor :: Renderer -> V4 Word8 -> IO ()
-data BlendMode
-BlendNone :: BlendMode
-BlendAlphaBlend :: BlendMode
-BlendAdditive :: BlendMode
-BlendMod :: BlendMode
-data Rectangle a
-Rectangle :: (Point V2 a) -> (V2 a) -> Rectangle a
-data Surface
-data Texture
 
 -- | Throws <a>SDLException</a> on failure.
 getDisplays :: IO [Display]
@@ -2118,52 +2185,6 @@ IYUV :: PixelFormat
 YUY2 :: PixelFormat
 UYVY :: PixelFormat
 YVYU :: PixelFormat
-data GLAttribute
-GLRedSize :: GLAttribute
-GLGreenSize :: GLAttribute
-GLBlueSize :: GLAttribute
-GLAlphaSize :: GLAttribute
-GLBufferSize :: GLAttribute
-GLDoubleBuffer :: GLAttribute
-GLDepthSize :: GLAttribute
-GLStencilSize :: GLAttribute
-GLAccumRedSize :: GLAttribute
-GLAccumGreenSize :: GLAttribute
-GLAccumBlueSize :: GLAttribute
-GLAccumAlphaSize :: GLAttribute
-GLStereo :: GLAttribute
-GLMultiSampleBuffers :: GLAttribute
-GLMultiSampleSamples :: GLAttribute
-GLAcceleratedVisual :: GLAttribute
-GLRetainedBacking :: GLAttribute
-GLContextMajorVersion :: GLAttribute
-GLContextMinorVersion :: GLAttribute
-GLContextFlags :: GLAttribute
-GLContextProfileMask :: GLAttribute
-GLShareWithCurrentContext :: GLAttribute
-GLFramebufferSRGBCapable :: GLAttribute
-GLContextEGL :: GLAttribute
-glSetAttribute :: GLAttribute -> CInt -> IO ()
-
--- | Replace the contents of the front buffer with the back buffer's. The
---   contents of the back buffer are undefined, clear them with
---   <tt>glClear</tt> or equivalent before drawing to them again.
-glSwapWindow :: Window -> IO ()
-glGetCurrentContext :: IO GLContext
-
--- | Create a new OpenGL context and makes it the current context for the
---   window.
---   
---   Throws <a>SDLException</a> if the window wasn't configured with OpenGL
---   support, or if context creation fails.
-glCreateContext :: Window -> IO GLContext
-glGetProcAddress :: CString -> IO (Ptr ())
-data SwapInterval
-ImmediateUpdates :: SwapInterval
-SynchronizedUpdates :: SwapInterval
-LateSwapTearing :: SwapInterval
-glSetSwapInterval :: SwapInterval -> IO ()
-glResetAttributes :: IO ()
 
 -- | Disable screen savers.
 disableScreenSaver :: IO ()
@@ -2183,7 +2204,6 @@ data MessageKind
 Error :: MessageKind
 Warning :: MessageKind
 Information :: MessageKind
-instance Eq Window
 instance Eq WindowMode
 instance Show WindowMode
 instance Eq WindowPosition
@@ -2200,9 +2220,7 @@ instance Eq Display
 instance Show Display
 instance Eq MessageKind
 instance Show MessageKind
-instance Eq BlendMode
-instance Show BlendMode
-instance Storable a => Storable (Rectangle a)
+instance Numbered WindowMode Word32
 
 module SDL.Events
 data Event
