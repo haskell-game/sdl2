@@ -1,3 +1,0 @@
--- |
-
-module SDL.Timers where

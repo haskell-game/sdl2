@@ -8,7 +8,7 @@ module SDL
   , module SDL.Init
   , module SDL.Joystick
   , module SDL.Power
-  , module SDL.Timers
+  , module SDL.Time
   , module SDL.Video
   , module SDL.Window
   ) where
@@ -21,6 +21,6 @@ import SDL.Haptic
 import SDL.Init
 import SDL.Joystick
 import SDL.Power
-import SDL.Timers
+import SDL.Time
 import SDL.Video
 import SDL.Window

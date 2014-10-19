@@ -37,7 +37,7 @@ library
     SDL.Init
     SDL.Power
     SDL.Joystick
-    SDL.Timers
+    SDL.Time
     SDL.Video
     SDL.Window
 
