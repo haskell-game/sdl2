@@ -116,6 +116,9 @@ executable lazyfoo-lesson-01
   main-is:
     Lesson01.hs
 
+  default-language:
+    Haskell2010
+
   ghc-options: -main-is Lazyfoo.Lesson01
 
 executable lazyfoo-lesson-02
@@ -129,5 +132,8 @@ executable lazyfoo-lesson-02
 
   main-is:
     Lesson02.hs
+
+  default-language:
+    Haskell2010
 
   ghc-options: -main-is Lazyfoo.Lesson02
