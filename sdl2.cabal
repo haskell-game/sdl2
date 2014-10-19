@@ -50,6 +50,7 @@ library
     SDL.Joystick
     SDL.Time
     SDL.Video
+    SDL.Video.OpenGL
     SDL.Window
 
     SDL.Raw
