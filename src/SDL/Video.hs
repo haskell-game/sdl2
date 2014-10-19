@@ -43,6 +43,7 @@ module SDL.Video
   , renderSetClipRect
   , renderSetLogicalSize
   , renderSetScale
+  , renderSetViewport
   , setRenderDrawBlendMode
   , setRenderDrawColor
   , BlendMode(..)
@@ -647,3 +648,8 @@ renderSetClipRect :: Renderer -> Rectangle CInt -> IO ()
 renderSetClipRect (Renderer r) rect =
   throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
   with rect $ Raw.renderSetClipRect r . castPtr
+
+renderSetViewport :: Renderer -> Rectangle CInt -> IO ()
+renderSetViewport (Renderer r) rect =
+  throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
+  with rect $ Raw.renderSetViewport r . castPtr
