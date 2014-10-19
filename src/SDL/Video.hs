@@ -37,6 +37,9 @@ module SDL.Video
   , renderDrawPoints
   , renderDrawRect
   , renderDrawRects
+  , renderFillRect
+  , renderFillRects
+  , setRenderDrawColor
   , Rectangle(..)
 
   -- * Display
@@ -557,6 +560,26 @@ renderDrawRects (Renderer r) rects =
     Raw.renderDrawRects r
                         (castPtr rp)
                         (fromIntegral (SV.length rects))
+
+setRenderDrawColor :: Renderer -> V4 Word8 -> IO ()
+setRenderDrawColor (Renderer re) (V4 r g b a) =
+  throwIfNeg_ "SDL.Video.setRenderDrawColor" "SDL_SetRenderDrawColor" $
+  Raw.setRenderDrawColor re r g b a
+
+renderFillRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
+renderFillRect (Renderer r) rect = do
+  throwIfNeg_ "SDL.Video.renderFillRect" "SDL_RenderFillRect" $
+    maybeWith with rect $ \rPtr ->
+      Raw.renderFillRect r
+                         (castPtr rPtr)
+
+renderFillRects :: Renderer -> SV.Vector (Rectangle CInt) -> IO ()
+renderFillRects (Renderer r) rects = do
+  throwIfNeg_ "SDL.Video.renderFillRects" "SDL_RenderFillRects" $
+    SV.unsafeWith rects $ \rp ->
+      Raw.renderFillRects r
+                          (castPtr rp)
+                          (fromIntegral (SV.length rects))
 
 -- | Show a simple message box with the given title and a message. Consider
 -- writing your messages to @stderr@ too.
