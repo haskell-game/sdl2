@@ -2,88 +2,30 @@
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video.OpenGL
   ( -- * OpenGL
-    GLAttribute(..)
-  , glSetAttribute
-  , glSwapWindow
-  , glGetCurrentContext
+    GLContext
   , glCreateContext
-  , Raw.glGetProcAddress
+  , Profile(..)
+  , Mode(..)
+  , glMakeCurrent
+  , glDeleteContext
+
+  , glSwapWindow
   , SwapInterval(..)
   , glSetSwapInterval
-  , Raw.glResetAttributes
+
+  -- ** Function Loading
+  , Raw.glGetProcAddress
   ) where
 
-import Data.Word
+import Control.Applicative
 import Foreign.C.Types
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
 import qualified SDL.Raw as Raw
 
-data GLAttribute
-  = GLRedSize
-  | GLGreenSize
-  | GLBlueSize
-  | GLAlphaSize
-  | GLBufferSize
-  | GLDoubleBuffer
-  | GLDepthSize
-  | GLStencilSize
-  | GLAccumRedSize
-  | GLAccumGreenSize
-  | GLAccumBlueSize
-  | GLAccumAlphaSize
-  | GLStereo
-  | GLMultiSampleBuffers
-  | GLMultiSampleSamples
-  | GLAcceleratedVisual
-  | GLRetainedBacking
-  | GLContextMajorVersion
-  | GLContextMinorVersion
-  | GLContextFlags
-  | GLContextProfileMask
-  | GLShareWithCurrentContext
-  | GLFramebufferSRGBCapable
-  | GLContextEGL
-
-instance ToNumber GLAttribute Word32 where
-  toNumber GLRedSize = Raw.glAttrRedSize
-  toNumber GLGreenSize = Raw.glAttrGreenSize
-  toNumber GLBlueSize = Raw.glAttrBlueSize
-  toNumber GLAlphaSize = Raw.glAttrAlphaSize
-  toNumber GLBufferSize = Raw.glAttrBufferSize
-  toNumber GLDoubleBuffer = Raw.glAttrDoubleBuffer
-  toNumber GLDepthSize = Raw.glAttrDepthSize
-  toNumber GLStencilSize = Raw.glAttrStencilSize
-  toNumber GLAccumRedSize = Raw.glAttrAccumRedSize
-  toNumber GLAccumGreenSize = Raw.glAttrAccumGreenSize
-  toNumber GLAccumBlueSize = Raw.glAttrAccumBlueSize
-  toNumber GLAccumAlphaSize = Raw.glAttrAccumAlphaSize
-  toNumber GLStereo = Raw.glAttrStereo
-  toNumber GLMultiSampleBuffers = Raw.glAttrMultiSampleBuffers
-  toNumber GLMultiSampleSamples = Raw.glAttrMultiSampleSamples
-  toNumber GLAcceleratedVisual = Raw.glAttrAcceleratedVisual
-  toNumber GLRetainedBacking = Raw.glAttrRetainedBacking
-  toNumber GLContextMajorVersion = Raw.glAttrContextMajorVersion
-  toNumber GLContextMinorVersion = Raw.glAttrContextMinorVersion
-  toNumber GLContextFlags = Raw.glAttrContextFlags
-  toNumber GLContextProfileMask = Raw.glAttrContextProfileMask
-  toNumber GLShareWithCurrentContext = Raw.glAttrShareWithCurrentContext
-  toNumber GLFramebufferSRGBCapable = Raw.glAttrFramebufferSRGBCapable
-  toNumber GLContextEGL = Raw.glAttrContextEGL
-
-glSetAttribute :: GLAttribute -> CInt -> IO ()
-glSetAttribute attribute value =
-  throwIfNeg_ "SDL.Video.glSetAttribute" "SDL_GL_SetAttribute" $
-    Raw.glSetAttribute (toNumber attribute) value
-
--- | Replace the contents of the front buffer with the back buffer's. The
--- contents of the back buffer are undefined, clear them with @glClear@ or
--- equivalent before drawing to them again.
-glSwapWindow :: Window -> IO ()
-glSwapWindow (Window w) = Raw.glSwapWindow w
-
-newtype GLContext = GLContext (Raw.GLContext)
+newtype GLContext = GLContext Raw.GLContext
+  deriving (Eq)
 
 -- | Create a new OpenGL context and makes it the current context for the
 -- window.
@@ -91,19 +33,48 @@ newtype GLContext = GLContext (Raw.GLContext)
 -- Throws 'SDLException' if the window wasn't configured with OpenGL
 -- support, or if context creation fails.
 glCreateContext :: Window -> IO GLContext
-glCreateContext (Window w) = fmap GLContext $ throwIfNull "SDL.Video.glCreateContext" "SDL_GL_CreateContext" $ Raw.glCreateContext w
+glCreateContext (Window w) =
+  GLContext <$> throwIfNull "SDL.Video.glCreateContext" "SDL_GL_CreateContext"
+    (Raw.glCreateContext w)
 
-glGetCurrentContext :: IO GLContext
-glGetCurrentContext = fmap GLContext $ throwIfNull "SDL.Video.glGetCurrentContext" "SDL_GL_GetCurrentContext" Raw.glGetCurrentContext
+data Profile
+  = Core Mode CInt CInt
+  | Compatibility Mode CInt CInt
+  | ES Mode CInt CInt
+  deriving (Eq, Show)
 
-data SwapInterval = ImmediateUpdates | SynchronizedUpdates | LateSwapTearing
+data Mode
+  = Normal
+  | Debug
+  deriving (Eq, Show)
 
-swapIntervalToC :: SwapInterval -> CInt
-swapIntervalToC ImmediateUpdates = 0
-swapIntervalToC SynchronizedUpdates = 1
-swapIntervalToC LateSwapTearing = -1
+-- | Throws 'SDLException' on failure.
+glMakeCurrent :: Window -> GLContext -> IO ()
+glMakeCurrent (Window w) (GLContext ctx) =
+  throwIfNeg_ "SDL.Video.OpenGL.glMakeCurrent" "SDL_GL_MakeCurrent" $
+    Raw.glMakeCurrent w ctx
+
+glDeleteContext :: GLContext -> IO ()
+glDeleteContext (GLContext ctx) = Raw.glDeleteContext ctx
+
+-- | Replace the contents of the front buffer with the back buffer's. The
+-- contents of the back buffer are undefined, clear them with @glClear@ or
+-- equivalent before drawing to them again.
+glSwapWindow :: Window -> IO ()
+glSwapWindow (Window w) = Raw.glSwapWindow w
+
+data SwapInterval
+  = ImmediateUpdates
+  | SynchronizedUpdates
+  | LateSwapTearing
+  deriving (Eq, Show)
+
+instance ToNumber SwapInterval CInt where
+  toNumber ImmediateUpdates = 0
+  toNumber SynchronizedUpdates = 1
+  toNumber LateSwapTearing = -1
 
 glSetSwapInterval :: SwapInterval -> IO ()
 glSetSwapInterval swapInterval =
   throwIfNeg_ "SDL.Video.glSetSwapInterval" "SDL_GL_SetSwapInterval" $
-    Raw.glSetSwapInterval (swapIntervalToC swapInterval)
+    Raw.glSetSwapInterval (toNumber swapInterval)
