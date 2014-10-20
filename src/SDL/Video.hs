@@ -479,7 +479,7 @@ createRenderer :: Window -> CInt -> RendererConfig -> IO Renderer
 createRenderer (Window w) driver config = do
   fmap Renderer $
     throwIfNull "SDL.Video.createRenderer" "SDL_CreateRenderer" $
-    Raw.createRenderer w driver flags
+                Raw.createRenderer w driver flags
   where
     flags = foldr (.|.) 0
       [ if rendererSoftware config then Raw.rendererFlagSoftware else 0
@@ -495,7 +495,9 @@ createWindowAndRenderer :: WindowConfig -> IO (Window, Renderer)
 createWindowAndRenderer config =
   alloca $ \wptr ->
   alloca $ \rptr -> do
-      void $ Raw.createWindowAndRenderer w h flags wptr rptr
+      void $
+        throwIfNeg "SDL.Video.createWindowAndRenderer" "SDL_CreateWindowAndRenderer" $
+                   Raw.createWindowAndRenderer w h flags wptr rptr
       win <- peek wptr
       ren <- peek rptr
       return (Window win, Renderer ren)
