@@ -36,6 +36,7 @@ module SDL.Video
   -- * Renderer Management
   , createRenderer
   , destroyRenderer
+  , createWindowAndRenderer
 
   -- * Clipboard Handling
   , getClipboardText
@@ -70,7 +71,7 @@ import Prelude hiding (all, foldl, foldr)
 
 import Control.Applicative
 import Control.Exception
-import Control.Monad (forM, unless)
+import Control.Monad (forM, unless, void)
 import Data.Foldable
 import Data.Maybe (catMaybes)
 import Data.Text (Text)
@@ -102,7 +103,10 @@ createWindow title config =
           Absolute (P (V2 x y)) -> create x y w h
     create' (windowSize config) flags >>= return . Window
   where
-    flags = foldr (.|.) 0
+    flags = windowConfigToFlags config
+
+windowConfigToFlags :: WindowConfig -> Word32
+windowConfigToFlags config = foldr (.|.) 0
       [ if windowBorder config then 0 else Raw.windowFlagBorderless
       , if windowHighDPI config then Raw.windowFlagAllowHighDPI else 0
       , if windowInputGrabbed config then Raw.windowFlagInputGrabbed else 0
@@ -484,3 +488,15 @@ createRenderer (Window w) driver config = do
 
 destroyRenderer :: Renderer -> IO ()
 destroyRenderer (Renderer r) = Raw.destroyRenderer r
+
+createWindowAndRenderer :: WindowConfig -> IO (Window, Renderer)
+createWindowAndRenderer config =
+  alloca $ \wptr ->
+  alloca $ \rptr -> do
+      void $ Raw.createWindowAndRenderer w h flags wptr rptr
+      win <- peek wptr
+      ren <- peek rptr
+      return (Window win, Renderer ren)
+  where
+    (V2 w h) = windowSize config
+    flags    = windowConfigToFlags config
