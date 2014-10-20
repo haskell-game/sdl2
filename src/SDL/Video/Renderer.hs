@@ -4,8 +4,10 @@ module SDL.Video.Renderer
   ( Renderer
 
   -- * Drawing Primitives
+  , blitScaled
   , blitSurface
   , createTextureFromSurface
+  , convertSurface
   , fillRect
   , freeSurface
   , loadBMP
@@ -13,10 +15,12 @@ module SDL.Video.Renderer
   , getWindowSurface
   , setRenderDrawBlendMode
   , setRenderDrawColor
+  , surfaceFormat
   , updateWindowSurface
   , BlendMode(..)
   , Rectangle(..)
   , Surface
+  , SurfacePixelFormat
   , Texture
 
   -- * Drawing Primitives
@@ -83,13 +87,18 @@ loadBMP filePath =
   throwIfNull "SDL.Video.loadBMP" "SDL_LoadBMP" $
   withCString filePath $ Raw.loadBMP
 
+newtype SurfacePixelFormat = SurfacePixelFormat (Ptr Raw.PixelFormat)
+
+-- It's possible we could use unsafePerformIO here, but I'm not
+-- sure. De need to guarantee that pointers aren't reused?
+mapRGB :: SurfacePixelFormat -> Word8 -> Word8 -> Word8 -> IO Word32
+mapRGB (SurfacePixelFormat fmt) = Raw.mapRGB fmt
+
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->format is immutable, but do we need to guarantee that pointers
 -- aren't reused by *different* surfaces?
-mapRGB :: Surface -> Word8 -> Word8 -> Word8 -> IO Word32
-mapRGB (Surface s) r g b = do
-  format <- Raw.surfaceFormat <$> peek s
-  Raw.mapRGB format r g b
+surfaceFormat :: Surface -> IO SurfacePixelFormat
+surfaceFormat (Surface s) = SurfacePixelFormat . Raw.surfaceFormat <$> peek s
 
 getWindowSurface :: Window -> IO Surface
 getWindowSurface (Window w) =
@@ -226,3 +235,16 @@ renderDrawPoints (Renderer r) points =
     Raw.renderDrawPoints r
                          (castPtr cp)
                          (fromIntegral (SV.length points))
+
+convertSurface :: Surface -> SurfacePixelFormat -> IO Surface
+convertSurface (Surface s) (SurfacePixelFormat fmt) =
+  fmap Surface $
+  throwIfNull "SDL.Video.Renderer.convertSurface" "SDL_ConvertSurface" $
+  Raw.convertSurface s fmt 0
+
+blitScaled :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
+blitScaled (Surface src) srcRect (Surface dst) dstRect =
+  throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
+  maybeWith with srcRect $ \srcPtr ->
+  maybeWith with dstRect $ \dstPtr ->
+  Raw.blitScaled src (castPtr srcPtr) dst (castPtr dstPtr)

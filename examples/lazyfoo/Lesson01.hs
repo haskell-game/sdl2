@@ -15,7 +15,8 @@ main = do
   SDL.showWindow window
 
   screenSurface <- SDL.getWindowSurface window
-  white <- SDL.mapRGB screenSurface 0xff 0xff 0xff
+  screenSurfaceFormat <- SDL.surfaceFormat screenSurface
+  white <- SDL.mapRGB screenSurfaceFormat 0xff 0xff 0xff
   SDL.fillRect screenSurface Nothing white
   SDL.updateWindowSurface window
 

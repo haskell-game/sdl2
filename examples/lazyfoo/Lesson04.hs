@@ -30,10 +30,6 @@ main = do
   surfaceLeft <- SDL.loadBMP "examples/lazyfoo/left.bmp"
   surfaceRight <- SDL.loadBMP "examples/lazyfoo/right.bmp"
 
-  white <- SDL.mapRGB screenSurface 0xff 0xff 0xff
-  SDL.fillRect screenSurface Nothing white
-  SDL.updateWindowSurface window
-
   let
     loop oldSurface = do
       let collectEvents = do
