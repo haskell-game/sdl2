@@ -8,6 +8,7 @@ module SDL.Video.Renderer
   , blitSurface
   , createTextureFromSurface
   , convertSurface
+  , destroyTexture
   , fillRect
   , freeSurface
   , loadBMP
@@ -71,6 +72,9 @@ createTextureFromSurface (Renderer r) (Surface s) =
   fmap Texture $
   throwIfNull "SDL.Video.createTextureFromSurface" "SDL_CreateTextureFromSurface" $
   Raw.createTextureFromSurface r s
+
+destroyTexture :: Texture -> IO ()
+destroyTexture (Texture t) = Raw.destroyTexture t
 
 fillRect :: Surface -> Maybe (Rectangle CInt) -> Word32 -> IO ()
 fillRect (Surface s) rect col =
