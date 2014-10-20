@@ -10,6 +10,7 @@ module SDL.Events
   , pollEvent
   , Raw.pumpEvents
   , waitEvent
+  , waitEventTimeout
   ) where
 
 import Control.Applicative
@@ -207,3 +208,10 @@ waitEvent = alloca $ \e -> do
   SDLEx.throwIfNeg_ "SDL.Events.waitEvent" "SDL_WaitEvent" $
     Raw.waitEvent e
   convertRaw <$> peek e
+
+waitEventTimeout :: CInt -> IO (Maybe Event)
+waitEventTimeout timeout = alloca $ \e -> do
+  n <- Raw.waitEventTimeout e timeout
+  if n == 0
+     then return Nothing
+     else Just . convertRaw <$> peek e
