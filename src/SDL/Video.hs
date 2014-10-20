@@ -34,9 +34,7 @@ module SDL.Video
   , setWindowTitle
 
   -- * Renderer Management
-  , RendererConfig(..)
   , createRenderer
-  , defaultRenderer
   , destroyRenderer
 
   -- * Clipboard Handling
