@@ -36,6 +36,7 @@ module SDL.Video
   -- * Renderer Management
   , RendererConfig(..)
   , createRenderer
+  , defaultRenderer
   , destroyRenderer
 
   -- * Clipboard Handling
