@@ -10,6 +10,10 @@ On Ubuntu you can install from source with a simple
 
     ./configure && make -j4 && sudo make install
 
+On OSX you can install SDL with [homebrew](http://brew.sh/). pkg-config is also recommended.
+
+    brew install sdl2 pkg-config
+
 # Contributing
 
 We need your help! The SDL API is fairly large, and the more hands we have, the
