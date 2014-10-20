@@ -1,7 +1,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video.Renderer
-  ( Renderer(..)
+  ( Renderer
 
   -- * Drawing Primitives
   , blitScaled
@@ -57,8 +57,6 @@ import SDL.Internal.Types
 
 import qualified Data.Vector.Storable as SV
 import qualified SDL.Raw as Raw
-
-newtype Renderer = Renderer Raw.Renderer
 
 blitSurface :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
 blitSurface (Surface src) srcRect (Surface dst) dstRect =

@@ -2,6 +2,7 @@ module SDL.Internal.Types
   ( WindowID(..)
   , Joystick(..)
   , Window(..)
+  , Renderer(..)
   ) where
 
 import Foreign
@@ -14,4 +15,7 @@ newtype WindowID = WindowID Word32
 newtype Joystick = Joystick { joystickPtr :: Raw.Joystick }
 
 newtype Window = Window (Raw.Window)
+  deriving (Eq)
+
+newtype Renderer = Renderer Raw.Renderer
   deriving (Eq)
