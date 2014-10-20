@@ -18,13 +18,13 @@ import Foreign
 import Foreign.C
 import Linear
 import Linear.Affine (Point(P))
-import SDL.Raw.Types hiding (Event(..), Point)
 import SDL.Internal.Types (WindowID(WindowID))
 
 import qualified Data.ByteString.Char8 as BSC8
 import qualified Data.Text.Encoding as Text
 import qualified SDL.Exception as SDLEx
 import qualified SDL.Raw as Raw
+import qualified SDL.Raw.Types as Raw
 
 data Event = Event
   { eventTimestamp :: Word32
@@ -72,7 +72,7 @@ data EventPayload
                   ,keyboardEventKeyMotion :: KeyMotion
                   ,keyboardEventState :: KeyState
                   ,keyboardEventRepeat :: Bool
-                  ,keyboardEventKeysym :: Keysym}
+                  ,keyboardEventKeysym :: Raw.Keysym}
   | TextEditingEvent {textEditingEventWindowID :: WindowID
                      ,textEditingEventText :: Text
                      ,textEditingEventStart :: Int32
@@ -94,23 +94,23 @@ data EventPayload
   | MouseWheelEvent {mouseWheelEventWindowID :: WindowID
                     ,mouseWheelEventWhich :: Word32
                     ,mouseWheelEventPos :: V2 Int32}
-  | JoyAxisEvent {joyAxisEventWhich :: JoystickID
+  | JoyAxisEvent {joyAxisEventWhich :: Raw.JoystickID
                  ,joyAxisEventAxis :: Word8
                  ,joyAxisEventValue :: Int16}
-  | JoyBallEvent {joyBallEventWhich :: JoystickID
+  | JoyBallEvent {joyBallEventWhich :: Raw.JoystickID
                  ,joyBallEventBall :: Word8
                  ,joyBallEventRelMotion :: V2 Int16}
-  | JoyHatEvent {joyHatEventWhich :: JoystickID
+  | JoyHatEvent {joyHatEventWhich :: Raw.JoystickID
                 ,joyHatEventHat :: Word8
                 ,joyHatEventValue :: Word8}
-  | JoyButtonEvent {joyButtonEventWhich :: JoystickID
+  | JoyButtonEvent {joyButtonEventWhich :: Raw.JoystickID
                    ,joyButtonEventButton :: Word8
                    ,joyButtonEventState :: Word8}
   | JoyDeviceEvent {joyDeviceEventWhich :: Int32}
-  | ControllerAxisEvent {controllerAxisEventWhich :: JoystickID
+  | ControllerAxisEvent {controllerAxisEventWhich :: Raw.JoystickID
                         ,controllerAxisEventAxis :: Word8
                         ,controllerAxisEventValue :: Int16}
-  | ControllerButtonEvent {controllerButtonEventWhich :: JoystickID
+  | ControllerButtonEvent {controllerButtonEventWhich :: Raw.JoystickID
                           ,controllerButtonEventButton :: Word8
                           ,controllerButtonEventState :: Word8}
   | ControllerDeviceEvent {controllerDeviceEventWhich :: Int32}
@@ -119,19 +119,19 @@ data EventPayload
               ,userEventCode :: Int32
               ,userEventData1 :: Ptr ()
               ,userEventData2 :: Ptr ()}
-  | SysWMEvent {sysWMEventMsg :: SysWMmsg}
-  | TouchFingerEvent {touchFingerEventTouchID :: TouchID
-                     ,touchFingerEventFingerID :: FingerID
+  | SysWMEvent {sysWMEventMsg :: Raw.SysWMmsg}
+  | TouchFingerEvent {touchFingerEventTouchID :: Raw.TouchID
+                     ,touchFingerEventFingerID :: Raw.FingerID
                      ,touchFingerEventPos :: Point V2 CFloat
                      ,touchFingerEventRelMotion :: V2 CFloat
                      ,touchFingerEventPressure :: CFloat}
-  | MultiGestureEvent {multiGestureEventTouchID :: TouchID
+  | MultiGestureEvent {multiGestureEventTouchID :: Raw.TouchID
                       ,multiGestureEventDTheta :: CFloat
                       ,multiGestureEventDDist :: CFloat
                       ,multiGestureEventPos :: Point V2 CFloat
                       ,multiGestureEventNumFingers :: Word16}
-  | DollarGestureEvent {dollarGestureEventTouchID :: TouchID
-                       ,dollarGestureEventGestureID :: GestureID
+  | DollarGestureEvent {dollarGestureEventTouchID :: Raw.TouchID
+                       ,dollarGestureEventGestureID :: Raw.GestureID
                        ,dollarGestureEventNumFingers :: Word32
                        ,dollarGestureEventError :: CFloat
                        ,dollagGestureEventPos :: Point V2 CFloat}

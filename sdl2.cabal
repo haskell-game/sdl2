@@ -110,52 +110,29 @@ library
 
 -- We should exclude these executables with a flag
 executable lazyfoo-lesson-01
-  build-depends:
-    base >= 4.0 && < 4.8,
-    linear >= 1.10.1.2 && < 1.11,
-    sdl2
-
-  hs-source-dirs:
-    examples/lazyfoo
-
-  main-is:
-    Lesson01.hs
-
-  default-language:
-    Haskell2010
-
+  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson01.hs
+  default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson01
 
 executable lazyfoo-lesson-02
-  build-depends:
-    base >= 4.0 && < 4.8,
-    linear >= 1.10.1.2 && < 1.11,
-    sdl2
-
-  hs-source-dirs:
-    examples/lazyfoo
-
-  main-is:
-    Lesson02.hs
-
-  default-language:
-    Haskell2010
-
+  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson02.hs
+  default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson02
 
 executable lazyfoo-lesson-03
-  build-depends:
-    base >= 4.0 && < 4.8,
-    linear >= 1.10.1.2 && < 1.11,
-    sdl2
-
-  hs-source-dirs:
-    examples/lazyfoo
-
-  main-is:
-    Lesson03.hs
-
-  default-language:
-    Haskell2010
-
+  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson03.hs
+  default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson03
+
+executable lazyfoo-lesson-04
+  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson04.hs
+  default-language: Haskell2010
+  ghc-options: -main-is Lazyfoo.Lesson04
