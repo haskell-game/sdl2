@@ -1,7 +1,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video.Renderer
-  ( Renderer(..)
+  ( Renderer
 
   -- * Drawing Primitives
   , blitScaled
