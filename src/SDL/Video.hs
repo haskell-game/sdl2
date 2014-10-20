@@ -34,6 +34,7 @@ module SDL.Video
   , setWindowTitle
 
   -- * Renderer Management
+  , RendererConfig(..)
   , createRenderer
   , destroyRenderer
   , createWindowAndRenderer
