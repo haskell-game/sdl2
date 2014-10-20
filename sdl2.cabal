@@ -45,6 +45,7 @@ library
     SDL.Exception
     SDL.Filesystem
     SDL.Haptic
+    SDL.Hints
     SDL.Init
     SDL.Input
     SDL.Input.Keyboard

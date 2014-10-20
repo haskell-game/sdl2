@@ -5,6 +5,7 @@ module SDL
   , module SDL.Exception
   , module SDL.Filesystem
   , module SDL.Haptic
+  , module SDL.Hints
   , module SDL.Init
   , module SDL.Input
   , module SDL.Joystick
@@ -19,6 +20,7 @@ import SDL.Events
 import SDL.Exception
 import SDL.Filesystem
 import SDL.Haptic
+import SDL.Hints
 import SDL.Init
 import SDL.Input
 import SDL.Joystick
