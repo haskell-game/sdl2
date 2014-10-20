@@ -36,6 +36,7 @@ module SDL.Video
   -- * Renderer Management
   , RendererConfig(..)
   , createRenderer
+  , defaultRenderer
   , destroyRenderer
 
   -- * Clipboard Handling
@@ -460,6 +461,14 @@ data RendererConfig = RendererConfig
   , rendererAccelerated   :: Bool
   , rendererPresentVSync  :: Bool
   , rendererTargetTexture :: Bool
+  }
+
+defaultRenderer :: RendererConfig
+defaultRenderer = RendererConfig
+  { rendererSoftware      = False
+  , rendererAccelerated   = True
+  , rendererPresentVSync  = False
+  , rendererTargetTexture = False
   }
 
 createRenderer :: Window -> CInt -> RendererConfig -> IO Renderer
