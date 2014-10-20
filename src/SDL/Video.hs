@@ -33,6 +33,10 @@ module SDL.Video
   , setWindowSize
   , setWindowTitle
 
+  -- * Renderer Management
+  , createRenderer
+  , destroyRenderer
+
   -- * Clipboard Handling
   , getClipboardText
   , hasClipboardText
@@ -449,3 +453,26 @@ getWindowMinimumSize (Window w) =
   alloca $ \hptr -> do
     Raw.getWindowMinimumSize w wptr hptr
     V2 <$> peek wptr <*> peek hptr
+
+data RendererConfig = RendererConfig
+  { rendererSoftware      :: Bool
+  , rendererAccelerated   :: Bool
+  , rendererPresentVSync  :: Bool
+  , rendererTargetTexture :: Bool
+  }
+
+createRenderer :: Window -> CInt -> RendererConfig -> IO Renderer
+createRenderer (Window w) driver config = do
+  fmap Renderer $
+    throwIfNull "SDL.Video.createRenderer" "SDL_CreateRenderer" $
+    Raw.createRenderer w driver flags
+  where
+    flags = foldr (.|.) 0
+      [ if rendererSoftware config then Raw.rendererFlagSoftware else 0
+      , if rendererAccelerated config then Raw.rendererFlagAccelerated else 0
+      , if rendererPresentVSync config then Raw.rendererFlagPresentVSync else 0
+      , if rendererTargetTexture config then Raw.rendererFlagTargetTexture else 0
+      ]
+
+destroyRenderer :: Renderer -> IO ()
+destroyRenderer (Renderer r) = Raw.destroyRenderer r
