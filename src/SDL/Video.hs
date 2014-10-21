@@ -34,12 +34,8 @@ module SDL.Video
   , setWindowTitle
 
   -- * Renderer Management
-  , RendererConfig(..)
   , createRenderer
-  , defaultRenderer
   , destroyRenderer
-  , RendererInfo(..)
-  , getRendererInfo
 
   -- * Clipboard Handling
   , getClipboardText
@@ -51,7 +47,6 @@ module SDL.Video
   , Display(..)
   , DisplayMode(..)
   , VideoDriver(..)
-  , PixelFormat(..)
 
   -- * Screen Savers
   -- | Screen savers should be disabled when the sudden enablement of the
@@ -295,84 +290,6 @@ data VideoDriver = VideoDriver {
                  }
                  deriving (Eq, Show)
 
-data PixelFormat = Unknown
-                 | Index1LSB
-                 | Index1MSB
-                 | Index4LSB
-                 | Index4MSB
-                 | Index8
-                 | RGB332
-                 | RGB444
-                 | RGB555
-                 | BGR555
-                 | ARGB4444
-                 | RGBA4444
-                 | ABGR4444
-                 | BGRA4444
-                 | ARGB1555
-                 | RGBA5551
-                 | ABGR1555
-                 | BGRA5551
-                 | RGB565
-                 | BGR565
-                 | RGB24
-                 | BGR24
-                 | RGB888
-                 | RGBX8888
-                 | BGR888
-                 | BGRX8888
-                 | ARGB8888
-                 | RGBA8888
-                 | ABGR8888
-                 | BGRA8888
-                 | ARGB2101010
-                 | YV12
-                 | IYUV
-                 | YUY2
-                 | UYVY
-                 | YVYU
-                 deriving (Eq, Show)
-
-instance FromNumber PixelFormat Word32 where
-  fromNumber n' = case n' of
-    n | n == Raw.pixelFormatUnknown -> Unknown
-    n | n == Raw.pixelFormatIndex1LSB -> Index1LSB
-    n | n == Raw.pixelFormatIndex1MSB -> Index1MSB
-    n | n == Raw.pixelFormatIndex4LSB -> Index4LSB
-    n | n == Raw.pixelFormatIndex4MSB -> Index4MSB
-    n | n == Raw.pixelFormatIndex8 -> Index8
-    n | n == Raw.pixelFormatRGB332 -> RGB332
-    n | n == Raw.pixelFormatRGB444 -> RGB444
-    n | n == Raw.pixelFormatRGB555 -> RGB555
-    n | n == Raw.pixelFormatBGR555 -> BGR555
-    n | n == Raw.pixelFormatARGB4444 -> ARGB4444
-    n | n == Raw.pixelFormatRGBA4444 -> RGBA4444
-    n | n == Raw.pixelFormatABGR4444 -> ABGR4444
-    n | n == Raw.pixelFormatBGRA4444 -> BGRA4444
-    n | n == Raw.pixelFormatARGB1555 -> ARGB1555
-    n | n == Raw.pixelFormatRGBA5551 -> RGBA5551
-    n | n == Raw.pixelFormatABGR1555 -> ABGR1555
-    n | n == Raw.pixelFormatBGRA5551 -> BGRA5551
-    n | n == Raw.pixelFormatRGB565 -> RGB565
-    n | n == Raw.pixelFormatBGR565 -> BGR565
-    n | n == Raw.pixelFormatRGB24 -> RGB24
-    n | n == Raw.pixelFormatBGR24 -> BGR24
-    n | n == Raw.pixelFormatRGB888 -> RGB888
-    n | n == Raw.pixelFormatRGBX8888 -> RGBX8888
-    n | n == Raw.pixelFormatBGR888 -> BGR888
-    n | n == Raw.pixelFormatBGRX8888 -> BGRX8888
-    n | n == Raw.pixelFormatARGB8888 -> ARGB8888
-    n | n == Raw.pixelFormatRGBA8888 -> RGBA8888
-    n | n == Raw.pixelFormatABGR8888 -> ABGR8888
-    n | n == Raw.pixelFormatBGRA8888 -> BGRA8888
-    n | n == Raw.pixelFormatARGB2101010 -> ARGB2101010
-    n | n == Raw.pixelFormatYV12 -> YV12
-    n | n == Raw.pixelFormatIYUV -> IYUV
-    n | n == Raw.pixelFormatYUY2 -> YUY2
-    n | n == Raw.pixelFormatUYVY -> UYVY
-    n | n == Raw.pixelFormatYVYU -> YVYU
-    _ -> error "fromNumber: not numbered"
-
 -- | Throws 'SDLException' on failure.
 getDisplays :: IO [Display]
 getDisplays = do
@@ -458,60 +375,11 @@ getWindowMinimumSize (Window w) =
     Raw.getWindowMinimumSize w wptr hptr
     V2 <$> peek wptr <*> peek hptr
 
-data RendererConfig = RendererConfig
-  { rendererSoftware      :: Bool
-  , rendererAccelerated   :: Bool
-  , rendererPresentVSync  :: Bool
-  , rendererTargetTexture :: Bool
-  } deriving (Eq, Show)
-
-instance FromNumber RendererConfig Word32 where
-  fromNumber n = RendererConfig
-    { rendererSoftware      = n .&. Raw.rendererFlagSoftware /= 0
-    , rendererAccelerated   = n .&. Raw.rendererFlagAccelerated /= 0
-    , rendererPresentVSync  = n .&. Raw.rendererFlagPresentVSync /= 0
-    , rendererTargetTexture = n .&. Raw.rendererFlagTargetTexture /= 0
-    }
-
-instance ToNumber RendererConfig Word32 where
-  toNumber config = foldr (.|.) 0
-    [ if rendererSoftware config then Raw.rendererFlagSoftware else 0
-    , if rendererAccelerated config then Raw.rendererFlagAccelerated else 0
-    , if rendererPresentVSync config then Raw.rendererFlagPresentVSync else 0
-    , if rendererTargetTexture config then Raw.rendererFlagTargetTexture else 0
-    ]
-
-defaultRenderer :: RendererConfig
-defaultRenderer = RendererConfig
-  { rendererSoftware      = False
-  , rendererAccelerated   = True
-  , rendererPresentVSync  = False
-  , rendererTargetTexture = False
-  }
-
 createRenderer :: Window -> CInt -> RendererConfig -> IO Renderer
-createRenderer (Window w) driver config = do
+createRenderer (Window w) driver config =
   fmap Renderer $
     throwIfNull "SDL.Video.createRenderer" "SDL_CreateRenderer" $
     Raw.createRenderer w driver (toNumber config)
 
 destroyRenderer :: Renderer -> IO ()
 destroyRenderer (Renderer r) = Raw.destroyRenderer r
-
-data RendererInfo = RendererInfo
-  { rendererInfoName              :: Text
-  , rendererInfoFlags             :: RendererConfig
-  , rendererInfoNumTextureFormats :: Word32
-  , rendererInfoTextureFormats    :: [PixelFormat]
-  , rendererInfoMaxTextureWidth   :: CInt
-  , rendererInfoMaxTextureHeight  :: CInt
-  } deriving (Eq, Show)
-
-getRendererInfo :: Renderer -> IO RendererInfo
-getRendererInfo (Renderer renderer) =
-  alloca $ \rptr -> do
-    throwIfNeg_ "getRendererInfo" "SDL_GetRendererInfo" $
-      Raw.getRendererInfo renderer rptr
-    (Raw.RendererInfo name flgs ntf tfs mtw mth) <- peek rptr
-    name' <- Text.decodeUtf8 <$> BS.packCString name
-    return $ RendererInfo name' (fromNumber flgs) ntf (fmap fromNumber tfs) mtw mth
