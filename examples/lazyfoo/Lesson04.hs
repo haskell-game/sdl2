@@ -6,14 +6,13 @@ module Lazyfoo.Lesson04 where
 
 import Prelude hiding (any, mapM_)
 import Control.Applicative
-import Control.Concurrent (threadDelay)
 import Control.Monad hiding (mapM_)
 import Data.Foldable
 import Data.Maybe
 import Data.Monoid
 import Linear
-import qualified SDL
-import qualified SDL.Raw as Raw
+import SDL as SDL
+import SDL.Input.Keyboard as SDL
 
 (screenWidth, screenHeight) = (640, 480)
 
@@ -46,12 +45,12 @@ main = do
             fromMaybe oldSurface $ getLast $
             foldMap (\case SDL.KeyboardEvent{..}
                              | keyboardEventKeyMotion == SDL.KeyDown ->
-                                 let keycode = Raw.keysymKeycode keyboardEventKeysym
-                                 in if | keycode == Raw.keycodeUp -> Last (Just surfaceUp)
-                                       | keycode == Raw.keycodeDown -> Last (Just surfaceDown)
-                                       | keycode == Raw.keycodeRight -> Last (Just surfaceRight)
-                                       | keycode == Raw.keycodeLeft -> Last (Just surfaceLeft)
-                                       | otherwise -> mempty
+                                 case SDL.keysymKeycode keyboardEventKeysym of
+                                   KeycodeUp    -> Last (Just surfaceUp)
+                                   KeycodeDown  -> Last (Just surfaceDown)
+                                   KeycodeRight -> Last (Just surfaceRight)
+                                   KeycodeLeft  -> Last (Just surfaceLeft)
+                                   _            -> mempty
                            _ -> mempty)
                     events
 
