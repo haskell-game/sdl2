@@ -1,17 +1,22 @@
 -- | Main module, re-exports the bulk of the API.
 module SDL
-  ( module SDL.Audio
+  ( -- * Initialization
+    module SDL.Init
+
+    -- * Modules
+  , module SDL.Audio
   , module SDL.Events
-  , module SDL.Exception
   , module SDL.Filesystem
   , module SDL.Haptic
   , module SDL.Hints
-  , module SDL.Init
   , module SDL.Input
   , module SDL.Power
   , module SDL.Time
   , module SDL.Video
   , module SDL.Window
+
+  -- * Auxiliary Modules
+  , module SDL.Exception
   ) where
 
 import SDL.Audio
