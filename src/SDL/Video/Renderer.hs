@@ -49,6 +49,8 @@ module SDL.Video.Renderer
   , defaultRenderer
   , RendererInfo(..)
   , getRendererInfo
+  , getNumRenderDrivers
+  , getRenderDriverInfo
   ) where
 
 import Prelude hiding (foldr)
@@ -411,11 +413,24 @@ data RendererInfo = RendererInfo
   , rendererInfoMaxTextureHeight  :: CInt
   } deriving (Eq, Show)
 
+fromRawRendererInfo :: Raw.RendererInfo -> IO RendererInfo
+fromRawRendererInfo (Raw.RendererInfo name flgs ntf tfs mtw mth) = do
+    name' <- Text.decodeUtf8 <$> BS.packCString name
+    return $ RendererInfo name' (fromNumber flgs) ntf (fmap fromNumber tfs) mtw mth
+
 getRendererInfo :: Renderer -> IO RendererInfo
 getRendererInfo (Renderer renderer) =
   alloca $ \rptr -> do
     throwIfNeg_ "getRendererInfo" "SDL_GetRendererInfo" $
       Raw.getRendererInfo renderer rptr
-    (Raw.RendererInfo name flgs ntf tfs mtw mth) <- peek rptr
-    name' <- Text.decodeUtf8 <$> BS.packCString name
-    return $ RendererInfo name' (fromNumber flgs) ntf (fmap fromNumber tfs) mtw mth
+    peek rptr >>= fromRawRendererInfo
+
+getNumRenderDrivers :: IO CInt
+getNumRenderDrivers = Raw.getNumRenderDrivers
+
+getRenderDriverInfo :: CInt -> IO RendererInfo
+getRenderDriverInfo idx =
+  alloca $ \rptr -> do
+    throwIfNeg_ "getRenderDriverInfo" "SDL_GetRenderDriverInfo" $
+      Raw.getRenderDriverInfo idx rptr
+    peek rptr >>= fromRawRendererInfo
