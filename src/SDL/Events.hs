@@ -20,6 +20,7 @@ import Foreign.C
 import Linear
 import Linear.Affine (Point(P))
 import SDL.Internal.Types (WindowID(WindowID))
+import SDL.Input.Keyboard
 
 import qualified Data.ByteString.Char8 as BSC8
 import qualified Data.Text.Encoding as Text
@@ -73,7 +74,7 @@ data EventPayload
                   ,keyboardEventKeyMotion :: KeyMotion
                   ,keyboardEventState :: KeyState
                   ,keyboardEventRepeat :: Bool
-                  ,keyboardEventKeysym :: Raw.Keysym}
+                  ,keyboardEventKeysym :: Keysym}
   | TextEditingEvent {textEditingEventWindowID :: WindowID
                      ,textEditingEventText :: Text
                      ,textEditingEventStart :: Int32
@@ -164,7 +165,7 @@ convertRaw (Raw.WindowEvent _ ts a b c d)
 convertRaw (Raw.KeyboardEvent t ts a b c d)
   = let motion | t == Raw.eventTypeKeyDown = KeyDown
                | t == Raw.eventTypeKeyUp = KeyUp
-    in Event ts (KeyboardEvent (WindowID a) motion (cToKeyState b) (c /= 0) d)
+    in Event ts (KeyboardEvent (WindowID a) motion (cToKeyState b) (c /= 0) (fromRawKeysym d))
 convertRaw (Raw.TextEditingEvent _ ts a b c d) = Event ts (TextEditingEvent (WindowID a) (ccharStringToText b) c d)
 convertRaw (Raw.TextInputEvent _ ts a b) = Event ts (TextInputEvent (WindowID a) (ccharStringToText b))
 convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) = Event ts (MouseMotionEvent (WindowID a) b c (P (V2 d e)) (V2 f g))
