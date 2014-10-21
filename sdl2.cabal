@@ -48,6 +48,7 @@ library
     SDL.Hints
     SDL.Init
     SDL.Input
+    SDL.Input.GameController
     SDL.Input.Joystick
     SDL.Input.Keyboard
     SDL.Power
