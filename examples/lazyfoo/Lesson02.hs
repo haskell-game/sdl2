@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Lazyfoo.Lesson02 where
+module Lazyfoo.Lesson02 (main) where
 
 import Control.Concurrent (threadDelay)
 import Foreign.C.Types

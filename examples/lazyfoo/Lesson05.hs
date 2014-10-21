@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Lazyfoo.Lesson05 where
+module Lazyfoo.Lesson05 (main) where
 
 import Control.Applicative
 import Control.Monad

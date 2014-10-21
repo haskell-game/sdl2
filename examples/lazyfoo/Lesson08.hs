@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Lazyfoo.Lesson08 where
+module Lazyfoo.Lesson08 (main) where
 
 import Control.Applicative
 import Control.Monad
@@ -12,12 +12,6 @@ import qualified SDL
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
-
-loadSurface :: FilePath -> SDL.Surface -> IO SDL.Surface
-loadSurface path screenSurface = do
-  loadedSurface <- SDL.loadBMP path
-  desiredFormat <- SDL.surfaceFormat screenSurface
-  SDL.convertSurface loadedSurface desiredFormat <* SDL.freeSurface loadedSurface
 
 main :: IO ()
 main = do

@@ -1,10 +1,9 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Lazyfoo.Lesson10 where
+module Lazyfoo.Lesson10 (main) where
 
 import Control.Applicative
 import Control.Monad
-import Data.Foldable (for_)
 import Foreign.C.Types
 import Linear
 import Linear.Affine
@@ -13,10 +12,7 @@ import qualified SDL
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
 
-data Texture = Texture
-  { textureSDL :: SDL.Texture
-  , textureSize :: V2 CInt
-  }
+data Texture = Texture SDL.Texture (V2 CInt)
 
 loadTexture :: SDL.Renderer -> FilePath -> IO Texture
 loadTexture r filePath = do
