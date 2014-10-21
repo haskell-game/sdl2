@@ -56,5 +56,8 @@ initSubSystem flags =
   SDLEx.throwIfNeg_ "SDL.Init.initSubSystem" "SDL_InitSubSystem" $
     Raw.initSubSystem (foldFlags initFlagToC flags)
 
+-- | Quit and shutdown SDL, freeing any resources that may have been in use.
+-- Do not call any SDL functions after you've called this function, unless
+-- otherwise documented that you may do so.
 quit :: IO ()
 quit = Raw.quit
