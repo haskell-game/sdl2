@@ -8,7 +8,6 @@ module SDL
   , module SDL.Hints
   , module SDL.Init
   , module SDL.Input
-  , module SDL.Joystick
   , module SDL.Power
   , module SDL.Time
   , module SDL.Video
@@ -23,7 +22,6 @@ import SDL.Haptic
 import SDL.Hints
 import SDL.Init
 import SDL.Input
-import SDL.Joystick
 import SDL.Power
 import SDL.Time
 import SDL.Video

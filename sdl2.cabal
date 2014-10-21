@@ -48,9 +48,9 @@ library
     SDL.Hints
     SDL.Init
     SDL.Input
+    SDL.Input.Joystick
     SDL.Input.Keyboard
     SDL.Power
-    SDL.Joystick
     SDL.Time
     SDL.Video
     SDL.Video.OpenGL
