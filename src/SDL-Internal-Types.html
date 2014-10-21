@@ -11,18 +11,22 @@
 <a name="line-2"></a>  <span class='hs-layout'>(</span> <span class='hs-conid'>WindowID</span><span class='hs-layout'>(</span><span class='hs-keyglyph'>..</span><span class='hs-layout'>)</span>
 <a name="line-3"></a>  <span class='hs-layout'>,</span> <span class='hs-conid'>Joystick</span><span class='hs-layout'>(</span><span class='hs-keyglyph'>..</span><span class='hs-layout'>)</span>
 <a name="line-4"></a>  <span class='hs-layout'>,</span> <span class='hs-conid'>Window</span><span class='hs-layout'>(</span><span class='hs-keyglyph'>..</span><span class='hs-layout'>)</span>
-<a name="line-5"></a>  <span class='hs-layout'>)</span> <span class='hs-keyword'>where</span>
-<a name="line-6"></a>
-<a name="line-7"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>Foreign</span>
-<a name="line-8"></a>
-<a name="line-9"></a><span class='hs-keyword'>import</span> <span class='hs-keyword'>qualified</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Raw</span> <span class='hs-keyword'>as</span> <span class='hs-conid'>Raw</span>
-<a name="line-10"></a>
-<a name="line-11"></a><a name="WindowID"></a><span class='hs-keyword'>newtype</span> <span class='hs-conid'>WindowID</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>WindowID</span> <span class='hs-conid'>Word32</span>
-<a name="line-12"></a>  <span class='hs-keyword'>deriving</span> <span class='hs-layout'>(</span><span class='hs-conid'>Eq</span><span class='hs-layout'>,</span><span class='hs-conid'>Ord</span><span class='hs-layout'>,</span><span class='hs-conid'>Show</span><span class='hs-layout'>)</span>
-<a name="line-13"></a>
-<a name="line-14"></a><a name="Joystick"></a><span class='hs-keyword'>newtype</span> <span class='hs-conid'>Joystick</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>Joystick</span> <span class='hs-layout'>{</span> <span class='hs-varid'>joystickPtr</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Raw</span><span class='hs-varop'>.</span><span class='hs-conid'>Joystick</span> <span class='hs-layout'>}</span>
-<a name="line-15"></a>
-<a name="line-16"></a><a name="Window"></a><span class='hs-keyword'>newtype</span> <span class='hs-conid'>Window</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>Window</span> <span class='hs-layout'>(</span><span class='hs-conid'>Raw</span><span class='hs-varop'>.</span><span class='hs-conid'>Window</span><span class='hs-layout'>)</span>
-<a name="line-17"></a>  <span class='hs-keyword'>deriving</span> <span class='hs-layout'>(</span><span class='hs-conid'>Eq</span><span class='hs-layout'>)</span>
+<a name="line-5"></a>  <span class='hs-layout'>,</span> <span class='hs-conid'>Renderer</span><span class='hs-layout'>(</span><span class='hs-keyglyph'>..</span><span class='hs-layout'>)</span>
+<a name="line-6"></a>  <span class='hs-layout'>)</span> <span class='hs-keyword'>where</span>
+<a name="line-7"></a>
+<a name="line-8"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>Foreign</span>
+<a name="line-9"></a>
+<a name="line-10"></a><span class='hs-keyword'>import</span> <span class='hs-keyword'>qualified</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Raw</span> <span class='hs-keyword'>as</span> <span class='hs-conid'>Raw</span>
+<a name="line-11"></a>
+<a name="line-12"></a><a name="WindowID"></a><span class='hs-keyword'>newtype</span> <span class='hs-conid'>WindowID</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>WindowID</span> <span class='hs-conid'>Word32</span>
+<a name="line-13"></a>  <span class='hs-keyword'>deriving</span> <span class='hs-layout'>(</span><span class='hs-conid'>Eq</span><span class='hs-layout'>,</span><span class='hs-conid'>Ord</span><span class='hs-layout'>,</span><span class='hs-conid'>Show</span><span class='hs-layout'>)</span>
+<a name="line-14"></a>
+<a name="line-15"></a><a name="Joystick"></a><span class='hs-keyword'>newtype</span> <span class='hs-conid'>Joystick</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>Joystick</span> <span class='hs-layout'>{</span> <span class='hs-varid'>joystickPtr</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Raw</span><span class='hs-varop'>.</span><span class='hs-conid'>Joystick</span> <span class='hs-layout'>}</span>
+<a name="line-16"></a>
+<a name="line-17"></a><a name="Window"></a><span class='hs-keyword'>newtype</span> <span class='hs-conid'>Window</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>Window</span> <span class='hs-layout'>(</span><span class='hs-conid'>Raw</span><span class='hs-varop'>.</span><span class='hs-conid'>Window</span><span class='hs-layout'>)</span>
+<a name="line-18"></a>  <span class='hs-keyword'>deriving</span> <span class='hs-layout'>(</span><span class='hs-conid'>Eq</span><span class='hs-layout'>)</span>
+<a name="line-19"></a>
+<a name="line-20"></a><a name="Renderer"></a><span class='hs-keyword'>newtype</span> <span class='hs-conid'>Renderer</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>Renderer</span> <span class='hs-conid'>Raw</span><span class='hs-varop'>.</span><span class='hs-conid'>Renderer</span>
+<a name="line-21"></a>  <span class='hs-keyword'>deriving</span> <span class='hs-layout'>(</span><span class='hs-conid'>Eq</span><span class='hs-layout'>)</span>
 </pre></body>
 </html>

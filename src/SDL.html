@@ -9,29 +9,36 @@
 <body>
 <pre><a name="line-1"></a><span class='hs-comment'>-- | Main module, re-exports the bulk of the API.</span>
 <a name="line-2"></a><span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span>
-<a name="line-3"></a>  <span class='hs-layout'>(</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Audio</span>
-<a name="line-4"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Events</span>
-<a name="line-5"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Exception</span>
-<a name="line-6"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Filesystem</span>
-<a name="line-7"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Haptic</span>
-<a name="line-8"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Init</span>
-<a name="line-9"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Joystick</span>
-<a name="line-10"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Power</span>
-<a name="line-11"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Time</span>
-<a name="line-12"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Video</span>
-<a name="line-13"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Window</span>
-<a name="line-14"></a>  <span class='hs-layout'>)</span> <span class='hs-keyword'>where</span>
-<a name="line-15"></a>
-<a name="line-16"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Audio</span>
-<a name="line-17"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Events</span>
-<a name="line-18"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Exception</span>
-<a name="line-19"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Filesystem</span>
-<a name="line-20"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Haptic</span>
-<a name="line-21"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Init</span>
-<a name="line-22"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Joystick</span>
-<a name="line-23"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Power</span>
-<a name="line-24"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Time</span>
-<a name="line-25"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Video</span>
-<a name="line-26"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Window</span>
+<a name="line-3"></a>  <span class='hs-layout'>(</span> <span class='hs-comment'>-- * Initialization</span>
+<a name="line-4"></a>    <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Init</span>
+<a name="line-5"></a>
+<a name="line-6"></a>    <span class='hs-comment'>-- * Modules</span>
+<a name="line-7"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Audio</span>
+<a name="line-8"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Events</span>
+<a name="line-9"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Filesystem</span>
+<a name="line-10"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Haptic</span>
+<a name="line-11"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Hints</span>
+<a name="line-12"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Input</span>
+<a name="line-13"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Power</span>
+<a name="line-14"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Time</span>
+<a name="line-15"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Video</span>
+<a name="line-16"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Window</span>
+<a name="line-17"></a>
+<a name="line-18"></a>  <span class='hs-comment'>-- * Auxiliary Modules</span>
+<a name="line-19"></a>  <span class='hs-layout'>,</span> <span class='hs-keyword'>module</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Exception</span>
+<a name="line-20"></a>  <span class='hs-layout'>)</span> <span class='hs-keyword'>where</span>
+<a name="line-21"></a>
+<a name="line-22"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Audio</span>
+<a name="line-23"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Events</span>
+<a name="line-24"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Exception</span>
+<a name="line-25"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Filesystem</span>
+<a name="line-26"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Haptic</span>
+<a name="line-27"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Hints</span>
+<a name="line-28"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Init</span>
+<a name="line-29"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Input</span>
+<a name="line-30"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Power</span>
+<a name="line-31"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Time</span>
+<a name="line-32"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Video</span>
+<a name="line-33"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Window</span>
 </pre></body>
 </html>

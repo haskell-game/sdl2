@@ -43,6 +43,10 @@ type ThreadPriority = Word32
 module SDL.Raw.Platform
 getPlatform :: IO CString
 
+module SDL.Input.Joystick
+
+module SDL.Input.GameController
+
 module SDL.Raw.Enum
 type AudioStatus = Word32
 audioStatusStopped :: AudioStatus
@@ -1364,40 +1368,6 @@ joystickIsHaptic :: Joystick -> IO CInt
 mouseIsHaptic :: IO CInt
 numHaptics :: IO CInt
 
-module SDL.Raw.Basic
-init :: InitFlag -> IO CInt
-initSubSystem :: InitFlag -> IO CInt
-quit :: IO ()
-quitSubSystem :: InitFlag -> IO ()
-setMainReady :: IO ()
-wasInit :: InitFlag -> IO Word32
-addHintCallback :: CString -> HintCallback -> Ptr () -> IO ()
-clearHints :: IO ()
-delHintCallback :: CString -> HintCallback -> Ptr () -> IO ()
-getHint :: CString -> IO CString
-setHint :: CString -> CString -> IO Bool
-setHintWithPriority :: CString -> CString -> HintPriority -> IO Bool
-clearError :: IO ()
-getError :: IO CString
-setError :: CString -> IO CInt
-log :: CString -> IO ()
-logCritical :: CInt -> CString -> IO ()
-logDebug :: CInt -> CString -> IO ()
-logError :: CInt -> CString -> IO ()
-logGetOutputFunction :: Ptr LogOutputFunction -> Ptr (Ptr ()) -> IO ()
-logGetPriority :: CInt -> IO LogPriority
-logInfo :: CInt -> CString -> IO ()
-logMessage :: CInt -> LogPriority -> CString -> IO ()
-logResetPriorities :: IO ()
-logSetAllPriority :: LogPriority -> IO ()
-logSetOutputFunction :: LogOutputFunction -> Ptr () -> IO ()
-logSetPriority :: CInt -> LogPriority -> IO ()
-logVerbose :: CInt -> CString -> IO ()
-logWarn :: CInt -> CString -> IO ()
-getRevision :: IO CString
-getRevisionNumber :: IO CInt
-getVersion :: Ptr Version -> IO ()
-
 module SDL.Raw.Event
 addEventWatch :: EventFilter -> Ptr () -> IO ()
 delEventWatch :: EventFilter -> Ptr () -> IO ()
@@ -1498,6 +1468,40 @@ gameControllerNameForIndex :: CInt -> IO CString
 gameControllerOpen :: CInt -> IO GameController
 gameControllerUpdate :: IO ()
 isGameController :: CInt -> IO Bool
+
+module SDL.Raw.Basic
+init :: InitFlag -> IO CInt
+initSubSystem :: InitFlag -> IO CInt
+quit :: IO ()
+quitSubSystem :: InitFlag -> IO ()
+setMainReady :: IO ()
+wasInit :: InitFlag -> IO Word32
+addHintCallback :: CString -> HintCallback -> Ptr () -> IO ()
+clearHints :: IO ()
+delHintCallback :: CString -> HintCallback -> Ptr () -> IO ()
+getHint :: CString -> IO CString
+setHint :: CString -> CString -> IO Bool
+setHintWithPriority :: CString -> CString -> HintPriority -> IO Bool
+clearError :: IO ()
+getError :: IO CString
+setError :: CString -> IO CInt
+log :: CString -> IO ()
+logCritical :: CInt -> CString -> IO ()
+logDebug :: CInt -> CString -> IO ()
+logError :: CInt -> CString -> IO ()
+logGetOutputFunction :: Ptr LogOutputFunction -> Ptr (Ptr ()) -> IO ()
+logGetPriority :: CInt -> IO LogPriority
+logInfo :: CInt -> CString -> IO ()
+logMessage :: CInt -> LogPriority -> CString -> IO ()
+logResetPriorities :: IO ()
+logSetAllPriority :: LogPriority -> IO ()
+logSetOutputFunction :: LogOutputFunction -> Ptr () -> IO ()
+logSetPriority :: CInt -> LogPriority -> IO ()
+logVerbose :: CInt -> CString -> IO ()
+logWarn :: CInt -> CString -> IO ()
+getRevision :: IO CString
+getRevisionNumber :: IO CInt
+getVersion :: Ptr Version -> IO ()
 
 module SDL.Raw.Power
 getPowerInfo :: Ptr CInt -> Ptr CInt -> IO PowerState
@@ -1759,22 +1763,536 @@ unlockAudioDevice :: AudioDeviceID -> IO ()
 --   design factor, use <a>SDL</a> instead if you can.
 module SDL.Raw
 
+module SDL.Input.Keyboard
 
-module SDL.Window
+-- | Get the current key modifier state for the keyboard.
+getModState :: IO KeyModifier
+data KeyModifier
+KeyModifier :: Bool -> Bool -> Bool -> Bool -> Bool -> Bool -> Bool -> Bool -> Bool -> Bool -> Bool -> KeyModifier
+keyModifierLeftShift :: KeyModifier -> Bool
+keyModifierRightShift :: KeyModifier -> Bool
+keyModifierLeftCtrl :: KeyModifier -> Bool
+keyModifierRightCtrl :: KeyModifier -> Bool
+keyModifierLeftAlt :: KeyModifier -> Bool
+keyModifierRightAlt :: KeyModifier -> Bool
+keyModifierLeftGUI :: KeyModifier -> Bool
+keyModifierRightGUI :: KeyModifier -> Bool
+keyModifierNumLock :: KeyModifier -> Bool
+keyModifierCapsLock :: KeyModifier -> Bool
+keyModifierAltGr :: KeyModifier -> Bool
 
-module SDL.Time
+-- | Set the rectangle used to type text inputs and start accepting text
+--   input events.
+startTextInput :: Rect -> IO ()
 
--- | Number of milliseconds since library initialization.
-ticks :: IO Word32
+-- | Stop receiving any text input events.
+stopTextInput :: IO ()
 
--- | The current time in seconds since some arbitrary starting point.
-time :: Fractional a => IO a
+-- | Check whether the platform has screen keyboard support.
+hasScreenKeyboardSupport :: IO Bool
 
-
-module SDL.Power
-
-
-module SDL.Joystick
+-- | Check whether the screen keyboard is shown for the given window.
+isScreenKeyboardShown :: Window -> IO Bool
+getScancodeName :: Scancode -> IO String
+data Scancode
+ScancodeUnknown :: Scancode
+ScancodeA :: Scancode
+ScancodeB :: Scancode
+ScancodeC :: Scancode
+ScancodeD :: Scancode
+ScancodeE :: Scancode
+ScancodeF :: Scancode
+ScancodeG :: Scancode
+ScancodeH :: Scancode
+ScancodeI :: Scancode
+ScancodeJ :: Scancode
+ScancodeK :: Scancode
+ScancodeL :: Scancode
+ScancodeM :: Scancode
+ScancodeN :: Scancode
+ScancodeO :: Scancode
+ScancodeP :: Scancode
+ScancodeQ :: Scancode
+ScancodeR :: Scancode
+ScancodeS :: Scancode
+ScancodeT :: Scancode
+ScancodeU :: Scancode
+ScancodeV :: Scancode
+ScancodeW :: Scancode
+ScancodeX :: Scancode
+ScancodeY :: Scancode
+ScancodeZ :: Scancode
+Scancode1 :: Scancode
+Scancode2 :: Scancode
+Scancode3 :: Scancode
+Scancode4 :: Scancode
+Scancode5 :: Scancode
+Scancode6 :: Scancode
+Scancode7 :: Scancode
+Scancode8 :: Scancode
+Scancode9 :: Scancode
+Scancode0 :: Scancode
+ScancodeReturn :: Scancode
+ScancodeEscape :: Scancode
+ScancodeBackspace :: Scancode
+ScancodeTab :: Scancode
+ScancodeSpace :: Scancode
+ScancodeMinus :: Scancode
+ScancodeEquals :: Scancode
+ScancodeLeftBracket :: Scancode
+ScancodeRightBracket :: Scancode
+ScancodeBackslash :: Scancode
+ScancodeNonUSHash :: Scancode
+ScancodeSemicolon :: Scancode
+ScancodeApostrophe :: Scancode
+ScancodeGrave :: Scancode
+ScancodeComma :: Scancode
+ScancodePeriod :: Scancode
+ScancodeSlash :: Scancode
+ScancodeCapsLock :: Scancode
+ScancodeF1 :: Scancode
+ScancodeF2 :: Scancode
+ScancodeF3 :: Scancode
+ScancodeF4 :: Scancode
+ScancodeF5 :: Scancode
+ScancodeF6 :: Scancode
+ScancodeF7 :: Scancode
+ScancodeF8 :: Scancode
+ScancodeF9 :: Scancode
+ScancodeF10 :: Scancode
+ScancodeF11 :: Scancode
+ScancodeF12 :: Scancode
+ScancodePrintScreen :: Scancode
+ScancodeScrollLock :: Scancode
+ScancodePause :: Scancode
+ScancodeInsert :: Scancode
+ScancodeHome :: Scancode
+ScancodePageUp :: Scancode
+ScancodeDelete :: Scancode
+ScancodeEnd :: Scancode
+ScancodePageDown :: Scancode
+ScancodeRight :: Scancode
+ScancodeLeft :: Scancode
+ScancodeDown :: Scancode
+ScancodeUp :: Scancode
+ScancodeNumLockClear :: Scancode
+ScancodeKPDivide :: Scancode
+ScancodeKPMultiply :: Scancode
+ScancodeKPMinus :: Scancode
+ScancodeKPPlus :: Scancode
+ScancodeKPEnter :: Scancode
+ScancodeKP1 :: Scancode
+ScancodeKP2 :: Scancode
+ScancodeKP3 :: Scancode
+ScancodeKP4 :: Scancode
+ScancodeKP5 :: Scancode
+ScancodeKP6 :: Scancode
+ScancodeKP7 :: Scancode
+ScancodeKP8 :: Scancode
+ScancodeKP9 :: Scancode
+ScancodeKP0 :: Scancode
+ScancodeKPPeriod :: Scancode
+ScancodeNonUSBackslash :: Scancode
+ScancodeApplication :: Scancode
+ScancodePower :: Scancode
+ScancodeKPEquals :: Scancode
+ScancodeF13 :: Scancode
+ScancodeF14 :: Scancode
+ScancodeF15 :: Scancode
+ScancodeF16 :: Scancode
+ScancodeF17 :: Scancode
+ScancodeF18 :: Scancode
+ScancodeF19 :: Scancode
+ScancodeF20 :: Scancode
+ScancodeF21 :: Scancode
+ScancodeF22 :: Scancode
+ScancodeF23 :: Scancode
+ScancodeF24 :: Scancode
+ScancodeExecute :: Scancode
+ScancodeHelp :: Scancode
+ScancodeMenu :: Scancode
+ScancodeSelect :: Scancode
+ScancodeStop :: Scancode
+ScancodeAgain :: Scancode
+ScancodeUndo :: Scancode
+ScancodeCut :: Scancode
+ScancodeCopy :: Scancode
+ScancodePaste :: Scancode
+ScancodeFind :: Scancode
+ScancodeMute :: Scancode
+ScancodeVolumeUp :: Scancode
+ScancodeVolumeDown :: Scancode
+ScancodeKPComma :: Scancode
+ScancodeEqualsAs400 :: Scancode
+ScancodeInternational1 :: Scancode
+ScancodeInternational2 :: Scancode
+ScancodeInternational3 :: Scancode
+ScancodeInternational4 :: Scancode
+ScancodeInternational5 :: Scancode
+ScancodeInternational6 :: Scancode
+ScancodeInternational7 :: Scancode
+ScancodeInternational8 :: Scancode
+ScancodeInternational9 :: Scancode
+ScancodeLang1 :: Scancode
+ScancodeLang2 :: Scancode
+ScancodeLang3 :: Scancode
+ScancodeLang4 :: Scancode
+ScancodeLang5 :: Scancode
+ScancodeLang6 :: Scancode
+ScancodeLang7 :: Scancode
+ScancodeLang8 :: Scancode
+ScancodeLang9 :: Scancode
+ScancodeAltErase :: Scancode
+ScancodeSysReq :: Scancode
+ScancodeCancel :: Scancode
+ScancodeClear :: Scancode
+ScancodePrior :: Scancode
+ScancodeReturn2 :: Scancode
+ScancodeSeparator :: Scancode
+ScancodeOut :: Scancode
+ScancodeOper :: Scancode
+ScancodeClearAgain :: Scancode
+ScancodeCrSel :: Scancode
+ScancodeExSel :: Scancode
+ScancodeKP00 :: Scancode
+ScancodeKP000 :: Scancode
+ScancodeThousandsSeparator :: Scancode
+ScancodeDecimalSeparator :: Scancode
+ScancodeCurrencyUnit :: Scancode
+ScancodeCurrencySubunit :: Scancode
+ScancodeLeftParen :: Scancode
+ScancodeRightParen :: Scancode
+ScancodeLeftBrace :: Scancode
+ScancodeRightBrace :: Scancode
+ScancodeKPTab :: Scancode
+ScancodeKPBackspace :: Scancode
+ScancodeKPA :: Scancode
+ScancodeKPB :: Scancode
+ScancodeKPC :: Scancode
+ScancodeKPD :: Scancode
+ScancodeKPE :: Scancode
+ScancodeKPF :: Scancode
+ScancodeKPXOR :: Scancode
+ScancodeKPPower :: Scancode
+ScancodeKPPercent :: Scancode
+ScancodeKPLess :: Scancode
+ScancodeKPGreater :: Scancode
+ScancodeKPAmpersand :: Scancode
+ScancodeKPDBLAmpersand :: Scancode
+ScancodeKPVerticalBar :: Scancode
+ScancodeKPDBLVerticalBar :: Scancode
+ScancodeKPColon :: Scancode
+ScancodeKPHash :: Scancode
+ScancodeKPSpace :: Scancode
+ScancodeKPAt :: Scancode
+ScancodeKPExclam :: Scancode
+ScancodeKPMemStore :: Scancode
+ScancodeKPMemRecall :: Scancode
+ScancodeKPMemClear :: Scancode
+ScancodeKPMemAdd :: Scancode
+ScancodeKPMemSubtract :: Scancode
+ScancodeKPMemMultiply :: Scancode
+ScancodeKPMemDivide :: Scancode
+ScancodeKPPlusMinus :: Scancode
+ScancodeKPClear :: Scancode
+ScancodeKPClearEntry :: Scancode
+ScancodeKPBinary :: Scancode
+ScancodeKPOctal :: Scancode
+ScancodeKPDecimal :: Scancode
+ScancodeKPHexadecimal :: Scancode
+ScancodeLCtrl :: Scancode
+ScancodeLShift :: Scancode
+ScancodeLAlt :: Scancode
+ScancodeLGUI :: Scancode
+ScancodeRCtrl :: Scancode
+ScancodeRShift :: Scancode
+ScancodeRAlt :: Scancode
+ScancodeRGUI :: Scancode
+ScancodeMode :: Scancode
+ScancodeAudioNext :: Scancode
+ScancodeAudioPrev :: Scancode
+ScancodeAudioStop :: Scancode
+ScancodeAudioPlay :: Scancode
+ScancodeAudioMute :: Scancode
+ScancodeMediaSelect :: Scancode
+ScancodeWWW :: Scancode
+ScancodeMail :: Scancode
+ScancodeCalculator :: Scancode
+ScancodeComputer :: Scancode
+ScancodeACSearch :: Scancode
+ScancodeACHome :: Scancode
+ScancodeACBack :: Scancode
+ScancodeACForward :: Scancode
+ScancodeACStop :: Scancode
+ScancodeACRefresh :: Scancode
+ScancodeACBookmarks :: Scancode
+ScancodeBrightnessDown :: Scancode
+ScancodeBrightnessUp :: Scancode
+ScancodeDisplaySwitch :: Scancode
+ScancodeKBDIllumToggle :: Scancode
+ScancodeKBDIllumDown :: Scancode
+ScancodeKBDIllumUp :: Scancode
+ScancodeEject :: Scancode
+ScancodeSleep :: Scancode
+ScancodeApp1 :: Scancode
+ScancodeApp2 :: Scancode
+ScancodeNum :: Scancode
+data Keycode
+KeycodeUnknown :: Keycode
+KeycodeReturn :: Keycode
+KeycodeEscape :: Keycode
+KeycodeBackspace :: Keycode
+KeycodeTab :: Keycode
+KeycodeSpace :: Keycode
+KeycodeExclaim :: Keycode
+KeycodeQuoteDbl :: Keycode
+KeycodeHash :: Keycode
+KeycodePercent :: Keycode
+KeycodeDollar :: Keycode
+KeycodeAmpersand :: Keycode
+KeycodeQuote :: Keycode
+KeycodeLeftParen :: Keycode
+KeycodeRightParen :: Keycode
+KeycodeAsterisk :: Keycode
+KeycodePlus :: Keycode
+KeycodeComma :: Keycode
+KeycodeMinus :: Keycode
+KeycodePeriod :: Keycode
+KeycodeSlash :: Keycode
+Keycode0 :: Keycode
+Keycode1 :: Keycode
+Keycode2 :: Keycode
+Keycode3 :: Keycode
+Keycode4 :: Keycode
+Keycode5 :: Keycode
+Keycode6 :: Keycode
+Keycode7 :: Keycode
+Keycode8 :: Keycode
+Keycode9 :: Keycode
+KeycodeColon :: Keycode
+KeycodeSemicolon :: Keycode
+KeycodeLess :: Keycode
+KeycodeEquals :: Keycode
+KeycodeGreater :: Keycode
+KeycodeQuestion :: Keycode
+KeycodeAt :: Keycode
+KeycodeLeftBracket :: Keycode
+KeycodeBackslash :: Keycode
+KeycodeRightBracket :: Keycode
+KeycodeCaret :: Keycode
+KeycodeUnderscore :: Keycode
+KeycodeBackquote :: Keycode
+KeycodeA :: Keycode
+KeycodeB :: Keycode
+KeycodeC :: Keycode
+KeycodeD :: Keycode
+KeycodeE :: Keycode
+KeycodeF :: Keycode
+KeycodeG :: Keycode
+KeycodeH :: Keycode
+KeycodeI :: Keycode
+KeycodeJ :: Keycode
+KeycodeK :: Keycode
+KeycodeL :: Keycode
+KeycodeM :: Keycode
+KeycodeN :: Keycode
+KeycodeO :: Keycode
+KeycodeP :: Keycode
+KeycodeQ :: Keycode
+KeycodeR :: Keycode
+KeycodeS :: Keycode
+KeycodeT :: Keycode
+KeycodeU :: Keycode
+KeycodeV :: Keycode
+KeycodeW :: Keycode
+KeycodeX :: Keycode
+KeycodeY :: Keycode
+KeycodeZ :: Keycode
+KeycodeCapsLock :: Keycode
+KeycodeF1 :: Keycode
+KeycodeF2 :: Keycode
+KeycodeF3 :: Keycode
+KeycodeF4 :: Keycode
+KeycodeF5 :: Keycode
+KeycodeF6 :: Keycode
+KeycodeF7 :: Keycode
+KeycodeF8 :: Keycode
+KeycodeF9 :: Keycode
+KeycodeF10 :: Keycode
+KeycodeF11 :: Keycode
+KeycodeF12 :: Keycode
+KeycodePrintScreen :: Keycode
+KeycodeScrollLock :: Keycode
+KeycodePause :: Keycode
+KeycodeInsert :: Keycode
+KeycodeHome :: Keycode
+KeycodePageUp :: Keycode
+KeycodeDelete :: Keycode
+KeycodeEnd :: Keycode
+KeycodePageDown :: Keycode
+KeycodeRight :: Keycode
+KeycodeLeft :: Keycode
+KeycodeDown :: Keycode
+KeycodeUp :: Keycode
+KeycodeNumLockClear :: Keycode
+KeycodeKPDivide :: Keycode
+KeycodeKPMultiply :: Keycode
+KeycodeKPMinus :: Keycode
+KeycodeKPPlus :: Keycode
+KeycodeKPEnter :: Keycode
+KeycodeKP1 :: Keycode
+KeycodeKP2 :: Keycode
+KeycodeKP3 :: Keycode
+KeycodeKP4 :: Keycode
+KeycodeKP5 :: Keycode
+KeycodeKP6 :: Keycode
+KeycodeKP7 :: Keycode
+KeycodeKP8 :: Keycode
+KeycodeKP9 :: Keycode
+KeycodeKP0 :: Keycode
+KeycodeKPPeriod :: Keycode
+KeycodeApplication :: Keycode
+KeycodePower :: Keycode
+KeycodeKPEquals :: Keycode
+KeycodeF13 :: Keycode
+KeycodeF14 :: Keycode
+KeycodeF15 :: Keycode
+KeycodeF16 :: Keycode
+KeycodeF17 :: Keycode
+KeycodeF18 :: Keycode
+KeycodeF19 :: Keycode
+KeycodeF20 :: Keycode
+KeycodeF21 :: Keycode
+KeycodeF22 :: Keycode
+KeycodeF23 :: Keycode
+KeycodeF24 :: Keycode
+KeycodeExecute :: Keycode
+KeycodeHelp :: Keycode
+KeycodeMenu :: Keycode
+KeycodeSelect :: Keycode
+KeycodeStop :: Keycode
+KeycodeAgain :: Keycode
+KeycodeUndo :: Keycode
+KeycodeCut :: Keycode
+KeycodeCopy :: Keycode
+KeycodePaste :: Keycode
+KeycodeFind :: Keycode
+KeycodeMute :: Keycode
+KeycodeVolumeUp :: Keycode
+KeycodeVolumeDown :: Keycode
+KeycodeKPComma :: Keycode
+KeycodeKPEqualsAS400 :: Keycode
+KeycodeAltErase :: Keycode
+KeycodeSysReq :: Keycode
+KeycodeCancel :: Keycode
+KeycodeClear :: Keycode
+KeycodePrior :: Keycode
+KeycodeReturn2 :: Keycode
+KeycodeSeparator :: Keycode
+KeycodeOut :: Keycode
+KeycodeOper :: Keycode
+KeycodeClearAgain :: Keycode
+KeycodeCrSel :: Keycode
+KeycodeExSel :: Keycode
+KeycodeKP00 :: Keycode
+KeycodeKP000 :: Keycode
+KeycodeThousandsSeparator :: Keycode
+KeycodeDecimalSeparator :: Keycode
+KeycodeCurrencyUnit :: Keycode
+KeycodeCurrencySubunit :: Keycode
+KeycodeKPLeftParen :: Keycode
+KeycodeKPRightParen :: Keycode
+KeycodeKPLeftBrace :: Keycode
+KeycodeKPRightBrace :: Keycode
+KeycodeKPTab :: Keycode
+KeycodeKPBackspace :: Keycode
+KeycodeKPA :: Keycode
+KeycodeKPB :: Keycode
+KeycodeKPC :: Keycode
+KeycodeKPD :: Keycode
+KeycodeKPE :: Keycode
+KeycodeKPF :: Keycode
+KeycodeKPXor :: Keycode
+KeycodeKPPower :: Keycode
+KeycodeKPPercent :: Keycode
+KeycodeKPLess :: Keycode
+KeycodeKPGreater :: Keycode
+KeycodeKPAmpersand :: Keycode
+KeycodeKPDblAmpersand :: Keycode
+KeycodeKPVecticalBar :: Keycode
+KeycodeKPDblVerticalBar :: Keycode
+KeycodeKPColon :: Keycode
+KeycodeKPHash :: Keycode
+KeycodeKPSpace :: Keycode
+KeycodeKPAt :: Keycode
+KeycodeKPExclam :: Keycode
+KeycodeKPMemStore :: Keycode
+KeycodeKPMemRecall :: Keycode
+KeycodeKPMemClear :: Keycode
+KeycodeKPMemAdd :: Keycode
+KeycodeKPMemSubtract :: Keycode
+KeycodeKPMemMultiply :: Keycode
+KeycodeKPMemDivide :: Keycode
+KeycodeKPPlusMinus :: Keycode
+KeycodeKPClear :: Keycode
+KeycodeKPClearEntry :: Keycode
+KeycodeKPBinary :: Keycode
+KeycodeKPOctal :: Keycode
+KeycodeKPDecimal :: Keycode
+KeycodeKPHexadecimal :: Keycode
+KeycodeLCtrl :: Keycode
+KeycodeLShift :: Keycode
+KeycodeLAlt :: Keycode
+KeycodeLGUI :: Keycode
+KeycodeRCtrl :: Keycode
+KeycodeRShift :: Keycode
+KeycodeRAlt :: Keycode
+KeycodeRGUI :: Keycode
+KeycodeMode :: Keycode
+KeycodeAudioNext :: Keycode
+KeycodeAudioPrev :: Keycode
+KeycodeAudioStop :: Keycode
+KeycodeAudioPlay :: Keycode
+KeycodeAudioMute :: Keycode
+KeycodeMediaSelect :: Keycode
+KeycodeWWW :: Keycode
+KeycodeMail :: Keycode
+KeycodeCalculator :: Keycode
+KeycodeComputer :: Keycode
+KeycodeACSearch :: Keycode
+KeycodeACHome :: Keycode
+KeycodeACBack :: Keycode
+KeycodeACForward :: Keycode
+KeycodeACStop :: Keycode
+KeycodeACRefresh :: Keycode
+KeycodeACBookmarks :: Keycode
+KeycodeBrightnessDown :: Keycode
+KeycodeBrightnessUp :: Keycode
+KeycodeDisplaySwitch :: Keycode
+KeycodeKbdIllumToggle :: Keycode
+KeycodeKbdIllumDown :: Keycode
+KeycodeKbdIllumUp :: Keycode
+KeycodeEject :: Keycode
+KeycodeSleep :: Keycode
+data Keysym
+Keysym :: Scancode -> Keycode -> KeyModifier -> Keysym
+keysymScancode :: Keysym -> Scancode
+keysymKeycode :: Keysym -> Keycode
+keysymModifier :: Keysym -> KeyModifier
+instance Eq KeyModifier
+instance Show KeyModifier
+instance Eq Scancode
+instance Show Scancode
+instance Eq Keycode
+instance Show Keycode
+instance Eq Keysym
+instance Show Keysym
+instance ToNumber Keycode Int32
+instance FromNumber Keycode Int32
+instance ToNumber Scancode Word32
+instance FromNumber Scancode Word32
+instance ToNumber KeyModifier Word32
+instance FromNumber KeyModifier Word32
 
 module SDL.Exception
 data SDLException
@@ -1803,159 +2321,8 @@ instance Read SDLException
 instance Show SDLException
 instance Exception SDLException
 
-module SDL.Filesystem
-
--- | An absolute path to the application data directory.
---   
---   The path is guaranteed to end with a path separator.
---   
---   Throws <a>SDLException</a> on failure, or if the platform does not
---   implement this functionality.
-getBasePath :: IO Text
-
--- | A path to a unique per user and per application directory for the
---   given organization and application name, intended for writing
---   preferences and other personal files.
---   
---   The path is guaranteed to end with a path separator.
---   
---   You should assume the path returned by this function is the only safe
---   place to write files to.
---   
---   Throws <a>SDLException</a> on failure.
-getPrefPath :: Text -> Text -> IO Text
-
-module SDL.Haptic
-data AvailableHapticDevice
-availableHapticDeviceName :: AvailableHapticDevice -> Text
-availableHapticDeviceIds :: IO (Vector AvailableHapticDevice)
-data OpenHapticDevice
-OpenHapticMouse :: OpenHapticDevice
-OpenHapticJoystick :: Joystick -> OpenHapticDevice
-OpenHapticDevice :: AvailableHapticDevice -> OpenHapticDevice
-openHaptic :: OpenHapticDevice -> IO HapticDevice
-data HapticDevice
-hapticDeviceName :: HapticDevice -> Text
-hapticDeviceNumAxes :: HapticDevice -> CInt
-data Effect
-Haptic :: Word32 -> Word16 -> Word16 -> Word16 -> EffectType -> Effect
-effectLength :: Effect -> Word32
-effectDelay :: Effect -> Word16
-effectButton :: Effect -> Word16
-effectInterval :: Effect -> Word16
-effectType :: Effect -> EffectType
-data EffectType
-HapticConstant :: HapticDirection -> Int16 -> EffectEnvelope -> EffectType
-hapticConstantDirection :: EffectType -> HapticDirection
-hapticConstantLevel :: EffectType -> Int16
-hapticConstantEnvelope :: EffectType -> EffectEnvelope
-HapticPeriodic :: EffectShape -> HapticDirection -> Word16 -> Int16 -> Int16 -> Word16 -> EffectEnvelope -> EffectType
-hapticPeriodicShape :: EffectType -> EffectShape
-hapticPeriodicDirection :: EffectType -> HapticDirection
-hapticPeriodicPeriod :: EffectType -> Word16
-hapticPeriodicMagnitude :: EffectType -> Int16
-hapticPeriodicOffset :: EffectType -> Int16
-hapticPeriodicPhase :: EffectType -> Word16
-hapticPeriodicEnvelope :: EffectType -> EffectEnvelope
-HapticCondition :: ConditionType -> [Word16] -> [Word16] -> [Int16] -> [Int16] -> [Word16] -> [Int16] -> EffectType
-hapticConditionType :: EffectType -> ConditionType
-hapticConditionRightSat :: EffectType -> [Word16]
-hapticConditionLeftSat :: EffectType -> [Word16]
-hapticConditionRightCoeff :: EffectType -> [Int16]
-hapticConditionLeftCoeff :: EffectType -> [Int16]
-hapticConditionDeadband :: EffectType -> [Word16]
-hapticConditionCenter :: EffectType -> [Int16]
-HapticRamp :: HapticDirection -> Int16 -> Int16 -> EffectEnvelope -> EffectType
-hapticRampDirection :: EffectType -> HapticDirection
-hapticRampStart :: EffectType -> Int16
-hapticRampEnd :: EffectType -> Int16
-hapticRampEnvelope :: EffectType -> EffectEnvelope
-HapticLeftRight :: Word32 -> Word16 -> Word16 -> EffectType
-hapticLeftRightLength :: EffectType -> Word32
-hapticLeftRightLargeMagnitude :: EffectType -> Word16
-hapticLeftRightSmallMagnitude :: EffectType -> Word16
-HapticCustom :: HapticDirection -> Word8 -> Word16 -> Vector Word16 -> EffectEnvelope -> EffectType
-hapticCustomDirection :: EffectType -> HapticDirection
-hapticCustomChannels :: EffectType -> Word8
-hapticCustomPeriod :: EffectType -> Word16
-hapticCustomSamples :: EffectType -> Vector Word16
-hapticCustomEnvelope :: EffectType -> EffectEnvelope
-instance Eq EffectEnvelope
-instance Show EffectEnvelope
-instance Eq EffectShape
-instance Show EffectShape
-instance Eq ConditionType
-instance Show ConditionType
-instance Eq EffectType
-instance Show EffectType
-instance Eq Effect
-instance Show Effect
-
-module SDL.Init
-
--- | Initializes SDL and the given subsystems. Do not call any SDL
---   functions prior to this one, unless otherwise documented that you may
---   do so.
---   
---   Throws <a>SDLException</a> if initialization fails.
-init :: Foldable f => f InitFlag -> IO ()
-
--- | Initialize individual subsystems. SDL needs to be initializied prior
---   to calls to this function.
---   
---   Throws <a>SDLException</a> if initialization fails.
-initSubSystem :: Foldable f => f InitFlag -> IO ()
-data InitFlag
-InitTimer :: InitFlag
-InitAudio :: InitFlag
-InitVideo :: InitFlag
-InitJoystick :: InitFlag
-InitHaptic :: InitFlag
-InitGameController :: InitFlag
-InitEvents :: InitFlag
-InitEverything :: InitFlag
-InitNoParachute :: InitFlag
-quit :: IO ()
-instance Eq InitFlag
-instance Ord InitFlag
-instance Show InitFlag
-instance Read InitFlag
-instance Bounded InitFlag
-instance Enum InitFlag
-
 module SDL.Video.OpenGL
-data GLAttribute
-GLRedSize :: GLAttribute
-GLGreenSize :: GLAttribute
-GLBlueSize :: GLAttribute
-GLAlphaSize :: GLAttribute
-GLBufferSize :: GLAttribute
-GLDoubleBuffer :: GLAttribute
-GLDepthSize :: GLAttribute
-GLStencilSize :: GLAttribute
-GLAccumRedSize :: GLAttribute
-GLAccumGreenSize :: GLAttribute
-GLAccumBlueSize :: GLAttribute
-GLAccumAlphaSize :: GLAttribute
-GLStereo :: GLAttribute
-GLMultiSampleBuffers :: GLAttribute
-GLMultiSampleSamples :: GLAttribute
-GLAcceleratedVisual :: GLAttribute
-GLRetainedBacking :: GLAttribute
-GLContextMajorVersion :: GLAttribute
-GLContextMinorVersion :: GLAttribute
-GLContextFlags :: GLAttribute
-GLContextProfileMask :: GLAttribute
-GLShareWithCurrentContext :: GLAttribute
-GLFramebufferSRGBCapable :: GLAttribute
-GLContextEGL :: GLAttribute
-glSetAttribute :: GLAttribute -> CInt -> IO ()
-
--- | Replace the contents of the front buffer with the back buffer's. The
---   contents of the back buffer are undefined, clear them with
---   <tt>glClear</tt> or equivalent before drawing to them again.
-glSwapWindow :: Window -> IO ()
-glGetCurrentContext :: IO GLContext
+data GLContext
 
 -- | Create a new OpenGL context and makes it the current context for the
 --   window.
@@ -1963,26 +2330,54 @@ glGetCurrentContext :: IO GLContext
 --   Throws <a>SDLException</a> if the window wasn't configured with OpenGL
 --   support, or if context creation fails.
 glCreateContext :: Window -> IO GLContext
-glGetProcAddress :: CString -> IO (Ptr ())
+data Profile
+Core :: Mode -> CInt -> CInt -> Profile
+Compatibility :: Mode -> CInt -> CInt -> Profile
+ES :: Mode -> CInt -> CInt -> Profile
+data Mode
+Normal :: Mode
+Debug :: Mode
+
+-- | Throws <a>SDLException</a> on failure.
+glMakeCurrent :: Window -> GLContext -> IO ()
+glDeleteContext :: GLContext -> IO ()
+
+-- | Replace the contents of the front buffer with the back buffer's. The
+--   contents of the back buffer are undefined, clear them with
+--   <tt>glClear</tt> or equivalent before drawing to them again.
+glSwapWindow :: Window -> IO ()
 data SwapInterval
 ImmediateUpdates :: SwapInterval
 SynchronizedUpdates :: SwapInterval
 LateSwapTearing :: SwapInterval
 glSetSwapInterval :: SwapInterval -> IO ()
-glResetAttributes :: IO ()
-instance Numbered GLAttribute Word32
+glGetProcAddress :: CString -> IO (Ptr ())
+instance Eq GLContext
+instance Eq Mode
+instance Show Mode
+instance Eq Profile
+instance Show Profile
+instance Eq SwapInterval
+instance Show SwapInterval
+instance ToNumber SwapInterval CInt
 
 module SDL.Video.Renderer
 data Renderer
+blitScaled :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
 blitSurface :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
 createTextureFromSurface :: Renderer -> Surface -> IO Texture
+convertSurface :: Surface -> SurfacePixelFormat -> IO Surface
+destroyTexture :: Texture -> IO ()
 fillRect :: Surface -> Maybe (Rectangle CInt) -> Word32 -> IO ()
 freeSurface :: Surface -> IO ()
 loadBMP :: FilePath -> IO Surface
-mapRGB :: Surface -> Word8 -> Word8 -> Word8 -> IO Word32
+mapRGB :: SurfacePixelFormat -> V3 Word8 -> IO Word32
 getWindowSurface :: Window -> IO Surface
+setColorKey :: Surface -> Maybe Word32 -> IO ()
 setRenderDrawBlendMode :: Renderer -> BlendMode -> IO ()
 setRenderDrawColor :: Renderer -> V4 Word8 -> IO ()
+surfaceDimensions :: Surface -> IO (V2 CInt)
+surfaceFormat :: Surface -> IO SurfacePixelFormat
 updateWindowSurface :: Window -> IO ()
 data BlendMode
 BlendNone :: BlendMode
@@ -1992,6 +2387,7 @@ BlendMod :: BlendMode
 data Rectangle a
 Rectangle :: (Point V2 a) -> (V2 a) -> Rectangle a
 data Surface
+data SurfacePixelFormat
 data Texture
 renderClear :: Renderer -> IO ()
 renderCopy :: Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> IO ()
@@ -2011,7 +2407,10 @@ renderSetViewport :: Renderer -> Maybe (Rectangle CInt) -> IO ()
 instance Eq BlendMode
 instance Show BlendMode
 instance Storable a => Storable (Rectangle a)
-instance Numbered BlendMode Word32
+instance ToNumber BlendMode Word32
+
+
+module SDL.Window
 
 module SDL.Video
 data Window
@@ -2111,6 +2510,15 @@ setWindowSize :: Window -> V2 CInt -> IO ()
 
 -- | Set the title of the window.
 setWindowTitle :: Window -> Text -> IO ()
+data RendererConfig
+RendererConfig :: Bool -> Bool -> Bool -> Bool -> RendererConfig
+rendererSoftware :: RendererConfig -> Bool
+rendererAccelerated :: RendererConfig -> Bool
+rendererPresentVSync :: RendererConfig -> Bool
+rendererTargetTexture :: RendererConfig -> Bool
+createRenderer :: Window -> CInt -> RendererConfig -> IO Renderer
+defaultRenderer :: RendererConfig
+destroyRenderer :: Renderer -> IO ()
 
 -- | Get the text from the clipboard.
 --   
@@ -2220,7 +2628,160 @@ instance Eq Display
 instance Show Display
 instance Eq MessageKind
 instance Show MessageKind
-instance Numbered WindowMode Word32
+instance ToNumber MessageKind Word32
+instance FromNumber PixelFormat Word32
+instance ToNumber WindowMode Word32
+
+module SDL.Time
+
+-- | Number of milliseconds since library initialization.
+ticks :: IO Word32
+
+-- | The current time in seconds since some arbitrary starting point.
+time :: Fractional a => IO a
+
+
+module SDL.Power
+
+module SDL.Input
+
+module SDL.Hints
+data AccelerometerJoystickOptions
+AccelerometerNotJoystick :: AccelerometerJoystickOptions
+AccelerometerIsJoystick :: AccelerometerJoystickOptions
+data FramebufferAccelerationOptions
+Disable3D :: FramebufferAccelerationOptions
+Enable3DDefault :: FramebufferAccelerationOptions
+Enable3DDirect3D :: FramebufferAccelerationOptions
+Enable3DOpenGL :: FramebufferAccelerationOptions
+Enable3DOpenGLES :: FramebufferAccelerationOptions
+Enable3DOpenGLES2 :: FramebufferAccelerationOptions
+Enable3DSoftware :: FramebufferAccelerationOptions
+data Hint :: * -> *
+HintAccelerometerAsJoystick :: Hint AccelerometerJoystickOptions
+HintFramebufferAcceleration :: Hint FramebufferAccelerationOptions
+HintMacCTRLClick :: Hint MacCTRLClickOptions
+HintMouseRelativeModeWarp :: Hint MouseModeWarpOptions
+HintRenderDriver :: Hint RenderDrivers
+HintRenderOpenGLShaders :: Hint RenderOpenGLShaderOptions
+HintRenderScaleQuality :: Hint RenderScaleQuality
+HintRenderVSync :: Hint RenderVSyncOptions
+HintVideoWinD3DCompiler :: Hint VideoWinD3DCompilerOptions
+data MacCTRLClickOptions
+NoRightClick :: MacCTRLClickOptions
+EmulateRightClick :: MacCTRLClickOptions
+data MouseModeWarpOptions
+MouseRawInput :: MouseModeWarpOptions
+MouseWarping :: MouseModeWarpOptions
+data RenderDrivers
+Direct3D :: RenderDrivers
+OpenGL :: RenderDrivers
+OpenGLES :: RenderDrivers
+OpenGLES2 :: RenderDrivers
+Software :: RenderDrivers
+data RenderOpenGLShaderOptions
+DisableShaders :: RenderOpenGLShaderOptions
+EnableShaders :: RenderOpenGLShaderOptions
+data RenderScaleQuality
+ScaleNearest :: RenderScaleQuality
+ScaleLinear :: RenderScaleQuality
+ScaleBest :: RenderScaleQuality
+data RenderVSyncOptions
+DisableVSync :: RenderVSyncOptions
+EnableVSync :: RenderVSyncOptions
+setHint :: Hint v -> v -> IO Bool
+data VideoWinD3DCompilerOptions
+D3DVistaOrLater :: VideoWinD3DCompilerOptions
+D3DXPSupport :: VideoWinD3DCompilerOptions
+D3DNone :: VideoWinD3DCompilerOptions
+
+module SDL.Haptic
+data AvailableHapticDevice
+availableHapticDeviceName :: AvailableHapticDevice -> Text
+availableHapticDeviceIds :: IO (Vector AvailableHapticDevice)
+data OpenHapticDevice
+OpenHapticMouse :: OpenHapticDevice
+OpenHapticJoystick :: Joystick -> OpenHapticDevice
+OpenHapticDevice :: AvailableHapticDevice -> OpenHapticDevice
+openHaptic :: OpenHapticDevice -> IO HapticDevice
+data HapticDevice
+hapticDeviceName :: HapticDevice -> Text
+hapticDeviceNumAxes :: HapticDevice -> CInt
+data Effect
+Haptic :: Word32 -> Word16 -> Word16 -> Word16 -> EffectType -> Effect
+effectLength :: Effect -> Word32
+effectDelay :: Effect -> Word16
+effectButton :: Effect -> Word16
+effectInterval :: Effect -> Word16
+effectType :: Effect -> EffectType
+data EffectType
+HapticConstant :: HapticDirection -> Int16 -> EffectEnvelope -> EffectType
+hapticConstantDirection :: EffectType -> HapticDirection
+hapticConstantLevel :: EffectType -> Int16
+hapticConstantEnvelope :: EffectType -> EffectEnvelope
+HapticPeriodic :: EffectShape -> HapticDirection -> Word16 -> Int16 -> Int16 -> Word16 -> EffectEnvelope -> EffectType
+hapticPeriodicShape :: EffectType -> EffectShape
+hapticPeriodicDirection :: EffectType -> HapticDirection
+hapticPeriodicPeriod :: EffectType -> Word16
+hapticPeriodicMagnitude :: EffectType -> Int16
+hapticPeriodicOffset :: EffectType -> Int16
+hapticPeriodicPhase :: EffectType -> Word16
+hapticPeriodicEnvelope :: EffectType -> EffectEnvelope
+HapticCondition :: ConditionType -> [Word16] -> [Word16] -> [Int16] -> [Int16] -> [Word16] -> [Int16] -> EffectType
+hapticConditionType :: EffectType -> ConditionType
+hapticConditionRightSat :: EffectType -> [Word16]
+hapticConditionLeftSat :: EffectType -> [Word16]
+hapticConditionRightCoeff :: EffectType -> [Int16]
+hapticConditionLeftCoeff :: EffectType -> [Int16]
+hapticConditionDeadband :: EffectType -> [Word16]
+hapticConditionCenter :: EffectType -> [Int16]
+HapticRamp :: HapticDirection -> Int16 -> Int16 -> EffectEnvelope -> EffectType
+hapticRampDirection :: EffectType -> HapticDirection
+hapticRampStart :: EffectType -> Int16
+hapticRampEnd :: EffectType -> Int16
+hapticRampEnvelope :: EffectType -> EffectEnvelope
+HapticLeftRight :: Word32 -> Word16 -> Word16 -> EffectType
+hapticLeftRightLength :: EffectType -> Word32
+hapticLeftRightLargeMagnitude :: EffectType -> Word16
+hapticLeftRightSmallMagnitude :: EffectType -> Word16
+HapticCustom :: HapticDirection -> Word8 -> Word16 -> Vector Word16 -> EffectEnvelope -> EffectType
+hapticCustomDirection :: EffectType -> HapticDirection
+hapticCustomChannels :: EffectType -> Word8
+hapticCustomPeriod :: EffectType -> Word16
+hapticCustomSamples :: EffectType -> Vector Word16
+hapticCustomEnvelope :: EffectType -> EffectEnvelope
+instance Eq EffectEnvelope
+instance Show EffectEnvelope
+instance Eq EffectShape
+instance Show EffectShape
+instance Eq ConditionType
+instance Show ConditionType
+instance Eq EffectType
+instance Show EffectType
+instance Eq Effect
+instance Show Effect
+
+module SDL.Filesystem
+
+-- | An absolute path to the application data directory.
+--   
+--   The path is guaranteed to end with a path separator.
+--   
+--   Throws <a>SDLException</a> on failure, or if the platform does not
+--   implement this functionality.
+getBasePath :: IO Text
+
+-- | A path to a unique per user and per application directory for the
+--   given organization and application name, intended for writing
+--   preferences and other personal files.
+--   
+--   The path is guaranteed to end with a path separator.
+--   
+--   You should assume the path returned by this function is the only safe
+--   place to write files to.
+--   
+--   Throws <a>SDLException</a> on failure.
+getPrefPath :: Text -> Text -> IO Text
 
 module SDL.Events
 data Event
@@ -2352,6 +2913,7 @@ WindowClosed :: WindowEvent
 pollEvent :: IO (Maybe Event)
 pumpEvents :: IO ()
 waitEvent :: IO Event
+waitEventTimeout :: CInt -> IO (Maybe Event)
 instance Eq KeyMotion
 instance Show KeyMotion
 instance Eq KeyState
@@ -2419,6 +2981,47 @@ audioQuit :: IO ()
 instance Eq AudioFormat
 instance Ord AudioFormat
 instance Show AudioFormat
+
+module SDL.Init
+
+-- | Initializes SDL and the given subsystems. Do not call any SDL
+--   functions prior to this one, unless otherwise documented that you may
+--   do so.
+--   
+--   Throws <a>SDLException</a> if initialization fails.
+init :: Foldable f => f InitFlag -> IO ()
+
+-- | Initialize individual subsystems. SDL needs to be initializied prior
+--   to calls to this function.
+--   
+--   Throws <a>SDLException</a> if initialization fails.
+initSubSystem :: Foldable f => f InitFlag -> IO ()
+data InitFlag
+InitTimer :: InitFlag
+InitAudio :: InitFlag
+InitVideo :: InitFlag
+InitJoystick :: InitFlag
+InitHaptic :: InitFlag
+InitGameController :: InitFlag
+InitEvents :: InitFlag
+InitEverything :: InitFlag
+InitNoParachute :: InitFlag
+
+-- | Quit and shutdown SDL, freeing any resources that may have been in
+--   use. Do not call any SDL functions after you've called this function,
+--   unless otherwise documented that you may do so.
+quit :: IO ()
+
+-- | The major, minor, and patch versions of the SDL library linked with.
+--   Does not require initialization.
+version :: Integral a => IO (a, a, a)
+instance Eq InitFlag
+instance Ord InitFlag
+instance Show InitFlag
+instance Read InitFlag
+instance Bounded InitFlag
+instance Enum InitFlag
+instance ToNumber InitFlag Word32
 
 
 -- | Main module, re-exports the bulk of the API.
