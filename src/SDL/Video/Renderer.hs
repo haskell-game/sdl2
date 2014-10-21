@@ -16,6 +16,7 @@ module SDL.Video.Renderer
   , getWindowSurface
   , setRenderDrawBlendMode
   , setRenderDrawColor
+  , surfaceDimensions
   , surfaceFormat
   , updateWindowSurface
   , BlendMode(..)
@@ -95,6 +96,13 @@ newtype SurfacePixelFormat = SurfacePixelFormat (Ptr Raw.PixelFormat)
 -- sure. De need to guarantee that pointers aren't reused?
 mapRGB :: SurfacePixelFormat -> Word8 -> Word8 -> Word8 -> IO Word32
 mapRGB (SurfacePixelFormat fmt) = Raw.mapRGB fmt
+
+-- It's possible we could use unsafePerformIO here, but I'm not
+-- sure. surface->{w,h} are immutable, but do we need to guarantee that pointers
+-- aren't reused by *different* surfaces?
+surfaceDimensions :: Surface -> IO (V2 CInt)
+surfaceDimensions (Surface s) = (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> peek s
+
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->format is immutable, but do we need to guarantee that pointers
