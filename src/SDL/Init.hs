@@ -4,6 +4,7 @@ module SDL.Init
   , initSubSystem
   , InitFlag(..)
   , quit
+  , version
   ) where
 
 import Prelude hiding (init)
@@ -61,3 +62,10 @@ initSubSystem flags =
 -- otherwise documented that you may do so.
 quit :: IO ()
 quit = Raw.quit
+
+-- | The major, minor, and patch versions of the SDL library linked with.
+-- Does not require initialization.
+version :: Integral a => IO (a, a, a)
+version = do
+	Raw.Version major minor patch <- alloca $ \v -> Raw.getVersion v >> peek v
+	return (fromIntegral major, fromIntegral minor, fromIntegral patch)
