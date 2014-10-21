@@ -50,18 +50,20 @@ module SDL.Video.Renderer
   , defaultRenderer
   , RendererInfo(..)
   , getRendererInfo
+  , getRenderDriverInfo
   ) where
 
 import Prelude hiding (foldr)
 
+import Control.Applicative
 import Data.Bits
 import Data.Foldable
 import Data.Text (Text)
+import Data.Traversable
 import Data.Word
-import Control.Applicative
-import Foreign.Marshal.Alloc
 import Foreign.C.String
 import Foreign.C.Types
+import Foreign.Marshal.Alloc
 import Foreign.Marshal.Utils
 import Foreign.Ptr
 import Foreign.Storable
@@ -417,11 +419,24 @@ data RendererInfo = RendererInfo
   , rendererInfoMaxTextureHeight  :: CInt
   } deriving (Eq, Show)
 
+fromRawRendererInfo :: Raw.RendererInfo -> IO RendererInfo
+fromRawRendererInfo (Raw.RendererInfo name flgs ntf tfs mtw mth) = do
+    name' <- Text.decodeUtf8 <$> BS.packCString name
+    return $ RendererInfo name' (fromNumber flgs) ntf (fmap fromNumber tfs) mtw mth
+
 getRendererInfo :: Renderer -> IO RendererInfo
 getRendererInfo (Renderer renderer) =
   alloca $ \rptr -> do
     throwIfNeg_ "getRendererInfo" "SDL_GetRendererInfo" $
       Raw.getRendererInfo renderer rptr
-    (Raw.RendererInfo name flgs ntf tfs mtw mth) <- peek rptr
-    name' <- Text.decodeUtf8 <$> BS.packCString name
-    return $ RendererInfo name' (fromNumber flgs) ntf (fmap fromNumber tfs) mtw mth
+    peek rptr >>= fromRawRendererInfo
+
+getRenderDriverInfo :: IO [RendererInfo]
+getRenderDriverInfo = do
+  count <- Raw.getNumRenderDrivers
+  traverse go [0..count-1]
+  where
+    go idx = alloca $ \rptr -> do
+               throwIfNeg_ "getRenderDriverInfo" "SDL_GetRenderDriverInfo" $
+                 Raw.getRenderDriverInfo idx rptr
+               peek rptr >>= fromRawRendererInfo
