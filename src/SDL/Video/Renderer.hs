@@ -17,6 +17,7 @@ module SDL.Video.Renderer
   , setColorKey
   , setRenderDrawBlendMode
   , setRenderDrawColor
+  , setTextureColorMod
   , surfaceDimensions
   , surfaceFormat
   , updateWindowSurface
@@ -278,3 +279,8 @@ setColorKey (Surface s) key =
 
     Just key' -> do
       Raw.setColorKey s 1 key'
+
+setTextureColorMod :: Texture -> V3 Word8 -> IO ()
+setTextureColorMod (Texture t) (V3 r g b) =
+  throwIfNeg_ "SDL.Video.Renderer.setTextureColorMod" "SDL_SetTextureColorMod" $
+  Raw.setTextureColorMod t r g b
