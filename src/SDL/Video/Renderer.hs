@@ -96,8 +96,8 @@ newtype SurfacePixelFormat = SurfacePixelFormat (Ptr Raw.PixelFormat)
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. De need to guarantee that pointers aren't reused?
-mapRGB :: SurfacePixelFormat -> Word8 -> Word8 -> Word8 -> IO Word32
-mapRGB (SurfacePixelFormat fmt) = Raw.mapRGB fmt
+mapRGB :: SurfacePixelFormat -> V3 Word8 -> IO Word32
+mapRGB (SurfacePixelFormat fmt) (V3 r g b) = Raw.mapRGB fmt r g b
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->{w,h} are immutable, but do we need to guarantee that pointers
