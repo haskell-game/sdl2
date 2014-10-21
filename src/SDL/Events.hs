@@ -19,6 +19,7 @@ import Foreign
 import Foreign.C
 import Linear
 import Linear.Affine (Point(P))
+import SDL.Internal.Numbered
 import SDL.Internal.Types (WindowID(WindowID))
 import SDL.Input.Keyboard
 
@@ -26,7 +27,6 @@ import qualified Data.ByteString.Char8 as BSC8
 import qualified Data.Text.Encoding as Text
 import qualified SDL.Exception as SDLEx
 import qualified SDL.Raw as Raw
-import qualified SDL.Raw.Types as Raw
 
 data Event = Event
   { eventTimestamp :: Word32
@@ -144,6 +144,13 @@ data EventPayload
 
 ccharStringToText :: [CChar] -> Text
 ccharStringToText = Text.decodeUtf8 . BSC8.pack . map castCCharToChar
+
+fromRawKeysym :: Raw.Keysym -> Keysym
+fromRawKeysym (Raw.Keysym scancode keycode modifier) =
+  Keysym scancode' keycode' modifier'
+  where scancode' = fromNumber scancode
+        keycode'  = fromNumber keycode
+        modifier' = fromNumber (fromIntegral modifier)
 
 convertRaw :: Raw.Event -> Event
 convertRaw (Raw.WindowEvent _ ts a b c d)

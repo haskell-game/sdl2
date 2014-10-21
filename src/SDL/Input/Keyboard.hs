@@ -20,7 +20,6 @@ module SDL.Input.Keyboard
   , Keycode(..)
 
   -- * Keysym
-  , fromRawKeysym
   , Keysym(..)
 ) where
 
@@ -1570,10 +1569,3 @@ data Keysym = Keysym
   , keysymModifier :: KeyModifier
   }
   deriving (Eq, Show)
-
-fromRawKeysym :: Raw.Keysym -> Keysym
-fromRawKeysym (Raw.Keysym scancode keycode modifier) =
-  Keysym scancode' keycode' modifier'
-  where scancode' = fromNumber scancode
-        keycode'  = fromNumber keycode
-        modifier' = fromNumber (fromIntegral modifier)
