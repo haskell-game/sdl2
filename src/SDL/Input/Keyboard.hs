@@ -15,10 +15,21 @@ module SDL.Input.Keyboard
   -- * Scancodes
   , getScancodeName
   , Scancode(..)
+
+  -- * Keycodes
+  , keysymScancode
+  , keysymKeycode
+  , keysymModifier
+  , Keycode(..)
+
+  -- * Keysym
+  , fromRawKeysym
+  , Keysym(..)
 ) where
 
 import Control.Applicative
 import Data.Bits
+import Data.Int
 import Data.Word
 import Foreign.C.String
 import Foreign.Marshal.Alloc
@@ -838,3 +849,734 @@ instance ToNumber Scancode Word32 where
   toNumber ScancodeApp1 = Raw.scancodeApp1
   toNumber ScancodeApp2 = Raw.scancodeApp2
   toNumber ScancodeNum = Raw.scancodeNum
+
+data Keycode
+  = KeycodeUnknown
+  | KeycodeReturn
+  | KeycodeEscape
+  | KeycodeBackspace
+  | KeycodeTab
+  | KeycodeSpace
+  | KeycodeExclaim
+  | KeycodeQuoteDbl
+  | KeycodeHash
+  | KeycodePercent
+  | KeycodeDollar
+  | KeycodeAmpersand
+  | KeycodeQuote
+  | KeycodeLeftParen
+  | KeycodeRightParen
+  | KeycodeAsterisk
+  | KeycodePlus
+  | KeycodeComma
+  | KeycodeMinus
+  | KeycodePeriod
+  | KeycodeSlash
+  | Keycode0
+  | Keycode1
+  | Keycode2
+  | Keycode3
+  | Keycode4
+  | Keycode5
+  | Keycode6
+  | Keycode7
+  | Keycode8
+  | Keycode9
+  | KeycodeColon
+  | KeycodeSemicolon
+  | KeycodeLess
+  | KeycodeEquals
+  | KeycodeGreater
+  | KeycodeQuestion
+  | KeycodeAt
+  | KeycodeLeftBracket
+  | KeycodeBackslash
+  | KeycodeRightBracket
+  | KeycodeCaret
+  | KeycodeUnderscore
+  | KeycodeBackquote
+  | KeycodeA
+  | KeycodeB
+  | KeycodeC
+  | KeycodeD
+  | KeycodeE
+  | KeycodeF
+  | KeycodeG
+  | KeycodeH
+  | KeycodeI
+  | KeycodeJ
+  | KeycodeK
+  | KeycodeL
+  | KeycodeM
+  | KeycodeN
+  | KeycodeO
+  | KeycodeP
+  | KeycodeQ
+  | KeycodeR
+  | KeycodeS
+  | KeycodeT
+  | KeycodeU
+  | KeycodeV
+  | KeycodeW
+  | KeycodeX
+  | KeycodeY
+  | KeycodeZ
+  | KeycodeCapsLock
+  | KeycodeF1
+  | KeycodeF2
+  | KeycodeF3
+  | KeycodeF4
+  | KeycodeF5
+  | KeycodeF6
+  | KeycodeF7
+  | KeycodeF8
+  | KeycodeF9
+  | KeycodeF10
+  | KeycodeF11
+  | KeycodeF12
+  | KeycodePrintScreen
+  | KeycodeScrollLock
+  | KeycodePause
+  | KeycodeInsert
+  | KeycodeHome
+  | KeycodePageUp
+  | KeycodeDelete
+  | KeycodeEnd
+  | KeycodePageDown
+  | KeycodeRight
+  | KeycodeLeft
+  | KeycodeDown
+  | KeycodeUp
+  | KeycodeNumLockClear
+  | KeycodeKPDivide
+  | KeycodeKPMultiply
+  | KeycodeKPMinus
+  | KeycodeKPPlus
+  | KeycodeKPEnter
+  | KeycodeKP1
+  | KeycodeKP2
+  | KeycodeKP3
+  | KeycodeKP4
+  | KeycodeKP5
+  | KeycodeKP6
+  | KeycodeKP7
+  | KeycodeKP8
+  | KeycodeKP9
+  | KeycodeKP0
+  | KeycodeKPPeriod
+  | KeycodeApplication
+  | KeycodePower
+  | KeycodeKPEquals
+  | KeycodeF13
+  | KeycodeF14
+  | KeycodeF15
+  | KeycodeF16
+  | KeycodeF17
+  | KeycodeF18
+  | KeycodeF19
+  | KeycodeF20
+  | KeycodeF21
+  | KeycodeF22
+  | KeycodeF23
+  | KeycodeF24
+  | KeycodeExecute
+  | KeycodeHelp
+  | KeycodeMenu
+  | KeycodeSelect
+  | KeycodeStop
+  | KeycodeAgain
+  | KeycodeUndo
+  | KeycodeCut
+  | KeycodeCopy
+  | KeycodePaste
+  | KeycodeFind
+  | KeycodeMute
+  | KeycodeVolumeUp
+  | KeycodeVolumeDown
+  | KeycodeKPComma
+  | KeycodeKPEqualsAS400
+  | KeycodeAltErase
+  | KeycodeSysReq
+  | KeycodeCancel
+  | KeycodeClear
+  | KeycodePrior
+  | KeycodeReturn2
+  | KeycodeSeparator
+  | KeycodeOut
+  | KeycodeOper
+  | KeycodeClearAgain
+  | KeycodeCrSel
+  | KeycodeExSel
+  | KeycodeKP00
+  | KeycodeKP000
+  | KeycodeThousandsSeparator
+  | KeycodeDecimalSeparator
+  | KeycodeCurrencyUnit
+  | KeycodeCurrencySubunit
+  | KeycodeKPLeftParen
+  | KeycodeKPRightParen
+  | KeycodeKPLeftBrace
+  | KeycodeKPRightBrace
+  | KeycodeKPTab
+  | KeycodeKPBackspace
+  | KeycodeKPA
+  | KeycodeKPB
+  | KeycodeKPC
+  | KeycodeKPD
+  | KeycodeKPE
+  | KeycodeKPF
+  | KeycodeKPXor
+  | KeycodeKPPower
+  | KeycodeKPPercent
+  | KeycodeKPLess
+  | KeycodeKPGreater
+  | KeycodeKPAmpersand
+  | KeycodeKPDblAmpersand
+  | KeycodeKPVecticalBar
+  | KeycodeKPDblVerticalBar
+  | KeycodeKPColon
+  | KeycodeKPHash
+  | KeycodeKPSpace
+  | KeycodeKPAt
+  | KeycodeKPExclam
+  | KeycodeKPMemStore
+  | KeycodeKPMemRecall
+  | KeycodeKPMemClear
+  | KeycodeKPMemAdd
+  | KeycodeKPMemSubtract
+  | KeycodeKPMemMultiply
+  | KeycodeKPMemDivide
+  | KeycodeKPPlusMinus
+  | KeycodeKPClear
+  | KeycodeKPClearEntry
+  | KeycodeKPBinary
+  | KeycodeKPOctal
+  | KeycodeKPDecimal
+  | KeycodeKPHexadecimal
+  | KeycodeLCtrl
+  | KeycodeLShift
+  | KeycodeLAlt
+  | KeycodeLGUI
+  | KeycodeRCtrl
+  | KeycodeRShift
+  | KeycodeRAlt
+  | KeycodeRGUI
+  | KeycodeMode
+  | KeycodeAudioNext
+  | KeycodeAudioPrev
+  | KeycodeAudioStop
+  | KeycodeAudioPlay
+  | KeycodeAudioMute
+  | KeycodeMediaSelect
+  | KeycodeWWW
+  | KeycodeMail
+  | KeycodeCalculator
+  | KeycodeComputer
+  | KeycodeACSearch
+  | KeycodeACHome
+  | KeycodeACBack
+  | KeycodeACForward
+  | KeycodeACStop
+  | KeycodeACRefresh
+  | KeycodeACBookmarks
+  | KeycodeBrightnessDown
+  | KeycodeBrightnessUp
+  | KeycodeDisplaySwitch
+  | KeycodeKbdIllumToggle
+  | KeycodeKbdIllumDown
+  | KeycodeKbdIllumUp
+  | KeycodeEject
+  | KeycodeSleep
+  deriving (Eq, Show)
+
+instance FromNumber Keycode Int32 where
+  fromNumber n' = case n' of
+    n | n == Raw.keycodeUnknown -> KeycodeUnknown
+    n | n == Raw.keycodeReturn -> KeycodeReturn
+    n | n == Raw.keycodeEscape -> KeycodeEscape
+    n | n == Raw.keycodeBackspace -> KeycodeBackspace
+    n | n == Raw.keycodeTab -> KeycodeTab
+    n | n == Raw.keycodeSpace -> KeycodeSpace
+    n | n == Raw.keycodeExclaim -> KeycodeExclaim
+    n | n == Raw.keycodeQuoteDbl -> KeycodeQuoteDbl
+    n | n == Raw.keycodeHash -> KeycodeHash
+    n | n == Raw.keycodePercent -> KeycodePercent
+    n | n == Raw.keycodeDollar -> KeycodeDollar
+    n | n == Raw.keycodeAmpersand -> KeycodeAmpersand
+    n | n == Raw.keycodeQuote -> KeycodeQuote
+    n | n == Raw.keycodeLeftParen -> KeycodeLeftParen
+    n | n == Raw.keycodeRightParen -> KeycodeRightParen
+    n | n == Raw.keycodeAsterisk -> KeycodeAsterisk
+    n | n == Raw.keycodePlus -> KeycodePlus
+    n | n == Raw.keycodeComma -> KeycodeComma
+    n | n == Raw.keycodeMinus -> KeycodeMinus
+    n | n == Raw.keycodePeriod -> KeycodePeriod
+    n | n == Raw.keycodeSlash -> KeycodeSlash
+    n | n == Raw.keycode0 -> Keycode0
+    n | n == Raw.keycode1 -> Keycode1
+    n | n == Raw.keycode2 -> Keycode2
+    n | n == Raw.keycode3 -> Keycode3
+    n | n == Raw.keycode4 -> Keycode4
+    n | n == Raw.keycode5 -> Keycode5
+    n | n == Raw.keycode6 -> Keycode6
+    n | n == Raw.keycode7 -> Keycode7
+    n | n == Raw.keycode8 -> Keycode8
+    n | n == Raw.keycode9 -> Keycode9
+    n | n == Raw.keycodeColon -> KeycodeColon
+    n | n == Raw.keycodeSemicolon -> KeycodeSemicolon
+    n | n == Raw.keycodeLess -> KeycodeLess
+    n | n == Raw.keycodeEquals -> KeycodeEquals
+    n | n == Raw.keycodeGreater -> KeycodeGreater
+    n | n == Raw.keycodeQuestion -> KeycodeQuestion
+    n | n == Raw.keycodeAt -> KeycodeAt
+    n | n == Raw.keycodeLeftBracket -> KeycodeLeftBracket
+    n | n == Raw.keycodeBackslash -> KeycodeBackslash
+    n | n == Raw.keycodeRightBracket -> KeycodeRightBracket
+    n | n == Raw.keycodeCaret -> KeycodeCaret
+    n | n == Raw.keycodeUnderscore -> KeycodeUnderscore
+    n | n == Raw.keycodeBackquote -> KeycodeBackquote
+    n | n == Raw.keycodeA -> KeycodeA
+    n | n == Raw.keycodeB -> KeycodeB
+    n | n == Raw.keycodeC -> KeycodeC
+    n | n == Raw.keycodeD -> KeycodeD
+    n | n == Raw.keycodeE -> KeycodeE
+    n | n == Raw.keycodeF -> KeycodeF
+    n | n == Raw.keycodeG -> KeycodeG
+    n | n == Raw.keycodeH -> KeycodeH
+    n | n == Raw.keycodeI -> KeycodeI
+    n | n == Raw.keycodeJ -> KeycodeJ
+    n | n == Raw.keycodeK -> KeycodeK
+    n | n == Raw.keycodeL -> KeycodeL
+    n | n == Raw.keycodeM -> KeycodeM
+    n | n == Raw.keycodeN -> KeycodeN
+    n | n == Raw.keycodeO -> KeycodeO
+    n | n == Raw.keycodeP -> KeycodeP
+    n | n == Raw.keycodeQ -> KeycodeQ
+    n | n == Raw.keycodeR -> KeycodeR
+    n | n == Raw.keycodeS -> KeycodeS
+    n | n == Raw.keycodeT -> KeycodeT
+    n | n == Raw.keycodeU -> KeycodeU
+    n | n == Raw.keycodeV -> KeycodeV
+    n | n == Raw.keycodeW -> KeycodeW
+    n | n == Raw.keycodeX -> KeycodeX
+    n | n == Raw.keycodeY -> KeycodeY
+    n | n == Raw.keycodeZ -> KeycodeZ
+    n | n == Raw.keycodeCapsLock -> KeycodeCapsLock
+    n | n == Raw.keycodeF1 -> KeycodeF1
+    n | n == Raw.keycodeF2 -> KeycodeF2
+    n | n == Raw.keycodeF3 -> KeycodeF3
+    n | n == Raw.keycodeF4 -> KeycodeF4
+    n | n == Raw.keycodeF5 -> KeycodeF5
+    n | n == Raw.keycodeF6 -> KeycodeF6
+    n | n == Raw.keycodeF7 -> KeycodeF7
+    n | n == Raw.keycodeF8 -> KeycodeF8
+    n | n == Raw.keycodeF9 -> KeycodeF9
+    n | n == Raw.keycodeF10 -> KeycodeF10
+    n | n == Raw.keycodeF11 -> KeycodeF11
+    n | n == Raw.keycodeF12 -> KeycodeF12
+    n | n == Raw.keycodePrintScreen -> KeycodePrintScreen
+    n | n == Raw.keycodeScrollLock -> KeycodeScrollLock
+    n | n == Raw.keycodePause -> KeycodePause
+    n | n == Raw.keycodeInsert -> KeycodeInsert
+    n | n == Raw.keycodeHome -> KeycodeHome
+    n | n == Raw.keycodePageUp -> KeycodePageUp
+    n | n == Raw.keycodeDelete -> KeycodeDelete
+    n | n == Raw.keycodeEnd -> KeycodeEnd
+    n | n == Raw.keycodePageDown -> KeycodePageDown
+    n | n == Raw.keycodeRight -> KeycodeRight
+    n | n == Raw.keycodeLeft -> KeycodeLeft
+    n | n == Raw.keycodeDown -> KeycodeDown
+    n | n == Raw.keycodeUp -> KeycodeUp
+    n | n == Raw.keycodeNumLockClear -> KeycodeNumLockClear
+    n | n == Raw.keycodeKPDivide -> KeycodeKPDivide
+    n | n == Raw.keycodeKPMultiply -> KeycodeKPMultiply
+    n | n == Raw.keycodeKPMinus -> KeycodeKPMinus
+    n | n == Raw.keycodeKPPlus -> KeycodeKPPlus
+    n | n == Raw.keycodeKPEnter -> KeycodeKPEnter
+    n | n == Raw.keycodeKP1 -> KeycodeKP1
+    n | n == Raw.keycodeKP2 -> KeycodeKP2
+    n | n == Raw.keycodeKP3 -> KeycodeKP3
+    n | n == Raw.keycodeKP4 -> KeycodeKP4
+    n | n == Raw.keycodeKP5 -> KeycodeKP5
+    n | n == Raw.keycodeKP6 -> KeycodeKP6
+    n | n == Raw.keycodeKP7 -> KeycodeKP7
+    n | n == Raw.keycodeKP8 -> KeycodeKP8
+    n | n == Raw.keycodeKP9 -> KeycodeKP9
+    n | n == Raw.keycodeKP0 -> KeycodeKP0
+    n | n == Raw.keycodeKPPeriod -> KeycodeKPPeriod
+    n | n == Raw.keycodeApplication -> KeycodeApplication
+    n | n == Raw.keycodePower -> KeycodePower
+    n | n == Raw.keycodeKPEquals -> KeycodeKPEquals
+    n | n == Raw.keycodeF13 -> KeycodeF13
+    n | n == Raw.keycodeF14 -> KeycodeF14
+    n | n == Raw.keycodeF15 -> KeycodeF15
+    n | n == Raw.keycodeF16 -> KeycodeF16
+    n | n == Raw.keycodeF17 -> KeycodeF17
+    n | n == Raw.keycodeF18 -> KeycodeF18
+    n | n == Raw.keycodeF19 -> KeycodeF19
+    n | n == Raw.keycodeF20 -> KeycodeF20
+    n | n == Raw.keycodeF21 -> KeycodeF21
+    n | n == Raw.keycodeF22 -> KeycodeF22
+    n | n == Raw.keycodeF23 -> KeycodeF23
+    n | n == Raw.keycodeF24 -> KeycodeF24
+    n | n == Raw.keycodeExecute -> KeycodeExecute
+    n | n == Raw.keycodeHelp -> KeycodeHelp
+    n | n == Raw.keycodeMenu -> KeycodeMenu
+    n | n == Raw.keycodeSelect -> KeycodeSelect
+    n | n == Raw.keycodeStop -> KeycodeStop
+    n | n == Raw.keycodeAgain -> KeycodeAgain
+    n | n == Raw.keycodeUndo -> KeycodeUndo
+    n | n == Raw.keycodeCut -> KeycodeCut
+    n | n == Raw.keycodeCopy -> KeycodeCopy
+    n | n == Raw.keycodePaste -> KeycodePaste
+    n | n == Raw.keycodeFind -> KeycodeFind
+    n | n == Raw.keycodeMute -> KeycodeMute
+    n | n == Raw.keycodeVolumeUp -> KeycodeVolumeUp
+    n | n == Raw.keycodeVolumeDown -> KeycodeVolumeDown
+    n | n == Raw.keycodeKPComma -> KeycodeKPComma
+    n | n == Raw.keycodeKPEqualsAS400 -> KeycodeKPEqualsAS400
+    n | n == Raw.keycodeAltErase -> KeycodeAltErase
+    n | n == Raw.keycodeSysReq -> KeycodeSysReq
+    n | n == Raw.keycodeCancel -> KeycodeCancel
+    n | n == Raw.keycodeClear -> KeycodeClear
+    n | n == Raw.keycodePrior -> KeycodePrior
+    n | n == Raw.keycodeReturn2 -> KeycodeReturn2
+    n | n == Raw.keycodeSeparator -> KeycodeSeparator
+    n | n == Raw.keycodeOut -> KeycodeOut
+    n | n == Raw.keycodeOper -> KeycodeOper
+    n | n == Raw.keycodeClearAgain -> KeycodeClearAgain
+    n | n == Raw.keycodeCrSel -> KeycodeCrSel
+    n | n == Raw.keycodeExSel -> KeycodeExSel
+    n | n == Raw.keycodeKP00 -> KeycodeKP00
+    n | n == Raw.keycodeKP000 -> KeycodeKP000
+    n | n == Raw.keycodeThousandsSeparator -> KeycodeThousandsSeparator
+    n | n == Raw.keycodeDecimalSeparator -> KeycodeDecimalSeparator
+    n | n == Raw.keycodeCurrencyUnit -> KeycodeCurrencyUnit
+    n | n == Raw.keycodeCurrencySubunit -> KeycodeCurrencySubunit
+    n | n == Raw.keycodeKPLeftParen -> KeycodeKPLeftParen
+    n | n == Raw.keycodeKPRightParen -> KeycodeKPRightParen
+    n | n == Raw.keycodeKPLeftBrace -> KeycodeKPLeftBrace
+    n | n == Raw.keycodeKPRightBrace -> KeycodeKPRightBrace
+    n | n == Raw.keycodeKPTab -> KeycodeKPTab
+    n | n == Raw.keycodeKPBackspace -> KeycodeKPBackspace
+    n | n == Raw.keycodeKPA -> KeycodeKPA
+    n | n == Raw.keycodeKPB -> KeycodeKPB
+    n | n == Raw.keycodeKPC -> KeycodeKPC
+    n | n == Raw.keycodeKPD -> KeycodeKPD
+    n | n == Raw.keycodeKPE -> KeycodeKPE
+    n | n == Raw.keycodeKPF -> KeycodeKPF
+    n | n == Raw.keycodeKPXor -> KeycodeKPXor
+    n | n == Raw.keycodeKPPower -> KeycodeKPPower
+    n | n == Raw.keycodeKPPercent -> KeycodeKPPercent
+    n | n == Raw.keycodeKPLess -> KeycodeKPLess
+    n | n == Raw.keycodeKPGreater -> KeycodeKPGreater
+    n | n == Raw.keycodeKPAmpersand -> KeycodeKPAmpersand
+    n | n == Raw.keycodeKPDblAmpersand -> KeycodeKPDblAmpersand
+    n | n == Raw.keycodeKPVecticalBar -> KeycodeKPVecticalBar
+    n | n == Raw.keycodeKPDblVerticalBar -> KeycodeKPDblVerticalBar
+    n | n == Raw.keycodeKPColon -> KeycodeKPColon
+    n | n == Raw.keycodeKPHash -> KeycodeKPHash
+    n | n == Raw.keycodeKPSpace -> KeycodeKPSpace
+    n | n == Raw.keycodeKPAt -> KeycodeKPAt
+    n | n == Raw.keycodeKPExclam -> KeycodeKPExclam
+    n | n == Raw.keycodeKPMemStore -> KeycodeKPMemStore
+    n | n == Raw.keycodeKPMemRecall -> KeycodeKPMemRecall
+    n | n == Raw.keycodeKPMemClear -> KeycodeKPMemClear
+    n | n == Raw.keycodeKPMemAdd -> KeycodeKPMemAdd
+    n | n == Raw.keycodeKPMemSubtract -> KeycodeKPMemSubtract
+    n | n == Raw.keycodeKPMemMultiply -> KeycodeKPMemMultiply
+    n | n == Raw.keycodeKPMemDivide -> KeycodeKPMemDivide
+    n | n == Raw.keycodeKPPlusMinus -> KeycodeKPPlusMinus
+    n | n == Raw.keycodeKPClear -> KeycodeKPClear
+    n | n == Raw.keycodeKPClearEntry -> KeycodeKPClearEntry
+    n | n == Raw.keycodeKPBinary -> KeycodeKPBinary
+    n | n == Raw.keycodeKPOctal -> KeycodeKPOctal
+    n | n == Raw.keycodeKPDecimal -> KeycodeKPDecimal
+    n | n == Raw.keycodeKPHexadecimal -> KeycodeKPHexadecimal
+    n | n == Raw.keycodeLCtrl -> KeycodeLCtrl
+    n | n == Raw.keycodeLShift -> KeycodeLShift
+    n | n == Raw.keycodeLAlt -> KeycodeLAlt
+    n | n == Raw.keycodeLGUI -> KeycodeLGUI
+    n | n == Raw.keycodeRCtrl -> KeycodeRCtrl
+    n | n == Raw.keycodeRShift -> KeycodeRShift
+    n | n == Raw.keycodeRAlt -> KeycodeRAlt
+    n | n == Raw.keycodeRGUI -> KeycodeRGUI
+    n | n == Raw.keycodeMode -> KeycodeMode
+    n | n == Raw.keycodeAudioNext -> KeycodeAudioNext
+    n | n == Raw.keycodeAudioPrev -> KeycodeAudioPrev
+    n | n == Raw.keycodeAudioStop -> KeycodeAudioStop
+    n | n == Raw.keycodeAudioPlay -> KeycodeAudioPlay
+    n | n == Raw.keycodeAudioMute -> KeycodeAudioMute
+    n | n == Raw.keycodeMediaSelect -> KeycodeMediaSelect
+    n | n == Raw.keycodeWWW -> KeycodeWWW
+    n | n == Raw.keycodeMail -> KeycodeMail
+    n | n == Raw.keycodeCalculator -> KeycodeCalculator
+    n | n == Raw.keycodeComputer -> KeycodeComputer
+    n | n == Raw.keycodeACSearch -> KeycodeACSearch
+    n | n == Raw.keycodeACHome -> KeycodeACHome
+    n | n == Raw.keycodeACBack -> KeycodeACBack
+    n | n == Raw.keycodeACForward -> KeycodeACForward
+    n | n == Raw.keycodeACStop -> KeycodeACStop
+    n | n == Raw.keycodeACRefresh -> KeycodeACRefresh
+    n | n == Raw.keycodeACBookmarks -> KeycodeACBookmarks
+    n | n == Raw.keycodeBrightnessDown -> KeycodeBrightnessDown
+    n | n == Raw.keycodeBrightnessUp -> KeycodeBrightnessUp
+    n | n == Raw.keycodeDisplaySwitch -> KeycodeDisplaySwitch
+    n | n == Raw.keycodeKbdIllumToggle -> KeycodeKbdIllumToggle
+    n | n == Raw.keycodeKbdIllumDown -> KeycodeKbdIllumDown
+    n | n == Raw.keycodeKbdIllumUp -> KeycodeKbdIllumUp
+    n | n == Raw.keycodeEject -> KeycodeEject
+    n | n == Raw.keycodeSleep -> KeycodeSleep
+    _ -> error "fromNumber: not numbered"
+
+instance ToNumber Keycode Int32 where
+  toNumber keycodeUnknown = Raw.keycodeUnknown
+  toNumber keycodeReturn = Raw.keycodeReturn
+  toNumber keycodeEscape = Raw.keycodeEscape
+  toNumber keycodeBackspace = Raw.keycodeBackspace
+  toNumber keycodeTab = Raw.keycodeTab
+  toNumber keycodeSpace = Raw.keycodeSpace
+  toNumber keycodeExclaim = Raw.keycodeExclaim
+  toNumber keycodeQuoteDbl = Raw.keycodeQuoteDbl
+  toNumber keycodeHash = Raw.keycodeHash
+  toNumber keycodePercent = Raw.keycodePercent
+  toNumber keycodeDollar = Raw.keycodeDollar
+  toNumber keycodeAmpersand = Raw.keycodeAmpersand
+  toNumber keycodeQuote = Raw.keycodeQuote
+  toNumber keycodeLeftParen = Raw.keycodeLeftParen
+  toNumber keycodeRightParen = Raw.keycodeRightParen
+  toNumber keycodeAsterisk = Raw.keycodeAsterisk
+  toNumber keycodePlus = Raw.keycodePlus
+  toNumber keycodeComma = Raw.keycodeComma
+  toNumber keycodeMinus = Raw.keycodeMinus
+  toNumber keycodePeriod = Raw.keycodePeriod
+  toNumber keycodeSlash = Raw.keycodeSlash
+  toNumber keycode0 = Raw.keycode0
+  toNumber keycode1 = Raw.keycode1
+  toNumber keycode2 = Raw.keycode2
+  toNumber keycode3 = Raw.keycode3
+  toNumber keycode4 = Raw.keycode4
+  toNumber keycode5 = Raw.keycode5
+  toNumber keycode6 = Raw.keycode6
+  toNumber keycode7 = Raw.keycode7
+  toNumber keycode8 = Raw.keycode8
+  toNumber keycode9 = Raw.keycode9
+  toNumber keycodeColon = Raw.keycodeColon
+  toNumber keycodeSemicolon = Raw.keycodeSemicolon
+  toNumber keycodeLess = Raw.keycodeLess
+  toNumber keycodeEquals = Raw.keycodeEquals
+  toNumber keycodeGreater = Raw.keycodeGreater
+  toNumber keycodeQuestion = Raw.keycodeQuestion
+  toNumber keycodeAt = Raw.keycodeAt
+  toNumber keycodeLeftBracket = Raw.keycodeLeftBracket
+  toNumber keycodeBackslash = Raw.keycodeBackslash
+  toNumber keycodeRightBracket = Raw.keycodeRightBracket
+  toNumber keycodeCaret = Raw.keycodeCaret
+  toNumber keycodeUnderscore = Raw.keycodeUnderscore
+  toNumber keycodeBackquote = Raw.keycodeBackquote
+  toNumber keycodeA = Raw.keycodeA
+  toNumber keycodeB = Raw.keycodeB
+  toNumber keycodeC = Raw.keycodeC
+  toNumber keycodeD = Raw.keycodeD
+  toNumber keycodeE = Raw.keycodeE
+  toNumber keycodeF = Raw.keycodeF
+  toNumber keycodeG = Raw.keycodeG
+  toNumber keycodeH = Raw.keycodeH
+  toNumber keycodeI = Raw.keycodeI
+  toNumber keycodeJ = Raw.keycodeJ
+  toNumber keycodeK = Raw.keycodeK
+  toNumber keycodeL = Raw.keycodeL
+  toNumber keycodeM = Raw.keycodeM
+  toNumber keycodeN = Raw.keycodeN
+  toNumber keycodeO = Raw.keycodeO
+  toNumber keycodeP = Raw.keycodeP
+  toNumber keycodeQ = Raw.keycodeQ
+  toNumber keycodeR = Raw.keycodeR
+  toNumber keycodeS = Raw.keycodeS
+  toNumber keycodeT = Raw.keycodeT
+  toNumber keycodeU = Raw.keycodeU
+  toNumber keycodeV = Raw.keycodeV
+  toNumber keycodeW = Raw.keycodeW
+  toNumber keycodeX = Raw.keycodeX
+  toNumber keycodeY = Raw.keycodeY
+  toNumber keycodeZ = Raw.keycodeZ
+  toNumber keycodeCapsLock = Raw.keycodeCapsLock
+  toNumber keycodeF1 = Raw.keycodeF1
+  toNumber keycodeF2 = Raw.keycodeF2
+  toNumber keycodeF3 = Raw.keycodeF3
+  toNumber keycodeF4 = Raw.keycodeF4
+  toNumber keycodeF5 = Raw.keycodeF5
+  toNumber keycodeF6 = Raw.keycodeF6
+  toNumber keycodeF7 = Raw.keycodeF7
+  toNumber keycodeF8 = Raw.keycodeF8
+  toNumber keycodeF9 = Raw.keycodeF9
+  toNumber keycodeF10 = Raw.keycodeF10
+  toNumber keycodeF11 = Raw.keycodeF11
+  toNumber keycodeF12 = Raw.keycodeF12
+  toNumber keycodePrintScreen = Raw.keycodePrintScreen
+  toNumber keycodeScrollLock = Raw.keycodeScrollLock
+  toNumber keycodePause = Raw.keycodePause
+  toNumber keycodeInsert = Raw.keycodeInsert
+  toNumber keycodeHome = Raw.keycodeHome
+  toNumber keycodePageUp = Raw.keycodePageUp
+  toNumber keycodeDelete = Raw.keycodeDelete
+  toNumber keycodeEnd = Raw.keycodeEnd
+  toNumber keycodePageDown = Raw.keycodePageDown
+  toNumber keycodeRight = Raw.keycodeRight
+  toNumber keycodeLeft = Raw.keycodeLeft
+  toNumber keycodeDown = Raw.keycodeDown
+  toNumber keycodeUp = Raw.keycodeUp
+  toNumber keycodeNumLockClear = Raw.keycodeNumLockClear
+  toNumber keycodeKPDivide = Raw.keycodeKPDivide
+  toNumber keycodeKPMultiply = Raw.keycodeKPMultiply
+  toNumber keycodeKPMinus = Raw.keycodeKPMinus
+  toNumber keycodeKPPlus = Raw.keycodeKPPlus
+  toNumber keycodeKPEnter = Raw.keycodeKPEnter
+  toNumber keycodeKP1 = Raw.keycodeKP1
+  toNumber keycodeKP2 = Raw.keycodeKP2
+  toNumber keycodeKP3 = Raw.keycodeKP3
+  toNumber keycodeKP4 = Raw.keycodeKP4
+  toNumber keycodeKP5 = Raw.keycodeKP5
+  toNumber keycodeKP6 = Raw.keycodeKP6
+  toNumber keycodeKP7 = Raw.keycodeKP7
+  toNumber keycodeKP8 = Raw.keycodeKP8
+  toNumber keycodeKP9 = Raw.keycodeKP9
+  toNumber keycodeKP0 = Raw.keycodeKP0
+  toNumber keycodeKPPeriod = Raw.keycodeKPPeriod
+  toNumber keycodeApplication = Raw.keycodeApplication
+  toNumber keycodePower = Raw.keycodePower
+  toNumber keycodeKPEquals = Raw.keycodeKPEquals
+  toNumber keycodeF13 = Raw.keycodeF13
+  toNumber keycodeF14 = Raw.keycodeF14
+  toNumber keycodeF15 = Raw.keycodeF15
+  toNumber keycodeF16 = Raw.keycodeF16
+  toNumber keycodeF17 = Raw.keycodeF17
+  toNumber keycodeF18 = Raw.keycodeF18
+  toNumber keycodeF19 = Raw.keycodeF19
+  toNumber keycodeF20 = Raw.keycodeF20
+  toNumber keycodeF21 = Raw.keycodeF21
+  toNumber keycodeF22 = Raw.keycodeF22
+  toNumber keycodeF23 = Raw.keycodeF23
+  toNumber keycodeF24 = Raw.keycodeF24
+  toNumber keycodeExecute = Raw.keycodeExecute
+  toNumber keycodeHelp = Raw.keycodeHelp
+  toNumber keycodeMenu = Raw.keycodeMenu
+  toNumber keycodeSelect = Raw.keycodeSelect
+  toNumber keycodeStop = Raw.keycodeStop
+  toNumber keycodeAgain = Raw.keycodeAgain
+  toNumber keycodeUndo = Raw.keycodeUndo
+  toNumber keycodeCut = Raw.keycodeCut
+  toNumber keycodeCopy = Raw.keycodeCopy
+  toNumber keycodePaste = Raw.keycodePaste
+  toNumber keycodeFind = Raw.keycodeFind
+  toNumber keycodeMute = Raw.keycodeMute
+  toNumber keycodeVolumeUp = Raw.keycodeVolumeUp
+  toNumber keycodeVolumeDown = Raw.keycodeVolumeDown
+  toNumber keycodeKPComma = Raw.keycodeKPComma
+  toNumber keycodeKPEqualsAS400 = Raw.keycodeKPEqualsAS400
+  toNumber keycodeAltErase = Raw.keycodeAltErase
+  toNumber keycodeSysReq = Raw.keycodeSysReq
+  toNumber keycodeCancel = Raw.keycodeCancel
+  toNumber keycodeClear = Raw.keycodeClear
+  toNumber keycodePrior = Raw.keycodePrior
+  toNumber keycodeReturn2 = Raw.keycodeReturn2
+  toNumber keycodeSeparator = Raw.keycodeSeparator
+  toNumber keycodeOut = Raw.keycodeOut
+  toNumber keycodeOper = Raw.keycodeOper
+  toNumber keycodeClearAgain = Raw.keycodeClearAgain
+  toNumber keycodeCrSel = Raw.keycodeCrSel
+  toNumber keycodeExSel = Raw.keycodeExSel
+  toNumber keycodeKP00 = Raw.keycodeKP00
+  toNumber keycodeKP000 = Raw.keycodeKP000
+  toNumber keycodeThousandsSeparator = Raw.keycodeThousandsSeparator
+  toNumber keycodeDecimalSeparator = Raw.keycodeDecimalSeparator
+  toNumber keycodeCurrencyUnit = Raw.keycodeCurrencyUnit
+  toNumber keycodeCurrencySubunit = Raw.keycodeCurrencySubunit
+  toNumber keycodeKPLeftParen = Raw.keycodeKPLeftParen
+  toNumber keycodeKPRightParen = Raw.keycodeKPRightParen
+  toNumber keycodeKPLeftBrace = Raw.keycodeKPLeftBrace
+  toNumber keycodeKPRightBrace = Raw.keycodeKPRightBrace
+  toNumber keycodeKPTab = Raw.keycodeKPTab
+  toNumber keycodeKPBackspace = Raw.keycodeKPBackspace
+  toNumber keycodeKPA = Raw.keycodeKPA
+  toNumber keycodeKPB = Raw.keycodeKPB
+  toNumber keycodeKPC = Raw.keycodeKPC
+  toNumber keycodeKPD = Raw.keycodeKPD
+  toNumber keycodeKPE = Raw.keycodeKPE
+  toNumber keycodeKPF = Raw.keycodeKPF
+  toNumber keycodeKPXor = Raw.keycodeKPXor
+  toNumber keycodeKPPower = Raw.keycodeKPPower
+  toNumber keycodeKPPercent = Raw.keycodeKPPercent
+  toNumber keycodeKPLess = Raw.keycodeKPLess
+  toNumber keycodeKPGreater = Raw.keycodeKPGreater
+  toNumber keycodeKPAmpersand = Raw.keycodeKPAmpersand
+  toNumber keycodeKPDblAmpersand = Raw.keycodeKPDblAmpersand
+  toNumber keycodeKPVecticalBar = Raw.keycodeKPVecticalBar
+  toNumber keycodeKPDblVerticalBar = Raw.keycodeKPDblVerticalBar
+  toNumber keycodeKPColon = Raw.keycodeKPColon
+  toNumber keycodeKPHash = Raw.keycodeKPHash
+  toNumber keycodeKPSpace = Raw.keycodeKPSpace
+  toNumber keycodeKPAt = Raw.keycodeKPAt
+  toNumber keycodeKPExclam = Raw.keycodeKPExclam
+  toNumber keycodeKPMemStore = Raw.keycodeKPMemStore
+  toNumber keycodeKPMemRecall = Raw.keycodeKPMemRecall
+  toNumber keycodeKPMemClear = Raw.keycodeKPMemClear
+  toNumber keycodeKPMemAdd = Raw.keycodeKPMemAdd
+  toNumber keycodeKPMemSubtract = Raw.keycodeKPMemSubtract
+  toNumber keycodeKPMemMultiply = Raw.keycodeKPMemMultiply
+  toNumber keycodeKPMemDivide = Raw.keycodeKPMemDivide
+  toNumber keycodeKPPlusMinus = Raw.keycodeKPPlusMinus
+  toNumber keycodeKPClear = Raw.keycodeKPClear
+  toNumber keycodeKPClearEntry = Raw.keycodeKPClearEntry
+  toNumber keycodeKPBinary = Raw.keycodeKPBinary
+  toNumber keycodeKPOctal = Raw.keycodeKPOctal
+  toNumber keycodeKPDecimal = Raw.keycodeKPDecimal
+  toNumber keycodeKPHexadecimal = Raw.keycodeKPHexadecimal
+  toNumber keycodeLCtrl = Raw.keycodeLCtrl
+  toNumber keycodeLShift = Raw.keycodeLShift
+  toNumber keycodeLAlt = Raw.keycodeLAlt
+  toNumber keycodeLGUI = Raw.keycodeLGUI
+  toNumber keycodeRCtrl = Raw.keycodeRCtrl
+  toNumber keycodeRShift = Raw.keycodeRShift
+  toNumber keycodeRAlt = Raw.keycodeRAlt
+  toNumber keycodeRGUI = Raw.keycodeRGUI
+  toNumber keycodeMode = Raw.keycodeMode
+  toNumber keycodeAudioNext = Raw.keycodeAudioNext
+  toNumber keycodeAudioPrev = Raw.keycodeAudioPrev
+  toNumber keycodeAudioStop = Raw.keycodeAudioStop
+  toNumber keycodeAudioPlay = Raw.keycodeAudioPlay
+  toNumber keycodeAudioMute = Raw.keycodeAudioMute
+  toNumber keycodeMediaSelect = Raw.keycodeMediaSelect
+  toNumber keycodeWWW = Raw.keycodeWWW
+  toNumber keycodeMail = Raw.keycodeMail
+  toNumber keycodeCalculator = Raw.keycodeCalculator
+  toNumber keycodeComputer = Raw.keycodeComputer
+  toNumber keycodeACSearch = Raw.keycodeACSearch
+  toNumber keycodeACHome = Raw.keycodeACHome
+  toNumber keycodeACBack = Raw.keycodeACBack
+  toNumber keycodeACForward = Raw.keycodeACForward
+  toNumber keycodeACStop = Raw.keycodeACStop
+  toNumber keycodeACRefresh = Raw.keycodeACRefresh
+  toNumber keycodeACBookmarks = Raw.keycodeACBookmarks
+  toNumber keycodeBrightnessDown = Raw.keycodeBrightnessDown
+  toNumber keycodeBrightnessUp = Raw.keycodeBrightnessUp
+  toNumber keycodeDisplaySwitch = Raw.keycodeDisplaySwitch
+  toNumber keycodeKbdIllumToggle = Raw.keycodeKbdIllumToggle
+  toNumber keycodeKbdIllumDown = Raw.keycodeKbdIllumDown
+  toNumber keycodeKbdIllumUp = Raw.keycodeKbdIllumUp
+  toNumber keycodeEject = Raw.keycodeEject
+  toNumber keycodeSleep = Raw.keycodeSleep
+
+data Keysym = Keysym
+  { keysymScancode :: Scancode
+  , keysymKeycode  :: Keycode
+  , keysymModifier :: KeyModifier
+  }
+  deriving (Eq, Show)
+
+fromRawKeysym :: Raw.Keysym -> Keysym
+fromRawKeysym (Raw.Keysym scancode keycode modifier) =
+  Keysym scancode' keycode' modifier'
+  where scancode' = fromNumber scancode
+        keycode'  = fromNumber keycode
+        modifier' = fromNumber (fromIntegral modifier)
