@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Init
   ( init
@@ -12,6 +13,7 @@ import Prelude hiding (init)
 import Data.Bitmask (foldFlags)
 import Data.Foldable
 import Foreign
+import SDL.Internal.Numbered
 
 import qualified SDL.Exception as SDLEx
 import qualified SDL.Raw as Raw
@@ -28,16 +30,16 @@ data InitFlag
   | InitNoParachute
   deriving (Eq,Ord,Show,Read,Bounded,Enum)
 
-initFlagToC :: InitFlag -> Word32
-initFlagToC InitTimer = Raw.initFlagTimer
-initFlagToC InitAudio = Raw.initFlagAudio
-initFlagToC InitVideo = Raw.initFlagVideo
-initFlagToC InitJoystick = Raw.initFlagJoystick
-initFlagToC InitHaptic = Raw.initFlagHaptic
-initFlagToC InitGameController = Raw.initFlagGameController
-initFlagToC InitEvents = Raw.initFlagEvents
-initFlagToC InitEverything = Raw.initFlagEverything
-initFlagToC InitNoParachute = Raw.initFlagNoParachute
+instance ToNumber InitFlag Word32 where
+  toNumber InitTimer = Raw.initFlagTimer
+  toNumber InitAudio = Raw.initFlagAudio
+  toNumber InitVideo = Raw.initFlagVideo
+  toNumber InitJoystick = Raw.initFlagJoystick
+  toNumber InitHaptic = Raw.initFlagHaptic
+  toNumber InitGameController = Raw.initFlagGameController
+  toNumber InitEvents = Raw.initFlagEvents
+  toNumber InitEverything = Raw.initFlagEverything
+  toNumber InitNoParachute = Raw.initFlagNoParachute
 
 -- | Initializes SDL and the given subsystems. Do not call any SDL functions
 -- prior to this one, unless otherwise documented that you may do so.
@@ -46,7 +48,7 @@ initFlagToC InitNoParachute = Raw.initFlagNoParachute
 init :: Foldable f => f InitFlag -> IO ()
 init flags =
   SDLEx.throwIfNeg_ "SDL.Init.init" "SDL_Init" $
-    Raw.init (foldFlags initFlagToC flags)
+    Raw.init (foldFlags toNumber flags)
 
 -- | Initialize individual subsystems. SDL needs to be initializied prior
 -- to calls to this function.
@@ -55,7 +57,7 @@ init flags =
 initSubSystem :: Foldable f => f InitFlag -> IO ()
 initSubSystem flags =
   SDLEx.throwIfNeg_ "SDL.Init.initSubSystem" "SDL_InitSubSystem" $
-    Raw.initSubSystem (foldFlags initFlagToC flags)
+    Raw.initSubSystem (foldFlags toNumber flags)
 
 -- | Quit and shutdown SDL, freeing any resources that may have been in use.
 -- Do not call any SDL functions after you've called this function, unless
