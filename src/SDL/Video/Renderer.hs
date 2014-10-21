@@ -14,6 +14,7 @@ module SDL.Video.Renderer
   , loadBMP
   , mapRGB
   , getWindowSurface
+  , setColorKey
   , setRenderDrawBlendMode
   , setRenderDrawColor
   , surfaceDimensions
@@ -45,6 +46,7 @@ module SDL.Video.Renderer
 
 import Data.Word
 import Control.Applicative
+import Foreign.Marshal.Alloc
 import Foreign.C.String
 import Foreign.C.Types
 import Foreign.Marshal.Utils
@@ -258,3 +260,21 @@ blitScaled (Surface src) srcRect (Surface dst) dstRect =
   maybeWith with srcRect $ \srcPtr ->
   maybeWith with dstRect $ \dstPtr ->
   Raw.blitScaled src (castPtr srcPtr) dst (castPtr dstPtr)
+
+setColorKey :: Surface -> Maybe Word32 -> IO ()
+setColorKey (Surface s) key =
+  throwIfNeg_ "SDL.Video.Renderer.setColorKey" "SDL_SetColorKey" $
+  case key of
+    Nothing ->
+      alloca $ \keyPtr -> do
+        -- TODO Error checking?
+        ret <- Raw.getColorKey s keyPtr
+        if ret == -1
+          -- if ret == -1 then there is no key enabled, so we have nothing to
+          -- do.
+          then return 0
+          else do key' <- peek keyPtr
+                  Raw.setColorKey s 0 key'
+
+    Just key' -> do
+      Raw.setColorKey s 1 key'
