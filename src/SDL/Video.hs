@@ -38,6 +38,8 @@ module SDL.Video
   , createRenderer
   , defaultRenderer
   , destroyRenderer
+  , RendererInfo(..)
+  , getRendererInfo
 
   -- * Clipboard Handling
   , getClipboardText
@@ -461,7 +463,23 @@ data RendererConfig = RendererConfig
   , rendererAccelerated   :: Bool
   , rendererPresentVSync  :: Bool
   , rendererTargetTexture :: Bool
-  }
+  } deriving (Eq, Show)
+
+instance FromNumber RendererConfig Word32 where
+  fromNumber n = RendererConfig
+    { rendererSoftware      = n .&. Raw.rendererFlagSoftware /= 0
+    , rendererAccelerated   = n .&. Raw.rendererFlagAccelerated /= 0
+    , rendererPresentVSync  = n .&. Raw.rendererFlagPresentVSync /= 0
+    , rendererTargetTexture = n .&. Raw.rendererFlagTargetTexture /= 0
+    }
+
+instance ToNumber RendererConfig Word32 where
+  toNumber config = foldr (.|.) 0
+    [ if rendererSoftware config then Raw.rendererFlagSoftware else 0
+    , if rendererAccelerated config then Raw.rendererFlagAccelerated else 0
+    , if rendererPresentVSync config then Raw.rendererFlagPresentVSync else 0
+    , if rendererTargetTexture config then Raw.rendererFlagTargetTexture else 0
+    ]
 
 defaultRenderer :: RendererConfig
 defaultRenderer = RendererConfig
@@ -475,14 +493,25 @@ createRenderer :: Window -> CInt -> RendererConfig -> IO Renderer
 createRenderer (Window w) driver config = do
   fmap Renderer $
     throwIfNull "SDL.Video.createRenderer" "SDL_CreateRenderer" $
-    Raw.createRenderer w driver flags
-  where
-    flags = foldr (.|.) 0
-      [ if rendererSoftware config then Raw.rendererFlagSoftware else 0
-      , if rendererAccelerated config then Raw.rendererFlagAccelerated else 0
-      , if rendererPresentVSync config then Raw.rendererFlagPresentVSync else 0
-      , if rendererTargetTexture config then Raw.rendererFlagTargetTexture else 0
-      ]
+    Raw.createRenderer w driver (toNumber config)
 
 destroyRenderer :: Renderer -> IO ()
 destroyRenderer (Renderer r) = Raw.destroyRenderer r
+
+data RendererInfo = RendererInfo
+  { rendererInfoName              :: Text
+  , rendererInfoFlags             :: RendererConfig
+  , rendererInfoNumTextureFormats :: Word32
+  , rendererInfoTextureFormats    :: [PixelFormat]
+  , rendererInfoMaxTextureWidth   :: CInt
+  , rendererInfoMaxTextureHeight  :: CInt
+  } deriving (Eq, Show)
+
+getRendererInfo :: Renderer -> IO RendererInfo
+getRendererInfo (Renderer renderer) =
+  alloca $ \rptr -> do
+    throwIfNeg_ "getRendererInfo" "SDL_GetRendererInfo" $
+      Raw.getRendererInfo renderer rptr
+    (Raw.RendererInfo name flgs ntf tfs mtw mth) <- peek rptr
+    name' <- Text.decodeUtf8 <$> BS.packCString name
+    return $ RendererInfo name' (fromNumber flgs) ntf (fmap fromNumber tfs) mtw mth

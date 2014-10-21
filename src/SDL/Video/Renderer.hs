@@ -44,6 +44,8 @@ module SDL.Video.Renderer
   , renderSetViewport
   ) where
 
+import qualified Data.Text.Encoding as Text
+import qualified Data.ByteString    as BS
 import Data.Word
 import Control.Applicative
 import Foreign.Marshal.Alloc
