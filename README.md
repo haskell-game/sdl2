@@ -36,3 +36,15 @@ ways you can help:
 3. Documentation is welcome, but may not be the best use of your time as we are
    currently in a period of rapid development as we find the most productive
    API.
+
+# Development
+
+## Using `cabal repl`
+
+You can use `cabal repl` as a development tool, but you'll need to configure the project in a slightly non-standard way first:
+
+```
+cabal configure --ghc-option=-fPIC
+```
+
+You only need to do this once (unless you reconfigure). From this point, `cabal repl` should Just Work.
