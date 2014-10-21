@@ -14,6 +14,7 @@ module SDL.Input.Keyboard
 
   -- * Scancodes
   , getScancodeName
+  , keysymScancode
   , Scancode(..)
 ) where
 
@@ -103,6 +104,9 @@ getScancodeName :: Scancode -> IO String
 getScancodeName scancode = do
   name <- Raw.getScancodeName $ toNumber scancode
   peekCString name
+
+keysymScancode :: Raw.Keysym -> Scancode
+keysymScancode = fromNumber . Raw.keysymScancode
 
 data Scancode
   = ScancodeUnknown
