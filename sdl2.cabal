@@ -116,39 +116,39 @@ executable lazyfoo-lesson-01
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson01.hs
   default-language: Haskell2010
-  ghc-options: -main-is Lazyfoo.Lesson01
+  ghc-options: -Wall -main-is Lazyfoo.Lesson01
 
 executable lazyfoo-lesson-02
   build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson02.hs
   default-language: Haskell2010
-  ghc-options: -main-is Lazyfoo.Lesson02
+  ghc-options: -Wall -main-is Lazyfoo.Lesson02
 
 executable lazyfoo-lesson-03
   build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson03.hs
   default-language: Haskell2010
-  ghc-options: -main-is Lazyfoo.Lesson03
+  ghc-options: -Wall -main-is Lazyfoo.Lesson03
 
 executable lazyfoo-lesson-04
   build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson04.hs
   default-language: Haskell2010
-  ghc-options: -main-is Lazyfoo.Lesson04
+  ghc-options: -Wall -main-is Lazyfoo.Lesson04
 
 executable lazyfoo-lesson-05
   build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson05.hs
   default-language: Haskell2010
-  ghc-options: -main-is Lazyfoo.Lesson05
+  ghc-options: -Wall -main-is Lazyfoo.Lesson05
 
 executable lazyfoo-lesson-07
   build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson07.hs
   default-language: Haskell2010
-  ghc-options: -main-is Lazyfoo.Lesson07
+  ghc-options: -Wall -main-is Lazyfoo.Lesson07
