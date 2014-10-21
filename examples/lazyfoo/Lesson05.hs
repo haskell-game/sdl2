@@ -3,12 +3,12 @@
 module Lazyfoo.Lesson05 where
 
 import Control.Applicative
-import Control.Concurrent (threadDelay)
 import Control.Monad
+import Foreign.C.Types
 import Linear
-import Linear.Affine (Point(P))
 import qualified SDL
 
+screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
 
 loadSurface :: FilePath -> SDL.Surface -> IO SDL.Surface

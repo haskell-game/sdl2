@@ -3,11 +3,12 @@
 module Lazyfoo.Lesson03 where
 
 import Control.Applicative
-import Control.Concurrent (threadDelay)
 import Control.Monad
+import Foreign.C.Types
 import Linear
 import qualified SDL
 
+screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
 
 main :: IO ()
