@@ -287,7 +287,7 @@ foreign import ccall "SDL.h SDL_CreateTextureFromSurface" createTextureFromSurfa
 foreign import ccall "SDL.h SDL_DestroyRenderer" destroyRenderer :: Renderer -> IO ()
 foreign import ccall "SDL.h SDL_DestroyTexture" destroyTexture :: Texture -> IO ()
 foreign import ccall "SDL.h SDL_GetNumRenderDrivers" getNumRenderDrivers :: IO CInt
-foreign import ccall "SDL.h SDL_GetRenderDrawBlendMode" getRenderDrawBlendMode :: Renderer -> IO Int
+foreign import ccall "SDL.h SDL_GetRenderDrawBlendMode" getRenderDrawBlendMode :: Renderer -> Ptr BlendMode -> IO Int
 foreign import ccall "SDL.h SDL_GetRenderDrawColor" getRenderDrawColor :: Renderer -> Ptr Word8 -> Ptr Word8 -> Ptr Word8 -> Ptr Word8 -> IO CInt
 foreign import ccall "SDL.h SDL_GetRenderDriverInfo" getRenderDriverInfo :: CInt -> Ptr RendererInfo -> IO CInt
 foreign import ccall "SDL.h SDL_GetRenderTarget" getRenderTarget :: Renderer -> IO Texture
