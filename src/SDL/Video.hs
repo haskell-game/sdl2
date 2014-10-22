@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -20,18 +21,16 @@ module SDL.Video
   , showWindow
 
   -- * Window Attributes
-  , getWindowMinimumSize
-  , getWindowMaximumSize
   , windowBordered
   , windowBrightness
-  , setWindowGammaRamp
+  , windowGammaRamp
   , windowGrab
-  , setWindowMode
-  , setWindowMaximumSize
-  , setWindowMinimumSize
-  , setWindowPosition
+  , windowMaximumSize
+  , windowMinimumSize
   , windowSize
   , windowTitle
+  , setWindowMode
+  , setWindowPosition
 
   -- * Renderer Management
   , createRenderer
@@ -66,15 +65,17 @@ import Prelude hiding (all, foldl, foldr)
 
 import Control.Applicative
 import Control.Exception
+import Control.Lens ((&), (%@~), traversed)
 import Control.Monad (forM, unless)
 import Data.Foldable
-import Data.Maybe (catMaybes)
+import Data.Maybe (catMaybes, fromMaybe)
 import Data.StateVar hiding (GettableStateVar, get, makeGettableStateVar)
 import Data.Text (Text)
 import Foreign hiding (void, throwIfNull, throwIfNeg, throwIfNeg_)
 import Foreign.C
 import Linear
 import Linear.Affine (Point(P))
+import Linear.V
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
@@ -83,6 +84,7 @@ import SDL.Video.Renderer
 
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
+import qualified Data.Vector as V
 import qualified Data.Vector.Storable as SV
 import qualified SDL.Raw as Raw
 
@@ -265,19 +267,38 @@ screenSaverEnabled = makeStateVar Raw.isScreenSaverEnabled set
 showWindow :: Window -> IO ()
 showWindow (Window w) = Raw.showWindow w
 
-setWindowGammaRamp :: Window -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> IO ()
-setWindowGammaRamp (Window w) r g b = do
-  unless (all ((== 256) . SV.length) $ catMaybes [r,g,b]) $
-    error "setWindowGammaRamp requires 256 element in each colour channel"
+windowGammaRamp :: Window -> StateVar (V3 (Maybe (V 256 Word16)))
+windowGammaRamp (Window win) = makeStateVar get set
+  where
+  set :: V3 (Maybe (V 256 Word16)) -> IO ()
+  set (V3 r g b) = do
+    let withChan :: Maybe (V 256 Word16) -> (Ptr Word16 -> IO ()) -> IO ()
+        withChan x f =
+          case x of
+            Just x' -> with x' (f . castPtr)
+            Nothing -> f nullPtr
 
-  let withChan x f = case x of Just x' -> SV.unsafeWith x' f
-                               Nothing -> f nullPtr
+    withChan r $ \rPtr ->
+      withChan b $ \bPtr ->
+        withChan g $ \gPtr ->
+          throwIfNeg_ "SDL.Video.windowGammaRamp" "SDL_SetWindowGammaRamp" $
+            Raw.setWindowGammaRamp win rPtr gPtr bPtr
 
-  withChan r $ \rPtr ->
-    withChan b $ \bPtr ->
-      withChan g $ \gPtr ->
-        throwIfNeg_ "SDL.Video.setWindowGammaRamp" "SDL_SetWindowGammaRamp" $
-          Raw.setWindowGammaRamp w rPtr gPtr bPtr
+  get :: IO (V3 (Maybe (V 256 Word16)))
+  get =
+    allocaArray 256 $ \rPtr ->
+    allocaArray 256 $ \bPtr ->
+    allocaArray 256 $ \gPtr -> do
+      throwIfNeg_ "SDL.Video.windowGammaRamp" "SDL_GetWindowGammaRamp" $
+        Raw.getWindowGammaRamp win rPtr gPtr bPtr
+
+      let peekChan :: Ptr Word16 -> IO (V 256 Word16)
+          peekChan ptr =
+            fmap (fromMaybe (error "SDL_GetWindowGammaRamp returned a non-256 element array") . fromVector . V.fromList) $
+            peekArray 256 ptr
+      V3 <$> (Just <$> peekChan rPtr)
+         <*> (Just <$> peekChan gPtr)
+         <*> (Just <$> peekChan bPtr)
 
 data Display = Display {
                displayName           :: String
@@ -367,25 +388,27 @@ instance ToNumber MessageKind Word32 where
   toNumber Warning = Raw.messageBoxFlagWarning
   toNumber Information = Raw.messageBoxFlagInformation
 
-setWindowMaximumSize :: Window -> V2 CInt -> IO ()
-setWindowMaximumSize (Window win) (V2 w h) = Raw.setWindowMaximumSize win w h
+windowMaximumSize :: Window -> StateVar (V2 CInt)
+windowMaximumSize (Window win) = makeStateVar get set
+  where
+  get =
+    alloca $ \wptr ->
+    alloca $ \hptr -> do
+      Raw.getWindowMaximumSize win wptr hptr
+      V2 <$> peek wptr <*> peek hptr
 
-setWindowMinimumSize :: Window -> V2 CInt -> IO ()
-setWindowMinimumSize (Window win) (V2 w h) = Raw.setWindowMinimumSize win w h
+  set (V2 w h) = Raw.setWindowMaximumSize win w h
 
-getWindowMaximumSize :: Window -> IO (V2 CInt)
-getWindowMaximumSize (Window w) =
-  alloca $ \wptr ->
-  alloca $ \hptr -> do
-    Raw.getWindowMaximumSize w wptr hptr
-    V2 <$> peek wptr <*> peek hptr
+windowMinimumSize :: Window -> StateVar (V2 CInt)
+windowMinimumSize (Window win) = makeStateVar get set
+  where
+  get =
+    alloca $ \wptr ->
+    alloca $ \hptr -> do
+      Raw.getWindowMinimumSize win wptr hptr
+      V2 <$> peek wptr <*> peek hptr
 
-getWindowMinimumSize :: Window -> IO (V2 CInt)
-getWindowMinimumSize (Window w) =
-  alloca $ \wptr ->
-  alloca $ \hptr -> do
-    Raw.getWindowMinimumSize w wptr hptr
-    V2 <$> peek wptr <*> peek hptr
+  set (V2 w h) = Raw.setWindowMinimumSize win w h
 
 createRenderer :: Window -> CInt -> RendererConfig -> IO Renderer
 createRenderer (Window w) driver config =
