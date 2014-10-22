@@ -15,6 +15,7 @@ module SDL.Events
 
 import Control.Applicative
 import Data.Text (Text)
+import Data.Maybe (catMaybes)
 import Foreign
 import Foreign.C
 import Linear
@@ -22,6 +23,7 @@ import Linear.Affine (Point(P))
 import SDL.Internal.Numbered
 import SDL.Internal.Types (WindowID(WindowID))
 import SDL.Input.Keyboard
+import SDL.Input.Mouse
 
 import qualified Data.ByteString.Char8 as BSC8
 import qualified Data.Text.Encoding as Text
@@ -82,19 +84,19 @@ data EventPayload
   | TextInputEvent {textInputEventWindowID :: WindowID
                    ,textInputEventText :: Text}
   | MouseMotionEvent {mouseMotionEventWindowID :: WindowID
-                     ,mouseMotionEventWhich :: Word32
-                     ,mouseMotionEventState :: Word32
+                     ,mouseMotionEventWhich :: MouseDevice
+                     ,mouseMotionEventState :: [MouseButton]
                      ,mouseMotionEventPos :: Point V2 Int32
                      ,mouseMotionEventRelMotion :: V2 Int32}
   | MouseButtonEvent {mouseButtonEventWindowID :: WindowID
                      ,mouseButtonEventMotion :: MouseMotion
-                     ,mouseButtonEventWhich :: Word32
+                     ,mouseButtonEventWhich :: MouseDevice
                      ,mouseButtonEventButton :: MouseButton
                      ,mouseButtonEventState :: Word8
                      ,mouseButtonEventClicks :: Word8
                      ,mouseButtonEventPos :: Point V2 Int32}
   | MouseWheelEvent {mouseWheelEventWindowID :: WindowID
-                    ,mouseWheelEventWhich :: Word32
+                    ,mouseWheelEventWhich :: MouseDevice
                     ,mouseWheelEventPos :: V2 Int32}
   | JoyAxisEvent {joyAxisEventWhich :: Raw.JoystickID
                  ,joyAxisEventAxis :: Word8
@@ -152,6 +154,10 @@ fromRawKeysym (Raw.Keysym scancode keycode modifier) =
         keycode'  = fromNumber keycode
         modifier' = fromNumber (fromIntegral modifier)
 
+touchOrMouse :: Word32 -> MouseDevice
+touchOrMouse x | x == Raw.touchMouseID = Touch
+               | otherwise = Mouse $ fromIntegral x
+
 convertRaw :: Raw.Event -> Event
 convertRaw (Raw.WindowEvent _ ts a b c d)
   = Event ts $ WindowEvent (WindowID a) $
@@ -175,7 +181,15 @@ convertRaw (Raw.KeyboardEvent t ts a b c d)
     in Event ts (KeyboardEvent (WindowID a) motion (cToKeyState b) (c /= 0) (fromRawKeysym d))
 convertRaw (Raw.TextEditingEvent _ ts a b c d) = Event ts (TextEditingEvent (WindowID a) (ccharStringToText b) c d)
 convertRaw (Raw.TextInputEvent _ ts a b) = Event ts (TextInputEvent (WindowID a) (ccharStringToText b))
-convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) = Event ts (MouseMotionEvent (WindowID a) b c (P (V2 d e)) (V2 f g))
+convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g)
+  = let buttons = catMaybes
+                  [ (Raw.buttonLMask `test` c) ButtonLeft
+                  , (Raw.buttonRMask `test` c) ButtonRight
+                  , (Raw.buttonMMask `test` c) ButtonMiddle
+                  , (Raw.buttonX1Mask `test` c) ButtonX1
+                  , (Raw.buttonX2Mask `test` c) ButtonX2 ]
+     in Event ts (MouseMotionEvent (WindowID a) (touchOrMouse b) buttons (P (V2 d e)) (V2 f g))
+  where mask `test` x = if mask .&. x /= 0 then Just else const Nothing
 convertRaw (Raw.MouseButtonEvent t ts a b c d e f g)
   = let motion | t == Raw.eventTypeMouseButtonUp = MouseButtonUp
                | t == Raw.eventTypeMouseButtonDown = MouseButtonDown
@@ -184,8 +198,8 @@ convertRaw (Raw.MouseButtonEvent t ts a b c d e f g)
                | c == Raw.buttonRight = ButtonRight
                | c == Raw.buttonX1 = ButtonX1
                | c == Raw.buttonX2 = ButtonX2
-    in Event ts (MouseButtonEvent (WindowID a) motion b button d e (P (V2 f g)))
-convertRaw (Raw.MouseWheelEvent _ ts a b c d) = Event ts (MouseWheelEvent (WindowID a) b (V2 c d))
+    in Event ts (MouseButtonEvent (WindowID a) motion (touchOrMouse b) button d e (P (V2 f g)))
+convertRaw (Raw.MouseWheelEvent _ ts a b c d) = Event ts (MouseWheelEvent (WindowID a) (touchOrMouse b) (V2 c d))
 convertRaw (Raw.JoyAxisEvent _ ts a b c) = Event ts (JoyAxisEvent a b c)
 convertRaw (Raw.JoyBallEvent _ ts a b c d) = Event ts (JoyBallEvent a b (V2 c d))
 convertRaw (Raw.JoyHatEvent _ ts a b c) = Event ts (JoyHatEvent a b c)
