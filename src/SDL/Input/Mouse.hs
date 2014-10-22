@@ -8,25 +8,10 @@ module SDL.Input.Mouse
   , MouseMotion(..)
   , MouseButton(..)
   , MouseDevice(..)
-) where
+  ) where
 
+import SDL.Exception
 import qualified SDL.Raw.Event as Raw
-import qualified SDL.Exception as SDLEx
-
--- | Sets the current relative mouse mode.
---
--- When relative mouse mode is enabled, cursor is hidden and mouse position
--- will not change. However, you will be delivered relative mouse position
--- change events.
-setRelativeMouseMode :: Bool -> IO ()
-setRelativeMouseMode enable =
-    -- relative mouse mode can fail if it's not supported
-    SDLEx.throwIfNeg_ "SDL.Input.Mouse" "SDL_SetRelativeMouseMode" $
-        Raw.setRelativeMouseMode enable
-
--- | Returns `True` if relative mouse mode is enabled.
-getRelativeMouseMode :: IO Bool
-getRelativeMouseMode = Raw.getRelativeMouseMode
 
 -- | Identifies what kind of mouse-like device this is.
 data MouseDevice
@@ -46,4 +31,21 @@ data MouseButton
     | ButtonX2
     | ButtonExtra !Int   -- ^ A mouse button that we don't know what it is.
     deriving ( Eq, Ord, Show, Read )
+
+-- | Sets the current relative mouse mode.
+--
+-- When relative mouse mode is enabled, cursor is hidden and mouse position
+-- will not change. However, you will be delivered relative mouse position
+-- change events.
+--
+-- Throws 'SDLException' on failure.
+setRelativeMouseMode :: Bool -> IO ()
+setRelativeMouseMode enable =
+    -- relative mouse mode can fail if it's not supported
+    throwIfNeg_ "SDL.Input.Mouse" "SDL_SetRelativeMouseMode" $
+        Raw.setRelativeMouseMode enable
+
+-- | Check if relative mouse mode is enabled.
+getRelativeMouseMode :: IO Bool
+getRelativeMouseMode = Raw.getRelativeMouseMode
 
