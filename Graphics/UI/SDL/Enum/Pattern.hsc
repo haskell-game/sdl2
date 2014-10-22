@@ -815,6 +815,9 @@ module Graphics.UI.SDL.Enum.Pattern (
 	pattern TextureModulateColor,
 	pattern TextureModulateAlpha,
 
+	-- ** Touch
+	pattern TouchMouseID,
+
 	-- ** Window Event
 	pattern WindowEventNone,
 	pattern WindowEventShown,
@@ -1617,6 +1620,8 @@ pattern TextureAccessTarget = (#const SDL_TEXTUREACCESS_TARGET)
 pattern TextureModulateNone = (#const SDL_TEXTUREMODULATE_NONE)
 pattern TextureModulateColor = (#const SDL_TEXTUREMODULATE_COLOR)
 pattern TextureModulateAlpha = (#const SDL_TEXTUREMODULATE_ALPHA)
+
+pattern TouchMouseID = (#const SDL_TOUCH_MOUSEID)
 
 pattern WindowEventNone = (#const SDL_WINDOWEVENT_NONE)
 pattern WindowEventShown = (#const SDL_WINDOWEVENT_SHOWN)

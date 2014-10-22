@@ -811,6 +811,9 @@ module Graphics.UI.SDL.Enum (
 	textureModulateColor,
 	textureModulateAlpha,
 
+	-- ** Touch
+	touchMouseID,
+
 	-- ** Window Event
 	windowEventNone,
 	windowEventShown,
@@ -2374,6 +2377,9 @@ textureModulateAlpha :: (Num a) => a
 textureModulateNone = (#const SDL_TEXTUREMODULATE_NONE)
 textureModulateColor = (#const SDL_TEXTUREMODULATE_COLOR)
 textureModulateAlpha = (#const SDL_TEXTUREMODULATE_ALPHA)
+
+touchMouseID :: (Num a) => a
+touchMouseID = (#const SDL_TOUCH_MOUSEID)
 
 windowEventNone :: (Num a) => a
 windowEventShown :: (Num a) => a
