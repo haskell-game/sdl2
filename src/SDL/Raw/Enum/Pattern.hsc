@@ -725,6 +725,9 @@ module SDL.Raw.Enum.Pattern (
 	pattern JoystickHatLeftUp,
 	pattern JoystickHatLeftDown,
 
+	-- ** Mouse and touch
+	pattern TouchMouseID,
+
 	-- ** Key States
 	pattern KeyPressed,
 	pattern KeyReleased,
@@ -1540,6 +1543,8 @@ pattern JoystickHatRightUp = (#const SDL_HAT_RIGHTUP)
 pattern JoystickHatRightDown = (#const SDL_HAT_RIGHTDOWN)
 pattern JoystickHatLeftUp = (#const SDL_HAT_LEFTUP)
 pattern JoystickHatLeftDown = (#const SDL_HAT_LEFTDOWN)
+
+pattern TouchMouseID = (#const SDL_TOUCH_MOUSEID)
 
 pattern KeyPressed = (#const SDL_PRESSED)
 pattern KeyReleased = (#const SDL_RELEASED)
