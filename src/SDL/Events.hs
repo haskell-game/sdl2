@@ -150,7 +150,7 @@ fromRawKeysym (Raw.Keysym scancode keycode modifier) =
 
 touchOrMouse :: Word32 -> MouseDevice
 touchOrMouse x | x == Raw.touchMouseID = Touch
-               | x == 0 = Mouse
+               | otherwise = Mouse $ fromIntegral x
 
 convertRaw :: Raw.Event -> Event
 convertRaw (Raw.WindowEvent _ ts a b c d)

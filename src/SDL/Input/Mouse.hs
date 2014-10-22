@@ -30,8 +30,8 @@ getRelativeMouseMode = Raw.getRelativeMouseMode
 
 -- | Identifies what kind of mouse-like device this is.
 data MouseDevice
-    = Mouse   -- ^ An actual mouse.
-    | Touch   -- ^ Some sort of touch device.
+    = Mouse !Int  -- ^ An actual mouse. The number identifies which mouse.
+    | Touch       -- ^ Some sort of touch device.
     deriving ( Eq, Ord, Show, Read )
 
 -- | Are buttons being pressed or released?
