@@ -55,14 +55,15 @@ module SDL.Video.Renderer
 
 import Prelude hiding (foldr)
 
+import Control.Applicative
 import Data.Bits
 import Data.Foldable
 import Data.Text (Text)
+import Data.Traversable
 import Data.Word
-import Control.Applicative
-import Foreign.Marshal.Alloc
 import Foreign.C.String
 import Foreign.C.Types
+import Foreign.Marshal.Alloc
 import Foreign.Marshal.Utils
 import Foreign.Ptr
 import Foreign.Storable
@@ -428,9 +429,12 @@ getRendererInfo (Renderer renderer) =
 getNumRenderDrivers :: IO CInt
 getNumRenderDrivers = Raw.getNumRenderDrivers
 
-getRenderDriverInfo :: CInt -> IO RendererInfo
-getRenderDriverInfo idx =
-  alloca $ \rptr -> do
-    throwIfNeg_ "getRenderDriverInfo" "SDL_GetRenderDriverInfo" $
-      Raw.getRenderDriverInfo idx rptr
-    peek rptr >>= fromRawRendererInfo
+getRenderDriverInfo :: IO [RendererInfo]
+getRenderDriverInfo = do
+  count <- Raw.getNumRenderDrivers
+  traverse go [0..count-1]
+  where
+    go idx = alloca $ \rptr -> do
+               throwIfNeg_ "getRenderDriverInfo" "SDL_GetRenderDriverInfo" $
+                 Raw.getRenderDriverInfo idx rptr
+               peek rptr >>= fromRawRendererInfo
