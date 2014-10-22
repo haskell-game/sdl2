@@ -192,6 +192,7 @@ convertRaw (Raw.MouseButtonEvent t ts a b c d e f g)
                | c == Raw.buttonRight = ButtonRight
                | c == Raw.buttonX1 = ButtonX1
                | c == Raw.buttonX2 = ButtonX2
+               | otherwise = ButtonExtra $ fromIntegral c
     in Event ts (MouseButtonEvent (WindowID a) motion (touchOrMouse b) button d e (P (V2 f g)))
 convertRaw (Raw.MouseWheelEvent _ ts a b c d) = Event ts (MouseWheelEvent (WindowID a) (touchOrMouse b) (V2 c d))
 convertRaw (Raw.JoyAxisEvent _ ts a b c) = Event ts (JoyAxisEvent a b c)

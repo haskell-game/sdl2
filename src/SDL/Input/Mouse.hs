@@ -37,6 +37,7 @@ data MouseButton
   | ButtonRight
   | ButtonX1
   | ButtonX2
+  | ButtonExtra !Int -- ^ An unknown mouse button.
   deriving (Eq, Show)
 
 -- | Identifies what kind of mouse-like device this is.
