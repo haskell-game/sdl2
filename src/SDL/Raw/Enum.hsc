@@ -721,6 +721,9 @@ module SDL.Raw.Enum (
 	joystickHatLeftUp,
 	joystickHatLeftDown,
 
+	-- ** Mouse and touch
+	touchMouseID,
+
 	-- ** Key States
 	keyPressed,
 	keyReleased,
@@ -2214,6 +2217,9 @@ joystickHatRightUp = (#const SDL_HAT_RIGHTUP)
 joystickHatRightDown = (#const SDL_HAT_RIGHTDOWN)
 joystickHatLeftUp = (#const SDL_HAT_LEFTUP)
 joystickHatLeftDown = (#const SDL_HAT_LEFTDOWN)
+
+touchMouseID :: (Num a) => a
+touchMouseID = (#const SDL_TOUCH_MOUSEID)
 
 keyPressed :: (Num a) => a
 keyReleased :: (Num a) => a

@@ -1,10 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module SDL.Input.Mouse
-    ( -- * Relative mouse mode
-      setRelativeMouseMode
-    , getRelativeMouseMode )
-    where
+  ( -- * Relative mouse mode
+    setRelativeMouseMode
+  , getRelativeMouseMode
+    -- * Mouse and touch input
+  , MouseDevice(..)
+) where
 
 import qualified SDL.Raw.Event as Raw
 import qualified SDL.Exception as SDLEx
@@ -23,4 +25,9 @@ setRelativeMouseMode enable =
 -- | Returns `True` if relative mouse mode is enabled.
 getRelativeMouseMode :: IO Bool
 getRelativeMouseMode = Raw.getRelativeMouseMode
+
+-- | Identifies what kind of mouse-like device this is.
+data MouseDevice = Mouse   -- ^ An actual mouse.
+                 | Touch   -- ^ Some sort of touch device.
+                 deriving ( Eq, Ord, Show, Read )
 
