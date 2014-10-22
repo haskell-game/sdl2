@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video.Renderer
@@ -15,8 +16,12 @@ module SDL.Video.Renderer
   , mapRGB
   , getWindowSurface
   , colorKey
+  , renderClipRect
   , renderDrawBlendMode
   , renderDrawColor
+  , renderLogicalSize
+  , renderScale
+  , renderViewport
   , textureColorMod
   , surfaceDimensions
   , surfaceFormat
@@ -40,10 +45,6 @@ module SDL.Video.Renderer
   , renderFillRect
   , renderFillRects
   , renderPresent
-  , renderSetClipRect
-  , renderSetLogicalSize
-  , renderSetScale
-  , renderSetViewport
 
   -- * Utilities
   , RendererConfig(..)
@@ -239,25 +240,57 @@ renderClear (Renderer r) =
   throwIfNeg_ "SDL.Video.renderClear" "SDL_RenderClear" $
   Raw.renderClear r
 
-renderSetScale :: Renderer -> V2 CFloat -> IO ()
-renderSetScale (Renderer r) (V2 x y) =
-  throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
-  Raw.renderSetScale r x y
+renderScale :: Renderer -> StateVar (V2 CFloat)
+renderScale (Renderer r) = makeStateVar get set
+  where
+  set (V2 x y) =
+    throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
+    Raw.renderSetScale r x y
 
-renderSetLogicalSize :: Renderer -> V2 CInt -> IO ()
-renderSetLogicalSize (Renderer r) (V2 x y) =
-  throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $
-  Raw.renderSetLogicalSize r x y
+  get =
+    alloca $ \w -> do
+    alloca $ \h -> do
+      Raw.renderGetScale r w h
+      V2 <$> peek w <*> peek h
 
-renderSetClipRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
-renderSetClipRect (Renderer r) rect =
-  throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
-  maybeWith with rect $ Raw.renderSetClipRect r . castPtr
+renderLogicalSize :: Renderer -> StateVar (V2 CInt)
+renderLogicalSize (Renderer r) = makeStateVar get set
+  where
+  set (V2 x y) =
+    throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $
+    Raw.renderSetLogicalSize r x y
 
-renderSetViewport :: Renderer -> Maybe (Rectangle CInt) -> IO ()
-renderSetViewport (Renderer r) rect =
-  throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
-  maybeWith with rect $ Raw.renderSetViewport r . castPtr
+  get =
+    alloca $ \w -> do
+    alloca $ \h -> do
+      Raw.renderGetLogicalSize r w h
+      V2 <$> peek w <*> peek h
+
+renderClipRect :: Renderer -> StateVar (Maybe (Rectangle CInt))
+renderClipRect (Renderer r) = makeStateVar get set
+  where
+  set rect =
+    throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
+    maybeWith with rect $ Raw.renderSetClipRect r . castPtr
+
+  get =
+    alloca $ \rect -> do
+      Raw.renderGetClipRect r rect
+      peek rect >>= \case
+        Raw.Rect x y w h -> return (Just (Rectangle (P (V2 x y)) (V2 w h)))
+
+renderViewport :: Renderer -> StateVar (Maybe (Rectangle CInt))
+renderViewport (Renderer r) = makeStateVar get set
+  where
+  set rect =
+    throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
+    maybeWith with rect $ Raw.renderSetViewport r . castPtr
+
+  get =
+    alloca $ \rect -> do
+      Raw.renderGetViewport r rect
+      peek rect >>= \case
+        Raw.Rect x y w h -> return (Just (Rectangle (P (V2 x y)) (V2 w h)))
 
 renderPresent :: Renderer -> IO ()
 renderPresent (Renderer r) = Raw.renderPresent r
