@@ -44,5 +44,6 @@ data MouseButton
     | ButtonRight
     | ButtonX1
     | ButtonX2
+    | ButtonExtra !Int   -- ^ A mouse button that we don't know what it is.
     deriving ( Eq, Ord, Show, Read )
 
