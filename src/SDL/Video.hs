@@ -65,10 +65,9 @@ import Prelude hiding (all, foldl, foldr)
 
 import Control.Applicative
 import Control.Exception
-import Control.Lens ((&), (%@~), traversed)
-import Control.Monad (forM, unless)
+import Control.Monad (forM)
 import Data.Foldable
-import Data.Maybe (catMaybes, fromMaybe)
+import Data.Maybe (fromMaybe)
 import Data.StateVar hiding (GettableStateVar, get, makeGettableStateVar)
 import Data.Text (Text)
 import Foreign hiding (void, throwIfNull, throwIfNeg, throwIfNeg_)
@@ -85,7 +84,6 @@ import SDL.Video.Renderer
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
 import qualified Data.Vector as V
-import qualified Data.Vector.Storable as SV
 import qualified SDL.Raw as Raw
 
 -- | Create a window with the given title and configuration.
