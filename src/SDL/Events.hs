@@ -63,12 +63,6 @@ data WindowEvent
   | WindowClosed
   deriving (Eq,Show)
 
-data MouseMotion = MouseButtonUp | MouseButtonDown
-  deriving (Eq,Show)
-
-data MouseButton = ButtonLeft | ButtonMiddle | ButtonRight | ButtonX1 | ButtonX2
-  deriving (Eq,Show)
-
 data EventPayload
   = WindowEvent {windowEventWindowID :: WindowID
                 ,windowEventEvent :: WindowEvent}

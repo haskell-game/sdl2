@@ -5,7 +5,9 @@ module SDL.Input.Mouse
   , getRelativeMouseMode
 
     -- * Mouse and Touch Input
+  , MouseButton(..)
   , MouseDevice(..)
+  , MouseMotion(..)
   ) where
 
 import SDL.Exception
@@ -29,8 +31,22 @@ setRelativeMouseMode enable =
 getRelativeMouseMode :: IO Bool
 getRelativeMouseMode = Raw.getRelativeMouseMode
 
+data MouseButton
+  = ButtonLeft
+  | ButtonMiddle
+  | ButtonRight
+  | ButtonX1
+  | ButtonX2
+  deriving (Eq, Show)
+
 -- | Identifies what kind of mouse-like device this is.
 data MouseDevice
   = Mouse !Int -- ^ An actual mouse. The number identifies which mouse.
   | Touch      -- ^ Some sort of touch device.
+  deriving (Eq, Show)
+
+-- | Are buttons being pressed or released?
+data MouseMotion
+  = MouseButtonUp
+  | MouseButtonDown
   deriving (Eq, Show)
