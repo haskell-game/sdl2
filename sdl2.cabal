@@ -55,6 +55,7 @@ library
     SDL.Input.GameController
     SDL.Input.Joystick
     SDL.Input.Keyboard
+    SDL.Input.Mouse
     SDL.Power
     SDL.Time
     SDL.Video
