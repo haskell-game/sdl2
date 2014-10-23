@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video.Renderer
@@ -14,10 +15,14 @@ module SDL.Video.Renderer
   , loadBMP
   , mapRGB
   , getWindowSurface
-  , setColorKey
-  , setRenderDrawBlendMode
-  , setRenderDrawColor
-  , setTextureColorMod
+  , colorKey
+  , renderClipRect
+  , renderDrawBlendMode
+  , renderDrawColor
+  , renderLogicalSize
+  , renderScale
+  , renderViewport
+  , textureColorMod
   , surfaceDimensions
   , surfaceFormat
   , updateWindowSurface
@@ -40,10 +45,6 @@ module SDL.Video.Renderer
   , renderFillRect
   , renderFillRects
   , renderPresent
-  , renderSetClipRect
-  , renderSetLogicalSize
-  , renderSetScale
-  , renderSetViewport
 
   -- * Utilities
   , RendererConfig(..)
@@ -58,6 +59,7 @@ import Prelude hiding (foldr)
 import Control.Applicative
 import Data.Bits
 import Data.Foldable
+import Data.StateVar hiding (GettableStateVar, get, makeGettableStateVar)
 import Data.Text (Text)
 import Data.Traversable
 import Data.Word
@@ -73,6 +75,7 @@ import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
 
+import qualified Data.StateVar as StateVar
 import qualified Data.Text.Encoding as Text
 import qualified Data.ByteString as BS
 import qualified Data.Vector.Storable as SV
@@ -135,15 +138,38 @@ getWindowSurface (Window w) =
   throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
   Raw.getWindowSurface w
 
-setRenderDrawBlendMode :: Renderer -> BlendMode -> IO ()
-setRenderDrawBlendMode (Renderer r) bm =
-  throwIfNeg_ "SDL.Video.setRenderDrawBlendMode" "SDL_RenderDrawBlendMode" $
-  Raw.setRenderDrawBlendMode r (toNumber bm)
+renderDrawBlendMode :: Renderer -> StateVar BlendMode
+renderDrawBlendMode (Renderer r) = makeStateVar get set
+  where
+  set bm =
+    throwIfNeg_ "SDL.Video.renderDrawBlendMode" "SDL_SetRenderDrawBlendMode" $
+    Raw.setRenderDrawBlendMode r (toNumber bm)
 
-setRenderDrawColor :: Renderer -> V4 Word8 -> IO ()
-setRenderDrawColor (Renderer re) (V4 r g b a) =
-  throwIfNeg_ "SDL.Video.setRenderDrawColor" "SDL_SetRenderDrawColor" $
-  Raw.setRenderDrawColor re r g b a
+  get =
+    alloca $ \bmPtr -> do
+      throwIfNeg_ "SDL.Video.renderDrawBlendMode" "SDL_GetRenderDrawBlendMode" $
+        Raw.getRenderDrawBlendMode r bmPtr
+
+      fromNumber <$> peek bmPtr
+
+
+renderDrawColor :: Renderer -> StateVar (V4 Word8)
+renderDrawColor (Renderer re) = makeStateVar get set
+  where
+  set (V4 r g b a) =
+    throwIfNeg_ "SDL.Video.renderDrawColor" "SDL_SetRenderDrawColor" $
+    Raw.setRenderDrawColor re r g b a
+
+  get =
+    alloca $ \r ->
+    alloca $ \g ->
+    alloca $ \b ->
+    alloca $ \a -> do
+      throwIfNeg_ "SDL.Video.renderDrawColor" "SDL_GetRenderDrawColor" $
+        Raw.getRenderDrawColor re r g b a
+
+      V4 <$> peek r <*> peek g <*> peek b <*> peek a
+
 
 updateWindowSurface :: Window -> IO ()
 updateWindowSurface (Window w) =
@@ -158,6 +184,13 @@ instance ToNumber BlendMode Word32 where
   toNumber BlendAlphaBlend = Raw.blendModeBlend
   toNumber BlendAdditive = Raw.blendModeAdd
   toNumber BlendMod = Raw.blendModeMod
+
+instance FromNumber BlendMode Word32 where
+  fromNumber x
+    | x == Raw.blendModeNone = BlendNone
+    | x == Raw.blendModeBlend = BlendAlphaBlend
+    | x == Raw.blendModeAdd = BlendAdditive
+    | x == Raw.blendModeMod = BlendMod
 
 data Rectangle a = Rectangle (Point V2 a) (V2 a)
 
@@ -209,25 +242,57 @@ renderClear (Renderer r) =
   throwIfNeg_ "SDL.Video.renderClear" "SDL_RenderClear" $
   Raw.renderClear r
 
-renderSetScale :: Renderer -> V2 CFloat -> IO ()
-renderSetScale (Renderer r) (V2 x y) =
-  throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
-  Raw.renderSetScale r x y
+renderScale :: Renderer -> StateVar (V2 CFloat)
+renderScale (Renderer r) = makeStateVar get set
+  where
+  set (V2 x y) =
+    throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
+    Raw.renderSetScale r x y
 
-renderSetLogicalSize :: Renderer -> V2 CInt -> IO ()
-renderSetLogicalSize (Renderer r) (V2 x y) =
-  throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $
-  Raw.renderSetLogicalSize r x y
+  get =
+    alloca $ \w -> do
+    alloca $ \h -> do
+      Raw.renderGetScale r w h
+      V2 <$> peek w <*> peek h
 
-renderSetClipRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
-renderSetClipRect (Renderer r) rect =
-  throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
-  maybeWith with rect $ Raw.renderSetClipRect r . castPtr
+renderLogicalSize :: Renderer -> StateVar (V2 CInt)
+renderLogicalSize (Renderer r) = makeStateVar get set
+  where
+  set (V2 x y) =
+    throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $
+    Raw.renderSetLogicalSize r x y
 
-renderSetViewport :: Renderer -> Maybe (Rectangle CInt) -> IO ()
-renderSetViewport (Renderer r) rect =
-  throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
-  maybeWith with rect $ Raw.renderSetViewport r . castPtr
+  get =
+    alloca $ \w -> do
+    alloca $ \h -> do
+      Raw.renderGetLogicalSize r w h
+      V2 <$> peek w <*> peek h
+
+renderClipRect :: Renderer -> StateVar (Maybe (Rectangle CInt))
+renderClipRect (Renderer r) = makeStateVar get set
+  where
+  set rect =
+    throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
+    maybeWith with rect $ Raw.renderSetClipRect r . castPtr
+
+  get =
+    alloca $ \rect -> do
+      Raw.renderGetClipRect r rect
+      peek rect >>= \case
+        Raw.Rect x y w h -> return (Just (Rectangle (P (V2 x y)) (V2 w h)))
+
+renderViewport :: Renderer -> StateVar (Maybe (Rectangle CInt))
+renderViewport (Renderer r) = makeStateVar get set
+  where
+  set rect =
+    throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
+    maybeWith with rect $ Raw.renderSetViewport r . castPtr
+
+  get =
+    alloca $ \rect -> do
+      Raw.renderGetViewport r rect
+      peek rect >>= \case
+        Raw.Rect x y w h -> return (Just (Rectangle (P (V2 x y)) (V2 w h)))
 
 renderPresent :: Renderer -> IO ()
 renderPresent (Renderer r) = Raw.renderPresent r
@@ -278,28 +343,45 @@ blitScaled (Surface src) srcRect (Surface dst) dstRect =
   maybeWith with dstRect $ \dstPtr ->
   Raw.blitScaled src (castPtr srcPtr) dst (castPtr dstPtr)
 
-setColorKey :: Surface -> Maybe Word32 -> IO ()
-setColorKey (Surface s) key =
-  throwIfNeg_ "SDL.Video.Renderer.setColorKey" "SDL_SetColorKey" $
-  case key of
-    Nothing ->
-      alloca $ \keyPtr -> do
-        -- TODO Error checking?
-        ret <- Raw.getColorKey s keyPtr
-        if ret == -1
-          -- if ret == -1 then there is no key enabled, so we have nothing to
-          -- do.
-          then return 0
-          else do key' <- peek keyPtr
-                  Raw.setColorKey s 0 key'
+colorKey :: Surface -> StateVar (Maybe Word32)
+colorKey surface@(Surface s) = makeStateVar get set
+  where
+  set key =
+    throwIfNeg_ "SDL.Video.Renderer.setColorKey" "SDL_SetColorKey" $
+    case key of
+      Nothing -> do
+        oldKey <- StateVar.get (colorKey surface)
+        case oldKey of
+          Just key' -> Raw.setColorKey s 0 key'
 
-    Just key' -> do
-      Raw.setColorKey s 1 key'
+          -- Nothing to do
+          Nothing -> return 0
 
-setTextureColorMod :: Texture -> V3 Word8 -> IO ()
-setTextureColorMod (Texture t) (V3 r g b) =
-  throwIfNeg_ "SDL.Video.Renderer.setTextureColorMod" "SDL_SetTextureColorMod" $
-  Raw.setTextureColorMod t r g b
+      Just key' -> Raw.setColorKey s 1 key'
+
+  get = do
+    alloca $ \keyPtr -> do
+      ret <- Raw.getColorKey s keyPtr
+
+      if ret == -1
+        then return Nothing
+        else do throwIfNeg_ "SDL.Video.Renderer.getColorKey" "SDL_GetColorKey" (return ret)
+                Just <$> peek keyPtr
+
+textureColorMod :: Texture -> StateVar (V3 Word8)
+textureColorMod (Texture t) = makeStateVar get set
+  where
+  set (V3 r g b) =
+    throwIfNeg_ "SDL.Video.Renderer.setTextureColorMod" "SDL_SetTextureColorMod" $
+    Raw.setTextureColorMod t r g b
+
+  get =
+    alloca $ \rPtr ->
+    alloca $ \gPtr ->
+    alloca $ \bPtr -> do
+      throwIfNeg_ "SDL.Video.Renderer.textureColorMod" "SDL_GetTextureColorMod" $
+        Raw.getTextureColorMod t rPtr gPtr bPtr
+      V3 <$> peek rPtr <*> peek gPtr <*> peek bPtr
 
 data PixelFormat = Unknown
                  | Index1LSB
