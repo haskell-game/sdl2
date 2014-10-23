@@ -10,6 +10,7 @@ module SDL.Video.Renderer
   , convertSurface
   , destroyTexture
   , fillRect
+  , fillRects
   , freeSurface
   , loadBMP
   , mapRGB
@@ -101,6 +102,15 @@ fillRect (Surface s) rect col =
   throwIfNeg_ "SDL.Video.fillRect" "SDL_FillRect" $
   maybeWith with rect $ \rectPtr ->
   Raw.fillRect s (castPtr rectPtr) col
+
+fillRects :: Surface -> SV.Vector (Rectangle CInt) -> Word32 -> IO ()
+fillRects (Surface s) rects col = do
+  throwIfNeg_ "SDL.Video.fillRects" "SDL_FillRects" $
+    SV.unsafeWith rects $ \rp ->
+      Raw.fillRects s
+                    (castPtr rp)
+                    (fromIntegral (SV.length rects))
+                    col
 
 freeSurface :: Surface -> IO ()
 freeSurface (Surface s) = Raw.freeSurface s
