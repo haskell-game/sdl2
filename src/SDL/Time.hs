@@ -9,6 +9,7 @@ module SDL.Time
   , delay
   , TimerCallback
   , TimerID(..)
+  , RetriggerTimer(..)
   , addTimer
   , removeTimer
   ) where
@@ -40,7 +41,9 @@ delay = Raw.delay
 foreign import ccall "wrapper"
   mkTimerCallback :: (Word32 -> Ptr () -> IO Word32) -> IO Raw.TimerCallback
 
-type TimerCallback = Word32 -> IO Word32
+data RetriggerTimer = Reschedule Word32 | Cancel
+
+type TimerCallback = Word32 -> IO RetriggerTimer
 
 newtype TimerID = TimerID CInt deriving (Eq, Show)
 
@@ -51,7 +54,11 @@ addTimer timeout callback =
     throwIf0 "addTimer" "SDL_AddTimer" $ Raw.addTimer timeout cb nullPtr
   where
     wrapCb :: TimerCallback -> Word32 -> Ptr () -> IO Word32
-    wrapCb cb = \w _ -> cb w
+    wrapCb cb = \w _ -> do
+      next <- cb w
+      return $ case next of
+        Cancel       -> 0
+        Reschedule n -> n
 
 removeTimer :: TimerID -> IO Bool
 removeTimer (TimerID t) = Raw.removeTimer t
