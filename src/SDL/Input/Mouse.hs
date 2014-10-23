@@ -66,7 +66,7 @@ data MouseMotion
   | MouseButtonDown
   deriving (Eq, Show)
 
-data WarpMouseOrigin = WarpInWindow Window | WarpCurrentFocus -- | WarpGlobal -- Needs 2.0.4
+data WarpMouseOrigin = WarpInWindow Window | WarpCurrentFocus -- WarpGlobal -- Needs 2.0.4
 
 warpMouse :: WarpMouseOrigin -> V2 CInt -> IO ()
 warpMouse (WarpInWindow (Window w)) (V2 x y) = Raw.warpMouseInWindow w x y
