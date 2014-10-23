@@ -13,7 +13,6 @@ module SDL
   , module SDL.Power
   , module SDL.Time
   , module SDL.Video
-  , module SDL.Window
 
   -- * Auxiliary Modules
   , module SDL.Exception
@@ -30,4 +29,3 @@ import SDL.Input
 import SDL.Power
 import SDL.Time
 import SDL.Video
-import SDL.Window
