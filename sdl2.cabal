@@ -198,10 +198,7 @@ executable lazyfoo-lesson-10
 executable lazyfoo-lesson-11
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8
-               , lens >= 4.4.0.2
-               , linear >= 1.10.1.2 && < 1.11
-               , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson11.hs
   default-language: Haskell2010
@@ -210,12 +207,17 @@ executable lazyfoo-lesson-11
 executable lazyfoo-lesson-12
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8
-               , lens >= 4.4.0.2
-               , linear >= 1.10.1.2 && < 1.11
-               , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson12.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson12
 
+executable lazyfoo-lesson-13
+  if flag(NoExamples)
+    buildable: False
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson13.hs
+  default-language: Haskell2010
+  ghc-options: -Wall -main-is Lazyfoo.Lesson13
