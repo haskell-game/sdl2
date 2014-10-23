@@ -17,6 +17,8 @@ module SDL.Video.Renderer
   , setColorKey
   , setRenderDrawBlendMode
   , setRenderDrawColor
+  , setTextureAlphaMod
+  , setTextureBlendMode
   , setTextureColorMod
   , surfaceDimensions
   , surfaceFormat
@@ -440,3 +442,13 @@ getRenderDriverInfo = do
                throwIfNeg_ "getRenderDriverInfo" "SDL_GetRenderDriverInfo" $
                  Raw.getRenderDriverInfo idx rptr
                peek rptr >>= fromRawRendererInfo
+
+setTextureAlphaMod :: Texture -> Word8 -> IO ()
+setTextureAlphaMod (Texture t) alpha =
+  throwIfNeg_ "SDL.Video.Renderer.setTextureAlphaMod" "SDL_SetTextureAlphaMod" $
+  Raw.setTextureAlphaMod t alpha
+
+setTextureBlendMode :: Texture -> BlendMode -> IO ()
+setTextureBlendMode (Texture t) bm =
+  throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMoe" $
+  Raw.setTextureBlendMode t (toNumber bm)
