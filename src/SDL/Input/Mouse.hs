@@ -8,9 +8,17 @@ module SDL.Input.Mouse
   , MouseButton(..)
   , MouseDevice(..)
   , MouseMotion(..)
+
+    -- * Warping the Mouse
+  , WarpMouseOrigin
+  , warpMouse
   ) where
 
+import Foreign.C
+import Foreign.Ptr
+import Linear
 import SDL.Exception
+import SDL.Internal.Types (Window(Window))
 
 import qualified SDL.Raw.Event as Raw
 
@@ -51,3 +59,9 @@ data MouseMotion
   = MouseButtonUp
   | MouseButtonDown
   deriving (Eq, Show)
+
+data WarpMouseOrigin = WarpInWindow Window | WarpCurrentFocus -- | WarpGlobal -- Needs 2.0.4
+
+warpMouse :: WarpMouseOrigin -> V2 CInt -> IO ()
+warpMouse (WarpInWindow (Window w)) (V2 x y) = Raw.warpMouseInWindow w x y
+warpMouse WarpCurrentFocus (V2 x y) = Raw.warpMouseInWindow nullPtr x y
