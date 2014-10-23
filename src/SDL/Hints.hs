@@ -10,11 +10,11 @@ module SDL.Hints (
     RenderOpenGLShaderOptions(..),
     RenderScaleQuality(..),
     RenderVSyncOptions(..),
+    clearHints,
     setHint,
     VideoWinD3DCompilerOptions(..)
 ) where
 
-import Foreign
 import Foreign.C
 import qualified SDL.Raw as Raw
 
@@ -137,3 +137,6 @@ setHint (HintVideoWinD3DCompiler) v =
          D3DXPSupport -> "d3dcompiler_43.dll"
          D3DNone ->  "none")
       (Raw.setHint hint)
+
+clearHints :: IO ()
+clearHints = Raw.clearHints
