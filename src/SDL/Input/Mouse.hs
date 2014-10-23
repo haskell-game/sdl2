@@ -12,8 +12,14 @@ module SDL.Input.Mouse
     -- * Warping the Mouse
   , WarpMouseOrigin
   , warpMouse
+
+    -- * Cursor Visibility
+  , setCursorVisible
+  , getCursorVisible
   ) where
 
+import Control.Applicative
+import Control.Monad (void)
 import Foreign.C
 import Foreign.Ptr
 import Linear
@@ -65,3 +71,11 @@ data WarpMouseOrigin = WarpInWindow Window | WarpCurrentFocus -- | WarpGlobal --
 warpMouse :: WarpMouseOrigin -> V2 CInt -> IO ()
 warpMouse (WarpInWindow (Window w)) (V2 x y) = Raw.warpMouseInWindow w x y
 warpMouse WarpCurrentFocus (V2 x y) = Raw.warpMouseInWindow nullPtr x y
+
+-- The usage of 'void' is OK here - Raw.showCursor just returns the old state.
+setCursorVisible :: Bool -> IO ()
+setCursorVisible True = void $ Raw.showCursor 1
+setCursorVisible False = void $ Raw.showCursor 0
+
+getCursorVisible :: IO Bool
+getCursorVisible = (== 1) <$> Raw.showCursor (-1)
