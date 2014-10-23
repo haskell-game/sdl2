@@ -73,6 +73,7 @@ module SDL.Raw.Event (
 	joystickGetGUIDFromString,
 	joystickGetGUIDString,
 	joystickGetHat,
+	joystickGetNameForIndex,
 	joystickInstanceID,
 	joystickName,
 	joystickNameForIndex,
@@ -189,6 +190,7 @@ foreign import ccall "sdlhelper.h SDLHelper_JoystickGetGUID" joystickGetGUID' ::
 foreign import ccall "sdlhelper.h SDLHelper_JoystickGetGUIDFromString" joystickGetGUIDFromString' :: CString -> Ptr JoystickGUID -> IO ()
 foreign import ccall "sdlhelper.h SDLHelper_JoystickGetGUIDString" joystickGetGUIDString' :: Ptr JoystickGUID -> CString -> CInt -> IO ()
 foreign import ccall "SDL.h SDL_JoystickGetHat" joystickGetHat :: Joystick -> CInt -> IO Word8
+foreign import ccall "SDL.h SDL_JoystickNameForIndex" joystickGetNameForIndex :: CInt -> IO CString
 foreign import ccall "SDL.h SDL_JoystickInstanceID" joystickInstanceID :: Joystick -> IO JoystickID
 foreign import ccall "SDL.h SDL_JoystickName" joystickName :: Joystick -> IO CString
 foreign import ccall "SDL.h SDL_JoystickNameForIndex" joystickNameForIndex :: CInt -> IO CString
