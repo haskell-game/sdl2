@@ -19,11 +19,11 @@
 <a name="line-10"></a>    <span class='hs-conid'>RenderOpenGLShaderOptions</span><span class='hs-layout'>(</span><span class='hs-keyglyph'>..</span><span class='hs-layout'>)</span><span class='hs-layout'>,</span>
 <a name="line-11"></a>    <span class='hs-conid'>RenderScaleQuality</span><span class='hs-layout'>(</span><span class='hs-keyglyph'>..</span><span class='hs-layout'>)</span><span class='hs-layout'>,</span>
 <a name="line-12"></a>    <span class='hs-conid'>RenderVSyncOptions</span><span class='hs-layout'>(</span><span class='hs-keyglyph'>..</span><span class='hs-layout'>)</span><span class='hs-layout'>,</span>
-<a name="line-13"></a>    <span class='hs-varid'>setHint</span><span class='hs-layout'>,</span>
-<a name="line-14"></a>    <span class='hs-conid'>VideoWinD3DCompilerOptions</span><span class='hs-layout'>(</span><span class='hs-keyglyph'>..</span><span class='hs-layout'>)</span>
-<a name="line-15"></a><span class='hs-layout'>)</span> <span class='hs-keyword'>where</span>
-<a name="line-16"></a>
-<a name="line-17"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>Foreign</span>
+<a name="line-13"></a>    <span class='hs-varid'>clearHints</span><span class='hs-layout'>,</span>
+<a name="line-14"></a>    <span class='hs-varid'>setHint</span><span class='hs-layout'>,</span>
+<a name="line-15"></a>    <span class='hs-conid'>VideoWinD3DCompilerOptions</span><span class='hs-layout'>(</span><span class='hs-keyglyph'>..</span><span class='hs-layout'>)</span>
+<a name="line-16"></a><span class='hs-layout'>)</span> <span class='hs-keyword'>where</span>
+<a name="line-17"></a>
 <a name="line-18"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>Foreign</span><span class='hs-varop'>.</span><span class='hs-conid'>C</span>
 <a name="line-19"></a><span class='hs-keyword'>import</span> <span class='hs-keyword'>qualified</span> <span class='hs-conid'>SDL</span><span class='hs-varop'>.</span><span class='hs-conid'>Raw</span> <span class='hs-keyword'>as</span> <span class='hs-conid'>Raw</span>
 <a name="line-20"></a>
@@ -146,5 +146,8 @@
 <a name="line-137"></a>         <span class='hs-conid'>D3DXPSupport</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-str'>"d3dcompiler_43.dll"</span>
 <a name="line-138"></a>         <span class='hs-conid'>D3DNone</span> <span class='hs-keyglyph'>-&gt;</span>  <span class='hs-str'>"none"</span><span class='hs-layout'>)</span>
 <a name="line-139"></a>      <span class='hs-layout'>(</span><span class='hs-conid'>Raw</span><span class='hs-varop'>.</span><span class='hs-varid'>setHint</span> <span class='hs-varid'>hint</span><span class='hs-layout'>)</span>
+<a name="line-140"></a>
+<a name="line-141"></a><a name="clearHints"></a><span class='hs-definition'>clearHints</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>IO</span> <span class='hs-conid'>()</span>
+<a name="line-142"></a><span class='hs-definition'>clearHints</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>Raw</span><span class='hs-varop'>.</span><span class='hs-varid'>clearHints</span>
 </pre></body>
 </html>
