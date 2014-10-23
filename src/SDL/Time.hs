@@ -18,3 +18,6 @@ time = do
   freq <- Raw.getPerformanceFrequency
   cnt <- Raw.getPerformanceCounter
   return $ fromIntegral cnt / fromIntegral freq
+
+delay :: Word32 -> IO ()
+delay = Raw.delay
