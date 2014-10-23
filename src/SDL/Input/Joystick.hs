@@ -35,7 +35,7 @@ availableJoysticks = do
   fmap (V.fromList) $
     for [0 .. (n - 1)] $ \i -> do
       cstr <-
-        throwIfNull "SDL.Input.Joystick.availableJoysticks" "SDL_GetJoystickNameForIndex" $
+        throwIfNull "SDL.Input.Joystick.availableJoysticks" "SDL_JoystickNameForIndex" $
           Raw.joystickNameForIndex i
       name <- Text.decodeUtf8 <$> BS.packCString cstr
       return (JoystickDevice name i)
