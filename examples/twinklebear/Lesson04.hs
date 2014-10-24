@@ -40,16 +40,10 @@ main :: IO ()
 main = do
   SDL.init [ SDL.InitVideo ]
 
-  let winConfig = SDL.defaultWindow { SDL.windowPosition = SDL.Absolute (P (V2 100 100))
-                                    , SDL.windowSize     = V2 screenWidth screenHeight }
-
-      rdrConfig = SDL.RendererConfig { SDL.rendererSoftware      = False
-                                     , SDL.rendererAccelerated   = True
-                                     , SDL.rendererPresentVSync  = True
-                                     , SDL.rendererTargetTexture = True }
+  let winConfig = SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
 
   window <- SDL.createWindow "Lesson 4" winConfig
-  renderer <- SDL.createRenderer window (-1) rdrConfig
+  renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
 
   image <- loadTexture renderer "examples/twinklebear/event-driven.bmp"
 

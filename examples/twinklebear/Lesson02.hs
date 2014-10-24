@@ -49,13 +49,8 @@ main :: IO ()
 main = do
   SDL.init [ SDL.InitEverything ]
 
-  let winConfig = SDL.defaultWindow { SDL.windowPosition = SDL.Absolute (P (V2 100 100))
-                                    , SDL.windowSize     = V2 screenWidth screenHeight }
-
-      rdrConfig = SDL.RendererConfig { SDL.rendererSoftware      = False
-                                     , SDL.rendererAccelerated   = True
-                                     , SDL.rendererPresentVSync  = True
-                                     , SDL.rendererTargetTexture = True }
+  let winConfig = SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
+      rdrConfig = SDL.defaultRenderer { SDL.rendererAccelerated = True }
 
   window <- SDL.createWindow "Lesson 2" winConfig
   renderer <- SDL.createRenderer window (-1) rdrConfig
