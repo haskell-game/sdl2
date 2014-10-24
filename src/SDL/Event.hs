@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Event
@@ -14,8 +15,9 @@ module SDL.Event
   ) where
 
 import Control.Applicative
-import Data.Text (Text)
 import Data.Maybe (catMaybes)
+import Data.Text (Text)
+import Data.Typeable
 import Foreign
 import Foreign.C
 import Linear
@@ -32,14 +34,14 @@ import qualified SDL.Raw as Raw
 
 data Event = Event
   { eventTimestamp :: Word32
-  , eventPayload :: EventPayload}
-  deriving (Eq, Show)
+  , eventPayload :: EventPayload
+  } deriving (Eq, Show, Typeable)
 
 data KeyMotion = KeyUp | KeyDown
-  deriving (Eq,Show)
+  deriving (Eq, Show, Typeable)
 
 data KeyState = KeyPressed | KeyReleased
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 cToKeyState :: (Eq a, Num a) => a -> KeyState
 cToKeyState c
@@ -61,7 +63,7 @@ data WindowEvent
   | WindowGainedKeyboardFocus
   | WindowLostKeyboardFocus
   | WindowClosed
-  deriving (Eq,Show)
+  deriving (Eq, Show, Typeable)
 
 data EventPayload
   = WindowEvent {windowEventWindowID :: WindowID
@@ -136,7 +138,7 @@ data EventPayload
   | DropEvent {dropEventFile :: CString}
   | ClipboardUpdateEvent
   | UnknownEvent {unknownEventType :: Word32}
-  deriving (Eq,Show)
+  deriving (Eq, Show, Typeable)
 
 ccharStringToText :: [CChar] -> Text
 ccharStringToText = Text.decodeUtf8 . BSC8.pack . map castCCharToChar

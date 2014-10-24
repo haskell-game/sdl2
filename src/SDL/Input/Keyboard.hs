@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 module SDL.Input.Keyboard
   ( -- * Keyboard Modifiers
@@ -26,6 +27,7 @@ module SDL.Input.Keyboard
 import Control.Applicative
 import Data.Bits
 import Data.Int
+import Data.Typeable
 import Data.Word
 import Foreign.C.String
 import Foreign.Marshal.Alloc
@@ -53,7 +55,7 @@ data KeyModifier = KeyModifier
   , keyModifierNumLock    :: Bool
   , keyModifierCapsLock   :: Bool
   , keyModifierAltGr      :: Bool
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance FromNumber KeyModifier Word32 where
   fromNumber m' = let m = m' in KeyModifier
@@ -354,7 +356,7 @@ data Scancode
   | ScancodeApp1
   | ScancodeApp2
   | ScancodeNum
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 instance FromNumber Scancode Word32 where
   fromNumber n' = case n' of
@@ -1083,7 +1085,7 @@ data Keycode
   | KeycodeKbdIllumUp
   | KeycodeEject
   | KeycodeSleep
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 instance FromNumber Keycode Int32 where
   fromNumber n' = case n' of
@@ -1567,5 +1569,4 @@ data Keysym = Keysym
   { keysymScancode :: Scancode
   , keysymKeycode  :: Keycode
   , keysymModifier :: KeyModifier
-  }
-  deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)

@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video.OpenGL
@@ -18,6 +19,7 @@ module SDL.Video.OpenGL
   ) where
 
 import Control.Applicative
+import Data.Typeable
 import Foreign.C.Types
 import SDL.Exception
 import SDL.Internal.Numbered
@@ -25,7 +27,7 @@ import SDL.Internal.Types
 import qualified SDL.Raw as Raw
 
 newtype GLContext = GLContext Raw.GLContext
-  deriving (Eq)
+  deriving (Eq, Typeable)
 
 -- | Create a new OpenGL context and makes it the current context for the
 -- window.
@@ -41,12 +43,12 @@ data Profile
   = Core Mode CInt CInt
   | Compatibility Mode CInt CInt
   | ES Mode CInt CInt
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 data Mode
   = Normal
   | Debug
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 -- | Throws 'SDLException' on failure.
 glMakeCurrent :: Window -> GLContext -> IO ()
@@ -67,7 +69,7 @@ data SwapInterval
   = ImmediateUpdates
   | SynchronizedUpdates
   | LateSwapTearing
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 instance ToNumber SwapInterval CInt where
   toNumber ImmediateUpdates = 0

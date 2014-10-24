@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Input.Mouse
   ( -- * Relative Mouse Mode
@@ -20,6 +21,7 @@ module SDL.Input.Mouse
 
 import Control.Applicative
 import Control.Monad (void)
+import Data.Typeable
 import Foreign.C
 import Foreign.Ptr
 import Linear
@@ -52,21 +54,25 @@ data MouseButton
   | ButtonX1
   | ButtonX2
   | ButtonExtra !Int -- ^ An unknown mouse button.
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 -- | Identifies what kind of mouse-like device this is.
 data MouseDevice
   = Mouse !Int -- ^ An actual mouse. The number identifies which mouse.
   | Touch      -- ^ Some sort of touch device.
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 -- | Are buttons being pressed or released?
 data MouseMotion
   = MouseButtonUp
   | MouseButtonDown
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
-data WarpMouseOrigin = WarpInWindow Window | WarpCurrentFocus -- WarpGlobal -- Needs 2.0.4
+data WarpMouseOrigin
+  = WarpInWindow Window
+  | WarpCurrentFocus
+  -- WarpGlobal -- Needs 2.0.4
+  deriving (Eq, Typeable)
 
 warpMouse :: WarpMouseOrigin -> V2 CInt -> IO ()
 warpMouse (WarpInWindow (Window w)) (V2 x y) = Raw.warpMouseInWindow w x y

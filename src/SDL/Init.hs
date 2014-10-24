@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Init
@@ -12,6 +13,7 @@ import Prelude hiding (init)
 
 import Data.Bitmask (foldFlags)
 import Data.Foldable
+import Data.Typeable
 import Foreign
 import SDL.Internal.Numbered
 
@@ -28,7 +30,7 @@ data InitFlag
   | InitEvents
   | InitEverything
   | InitNoParachute
-  deriving (Eq,Ord,Show,Read,Bounded,Enum)
+  deriving (Eq, Show, Typeable)
 
 instance ToNumber InitFlag Word32 where
   toNumber InitTimer = Raw.initFlagTimer

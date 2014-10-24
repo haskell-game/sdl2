@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -46,6 +47,7 @@ import Data.Traversable (for)
 import Foreign
 import Foreign.C
 import Data.Text (Text)
+import Data.Typeable
 import Data.Vector.Storable (Vector)
 
 import qualified Data.ByteString as BS
@@ -58,7 +60,7 @@ import qualified SDL.Raw.Enum as Raw
 import qualified SDL.Raw.Types as Raw
 
 newtype AudioFormat = AudioFormat { unAudioFormat :: Word16 }
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Typeable)
 
 {-
 
@@ -92,6 +94,7 @@ audioFormatF32 = audioFormatF32LSB
 -}
 
 data Channels = Mono | Stereo | Quad | FivePointOne
+  deriving (Eq, Show, Typeable)
 
 data AudioSpec = AudioSpec
   { audioSpecFreq :: !CInt
@@ -110,6 +113,7 @@ audioSpecSize :: AudioSpec -> Word32
 audioSpecSize = _audioSpecSize
 
 newtype AudioDevice = AudioDevice (Raw.AudioDeviceID)
+  deriving (Eq, Typeable)
 
 getAudioDeviceNames :: AudioDeviceUsage -> IO (Maybe (V.Vector Text))
 getAudioDeviceNames usage = do
@@ -125,6 +129,7 @@ getAudioDeviceNames usage = do
   where usage' = encodeUsage usage
 
 data AudioDeviceUsage = ForPlayback | ForCapture
+  deriving (Eq, Show, Typeable)
 
 encodeUsage :: Num a => AudioDeviceUsage -> a
 encodeUsage usage =
@@ -140,11 +145,12 @@ data OpenDeviceSpec = OpenDeviceSpec
   , openDeviceCallback :: !(CInt -> IO (Vector Word8))
   , openDeviceUsage :: !AudioDeviceUsage
   , openDeviceName :: !(Maybe Text)
-  }
+  } deriving (Typeable)
 
 data Changeable a
   = Mandate !a
   | Desire !a
+  deriving (Eq, Show, Typeable)
 
 foldChangeable :: (a -> b) -> (a -> b) -> Changeable a -> b
 foldChangeable f _ (Mandate a) = f a
@@ -213,18 +219,21 @@ closeAudioDevice :: AudioDevice -> IO ()
 closeAudioDevice (AudioDevice d) = Raw.closeAudioDevice d
 
 data LockState = Locked | Unlocked
+  deriving (Eq, Show, Typeable)
 
 setAudioDeviceLocked :: AudioDevice -> LockState -> IO ()
 setAudioDeviceLocked (AudioDevice d) Locked = Raw.lockAudioDevice d
 setAudioDeviceLocked (AudioDevice d) Unlocked = Raw.unlockAudioDevice d
 
 data PlaybackState = Pause | Play
+  deriving (Eq, Show, Typeable)
 
 setAudioDevicePlaybackState :: AudioDevice -> PlaybackState -> IO ()
 setAudioDevicePlaybackState (AudioDevice d) Pause = Raw.pauseAudioDevice d 1
 setAudioDevicePlaybackState (AudioDevice d) Play = Raw.pauseAudioDevice d 0
 
 data AudioDeviceStatus = Playing | Paused | Stopped
+  deriving (Eq, Show, Typeable)
 
 audioDeviceStatus :: AudioDevice -> IO AudioDeviceStatus
 audioDeviceStatus (AudioDevice d) = SDLEx.fromC "SDL.Audio.audioDeviceStatus" "SDL_AudioStatus" readStatus <$> Raw.getAudioDeviceStatus d
@@ -239,6 +248,7 @@ audioDeviceStatus (AudioDevice d) = SDLEx.fromC "SDL.Audio.audioDeviceStatus" "S
 -- clearQueuedAudio (AudioDevice d) = Raw.clearQueuedAudio d
 
 newtype AudioDriver = AudioDriver Text
+  deriving (Eq, Show, Typeable)
 
 audioDriverName :: AudioDriver -> Text
 audioDriverName (AudioDriver t) = t

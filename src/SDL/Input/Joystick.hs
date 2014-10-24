@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Input.Joystick
   ( availableJoysticks
@@ -13,6 +14,7 @@ import Control.Applicative
 import Data.Int
 import Data.Text (Text)
 import Data.Traversable (for)
+import Data.Typeable
 import Foreign.C.Types
 import Foreign.Marshal.Alloc
 import Foreign.Storable
@@ -27,7 +29,7 @@ import qualified SDL.Raw as Raw
 data JoystickDevice = JoystickDevice
   { joystickDeviceName :: Text
   , joystickDeviceId :: CInt
-  }
+  } deriving (Eq, Show, Typeable)
 
 availableJoysticks :: IO (V.Vector JoystickDevice)
 availableJoysticks = do
@@ -41,6 +43,7 @@ availableJoysticks = do
       return (JoystickDevice name i)
 
 newtype Joystick = Joystick Raw.Joystick
+  deriving (Eq, Typeable)
 
 openJoystick :: JoystickDevice -> IO Joystick
 openJoystick (JoystickDevice _ x) =

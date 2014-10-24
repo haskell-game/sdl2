@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE KindSignatures #-}
 module SDL.Hint (
@@ -15,33 +16,64 @@ module SDL.Hint (
     VideoWinD3DCompilerOptions(..)
 ) where
 
+import Data.Typeable
 import Foreign.C
 import qualified SDL.Raw as Raw
 
-data AccelerometerJoystickOptions = AccelerometerNotJoystick | AccelerometerIsJoystick
+data AccelerometerJoystickOptions
+  = AccelerometerNotJoystick
+  | AccelerometerIsJoystick
+  deriving (Eq, Show, Typeable)
 
-data FramebufferAccelerationOptions =
-    Disable3D         |
-    Enable3DDefault   |
-    Enable3DDirect3D  |
-    Enable3DOpenGL    |
-    Enable3DOpenGLES  |
-    Enable3DOpenGLES2 |
-    Enable3DSoftware
+data FramebufferAccelerationOptions
+  = Disable3D
+  | Enable3DDefault
+  | Enable3DDirect3D
+  | Enable3DOpenGL
+  | Enable3DOpenGLES
+  | Enable3DOpenGLES2
+  | Enable3DSoftware
+  deriving (Eq, Show, Typeable)
 
-data MacCTRLClickOptions = NoRightClick | EmulateRightClick
+data MacCTRLClickOptions
+  = NoRightClick
+  | EmulateRightClick
+  deriving (Eq, Show, Typeable)
 
-data MouseModeWarpOptions = MouseRawInput | MouseWarping
+data MouseModeWarpOptions
+  = MouseRawInput
+  | MouseWarping
+  deriving (Eq, Show, Typeable)
 
-data RenderDrivers = Direct3D | OpenGL | OpenGLES | OpenGLES2 | Software
+data RenderDrivers
+  = Direct3D
+  | OpenGL
+  | OpenGLES
+  | OpenGLES2
+  | Software
+  deriving (Eq, Show, Typeable)
 
-data RenderOpenGLShaderOptions = DisableShaders | EnableShaders
+data RenderOpenGLShaderOptions
+  = DisableShaders
+  | EnableShaders
+  deriving (Eq, Show, Typeable)
 
-data RenderScaleQuality = ScaleNearest | ScaleLinear | ScaleBest
+data RenderScaleQuality
+  = ScaleNearest
+  | ScaleLinear
+  | ScaleBest
+  deriving (Eq, Show, Typeable)
 
-data RenderVSyncOptions = DisableVSync | EnableVSync
+data RenderVSyncOptions
+  = DisableVSync
+  | EnableVSync
+  deriving (Eq, Show, Typeable)
 
-data VideoWinD3DCompilerOptions = D3DVistaOrLater | D3DXPSupport | D3DNone
+data VideoWinD3DCompilerOptions
+  = D3DVistaOrLater
+  | D3DXPSupport
+  | D3DNone
+  deriving (Eq, Show, Typeable)
 
 data Hint :: * -> * where
   HintAccelerometerAsJoystick :: Hint AccelerometerJoystickOptions

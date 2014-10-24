@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video.Renderer
@@ -66,6 +67,7 @@ import Data.Bits
 import Data.Foldable
 import Data.Text (Text)
 import Data.Traversable
+import Data.Typeable
 import Data.Word
 import Foreign.C.String
 import Foreign.C.Types
@@ -104,7 +106,7 @@ data TextureAccess
   = TextureAccessStatic
   | TextureAccessStreaming
   | TextureAccessTarget
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 instance FromNumber TextureAccess CInt where
   fromNumber n' = case n' of
@@ -118,7 +120,7 @@ data TextureInfo = TextureInfo
   , textureAccess      :: TextureAccess
   , textureWidth       :: CInt
   , textureHeight      :: CInt
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 queryTexture :: Texture -> IO TextureInfo
 queryTexture (Texture tex) =
@@ -159,6 +161,7 @@ loadBMP filePath =
   withCString filePath $ Raw.loadBMP
 
 newtype SurfacePixelFormat = SurfacePixelFormat (Ptr Raw.PixelFormat)
+  deriving (Eq, Typeable)
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. De need to guarantee that pointers aren't reused?
@@ -170,7 +173,6 @@ mapRGB (SurfacePixelFormat fmt) (V3 r g b) = Raw.mapRGB fmt r g b
 -- aren't reused by *different* surfaces?
 surfaceDimensions :: Surface -> IO (V2 CInt)
 surfaceDimensions (Surface s) = (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> peek s
-
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->format is immutable, but do we need to guarantee that pointers
@@ -199,8 +201,12 @@ updateWindowSurface (Window w) =
   throwIfNeg_ "SDL.Video.updateWindowSurface" "SDL_UpdateWindowSurface" $
     Raw.updateWindowSurface w
 
-data BlendMode = BlendNone | BlendAlphaBlend | BlendAdditive | BlendMod
-  deriving (Eq,Show)
+data BlendMode
+  = BlendNone
+  | BlendAlphaBlend
+  | BlendAdditive
+  | BlendMod
+  deriving (Eq, Show, Typeable)
 
 instance ToNumber BlendMode Word32 where
   toNumber BlendNone = Raw.blendModeNone
@@ -209,6 +215,7 @@ instance ToNumber BlendMode Word32 where
   toNumber BlendMod = Raw.blendModeMod
 
 data Rectangle a = Rectangle (Point V2 a) (V2 a)
+  deriving (Eq, Show, Typeable)
 
 instance Storable a => Storable (Rectangle a) where
   sizeOf ~(Rectangle o s) = sizeOf o + sizeOf s
@@ -222,8 +229,10 @@ instance Storable a => Storable (Rectangle a) where
     poke (castPtr (ptr `plusPtr` sizeOf o)) s
 
 newtype Surface = Surface (Ptr Raw.Surface)
+  deriving (Eq, Typeable)
 
 newtype Texture = Texture Raw.Texture
+  deriving (Eq, Typeable)
 
 renderDrawRect :: Renderer -> Rectangle CInt -> IO ()
 renderDrawRect (Renderer r) rect =
@@ -350,43 +359,44 @@ setTextureColorMod (Texture t) (V3 r g b) =
   throwIfNeg_ "SDL.Video.Renderer.setTextureColorMod" "SDL_SetTextureColorMod" $
   Raw.setTextureColorMod t r g b
 
-data PixelFormat = Unknown
-                 | Index1LSB
-                 | Index1MSB
-                 | Index4LSB
-                 | Index4MSB
-                 | Index8
-                 | RGB332
-                 | RGB444
-                 | RGB555
-                 | BGR555
-                 | ARGB4444
-                 | RGBA4444
-                 | ABGR4444
-                 | BGRA4444
-                 | ARGB1555
-                 | RGBA5551
-                 | ABGR1555
-                 | BGRA5551
-                 | RGB565
-                 | BGR565
-                 | RGB24
-                 | BGR24
-                 | RGB888
-                 | RGBX8888
-                 | BGR888
-                 | BGRX8888
-                 | ARGB8888
-                 | RGBA8888
-                 | ABGR8888
-                 | BGRA8888
-                 | ARGB2101010
-                 | YV12
-                 | IYUV
-                 | YUY2
-                 | UYVY
-                 | YVYU
-                 deriving (Eq, Show)
+data PixelFormat
+  = Unknown
+  | Index1LSB
+  | Index1MSB
+  | Index4LSB
+  | Index4MSB
+  | Index8
+  | RGB332
+  | RGB444
+  | RGB555
+  | BGR555
+  | ARGB4444
+  | RGBA4444
+  | ABGR4444
+  | BGRA4444
+  | ARGB1555
+  | RGBA5551
+  | ABGR1555
+  | BGRA5551
+  | RGB565
+  | BGR565
+  | RGB24
+  | BGR24
+  | RGB888
+  | RGBX8888
+  | BGR888
+  | BGRX8888
+  | ARGB8888
+  | RGBA8888
+  | ABGR8888
+  | BGRA8888
+  | ARGB2101010
+  | YV12
+  | IYUV
+  | YUY2
+  | UYVY
+  | YVYU
+  deriving (Eq, Show, Typeable)
 
 instance FromNumber PixelFormat Word32 where
   fromNumber n' = case n' of
@@ -433,7 +443,7 @@ data RendererConfig = RendererConfig
   , rendererAccelerated   :: Bool
   , rendererPresentVSync  :: Bool
   , rendererTargetTexture :: Bool
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance FromNumber RendererConfig Word32 where
   fromNumber n = RendererConfig
@@ -466,7 +476,7 @@ data RendererInfo = RendererInfo
   , rendererInfoTextureFormats    :: [PixelFormat]
   , rendererInfoMaxTextureWidth   :: CInt
   , rendererInfoMaxTextureHeight  :: CInt
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 fromRawRendererInfo :: Raw.RendererInfo -> IO RendererInfo
 fromRawRendererInfo (Raw.RendererInfo name flgs ntf tfs mtw mth) = do

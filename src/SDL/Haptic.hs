@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Haptic
   ( AvailableHapticDevice
@@ -14,6 +15,7 @@ module SDL.Haptic
 
 import Control.Applicative
 import Data.Text (Text)
+import Data.Typeable
 import Foreign
 import Foreign.C
 import Data.Traversable (for)
@@ -27,7 +29,8 @@ import qualified SDL.Raw as Raw
 
 data AvailableHapticDevice = AvailableHapticDevice
   { availableHapticDeviceName :: Text
-  , availableHapticDeviceIndex :: CInt}
+  , availableHapticDeviceIndex :: CInt
+  } deriving (Eq, Show, Typeable)
 
 availableHapticDeviceIds :: IO (V.Vector AvailableHapticDevice)
 availableHapticDeviceIds = do
@@ -45,7 +48,7 @@ data HapticDevice = HapticDevice
   { hapticDevicePtr :: Raw.Haptic
   , hapticDeviceName :: Text
   , hapticDeviceNumAxes :: CInt
-  }
+  } deriving (Eq, Show, Typeable)
 
 openHaptic :: OpenHapticDevice -> IO HapticDevice
 openHaptic o = do
@@ -80,16 +83,16 @@ data EffectEnvelope = EffectEnvelope
   { envelopeAttackLength :: Word16
   , envelopeAttackLevel :: Word16
   , envelopeFadeLength :: Word16
-  , envelopeFadeLevel :: Word16}
-  deriving (Eq,Show)
+  , envelopeFadeLevel :: Word16
+  } deriving (Eq, Show, Typeable)
 
 data Effect = Haptic
   { effectLength :: Word32
   , effectDelay :: Word16
   , effectButton :: Word16
   , effectInterval :: Word16
-  , effectType :: EffectType}
-  deriving (Eq,Show)
+  , effectType :: EffectType
+  } deriving (Eq, Show, Typeable)
 
 data EffectShape
   = HapticSine
@@ -97,10 +100,10 @@ data EffectShape
   | HapticTriangle
   | HapticSawtoothUp
   | HapticSawtoothDown
-  deriving (Eq,Show)
+  deriving (Eq, Show, Typeable)
 
 data ConditionType = Spring | Damper | Inertia | Friction
-  deriving (Eq,Show)
+  deriving (Eq, Show, Typeable)
 
 data EffectType
   = HapticConstant {hapticConstantDirection :: Raw.HapticDirection
@@ -132,4 +135,4 @@ data EffectType
                  ,hapticCustomPeriod :: Word16
                  ,hapticCustomSamples :: V.Vector Word16
                  ,hapticCustomEnvelope :: EffectEnvelope}
-  deriving (Eq,Show)
+  deriving (Eq, Show, Typeable)

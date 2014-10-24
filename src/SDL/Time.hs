@@ -1,5 +1,5 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings #-}
-
 module SDL.Time
   ( -- * Time Measurement
     ticks
@@ -14,6 +14,7 @@ module SDL.Time
   , removeTimer
   ) where
 
+import Data.Typeable
 import Data.Word
 import Foreign
 import Foreign.C
@@ -22,7 +23,6 @@ import SDL.Exception
 
 import qualified SDL.Raw.Timer as Raw
 import qualified SDL.Raw.Types as Raw
-
 
 -- | Number of milliseconds since library initialization.
 ticks :: IO Word32
@@ -41,11 +41,15 @@ delay = Raw.delay
 foreign import ccall "wrapper"
   mkTimerCallback :: (Word32 -> Ptr () -> IO Word32) -> IO Raw.TimerCallback
 
-data RetriggerTimer = Reschedule Word32 | Cancel
+data RetriggerTimer
+  = Reschedule Word32
+  | Cancel
+  deriving (Eq, Show, Typeable)
 
 type TimerCallback = Word32 -> IO RetriggerTimer
 
-newtype TimerID = TimerID CInt deriving (Eq, Show)
+newtype TimerID = TimerID CInt
+  deriving (Eq, Show, Typeable)
 
 addTimer :: Word32 -> TimerCallback -> IO TimerID
 addTimer timeout callback =

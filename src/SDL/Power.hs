@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Power
@@ -8,6 +9,7 @@ module SDL.Power
   ) where
 
 import Control.Applicative
+import Data.Typeable
 import Data.Word
 import Foreign.Ptr
 import SDL.Exception
@@ -28,13 +30,13 @@ getPowerInfo = do
 data PowerState
   = Battery BatteryState
   | Mains
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 data BatteryState
   = Draining
   | Charged
   | Charging
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 instance FromNumber PowerState Word32 where
   fromNumber n' = case n' of
