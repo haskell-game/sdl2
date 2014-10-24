@@ -66,78 +66,122 @@ data WindowEvent
   deriving (Eq, Show, Typeable)
 
 data EventPayload
-  = WindowEvent {windowEventWindowID :: WindowID
-                ,windowEventEvent :: WindowEvent}
-  | KeyboardEvent {keyboardEventWindowID :: WindowID
-                  ,keyboardEventKeyMotion :: KeyMotion
-                  ,keyboardEventState :: KeyState
-                  ,keyboardEventRepeat :: Bool
-                  ,keyboardEventKeysym :: Keysym}
-  | TextEditingEvent {textEditingEventWindowID :: WindowID
-                     ,textEditingEventText :: Text
-                     ,textEditingEventStart :: Int32
-                     ,textEditingEventLength :: Int32}
-  | TextInputEvent {textInputEventWindowID :: WindowID
-                   ,textInputEventText :: Text}
-  | MouseMotionEvent {mouseMotionEventWindowID :: WindowID
-                     ,mouseMotionEventWhich :: MouseDevice
-                     ,mouseMotionEventState :: [MouseButton]
-                     ,mouseMotionEventPos :: Point V2 Int32
-                     ,mouseMotionEventRelMotion :: V2 Int32}
-  | MouseButtonEvent {mouseButtonEventWindowID :: WindowID
-                     ,mouseButtonEventMotion :: MouseMotion
-                     ,mouseButtonEventWhich :: MouseDevice
-                     ,mouseButtonEventButton :: MouseButton
-                     ,mouseButtonEventState :: Word8
-                     ,mouseButtonEventClicks :: Word8
-                     ,mouseButtonEventPos :: Point V2 Int32}
-  | MouseWheelEvent {mouseWheelEventWindowID :: WindowID
-                    ,mouseWheelEventWhich :: MouseDevice
-                    ,mouseWheelEventPos :: V2 Int32}
-  | JoyAxisEvent {joyAxisEventWhich :: Raw.JoystickID
-                 ,joyAxisEventAxis :: Word8
-                 ,joyAxisEventValue :: Int16}
-  | JoyBallEvent {joyBallEventWhich :: Raw.JoystickID
-                 ,joyBallEventBall :: Word8
-                 ,joyBallEventRelMotion :: V2 Int16}
-  | JoyHatEvent {joyHatEventWhich :: Raw.JoystickID
-                ,joyHatEventHat :: Word8
-                ,joyHatEventValue :: Word8}
-  | JoyButtonEvent {joyButtonEventWhich :: Raw.JoystickID
-                   ,joyButtonEventButton :: Word8
-                   ,joyButtonEventState :: Word8}
-  | JoyDeviceEvent {joyDeviceEventWhich :: Int32}
-  | ControllerAxisEvent {controllerAxisEventWhich :: Raw.JoystickID
-                        ,controllerAxisEventAxis :: Word8
-                        ,controllerAxisEventValue :: Int16}
-  | ControllerButtonEvent {controllerButtonEventWhich :: Raw.JoystickID
-                          ,controllerButtonEventButton :: Word8
-                          ,controllerButtonEventState :: Word8}
-  | ControllerDeviceEvent {controllerDeviceEventWhich :: Int32}
+  = WindowEvent
+    { windowEventWindowID :: WindowID
+    , windowEventEvent :: WindowEvent
+    }
+  | KeyboardEvent
+    { keyboardEventWindowID :: WindowID
+    , keyboardEventKeyMotion :: KeyMotion
+    , keyboardEventState :: KeyState
+    , keyboardEventRepeat :: Bool
+    , keyboardEventKeysym :: Keysym
+    }
+  | TextEditingEvent
+    { textEditingEventWindowID :: WindowID
+    , textEditingEventText :: Text
+    , textEditingEventStart :: Int32
+    , textEditingEventLength :: Int32
+    }
+  | TextInputEvent
+    { textInputEventWindowID :: WindowID
+    , textInputEventText :: Text
+    }
+  | MouseMotionEvent
+    { mouseMotionEventWindowID :: WindowID
+    , mouseMotionEventWhich :: MouseDevice
+    , mouseMotionEventState :: [MouseButton]
+    , mouseMotionEventPos :: Point V2 Int32
+    , mouseMotionEventRelMotion :: V2 Int32
+    }
+  | MouseButtonEvent
+    { mouseButtonEventWindowID :: WindowID
+    , mouseButtonEventMotion :: MouseMotion
+    , mouseButtonEventWhich :: MouseDevice
+    , mouseButtonEventButton :: MouseButton
+    , mouseButtonEventState :: Word8
+    , mouseButtonEventClicks :: Word8
+    , mouseButtonEventPos :: Point V2 Int32
+    }
+  | MouseWheelEvent
+    { mouseWheelEventWindowID :: WindowID
+    , mouseWheelEventWhich :: MouseDevice
+    , mouseWheelEventPos :: V2 Int32
+    }
+  | JoyAxisEvent
+    { joyAxisEventWhich :: Raw.JoystickID
+    , joyAxisEventAxis :: Word8
+    , joyAxisEventValue :: Int16
+    }
+  | JoyBallEvent
+    { joyBallEventWhich :: Raw.JoystickID
+    , joyBallEventBall :: Word8
+    , joyBallEventRelMotion :: V2 Int16
+    }
+  | JoyHatEvent
+    { joyHatEventWhich :: Raw.JoystickID
+    , joyHatEventHat :: Word8
+    , joyHatEventValue :: Word8
+    }
+  | JoyButtonEvent
+    { joyButtonEventWhich :: Raw.JoystickID
+    , joyButtonEventButton :: Word8
+    , joyButtonEventState :: Word8
+    }
+  | JoyDeviceEvent
+    { joyDeviceEventWhich :: Int32
+    }
+  | ControllerAxisEvent
+    { controllerAxisEventWhich :: Raw.JoystickID
+    , controllerAxisEventAxis :: Word8
+    , controllerAxisEventValue :: Int16
+    }
+  | ControllerButtonEvent
+    { controllerButtonEventWhich :: Raw.JoystickID
+    , controllerButtonEventButton :: Word8
+    , controllerButtonEventState :: Word8
+    }
+  | ControllerDeviceEvent
+    { controllerDeviceEventWhich :: Int32
+    }
   | QuitEvent
-  | UserEvent {userEventWindowID :: WindowID
-              ,userEventCode :: Int32
-              ,userEventData1 :: Ptr ()
-              ,userEventData2 :: Ptr ()}
-  | SysWMEvent {sysWMEventMsg :: Raw.SysWMmsg}
-  | TouchFingerEvent {touchFingerEventTouchID :: Raw.TouchID
-                     ,touchFingerEventFingerID :: Raw.FingerID
-                     ,touchFingerEventPos :: Point V2 CFloat
-                     ,touchFingerEventRelMotion :: V2 CFloat
-                     ,touchFingerEventPressure :: CFloat}
-  | MultiGestureEvent {multiGestureEventTouchID :: Raw.TouchID
-                      ,multiGestureEventDTheta :: CFloat
-                      ,multiGestureEventDDist :: CFloat
-                      ,multiGestureEventPos :: Point V2 CFloat
-                      ,multiGestureEventNumFingers :: Word16}
-  | DollarGestureEvent {dollarGestureEventTouchID :: Raw.TouchID
-                       ,dollarGestureEventGestureID :: Raw.GestureID
-                       ,dollarGestureEventNumFingers :: Word32
-                       ,dollarGestureEventError :: CFloat
-                       ,dollagGestureEventPos :: Point V2 CFloat}
-  | DropEvent {dropEventFile :: CString}
+  | UserEvent
+    { userEventWindowID :: WindowID
+    , userEventCode :: Int32
+    , userEventData1 :: Ptr ()
+    , userEventData2 :: Ptr ()
+    }
+  | SysWMEvent
+    { sysWMEventMsg :: Raw.SysWMmsg
+    }
+  | TouchFingerEvent
+    { touchFingerEventTouchID :: Raw.TouchID
+    , touchFingerEventFingerID :: Raw.FingerID
+    , touchFingerEventPos :: Point V2 CFloat
+    , touchFingerEventRelMotion :: V2 CFloat
+    , touchFingerEventPressure :: CFloat
+    }
+  | MultiGestureEvent
+    { multiGestureEventTouchID :: Raw.TouchID
+    , multiGestureEventDTheta :: CFloat
+    , multiGestureEventDDist :: CFloat
+    , multiGestureEventPos :: Point V2 CFloat
+    , multiGestureEventNumFingers :: Word16
+    }
+  | DollarGestureEvent
+    { dollarGestureEventTouchID :: Raw.TouchID
+    , dollarGestureEventGestureID :: Raw.GestureID
+    , dollarGestureEventNumFingers :: Word32
+    , dollarGestureEventError :: CFloat
+    , dollagGestureEventPos :: Point V2 CFloat
+    }
+  | DropEvent
+    { dropEventFile :: CString
+    }
   | ClipboardUpdateEvent
-  | UnknownEvent {unknownEventType :: Word32}
+  | UnknownEvent
+    { unknownEventType :: Word32
+    }
   deriving (Eq, Show, Typeable)
 
 ccharStringToText :: [CChar] -> Text
