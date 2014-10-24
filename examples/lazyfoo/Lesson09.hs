@@ -9,6 +9,8 @@ import Linear
 import Linear.Affine
 import qualified SDL
 
+import Paths_sdl2
+
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
 
@@ -39,7 +41,7 @@ main = do
 
   SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
 
-  textureSurface <- SDL.loadBMP "examples/lazyfoo/viewport.bmp"
+  textureSurface <- getDataFileName "examples/lazyfoo/viewport.bmp" >>= SDL.loadBMP
   texture <- SDL.createTextureFromSurface renderer textureSurface
   SDL.freeSurface textureSurface
 

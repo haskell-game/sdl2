@@ -8,12 +8,14 @@ import Foreign.C.Types
 import Linear
 import qualified SDL
 
+import Paths_sdl2
+
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
 
-loadSurface :: FilePath -> SDL.Surface -> IO SDL.Surface
-loadSurface path screenSurface = do
-  loadedSurface <- SDL.loadBMP path
+loadSurface :: SDL.Surface -> FilePath -> IO SDL.Surface
+loadSurface screenSurface path = do
+  loadedSurface <- getDataFileName path >>= SDL.loadBMP
   desiredFormat <- SDL.surfaceFormat screenSurface
   SDL.convertSurface loadedSurface desiredFormat <* SDL.freeSurface loadedSurface
 
@@ -24,7 +26,7 @@ main = do
   SDL.showWindow window
   screenSurface <- SDL.getWindowSurface window
 
-  stretchedSurface <- loadSurface "examples/lazyfoo/stretch.bmp" screenSurface
+  stretchedSurface <- loadSurface screenSurface "examples/lazyfoo/stretch.bmp"
 
   let
     loop = do

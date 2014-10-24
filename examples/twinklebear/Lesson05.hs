@@ -15,6 +15,7 @@ import Linear
 import Linear.Affine ( Point(P) )
 import qualified SDL
 
+import Paths_sdl2
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
@@ -52,10 +53,10 @@ main = do
 
   let winConfig = SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
 
-  window <- SDL.createWindow "Lesson 4a" winConfig
+  window <- SDL.createWindow "Lesson 5" winConfig
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
 
-  spriteSheet <- loadTexture renderer "examples/twinklebear/spritesheet.bmp"
+  spriteSheet <- getDataFileName "examples/twinklebear/spritesheet.bmp" >>= loadTexture renderer
   let [spriteOne, spriteTwo, spriteThree, spriteFour] =
         [ SDL.Rectangle (P (V2 (x * spriteWidth) (y * spriteHeight))) (V2 spriteWidth spriteHeight)
           | x <- [0..1], y <- [0..1] ]

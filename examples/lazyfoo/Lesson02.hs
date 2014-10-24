@@ -6,6 +6,8 @@ import Foreign.C.Types
 import Linear
 import qualified SDL
 
+import Paths_sdl2
+
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
 
@@ -16,7 +18,7 @@ main = do
   SDL.showWindow window
   screenSurface <- SDL.getWindowSurface window
 
-  helloWorld <- SDL.loadBMP "examples/lazyfoo/hello_world.bmp"
+  helloWorld <- getDataFileName "examples/lazyfoo/hello_world.bmp" >>= SDL.loadBMP
 
   SDL.blitSurface helloWorld Nothing screenSurface Nothing
   SDL.updateWindowSurface window
