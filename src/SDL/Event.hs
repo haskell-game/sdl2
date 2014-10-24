@@ -6,8 +6,10 @@ module SDL.Event
   ( Event(..)
   , EventPayload(..)
   , KeyMotion(..)
+  , KeyState(..)
   , MouseButton(..)
   , MouseMotion(..)
+  , WindowID
   , pollEvent
   , Raw.pumpEvents
   , waitEvent
