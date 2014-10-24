@@ -39,8 +39,7 @@ main = do
               Just e' -> (e' :) <$> collectEvents
 
       events <- map SDL.eventPayload <$> collectEvents
-      let quit =
-            any (\case SDL.QuitEvent -> True ; _ -> False) events
+      let quit = any (== SDL.QuitEvent) events
 
           currentSurface =
             fromMaybe oldSurface $ getLast $

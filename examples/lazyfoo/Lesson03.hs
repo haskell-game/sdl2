@@ -1,4 +1,3 @@
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Lazyfoo.Lesson03 (main) where
 
@@ -29,8 +28,7 @@ main = do
               Just e' -> (e' :) <$> collectEvents
 
       events <- collectEvents
-      let quit = any (\case SDL.QuitEvent -> True ; _ -> False) $
-                 map SDL.eventPayload events
+      let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
       SDL.blitSurface xOut Nothing screenSurface Nothing
       SDL.updateWindowSurface window
