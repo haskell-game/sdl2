@@ -3,7 +3,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video.OpenGL
   ( -- * OpenGL
-    GLContext
+    defaultOpenGL
+  , OpenGLConfig(..)
+  , GLContext
   , glCreateContext
   , Profile(..)
   , Mode(..)
@@ -21,10 +23,37 @@ module SDL.Video.OpenGL
 import Control.Applicative
 import Data.Typeable
 import Foreign.C.Types
+import Linear
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
 import qualified SDL.Raw as Raw
+
+defaultOpenGL :: OpenGLConfig
+defaultOpenGL = OpenGLConfig
+  { glColorPrecision = V4 8 8 8 0
+  , glDepthPrecision = 24
+  , glStencilPrecision = 8
+  , glProfile = Compatibility Normal 2 1
+  }
+
+data OpenGLConfig = OpenGLConfig
+  { glColorPrecision   :: V4 CInt -- ^ Defaults to 'V4' @8 8 8 0@.
+  , glDepthPrecision   :: CInt    -- ^ Defaults to @24@.
+  , glStencilPrecision :: CInt    -- ^ Defaults to @8@.
+  , glProfile          :: Profile -- ^ Defaults to 'Compatibility' 'Normal' @2 1@.
+  } deriving (Eq, Show, Typeable)
+
+data Profile
+  = Core Mode CInt CInt
+  | Compatibility Mode CInt CInt
+  | ES Mode CInt CInt
+  deriving (Eq, Show, Typeable)
+
+data Mode
+  = Normal
+  | Debug
+  deriving (Eq, Show, Typeable)
 
 newtype GLContext = GLContext Raw.GLContext
   deriving (Eq, Typeable)
@@ -38,17 +67,6 @@ glCreateContext :: Window -> IO GLContext
 glCreateContext (Window w) =
   GLContext <$> throwIfNull "SDL.Video.glCreateContext" "SDL_GL_CreateContext"
     (Raw.glCreateContext w)
-
-data Profile
-  = Core Mode CInt CInt
-  | Compatibility Mode CInt CInt
-  | ES Mode CInt CInt
-  deriving (Eq, Show, Typeable)
-
-data Mode
-  = Normal
-  | Debug
-  deriving (Eq, Show, Typeable)
 
 -- | Throws 'SDLException' on failure.
 glMakeCurrent :: Window -> GLContext -> IO ()

@@ -66,13 +66,13 @@ module SDL.Video
   , MessageKind(..)
   ) where
 
-import Prelude hiding (all, foldl, foldr)
+import Prelude hiding (all, foldl, foldr, mapM_)
 
 import Control.Applicative
 import Control.Exception
 import Control.Monad (forM, unless)
 import Data.Foldable
-import Data.Maybe (catMaybes)
+import Data.Maybe (catMaybes, isJust)
 import Data.Text (Text)
 import Data.Typeable
 import Foreign hiding (void, throwIfNull, throwIfNeg, throwIfNeg_)
@@ -94,7 +94,11 @@ import qualified SDL.Raw as Raw
 --
 -- Throws 'SDLException' on failure.
 createWindow :: Text -> WindowConfig -> IO Window
-createWindow title config =
+createWindow title config = do
+  case windowOpenGL config of
+    Just glcfg -> setGLAttributes glcfg
+    Nothing    -> return ()
+
   BS.useAsCString (Text.encodeUtf8 title) $ \title' -> do
     let create = Raw.createWindow title'
     let create' (V2 w h) = case windowPosition config of
@@ -108,9 +112,29 @@ createWindow title config =
       , if windowHighDPI config then Raw.windowFlagAllowHighDPI else 0
       , if windowInputGrabbed config then Raw.windowFlagInputGrabbed else 0
       , toNumber $ windowMode config
-      , if windowOpenGL config then Raw.windowFlagOpenGL else 0
+      , if isJust $ windowOpenGL config then Raw.windowFlagOpenGL else 0
       , if windowResizable config then Raw.windowFlagResizable else 0
       ]
+    setGLAttributes (OpenGLConfig (V4 r g b a) d s p) = do
+      let (msk, v0, v1, flg) = case p of
+            Core Debug v0' v1' -> (Raw.glProfileCore, v0', v1', Raw.glContextFlagDebug)
+            Core Normal v0' v1' -> (Raw.glProfileCore, v0', v1', 0)
+            Compatibility Debug v0' v1' -> (Raw.glProfileCompatibility, v0', v1', Raw.glContextFlagDebug)
+            Compatibility Normal v0' v1' -> (Raw.glProfileCompatibility, v0', v1', 0)
+            ES Debug v0' v1' -> (Raw.glProfileES, v0', v1', Raw.glContextFlagDebug)
+            ES Normal v0' v1' -> (Raw.glProfileES, v0', v1', 0)
+      mapM_ (throwIfNeg_ "SDL.Video.createWindow" "SDL_GL_SetAttribute" . uncurry Raw.glSetAttribute) $
+        [ (Raw.glAttrRedSize, r)
+        , (Raw.glAttrGreenSize, g)
+        , (Raw.glAttrBlueSize, b)
+        , (Raw.glAttrAlphaSize, a)
+        , (Raw.glAttrDepthSize, d)
+        , (Raw.glAttrStencilSize, s)
+        , (Raw.glAttrContextProfileMask, msk)
+        , (Raw.glAttrContextMajorVersion, v0)
+        , (Raw.glAttrContextMinorVersion, v1)
+        , (Raw.glAttrContextFlags, flg)
+        ]
 
 -- | Default configuration for windows. Use the record update syntax to
 -- override any of the defaults.
@@ -120,21 +144,21 @@ defaultWindow = WindowConfig
   , windowHighDPI      = False
   , windowInputGrabbed = False
   , windowMode         = Windowed
-  , windowOpenGL       = False
+  , windowOpenGL       = Nothing
   , windowPosition     = Wherever
   , windowResizable    = False
   , windowSize         = V2 800 600
   }
 
 data WindowConfig = WindowConfig
-  { windowBorder       :: Bool           -- ^ Defaults to 'True'.
-  , windowHighDPI      :: Bool           -- ^ Defaults to 'False'. Can not be changed after window creation.
-  , windowInputGrabbed :: Bool           -- ^ Defaults to 'False'. Whether the mouse shall be confined to the window.
-  , windowMode         :: WindowMode     -- ^ Defaults to 'Windowed'.
-  , windowOpenGL       :: Bool           -- ^ Defaults to 'False'. Can not be changed after window creation.
-  , windowPosition     :: WindowPosition -- ^ Defaults to 'Wherever'.
-  , windowResizable    :: Bool           -- ^ Defaults to 'False'. Whether the window can be resized by the user. It is still possible to programatically change the size with 'setWindowSize'.
-  , windowSize         :: V2 CInt        -- ^ Defaults to @(800, 600)@.
+  { windowBorder       :: Bool               -- ^ Defaults to 'True'.
+  , windowHighDPI      :: Bool               -- ^ Defaults to 'False'. Can not be changed after window creation.
+  , windowInputGrabbed :: Bool               -- ^ Defaults to 'False'. Whether the mouse shall be confined to the window.
+  , windowMode         :: WindowMode         -- ^ Defaults to 'Windowed'.
+  , windowOpenGL       :: Maybe OpenGLConfig -- ^ Defaults to 'Nothing'. Can not be changed after window creation.
+  , windowPosition     :: WindowPosition     -- ^ Defaults to 'Wherever'.
+  , windowResizable    :: Bool               -- ^ Defaults to 'False'. Whether the window can be resized by the user. It is still possible to programatically change the size with 'setWindowSize'.
+  , windowSize         :: V2 CInt            -- ^ Defaults to @(800, 600)@.
   } deriving (Eq, Show, Typeable)
 
 data WindowMode
