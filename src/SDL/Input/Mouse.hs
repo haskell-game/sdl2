@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Input.Mouse
   ( -- * Relative Mouse Mode
@@ -22,12 +23,15 @@ module SDL.Input.Mouse
 import Control.Applicative
 import Control.Monad (void)
 import Data.Typeable
+import Data.Word
 import Foreign.C
 import Foreign.Ptr
 import Linear
 import SDL.Exception
+import SDL.Internal.Numbered
 import SDL.Internal.Types (Window(Window))
 
+import qualified SDL.Raw.Enum as Raw
 import qualified SDL.Raw.Event as Raw
 
 -- | Sets the current relative mouse mode.
@@ -61,6 +65,11 @@ data MouseDevice
   = Mouse !Int -- ^ An actual mouse. The number identifies which mouse.
   | Touch      -- ^ Some sort of touch device.
   deriving (Eq, Show, Typeable)
+
+instance FromNumber MouseDevice Word32 where
+  fromNumber n' = case n' of
+    n | n == Raw.touchMouseID -> Touch
+    n | otherwise -> Mouse $ fromIntegral n
 
 -- | Are buttons being pressed or released?
 data MouseMotion

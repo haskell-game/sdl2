@@ -217,10 +217,6 @@ fromRawKeysym (Raw.Keysym scancode keycode modifier) =
         keycode'  = fromNumber keycode
         modifier' = fromNumber (fromIntegral modifier)
 
-touchOrMouse :: Word32 -> MouseDevice
-touchOrMouse x | x == Raw.touchMouseID = Touch
-               | otherwise = Mouse $ fromIntegral x
-
 convertRaw :: Raw.Event -> Event
 convertRaw (Raw.WindowEvent t ts a b c d) = Event ts $
   let w' = WindowID a in case b of
@@ -252,7 +248,7 @@ convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g)
                   , (Raw.buttonMMask `test` c) ButtonMiddle
                   , (Raw.buttonX1Mask `test` c) ButtonX1
                   , (Raw.buttonX2Mask `test` c) ButtonX2 ]
-     in Event ts (MouseMotionEvent (WindowID a) (touchOrMouse b) buttons (P (V2 d e)) (V2 f g))
+     in Event ts (MouseMotionEvent (WindowID a) (fromNumber b) buttons (P (V2 d e)) (V2 f g))
   where mask `test` x = if mask .&. x /= 0 then Just else const Nothing
 convertRaw (Raw.MouseButtonEvent t ts a b c d e f g)
   = let motion | t == Raw.eventTypeMouseButtonUp = MouseButtonUp
@@ -263,8 +259,8 @@ convertRaw (Raw.MouseButtonEvent t ts a b c d e f g)
                | c == Raw.buttonX1 = ButtonX1
                | c == Raw.buttonX2 = ButtonX2
                | otherwise = ButtonExtra $ fromIntegral c
-    in Event ts (MouseButtonEvent (WindowID a) motion (touchOrMouse b) button d e (P (V2 f g)))
-convertRaw (Raw.MouseWheelEvent _ ts a b c d) = Event ts (MouseWheelEvent (WindowID a) (touchOrMouse b) (V2 c d))
+    in Event ts (MouseButtonEvent (WindowID a) motion (fromNumber b) button d e (P (V2 f g)))
+convertRaw (Raw.MouseWheelEvent _ ts a b c d) = Event ts (MouseWheelEvent (WindowID a) (fromNumber b) (V2 c d))
 convertRaw (Raw.JoyAxisEvent _ ts a b c) = Event ts (JoyAxisEvent a b c)
 convertRaw (Raw.JoyBallEvent _ ts a b c d) = Event ts (JoyBallEvent a b (V2 c d))
 convertRaw (Raw.JoyHatEvent _ ts a b c) = Event ts (JoyHatEvent a b c)
