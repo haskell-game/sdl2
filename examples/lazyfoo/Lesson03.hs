@@ -7,6 +7,8 @@ import Foreign.C.Types
 import Linear
 import qualified SDL
 
+import Paths_sdl2 (getDataFileName)
+
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
 
@@ -17,7 +19,7 @@ main = do
   SDL.showWindow window
   screenSurface <- SDL.getWindowSurface window
 
-  xOut <- SDL.loadBMP "examples/lazyfoo/x.bmp"
+  xOut <- getDataFileName "examples/lazyfoo/x.bmp" >>= SDL.loadBMP
 
   let
     loop = do

@@ -14,6 +14,8 @@ import Linear
 import Linear.Affine
 import qualified SDL
 
+import Paths_sdl2 (getDataFileName)
+
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
 
@@ -21,7 +23,7 @@ data Texture = Texture SDL.Texture (V2 CInt)
 
 loadTexture :: SDL.Renderer -> FilePath -> IO Texture
 loadTexture r filePath = do
-  surface <- SDL.loadBMP filePath
+  surface <- getDataFileName filePath >>= SDL.loadBMP
   size <- SDL.surfaceDimensions surface
   format <- SDL.surfaceFormat surface
   key <- SDL.mapRGB format (V3 0 maxBound maxBound)

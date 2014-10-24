@@ -14,8 +14,13 @@ import Foreign.C.Types
 import Linear
 import qualified SDL
 
+import Paths_sdl2 (getDataFileName)
+
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
+
+loadBMP :: FilePath -> IO (SDL.Surface)
+loadBMP path = getDataFileName path >>= SDL.loadBMP
 
 main :: IO ()
 main = do
@@ -24,11 +29,11 @@ main = do
   SDL.showWindow window
   screenSurface <- SDL.getWindowSurface window
 
-  surfaceDefault <- SDL.loadBMP "examples/lazyfoo/press.bmp"
-  surfaceUp <- SDL.loadBMP "examples/lazyfoo/up.bmp"
-  surfaceDown <- SDL.loadBMP "examples/lazyfoo/down.bmp"
-  surfaceLeft <- SDL.loadBMP "examples/lazyfoo/left.bmp"
-  surfaceRight <- SDL.loadBMP "examples/lazyfoo/right.bmp"
+  surfaceDefault <- loadBMP "examples/lazyfoo/press.bmp"
+  surfaceUp <- loadBMP "examples/lazyfoo/up.bmp"
+  surfaceDown <- loadBMP "examples/lazyfoo/down.bmp"
+  surfaceLeft <- loadBMP "examples/lazyfoo/left.bmp"
+  surfaceRight <- loadBMP "examples/lazyfoo/right.bmp"
 
   let
     loop oldSurface = do

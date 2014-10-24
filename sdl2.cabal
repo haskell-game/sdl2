@@ -26,6 +26,10 @@ extra-source-files:
   cbits/sdlhelper.c,
   include/sdlhelper.h
 
+data-files:
+  examples/lazyfoo/*.bmp
+  examples/twinklebear/*.bmp
+
 source-repository head
   type:     git
   location: git://github.com/haskell-game/sdl2.git
