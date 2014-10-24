@@ -7,7 +7,6 @@ module SDL.Event
   , KeyMotion(..)
   , MouseButton(..)
   , MouseMotion(..)
-  , WindowEvent(..)
   , pollEvent
   , Raw.pumpEvents
   , waitEvent
@@ -48,27 +47,50 @@ cToKeyState c
   | c == Raw.keyPressed = KeyPressed
   | c == Raw.keyReleased = KeyReleased
 
-data WindowEvent
-  = WindowShown
-  | WindowHidden
-  | WindowExposed
-  | WindowMoved (Point V2 Int32)
-  | WindowResized (V2 Int32)
-  | WindowSizeChanged
-  | WindowMinimized
-  | WindowMaximized
-  | WindowRestored
-  | WindowGainedMouseFocus
-  | WindowLostMouseFocus
-  | WindowGainedKeyboardFocus
-  | WindowLostKeyboardFocus
-  | WindowClosed
-  deriving (Eq, Show, Typeable)
-
 data EventPayload
-  = WindowEvent
+  = WindowShown
     { windowEventWindowID :: WindowID
-    , windowEventEvent :: WindowEvent
+    }
+  | WindowHidden
+    { windowEventWindowID :: WindowID
+    }
+  | WindowExposed
+    { windowEventWindowID :: WindowID
+    }
+  | WindowMoved
+    { windowEventWindowID :: WindowID
+    , windowEventPosition :: Point V2 Int32
+    }
+  | WindowResized
+    { windowEventWindowID :: WindowID
+    , windowEventSize :: V2 Int32
+    }
+  | WindowSizeChanged
+    { windowEventWindowID :: WindowID
+    }
+  | WindowMinimized
+    { windowEventWindowID :: WindowID
+    }
+  | WindowMaximized
+    { windowEventWindowID :: WindowID
+    }
+  | WindowRestored
+    { windowEventWindowID :: WindowID
+    }
+  | WindowGainedMouseFocus
+    { windowEventWindowID :: WindowID
+    }
+  | WindowLostMouseFocus
+    { windowEventWindowID :: WindowID
+    }
+  | WindowGainedKeyboardFocus
+    { windowEventWindowID :: WindowID
+    }
+  | WindowLostKeyboardFocus
+    { windowEventWindowID :: WindowID
+    }
+  | WindowClosed
+    { windowEventWindowID :: WindowID
     }
   | KeyboardEvent
     { keyboardEventWindowID :: WindowID
@@ -199,22 +221,23 @@ touchOrMouse x | x == Raw.touchMouseID = Touch
                | otherwise = Mouse $ fromIntegral x
 
 convertRaw :: Raw.Event -> Event
-convertRaw (Raw.WindowEvent _ ts a b c d)
-  = Event ts $ WindowEvent (WindowID a) $
-    if | b == Raw.windowEventShown -> WindowShown
-       | b == Raw.windowEventHidden -> WindowHidden
-       | b == Raw.windowEventExposed -> WindowExposed
-       | b == Raw.windowEventMoved -> WindowMoved (P (V2 c d))
-       | b == Raw.windowEventResized -> WindowResized (V2 c d)
-       | b == Raw.windowEventSizeChanged -> WindowSizeChanged
-       | b == Raw.windowEventMinimized -> WindowMinimized
-       | b == Raw.windowEventMaximized -> WindowMaximized
-       | b == Raw.windowEventRestored -> WindowRestored
-       | b == Raw.windowEventEnter -> WindowGainedMouseFocus
-       | b == Raw.windowEventLeave -> WindowLostMouseFocus
-       | b == Raw.windowEventFocusGained -> WindowGainedKeyboardFocus
-       | b == Raw.windowEventFocusLost -> WindowLostKeyboardFocus
-       | b == Raw.windowEventClose -> WindowClosed
+convertRaw (Raw.WindowEvent t ts a b c d) = Event ts $
+  let w' = WindowID a in case b of
+    n | n == Raw.windowEventShown -> WindowShown w'
+    n | n == Raw.windowEventHidden -> WindowHidden w'
+    n | n == Raw.windowEventExposed -> WindowExposed w'
+    n | n == Raw.windowEventMoved -> WindowMoved w' (P (V2 c d))
+    n | n == Raw.windowEventResized -> WindowResized w' (V2 c d)
+    n | n == Raw.windowEventSizeChanged -> WindowSizeChanged w'
+    n | n == Raw.windowEventMinimized -> WindowMinimized w'
+    n | n == Raw.windowEventMaximized -> WindowMaximized w'
+    n | n == Raw.windowEventRestored -> WindowRestored w'
+    n | n == Raw.windowEventEnter -> WindowGainedMouseFocus w'
+    n | n == Raw.windowEventLeave -> WindowLostMouseFocus w'
+    n | n == Raw.windowEventFocusGained -> WindowGainedKeyboardFocus w'
+    n | n == Raw.windowEventFocusLost -> WindowLostKeyboardFocus w'
+    n | n == Raw.windowEventClose -> WindowClosed w'
+    _ -> UnknownEvent t
 convertRaw (Raw.KeyboardEvent t ts a b c d)
   = let motion | t == Raw.eventTypeKeyDown = KeyDown
                | t == Raw.eventTypeKeyUp = KeyUp
