@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Event
@@ -42,10 +43,10 @@ data KeyMotion = KeyUp | KeyDown
 data KeyState = KeyPressed | KeyReleased
   deriving (Eq, Show, Typeable)
 
-cToKeyState :: (Eq a, Num a) => a -> KeyState
-cToKeyState c
-  | c == Raw.keyPressed = KeyPressed
-  | c == Raw.keyReleased = KeyReleased
+instance FromNumber KeyState Word8 where
+  fromNumber n' = case n' of
+    n | n == Raw.keyPressed -> KeyReleased
+    n | n == Raw.keyReleased -> KeyReleased
 
 data EventPayload
   = WindowShown
@@ -241,7 +242,7 @@ convertRaw (Raw.WindowEvent t ts a b c d) = Event ts $
 convertRaw (Raw.KeyboardEvent t ts a b c d)
   = let motion | t == Raw.eventTypeKeyDown = KeyDown
                | t == Raw.eventTypeKeyUp = KeyUp
-    in Event ts (KeyboardEvent (WindowID a) motion (cToKeyState b) (c /= 0) (fromRawKeysym d))
+    in Event ts (KeyboardEvent (WindowID a) motion (fromNumber b) (c /= 0) (fromRawKeysym d))
 convertRaw (Raw.TextEditingEvent _ ts a b c d) = Event ts (TextEditingEvent (WindowID a) (ccharStringToText b) c d)
 convertRaw (Raw.TextInputEvent _ ts a b) = Event ts (TextInputEvent (WindowID a) (ccharStringToText b))
 convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g)
