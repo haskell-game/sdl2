@@ -45,7 +45,7 @@ library
   exposed-modules:
     SDL
     SDL.Audio
-    SDL.Events
+    SDL.Event
     SDL.Exception
     SDL.Filesystem
     SDL.Haptic

@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
-module SDL.Events
+module SDL.Event
   ( Event(..)
   , EventPayload(..)
   , KeyMotion(..)

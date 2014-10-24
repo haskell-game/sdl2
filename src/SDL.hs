@@ -5,7 +5,7 @@ module SDL
 
     -- * Modules
   , module SDL.Audio
-  , module SDL.Events
+  , module SDL.Event
   , module SDL.Filesystem
   , module SDL.Haptic
   , module SDL.Hint
@@ -19,7 +19,7 @@ module SDL
   ) where
 
 import SDL.Audio
-import SDL.Events
+import SDL.Event
 import SDL.Exception
 import SDL.Filesystem
 import SDL.Haptic
