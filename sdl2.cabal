@@ -249,3 +249,12 @@ executable twinklebear-lesson-02
   default-language: Haskell2010
   ghc-options: -Wall -main-is TwinkleBear.Lesson02
 
+executable twinklebear-lesson-04
+  if flag(NoExamples)
+    buildable: False
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  hs-source-dirs: examples/twinklebear
+  main-is: Lesson04.hs
+  default-language: Haskell2010
+  ghc-options: -Wall -main-is TwinkleBear.Lesson04
+
