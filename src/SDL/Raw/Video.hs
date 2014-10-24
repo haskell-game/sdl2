@@ -298,7 +298,7 @@ foreign import ccall "SDL.h SDL_GetTextureAlphaMod" getTextureAlphaMod :: Textur
 foreign import ccall "SDL.h SDL_GetTextureBlendMode" getTextureBlendMode :: Texture -> Ptr BlendMode -> IO CInt
 foreign import ccall "SDL.h SDL_GetTextureColorMod" getTextureColorMod :: Texture -> Ptr Word8 -> Ptr Word8 -> Ptr Word8 -> IO CInt
 foreign import ccall "SDL.h SDL_LockTexture" lockTexture :: Texture -> Ptr Rect -> Ptr (Ptr ()) -> Ptr CInt -> IO CInt
-foreign import ccall "SDL.h SDL_QueryTexture" queryTexture :: Texture -> Word32 -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
+foreign import ccall "SDL.h SDL_QueryTexture" queryTexture :: Texture -> Ptr Word32 -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderClear" renderClear :: Renderer -> IO CInt
 foreign import ccall "SDL.h SDL_RenderCopy" renderCopy :: Renderer -> Texture -> Ptr Rect -> Ptr Rect -> IO CInt
 foreign import ccall "SDL.h SDL_RenderCopyEx" renderCopyEx :: Renderer -> Texture -> Ptr Rect -> Ptr Rect -> CDouble -> Ptr Point -> RendererFlip -> IO CInt

@@ -24,11 +24,14 @@ module SDL.Video.Renderer
   , surfaceDimensions
   , surfaceFormat
   , updateWindowSurface
+  , queryTexture
   , BlendMode(..)
   , Rectangle(..)
   , Surface
   , SurfacePixelFormat
   , Texture
+  , TextureInfo(..)
+  , TextureAccess(..)
   , PixelFormat(..)
 
   -- * Drawing Primitives
@@ -96,6 +99,40 @@ createTextureFromSurface (Renderer r) (Surface s) =
 
 destroyTexture :: Texture -> IO ()
 destroyTexture (Texture t) = Raw.destroyTexture t
+
+data TextureAccess
+  = TextureAccessStatic
+  | TextureAccessStreaming
+  | TextureAccessTarget
+  deriving (Eq, Show)
+
+instance FromNumber TextureAccess CInt where
+  fromNumber n' = case n' of
+    n | n == Raw.textureAccessStatic -> TextureAccessStatic
+    n | n == Raw.textureAccessStreaming -> TextureAccessStreaming
+    n | n == Raw.textureAccessTarget -> TextureAccessTarget
+    _ -> error "Unknown value"
+
+data TextureInfo = TextureInfo
+  { texturePixelFormat :: PixelFormat
+  , textureAccess      :: TextureAccess
+  , textureWidth       :: CInt
+  , textureHeight      :: CInt }
+  deriving (Eq, Show)
+
+queryTexture :: Texture -> IO TextureInfo
+queryTexture (Texture tex) =
+  alloca $ \pfPtr ->
+  alloca $ \acPtr ->
+  alloca $ \wPtr ->
+  alloca $ \hPtr -> do
+    throwIfNeg_ "SDL.Video.queryTexture" "SDL_QueryTexture" $
+      Raw.queryTexture tex pfPtr acPtr wPtr hPtr
+    TextureInfo <$>
+      fmap fromNumber (peek pfPtr) <*>
+      fmap fromNumber (peek acPtr) <*>
+      peek wPtr <*>
+      peek hPtr
 
 fillRect :: Surface -> Maybe (Rectangle CInt) -> Word32 -> IO ()
 fillRect (Surface s) rect col =
