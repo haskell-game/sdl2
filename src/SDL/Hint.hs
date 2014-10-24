@@ -1,6 +1,6 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE KindSignatures #-}
-module SDL.Hints (
+module SDL.Hint (
     AccelerometerJoystickOptions(..),
     FramebufferAccelerationOptions(..),
     Hint(..),

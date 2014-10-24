@@ -8,7 +8,7 @@ module SDL
   , module SDL.Events
   , module SDL.Filesystem
   , module SDL.Haptic
-  , module SDL.Hints
+  , module SDL.Hint
   , module SDL.Input
   , module SDL.Power
   , module SDL.Time
@@ -23,7 +23,7 @@ import SDL.Events
 import SDL.Exception
 import SDL.Filesystem
 import SDL.Haptic
-import SDL.Hints
+import SDL.Hint
 import SDL.Init
 import SDL.Input
 import SDL.Power

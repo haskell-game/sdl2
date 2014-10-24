@@ -49,7 +49,7 @@ library
     SDL.Exception
     SDL.Filesystem
     SDL.Haptic
-    SDL.Hints
+    SDL.Hint
     SDL.Init
     SDL.Input
     SDL.Input.GameController
