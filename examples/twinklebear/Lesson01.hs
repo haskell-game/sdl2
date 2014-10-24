@@ -10,7 +10,7 @@ import qualified SDL
 
 main :: IO ()
 main = do
-  SDL.init [ SDL.InitEverything ]
+  SDL.initialize [ SDL.InitEverything ]
 
   let winConfig = SDL.defaultWindow { SDL.windowPosition = SDL.Absolute (P (V2 100 100))
                                     , SDL.windowSize     = V2 640 480 }

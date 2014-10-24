@@ -48,7 +48,7 @@ renderTexture renderer tex clipRect pos = do
 
 main :: IO ()
 main = do
-  SDL.init [ SDL.InitVideo ]
+  SDL.initialize [ SDL.InitVideo ]
 
   let winConfig = SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
 

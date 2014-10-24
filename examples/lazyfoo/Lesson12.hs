@@ -40,7 +40,7 @@ setTextureColor (Texture t _) rgb = SDL.setTextureColorMod t rgb
 
 main :: IO ()
 main = do
-  SDL.init [SDL.InitVideo]
+  SDL.initialize [SDL.InitVideo]
 
   hintSet <- SDL.setHint SDL.HintRenderScaleQuality SDL.ScaleLinear
   unless hintSet $

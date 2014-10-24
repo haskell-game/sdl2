@@ -13,7 +13,7 @@ screenWidth, screenHeight :: CInt
 
 main :: IO ()
 main = do
-  SDL.init [SDL.InitVideo]
+  SDL.initialize [SDL.InitVideo]
   window <- SDL.createWindow "SDL Tutorial" SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
   SDL.showWindow window
   screenSurface <- SDL.getWindowSurface window

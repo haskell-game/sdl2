@@ -43,7 +43,7 @@ setTextureBlendMode (Texture t _) = SDL.setTextureBlendMode t
 
 main :: IO ()
 main = do
-  SDL.init [SDL.InitVideo]
+  SDL.initialize [SDL.InitVideo]
 
   hintSet <- SDL.setHint SDL.HintRenderScaleQuality SDL.ScaleLinear
   unless hintSet $

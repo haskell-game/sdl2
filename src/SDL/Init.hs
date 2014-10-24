@@ -2,14 +2,12 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Init
-  ( init
-  , initSubSystem
+  ( initialize
+  , initializeSubSystem
   , InitFlag(..)
   , quit
   , version
   ) where
-
-import Prelude hiding (init)
 
 import Data.Bitmask (foldFlags)
 import Data.Foldable
@@ -47,8 +45,8 @@ instance ToNumber InitFlag Word32 where
 -- prior to this one, unless otherwise documented that you may do so.
 --
 -- Throws 'SDLEx.SDLException' if initialization fails.
-init :: Foldable f => f InitFlag -> IO ()
-init flags =
+initialize :: Foldable f => f InitFlag -> IO ()
+initialize flags =
   SDLEx.throwIfNeg_ "SDL.Init.init" "SDL_Init" $
     Raw.init (foldFlags toNumber flags)
 
@@ -56,8 +54,8 @@ init flags =
 -- to calls to this function.
 --
 -- Throws 'SDLEx.SDLException' if initialization fails.
-initSubSystem :: Foldable f => f InitFlag -> IO ()
-initSubSystem flags =
+initializeSubSystem :: Foldable f => f InitFlag -> IO ()
+initializeSubSystem flags =
   SDLEx.throwIfNeg_ "SDL.Init.initSubSystem" "SDL_InitSubSystem" $
     Raw.initSubSystem (foldFlags toNumber flags)
 

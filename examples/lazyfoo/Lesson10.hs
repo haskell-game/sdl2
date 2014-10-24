@@ -31,7 +31,7 @@ renderTexture r (Texture t size) xy =
 
 main :: IO ()
 main = do
-  SDL.init [SDL.InitVideo]
+  SDL.initialize [SDL.InitVideo]
 
   hintSet <- SDL.setHint SDL.HintRenderScaleQuality SDL.ScaleLinear
   unless hintSet $
