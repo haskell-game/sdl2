@@ -10,6 +10,7 @@ import Linear
 import Linear.Affine ( Point(P) )
 import qualified SDL
 
+import Paths_sdl2 (getDataFileName)
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
@@ -55,8 +56,8 @@ main = do
   window <- SDL.createWindow "Lesson 2" winConfig
   renderer <- SDL.createRenderer window (-1) rdrConfig
 
-  background <- loadTexture renderer "examples/twinklebear/background.bmp"
-  image <- loadTexture renderer "examples/twinklebear/smiley.bmp"
+  background <- getDataFileName "examples/twinklebear/background.bmp" >>= loadTexture renderer
+  image <- getDataFileName "examples/twinklebear/smiley.bmp" >>= loadTexture renderer
 
   renderTiledBackground renderer background
   renderTexture renderer image Centered

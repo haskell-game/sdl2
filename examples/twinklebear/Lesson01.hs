@@ -7,6 +7,7 @@ import Linear
 import Linear.Affine ( Point(P) )
 import qualified SDL
 
+import Paths_sdl2 (getDataFileName)
 
 main :: IO ()
 main = do
@@ -16,14 +17,14 @@ main = do
                                     , SDL.windowSize     = V2 640 480 }
 
       rdrConfig = SDL.RendererConfig { SDL.rendererSoftware      = False
-                                        , SDL.rendererAccelerated   = True
-                                        , SDL.rendererPresentVSync  = True
-                                        , SDL.rendererTargetTexture = True }
+                                     , SDL.rendererAccelerated   = True
+                                     , SDL.rendererPresentVSync  = True
+                                     , SDL.rendererTargetTexture = True }
 
   window <- SDL.createWindow "Hello World!" winConfig
   renderer <- SDL.createRenderer window (-1) rdrConfig
 
-  bmp <- SDL.loadBMP "examples/twinklebear/hello.bmp"
+  bmp <- getDataFileName "examples/twinkleBear/hello.bmp" >>= SDL.loadBMP
   tex <- SDL.createTextureFromSurface renderer bmp
   SDL.freeSurface bmp
 

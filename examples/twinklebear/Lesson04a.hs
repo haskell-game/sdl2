@@ -15,6 +15,7 @@ import Linear
 import Linear.Affine ( Point(P) )
 import qualified SDL
 
+import Paths_sdl2 (getDataFileName)
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
@@ -50,7 +51,7 @@ main = do
   window <- SDL.createWindow "Lesson 4a" winConfig
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
 
-  image <- loadTexture renderer "examples/twinklebear/ladybeetle.bmp"
+  image <- getDataFileName "examples/twinklebear/ladybeetle.bmp" >>= loadTexture renderer
 
   let loop imgPos = do
         let collectEvents = do
