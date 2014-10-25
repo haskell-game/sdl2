@@ -9,7 +9,7 @@ import Linear
 import Linear.Affine
 import qualified SDL
 
-import Paths_sdl2
+import Paths_sdl2 (getDataFileName)
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)

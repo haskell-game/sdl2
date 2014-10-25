@@ -7,7 +7,7 @@ import Linear
 import Linear.Affine ( Point(P) )
 import qualified SDL
 
-import Paths_sdl2
+import Paths_sdl2 (getDataFileName)
 
 main :: IO ()
 main = do
