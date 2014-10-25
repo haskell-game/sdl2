@@ -11,6 +11,9 @@ module SDL.Input.Mouse
   , MouseDevice(..)
   , MouseMotion(..)
 
+    -- * Mouse State
+  , getMouseState
+
     -- * Warping the Mouse
   , WarpMouseOrigin
   , warpMouse
@@ -25,8 +28,11 @@ import Control.Monad (void)
 import Data.Typeable
 import Data.Word
 import Foreign.C
+import Foreign.Marshal.Alloc
 import Foreign.Ptr
+import Foreign.Storable
 import Linear
+import Linear.Affine
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types (Window(Window))
@@ -94,3 +100,10 @@ setCursorVisible False = void $ Raw.showCursor 0
 
 getCursorVisible :: IO Bool
 getCursorVisible = (== 1) <$> Raw.showCursor (-1)
+
+getMouseState :: IO (Point V2 CInt)
+getMouseState =
+  alloca $ \x ->
+  alloca $ \y -> do
+    _ <- Raw.getMouseState x y -- We don't deal with button states here
+    P <$> (V2 <$> peek x <*> peek y)
