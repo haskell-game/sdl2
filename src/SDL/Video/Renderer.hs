@@ -38,6 +38,7 @@ module SDL.Video.Renderer
   -- * Drawing Primitives
   , renderClear
   , renderCopy
+  , renderCopyEx
   , renderDrawLine
   , renderDrawLines
   , renderDrawPoint
@@ -296,6 +297,17 @@ renderCopy (Renderer r) (Texture t) srcRect dstRect =
   maybeWith with srcRect $ \src ->
   maybeWith with dstRect $ \dst ->
   Raw.renderCopy r t (castPtr src) (castPtr dst)
+
+renderCopyEx :: Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> CDouble -> Maybe (Point V2 CInt) -> V2 Bool -> IO ()
+renderCopyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
+  throwIfNeg_ "SDL.Video.renderCopyEx" "SDL_RenderCopyEx" $
+  maybeWith with srcRect $ \src ->
+  maybeWith with dstRect $ \dst ->
+  maybeWith with center $ \c ->
+  Raw.renderCopyEx r t (castPtr src) (castPtr dst) theta (castPtr c)
+                   (case flips of
+                      V2 x y -> (if x then Raw.rendererFlipHorizontal else 0) .|.
+                               (if y then Raw.rendererFlipVertical else 0))
 
 renderDrawLine :: Renderer -> Point V2 CInt -> Point V2 CInt -> IO ()
 renderDrawLine (Renderer r) (P (V2 x y)) (P (V2 x' y')) =
