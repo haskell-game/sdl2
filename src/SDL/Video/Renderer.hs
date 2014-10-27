@@ -3,6 +3,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video.Renderer
   ( Renderer
+  , RenderMT
+  , RenderM
+  , MonadRender(..)
+  , liftRender
+  , liftIOToRender
+  , withRenderer
 
   -- * Drawing Primitives
   , blitScaled
@@ -64,6 +70,7 @@ module SDL.Video.Renderer
 import Prelude hiding (foldr)
 
 import Control.Applicative
+import Control.Monad.IO.Class
 import Data.Bits
 import Data.Foldable
 import Data.Text (Text)
@@ -86,6 +93,40 @@ import qualified Data.Text.Encoding as Text
 import qualified Data.ByteString as BS
 import qualified Data.Vector.Storable as SV
 import qualified SDL.Raw as Raw
+
+newtype RenderMT m a = RenderMT { runRenderMT :: Renderer -> m a }
+type RenderM a = RenderMT IO a
+
+liftRender :: MonadIO m => m a -> RenderMT m a
+liftRender prg = RenderMT $ \_ -> prg
+
+liftIOToRender :: IO a -> RenderM a
+liftIOToRender = liftRender
+
+withRenderer :: MonadIO m => Renderer -> RenderMT m a -> m a
+withRenderer r prg = runRenderMT prg r
+
+instance Functor m => Functor (RenderMT m) where
+  fmap f x = RenderMT $ \r -> f `fmap` (runRenderMT x r)
+
+instance Applicative m => Applicative (RenderMT m) where
+  pure x = RenderMT $ \_ -> pure x
+  f <*> x = RenderMT $ \r -> (runRenderMT f r) <*> (runRenderMT x r)
+
+instance Monad m => Monad (RenderMT m) where
+  return x = RenderMT $ \_ -> return x
+  x >>= f = RenderMT $ \r -> do
+    x' <- runRenderMT x r
+    runRenderMT (f x') r
+
+instance MonadIO m => MonadIO (RenderMT m) where
+  liftIO prg = RenderMT $ \_ -> liftIO prg
+
+class (Functor m, Applicative m, MonadIO m) => MonadRender m where
+  getRenderer :: m Renderer
+
+instance (Applicative m, MonadIO m) => MonadRender (RenderMT m) where
+  getRenderer = RenderMT $ \r -> return r
 
 blitSurface :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
 blitSurface (Surface src) srcRect (Surface dst) dstRect =
