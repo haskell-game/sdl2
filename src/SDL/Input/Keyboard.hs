@@ -5,6 +5,8 @@ module SDL.Input.Keyboard
     getModState
   , KeyModifier(..)
 
+  , getKeyboardState
+
   -- * Text Input
   , startTextInput
   , stopTextInput
@@ -31,10 +33,12 @@ import Data.Typeable
 import Data.Word
 import Foreign.C.String
 import Foreign.Marshal.Alloc
+import Foreign.Marshal.Array
 import Foreign.Storable
 import SDL.Internal.Numbered
 import SDL.Internal.Types
 
+import qualified Data.Vector as V
 import qualified SDL.Raw.Enum as Raw
 import qualified SDL.Raw.Event as Raw
 import qualified SDL.Raw.Types as Raw
@@ -1570,3 +1574,11 @@ data Keysym = Keysym
   , keysymKeycode  :: Keycode
   , keysymModifier :: KeyModifier
   } deriving (Eq, Show, Typeable)
+
+getKeyboardState :: IO (Scancode -> Bool)
+getKeyboardState = do
+  alloca $ \nkeys -> do
+    keyptr <- Raw.getKeyboardState nkeys
+    n <- peek nkeys
+    keys <- V.fromList <$> peekArray (fromIntegral n) keyptr
+    return $ \scancode -> 1 == keys V.! fromIntegral (toNumber scancode)
