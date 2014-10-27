@@ -15,20 +15,24 @@ screenWidth, screenHeight :: CInt
 
 data Texture = Texture SDL.Texture (V2 CInt)
 
-loadTexture :: SDL.Renderer -> FilePath -> IO Texture
-loadTexture r filePath = do
-  surface <- getDataFileName filePath >>= SDL.loadBMP
-  size <- SDL.surfaceDimensions surface
-  format <- SDL.surfaceFormat surface
-  key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.setColorKey surface (Just key)
-  t <- SDL.createTextureFromSurface r surface
-  SDL.freeSurface surface
+loadTexture :: FilePath -> SDL.RenderM Texture
+loadTexture filePath = do
+  (surface, size) <- SDL.liftRender loadSurface
+  t <- SDL.createTextureFromSurface surface
+  SDL.liftRender $ SDL.freeSurface surface
   return (Texture t size)
+    where
+      loadSurface = do
+        surface <- getDataFileName filePath >>= SDL.loadBMP
+        size <- SDL.surfaceDimensions surface
+        format <- SDL.surfaceFormat surface
+        key <- SDL.mapRGB format (V3 0 maxBound maxBound)
+        SDL.setColorKey surface (Just key)
+        return (surface, size)
 
-renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> IO ()
-renderTexture r (Texture t size) xy =
-  SDL.renderCopy r t Nothing (Just $ SDL.Rectangle xy size)
+renderTexture :: Texture -> Point V2 CInt -> SDL.RenderM ()
+renderTexture (Texture t size) xy =
+  SDL.renderCopy t Nothing (Just $ SDL.Rectangle xy size)
 
 main :: IO ()
 main = do
@@ -55,10 +59,12 @@ main = do
          , SDL.rendererPresentVSync = False
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  (fooTexture, backgroundTexture) <- SDL.withRenderer renderer $ do
+    SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
 
-  fooTexture <- loadTexture renderer "examples/lazyfoo/foo.bmp"
-  backgroundTexture <- loadTexture renderer "examples/lazyfoo/background.bmp"
+    foo <- loadTexture "examples/lazyfoo/foo.bmp"
+    bg <- loadTexture "examples/lazyfoo/background.bmp"
+    return (foo, bg)
 
   let loop = do
         let collectEvents = do
@@ -70,13 +76,14 @@ main = do
 
         let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-        SDL.renderClear renderer
+        SDL.withRenderer renderer $ do
+          SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
+          SDL.renderClear
 
-        renderTexture renderer backgroundTexture 0
-        renderTexture renderer fooTexture (P (V2 240 190))
+          renderTexture backgroundTexture 0
+          renderTexture fooTexture (P (V2 240 190))
 
-        SDL.renderPresent renderer
+          SDL.renderPresent
 
         unless quit loop
 

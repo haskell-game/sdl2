@@ -24,13 +24,15 @@ main = do
   window <- SDL.createWindow "Hello World!" winConfig
   renderer <- SDL.createRenderer window (-1) rdrConfig
 
-  bmp <- getDataFileName "examples/twinkleBear/hello.bmp" >>= SDL.loadBMP
-  tex <- SDL.createTextureFromSurface renderer bmp
-  SDL.freeSurface bmp
+  tex <- SDL.withRenderer renderer $ do
+    bmp <- SDL.liftRender $ getDataFileName "examples/twinklebear/hello.bmp" >>= SDL.loadBMP
+    texture <- SDL.createTextureFromSurface bmp
+    SDL.liftRender $ SDL.freeSurface bmp
 
-  SDL.renderClear renderer
-  SDL.renderCopy renderer tex Nothing Nothing
-  SDL.renderPresent renderer
+    SDL.renderClear
+    SDL.renderCopy texture Nothing Nothing
+    SDL.renderPresent
+    return texture
 
   SDL.delay 2000
 

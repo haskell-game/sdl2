@@ -24,22 +24,22 @@ screenWidth, screenHeight :: CInt
 data RenderPos = Centered | At (Point V2 CInt)
 
 
-loadTexture :: SDL.Renderer -> FilePath -> IO SDL.Texture
-loadTexture renderer path = do
-  bmp <- SDL.loadBMP path
-  SDL.createTextureFromSurface renderer bmp <* SDL.freeSurface bmp
+loadTexture :: FilePath -> SDL.RenderM SDL.Texture
+loadTexture path = do
+  bmp <- SDL.liftRender $ getDataFileName path >>= SDL.loadBMP
+  SDL.createTextureFromSurface bmp <* (SDL.liftRender $ SDL.freeSurface bmp)
 
 
-renderTexture :: SDL.Renderer -> SDL.Texture -> RenderPos -> IO ()
-renderTexture renderer tex pos = do
-  ti <- SDL.queryTexture tex
+renderTexture :: SDL.Texture -> RenderPos -> SDL.RenderM ()
+renderTexture tex pos = do
+  ti <- SDL.liftRender $ SDL.queryTexture tex
   let (w, h) = (SDL.textureWidth ti, SDL.textureHeight ti)
       pos'   = case pos of
         At p     -> p
         Centered -> let cntr a b = (a - b) `div` 2
                     in P $ V2 (cntr screenWidth w) (cntr screenHeight h)
       extent = (V2 w h)
-  SDL.renderCopy renderer tex Nothing (Just $ SDL.Rectangle pos' extent)
+  SDL.renderCopy tex Nothing (Just $ SDL.Rectangle pos' extent)
 
 
 main :: IO ()
@@ -51,7 +51,7 @@ main = do
   window <- SDL.createWindow "Lesson 4a" winConfig
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
 
-  image <- getDataFileName "examples/twinklebear/ladybeetle.bmp" >>= loadTexture renderer
+  image <- SDL.withRenderer renderer $ loadTexture "examples/twinklebear/ladybeetle.bmp"
 
   let loop imgPos = do
         let collectEvents = do
@@ -79,9 +79,10 @@ main = do
 
             imgPos' = imgPos + posDelta
 
-        SDL.renderClear renderer
-        renderTexture renderer image $ At (P imgPos')
-        SDL.renderPresent renderer
+        SDL.withRenderer renderer $ do
+          SDL.renderClear
+          renderTexture image $ At (P imgPos')
+          SDL.renderPresent
 
         unless quit $ loop imgPos'
 

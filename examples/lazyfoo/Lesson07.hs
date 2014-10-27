@@ -37,11 +37,12 @@ main = do
          , SDL.rendererPresentVSync = False
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-
-  xOutSurface <- getDataFileName "examples/lazyfoo/texture.bmp" >>= SDL.loadBMP
-  texture <- SDL.createTextureFromSurface renderer xOutSurface
-  SDL.freeSurface xOutSurface
+  texture <- SDL.withRenderer renderer $ do
+    SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
+    xOutSurface <- SDL.liftRender $ getDataFileName "examples/lazyfoo/texture.bmp" >>= SDL.loadBMP
+    tex <- SDL.createTextureFromSurface xOutSurface
+    SDL.liftRender $ SDL.freeSurface xOutSurface
+    return tex
 
   let loop = do
         let collectEvents = do
@@ -53,9 +54,10 @@ main = do
 
         let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
-        SDL.renderClear renderer
-        SDL.renderCopy renderer texture Nothing Nothing
-        SDL.renderPresent renderer
+        SDL.withRenderer renderer $ do
+          SDL.renderClear
+          SDL.renderCopy texture Nothing Nothing
+          SDL.renderPresent
 
         unless quit loop
 

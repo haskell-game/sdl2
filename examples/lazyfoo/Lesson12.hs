@@ -21,21 +21,25 @@ screenWidth, screenHeight :: CInt
 
 data Texture = Texture SDL.Texture (V2 CInt)
 
-loadTexture :: SDL.Renderer -> FilePath -> IO Texture
-loadTexture r filePath = do
-  surface <- getDataFileName filePath >>= SDL.loadBMP
-  size <- SDL.surfaceDimensions surface
-  format <- SDL.surfaceFormat surface
-  key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.setColorKey surface (Just key)
-  t <- SDL.createTextureFromSurface r surface
-  SDL.freeSurface surface
+loadTexture :: FilePath -> SDL.RenderM Texture
+loadTexture filePath = do
+  (surface, size) <- SDL.liftRender loadSurface
+  t <- SDL.createTextureFromSurface surface
+  SDL.liftRender $ SDL.freeSurface surface
   return (Texture t size)
+    where
+      loadSurface = do
+        surface <- getDataFileName filePath >>= SDL.loadBMP
+        size <- SDL.surfaceDimensions surface
+        format <- SDL.surfaceFormat surface
+        key <- SDL.mapRGB format (V3 0 maxBound maxBound)
+        SDL.setColorKey surface (Just key)
+        return (surface, size)
 
-renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> IO ()
-renderTexture r (Texture t size) xy clip =
+renderTexture :: Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> SDL.RenderM ()
+renderTexture (Texture t size) xy clip =
   let dstSize = maybe size (\(SDL.Rectangle _ size') ->  size') clip
-  in SDL.renderCopy r t clip (Just (SDL.Rectangle xy dstSize))
+  in SDL.renderCopy t clip (Just (SDL.Rectangle xy dstSize))
 
 setTextureColor :: Texture -> V3 Word8 -> IO ()
 setTextureColor (Texture t _) rgb = SDL.setTextureColorMod t rgb
@@ -65,9 +69,9 @@ main = do
          , SDL.rendererPresentVSync = False
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-
-  modulatedTexture <- loadTexture renderer "examples/lazyfoo/colors.bmp"
+  modulatedTexture <- SDL.withRenderer renderer $ do
+    SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
+    loadTexture "examples/lazyfoo/colors.bmp"
 
   let loop color = do
         let collectEvents = do
@@ -95,14 +99,15 @@ main = do
                          _ -> mempty) $
               map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-        SDL.renderClear renderer
-
         let color' = color + colorAdjustment
-        setTextureColor modulatedTexture color'
-        renderTexture renderer modulatedTexture 0 Nothing
+        SDL.withRenderer renderer $ do
+          SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
+          SDL.renderClear
 
-        SDL.renderPresent renderer
+          SDL.liftRender $ setTextureColor modulatedTexture color'
+          renderTexture modulatedTexture 0 Nothing
+
+          SDL.renderPresent
 
         unless quit (loop color')
 

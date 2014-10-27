@@ -22,23 +22,26 @@ screenWidth, screenHeight :: CInt
 
 data Texture = Texture SDL.Texture (V2 CInt)
 
-loadTexture :: SDL.Renderer -> FilePath -> IO Texture
-loadTexture r filePath = do
-  surface <- getDataFileName filePath >>= SDL.loadBMP
-  size <- SDL.surfaceDimensions surface
-  format <- SDL.surfaceFormat surface
-  key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.setColorKey surface (Just key)
-  t <- SDL.createTextureFromSurface r surface
-  SDL.freeSurface surface
+loadTexture :: FilePath -> SDL.RenderM Texture
+loadTexture filePath = do
+  (surface, size) <- SDL.liftRender loadSurface
+  t <- SDL.createTextureFromSurface surface
+  SDL.liftRender $ SDL.freeSurface surface
   return (Texture t size)
+    where
+      loadSurface = do
+        surface <- getDataFileName filePath >>= SDL.loadBMP
+        size <- SDL.surfaceDimensions surface
+        format <- SDL.surfaceFormat surface
+        key <- SDL.mapRGB format (V3 0 maxBound maxBound)
+        SDL.setColorKey surface (Just key)
+        return (surface, size)
 
-renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> Maybe CDouble -> Maybe (Point V2 CInt) -> Maybe (V2 Bool) -> IO ()
-renderTexture r (Texture t size) xy clip theta center flips =
+renderTexture :: Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> Maybe CDouble -> Maybe (Point V2 CInt) -> Maybe (V2 Bool) -> SDL.RenderM ()
+renderTexture (Texture t size) xy clip theta center flips =
   let dstSize =
         maybe size (\(SDL.Rectangle _ size') ->  size') clip
-  in SDL.renderCopyEx r
-                      t
+  in SDL.renderCopyEx t
                       clip
                       (Just (SDL.Rectangle xy dstSize))
                       (fromMaybe 0 theta)
@@ -68,9 +71,9 @@ handleEvent mousePos e (Button buttonPos _) =
 
   in Button buttonPos sprite
 
-renderButton :: SDL.Renderer -> Texture -> Button -> IO ()
-renderButton r spriteSheet (Button xy sprite) =
-  renderTexture r spriteSheet xy (Just spriteClipRect) Nothing Nothing Nothing
+renderButton :: Texture -> Button -> SDL.RenderM ()
+renderButton spriteSheet (Button xy sprite) =
+  renderTexture spriteSheet xy (Just spriteClipRect) Nothing Nothing Nothing
   where
   spriteClipRect =
     let i = case sprite of
@@ -105,9 +108,10 @@ main = do
          , SDL.rendererPresentVSync = True
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  buttonSpriteSheet <- SDL.withRenderer renderer $ do
+    SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
 
-  buttonSpriteSheet <- loadTexture renderer "examples/lazyfoo/button.bmp"
+    loadTexture "examples/lazyfoo/button.bmp"
 
   let loop buttons = do
         let collectEvents = do
@@ -125,13 +129,15 @@ main = do
                          e -> (mempty, Endo (handleEvent mousePos e))) $
               map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-        SDL.renderClear renderer
+            buttons' = map (\b -> updateButton b) buttons
 
-        let buttons' = map (\b -> updateButton b) buttons
-        for_ buttons' (renderButton renderer buttonSpriteSheet)
+        SDL.withRenderer renderer $ do
+          SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
+          SDL.renderClear
 
-        SDL.renderPresent renderer
+          for_ buttons' (renderButton buttonSpriteSheet)
+
+          SDL.renderPresent
 
         unless quit (loop buttons')
 
