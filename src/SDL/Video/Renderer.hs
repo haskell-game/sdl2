@@ -98,21 +98,23 @@ blitSurface (Surface src) srcRect (Surface dst) dstRect =
   Raw.blitSurface src (castPtr srcPtr) dst (castPtr dstPtr)
 
 createTexture :: Renderer -> PixelFormat -> TextureAccess -> V2 CInt -> IO Texture
-createTexture (Renderer r) fmt access (V2 w h) =
-  fmap Texture $
-  throwIfNull "SDL.Video.Renderer.createTexture" "SDL_CreateTexture" $
-  withForeignPtr r $ \rptr ->
+createTexture (Renderer r) fmt access (V2 w h) = do
+  texturePtr <-
+    throwIfNull "SDL.Video.Renderer.createTexture" "SDL_CreateTexture" $
+    withForeignPtr r $ \rptr ->
     Raw.createTexture rptr (toNumber fmt) (toNumber access) w h
+  Texture <$> newForeignPtr Raw.destroyTextureFunPtr texturePtr
 
 createTextureFromSurface :: Renderer -> Surface -> IO Texture
-createTextureFromSurface (Renderer r) (Surface s) =
-  fmap Texture $
-  throwIfNull "SDL.Video.createTextureFromSurface" "SDL_CreateTextureFromSurface" $
-  withForeignPtr r $ \rptr ->
+createTextureFromSurface (Renderer r) (Surface s) = do
+  texturePtr <-
+    throwIfNull "SDL.Video.createTextureFromSurface" "SDL_CreateTextureFromSurface" $
+    withForeignPtr r $ \rptr ->
     Raw.createTextureFromSurface rptr s
+  Texture <$> newForeignPtr Raw.destroyTextureFunPtr texturePtr
 
 destroyTexture :: Texture -> IO ()
-destroyTexture (Texture t) = Raw.destroyTexture t
+destroyTexture (Texture t) = withForeignPtr t Raw.destroyTexture
 
 data TextureAccess
   = TextureAccessStatic
@@ -147,7 +149,8 @@ queryTexture (Texture tex) =
   alloca $ \wPtr ->
   alloca $ \hPtr -> do
     throwIfNeg_ "SDL.Video.queryTexture" "SDL_QueryTexture" $
-      Raw.queryTexture tex pfPtr acPtr wPtr hPtr
+      withForeignPtr tex $ \texPtr ->
+      Raw.queryTexture texPtr pfPtr acPtr wPtr hPtr
     TextureInfo <$>
       fmap fromNumber (peek pfPtr) <*>
       fmap fromNumber (peek acPtr) <*>
@@ -251,7 +254,7 @@ instance Storable a => Storable (Rectangle a) where
 newtype Surface = Surface (Ptr Raw.Surface)
   deriving (Eq, Typeable)
 
-newtype Texture = Texture Raw.Texture
+newtype Texture = Texture (ForeignPtr ())
   deriving (Eq, Typeable)
 
 renderDrawRect :: Renderer -> Rectangle CInt -> IO ()
@@ -325,7 +328,8 @@ renderCopy (Renderer r) (Texture t) srcRect dstRect =
   maybeWith with srcRect $ \src ->
   maybeWith with dstRect $ \dst ->
   withForeignPtr r $ \rptr ->
-  Raw.renderCopy rptr t (castPtr src) (castPtr dst)
+  withForeignPtr t $ \tptr ->
+  Raw.renderCopy rptr tptr (castPtr src) (castPtr dst)
 
 renderCopyEx :: Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> CDouble -> Maybe (Point V2 CInt) -> V2 Bool -> IO ()
 renderCopyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
@@ -334,7 +338,8 @@ renderCopyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
   maybeWith with dstRect $ \dst ->
   maybeWith with center $ \c ->
   withForeignPtr r $ \rptr ->
-  Raw.renderCopyEx rptr t (castPtr src) (castPtr dst) theta (castPtr c)
+  withForeignPtr t $ \tptr ->
+  Raw.renderCopyEx rptr tptr (castPtr src) (castPtr dst) theta (castPtr c)
                    (case flips of
                       V2 x y -> (if x then Raw.rendererFlipHorizontal else 0) .|.
                                (if y then Raw.rendererFlipVertical else 0))
@@ -403,7 +408,8 @@ setColorKey (Surface s) key =
 setTextureColorMod :: Texture -> V3 Word8 -> IO ()
 setTextureColorMod (Texture t) (V3 r g b) =
   throwIfNeg_ "SDL.Video.Renderer.setTextureColorMod" "SDL_SetTextureColorMod" $
-  Raw.setTextureColorMod t r g b
+  withForeignPtr t $ \tptr ->
+  Raw.setTextureColorMod tptr r g b
 
 data PixelFormat
   = Unknown
@@ -590,12 +596,14 @@ getRenderDriverInfo = do
 setTextureAlphaMod :: Texture -> Word8 -> IO ()
 setTextureAlphaMod (Texture t) alpha =
   throwIfNeg_ "SDL.Video.Renderer.setTextureAlphaMod" "SDL_SetTextureAlphaMod" $
-  Raw.setTextureAlphaMod t alpha
+  withForeignPtr t $ \tptr ->
+  Raw.setTextureAlphaMod tptr alpha
 
 setTextureBlendMode :: Texture -> BlendMode -> IO ()
 setTextureBlendMode (Texture t) bm =
   throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMoe" $
-  Raw.setTextureBlendMode t (toNumber bm)
+  withForeignPtr t $ \tptr ->
+  Raw.setTextureBlendMode tptr (toNumber bm)
 
 setRenderTarget :: Renderer -> Maybe Texture -> IO ()
 setRenderTarget (Renderer r) texture =
@@ -603,4 +611,4 @@ setRenderTarget (Renderer r) texture =
   withForeignPtr r $ \rptr ->
   case texture of
     Nothing -> Raw.setRenderTarget rptr nullPtr
-    Just (Texture t) -> Raw.setRenderTarget rptr t
+    Just (Texture t) -> withForeignPtr t (Raw.setRenderTarget rptr)

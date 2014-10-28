@@ -86,6 +86,7 @@ module SDL.Raw.Video (
 	destroyRenderer,
 	destroyRendererFunPtr,
 	destroyTexture,
+	destroyTextureFunPtr,
 	getNumRenderDrivers,
 	getRenderDrawBlendMode,
 	getRenderDrawColor,
@@ -288,6 +289,7 @@ foreign import ccall "SDL.h SDL_CreateTextureFromSurface" createTextureFromSurfa
 foreign import ccall "SDL.h SDL_DestroyRenderer" destroyRenderer :: Renderer -> IO ()
 foreign import ccall "SDL.h &SDL_DestroyRenderer" destroyRendererFunPtr :: FunPtr (Renderer -> IO ())
 foreign import ccall "SDL.h SDL_DestroyTexture" destroyTexture :: Texture -> IO ()
+foreign import ccall "SDL.h &SDL_DestroyTexture" destroyTextureFunPtr :: FunPtr (Texture -> IO ())
 foreign import ccall "SDL.h SDL_GetNumRenderDrivers" getNumRenderDrivers :: IO CInt
 foreign import ccall "SDL.h SDL_GetRenderDrawBlendMode" getRenderDrawBlendMode :: Renderer -> Ptr BlendMode -> IO Int
 foreign import ccall "SDL.h SDL_GetRenderDrawColor" getRenderDrawColor :: Renderer -> Ptr Word8 -> Ptr Word8 -> Ptr Word8 -> Ptr Word8 -> IO CInt
