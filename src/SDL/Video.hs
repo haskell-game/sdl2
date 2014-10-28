@@ -36,7 +36,6 @@ module SDL.Video
 
   -- * Renderer Management
   , createRenderer
-  , destroyRenderer
 
   -- * Clipboard Handling
   , getClipboardText
@@ -401,11 +400,11 @@ getWindowMinimumSize (Window w) =
     Raw.getWindowMinimumSize w wptr hptr
     V2 <$> peek wptr <*> peek hptr
 
+-- | Create a new 'Renderer' attached to a specific 'Window'. The 'Renderer' will be automatically destroyed upon garbage collection.
 createRenderer :: Window -> CInt -> RendererConfig -> IO Renderer
-createRenderer (Window w) driver config =
-  fmap Renderer $
+createRenderer (Window w) driver config = do
+  ptr <-
     throwIfNull "SDL.Video.createRenderer" "SDL_CreateRenderer" $
-    Raw.createRenderer w driver (toNumber config)
+      Raw.createRenderer w driver (toNumber config)
 
-destroyRenderer :: Renderer -> IO ()
-destroyRenderer (Renderer r) = Raw.destroyRenderer r
+  Renderer <$> newForeignPtr Raw.destroyRendererFunPtr ptr

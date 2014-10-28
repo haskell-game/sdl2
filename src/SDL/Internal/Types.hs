@@ -20,5 +20,5 @@ newtype Joystick = Joystick { joystickPtr :: Raw.Joystick }
 newtype Window = Window (Raw.Window)
   deriving (Eq, Typeable)
 
-newtype Renderer = Renderer Raw.Renderer
+newtype Renderer = Renderer (ForeignPtr ())
   deriving (Eq, Typeable)
