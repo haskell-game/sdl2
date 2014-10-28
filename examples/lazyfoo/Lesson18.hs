@@ -29,7 +29,6 @@ loadTexture r filePath = do
   key <- SDL.mapRGB format (V3 0 maxBound maxBound)
   SDL.setColorKey surface (Just key)
   t <- SDL.createTextureFromSurface r surface
-  SDL.freeSurface surface
   return (Texture t size)
 
 renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> Maybe CDouble -> Maybe (Point V2 CInt) -> Maybe (V2 Bool) -> IO ()
@@ -51,60 +50,56 @@ main = do
   unless hintSet $
     putStrLn "Warning: Linear texture filtering not enabled!"
 
-  window <-
-    SDL.createWindow
-      "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
-  SDL.showWindow window
+  SDL.withWindow "SDL Tutorial" SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight} $ \window -> do
+    SDL.showWindow window
 
-  renderer <-
-    SDL.createRenderer
-      window
-      (-1)
-      (SDL.RendererConfig
-         { SDL.rendererAccelerated = True
-         , SDL.rendererSoftware = False
-         , SDL.rendererTargetTexture = False
-         , SDL.rendererPresentVSync = True
-         })
+    renderer <-
+      SDL.createRenderer
+        window
+        (-1)
+        (SDL.RendererConfig
+           { SDL.rendererAccelerated = True
+           , SDL.rendererSoftware = False
+           , SDL.rendererTargetTexture = False
+           , SDL.rendererPresentVSync = True
+           })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+    SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
 
-  pressTexture <- loadTexture renderer "examples/lazyfoo/press.bmp"
-  upTexture <- loadTexture renderer "examples/lazyfoo/up.bmp"
-  downTexture <- loadTexture renderer "examples/lazyfoo/down.bmp"
-  leftTexture <- loadTexture renderer "examples/lazyfoo/left.bmp"
-  rightTexture <- loadTexture renderer "examples/lazyfoo/right.bmp"
+    pressTexture <- loadTexture renderer "examples/lazyfoo/press.bmp"
+    upTexture <- loadTexture renderer "examples/lazyfoo/up.bmp"
+    downTexture <- loadTexture renderer "examples/lazyfoo/down.bmp"
+    leftTexture <- loadTexture renderer "examples/lazyfoo/left.bmp"
+    rightTexture <- loadTexture renderer "examples/lazyfoo/right.bmp"
 
-  let
-    loop = do
-      let collectEvents = do
-            e <- SDL.pollEvent
-            case e of
-              Nothing -> return []
-              Just e' -> (e' :) <$> collectEvents
+    let
+      loop = do
+        let collectEvents = do
+              e <- SDL.pollEvent
+              case e of
+                Nothing -> return []
+                Just e' -> (e' :) <$> collectEvents
 
-      events <- map SDL.eventPayload <$> collectEvents
-      let quit = any (== SDL.QuitEvent) events
+        events <- map SDL.eventPayload <$> collectEvents
+        let quit = any (== SDL.QuitEvent) events
 
-      keyMap <- SDL.getKeyboardState
-      let texture =
-            if | keyMap SDL.ScancodeUp -> upTexture
-               | keyMap SDL.ScancodeDown -> downTexture
-               | keyMap SDL.ScancodeLeft -> leftTexture
-               | keyMap SDL.ScancodeRight -> rightTexture
-               | otherwise -> pressTexture
+        keyMap <- SDL.getKeyboardState
+        let texture =
+              if | keyMap SDL.ScancodeUp -> upTexture
+                 | keyMap SDL.ScancodeDown -> downTexture
+                 | keyMap SDL.ScancodeLeft -> leftTexture
+                 | keyMap SDL.ScancodeRight -> rightTexture
+                 | otherwise -> pressTexture
 
-      SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-      SDL.renderClear renderer
+        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+        SDL.renderClear renderer
 
-      renderTexture renderer texture 0 Nothing Nothing Nothing Nothing
+        renderTexture renderer texture 0 Nothing Nothing Nothing Nothing
 
-      SDL.renderPresent renderer
+        SDL.renderPresent renderer
 
-      unless quit loop
+        unless quit loop
 
-  loop
+    loop
 
-  SDL.destroyWindow window
-  SDL.quit
+    SDL.quit

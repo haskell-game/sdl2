@@ -16,35 +16,33 @@ loadSurface :: SDL.Surface -> FilePath -> IO SDL.Surface
 loadSurface screenSurface path = do
   loadedSurface <- getDataFileName path >>= SDL.loadBMP
   desiredFormat <- SDL.surfaceFormat screenSurface
-  SDL.convertSurface loadedSurface desiredFormat <* SDL.freeSurface loadedSurface
+  SDL.convertSurface loadedSurface desiredFormat
 
 main :: IO ()
 main = do
   SDL.initialize [SDL.InitVideo]
-  window <- SDL.createWindow "SDL Tutorial" SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
-  SDL.showWindow window
-  screenSurface <- SDL.getWindowSurface window
+  SDL.withWindow "SDL Tutorial" SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight } $ \window -> do
+    SDL.showWindow window
+    screenSurface <- SDL.getWindowSurface window
 
-  stretchedSurface <- loadSurface screenSurface "examples/lazyfoo/stretch.bmp"
+    stretchedSurface <- loadSurface screenSurface "examples/lazyfoo/stretch.bmp"
 
-  let
-    loop = do
-      let collectEvents = do
-            e <- SDL.pollEvent
-            case e of
-              Nothing -> return []
-              Just e' -> (e' :) <$> collectEvents
+    let
+      loop = do
+        let collectEvents = do
+              e <- SDL.pollEvent
+              case e of
+                Nothing -> return []
+                Just e' -> (e' :) <$> collectEvents
 
-      events <- collectEvents
-      let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
+        events <- collectEvents
+        let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
-      SDL.blitScaled stretchedSurface Nothing screenSurface Nothing
-      SDL.updateWindowSurface window
+        SDL.blitScaled stretchedSurface Nothing screenSurface Nothing
+        SDL.updateWindowSurface window
 
-      unless quit loop
+        unless quit loop
 
-  loop
+    loop
 
-  SDL.freeSurface stretchedSurface
-  SDL.destroyWindow window
   SDL.quit

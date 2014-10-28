@@ -30,7 +30,6 @@ loadTexture r filePath = do
   key <- SDL.mapRGB format (V3 0 maxBound maxBound)
   SDL.setColorKey surface (Just key)
   t <- SDL.createTextureFromSurface r surface
-  SDL.freeSurface surface
   return (Texture t size)
 
 renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> Maybe CDouble -> Maybe (Point V2 CInt) -> Maybe (V2 Bool) -> IO ()
@@ -88,60 +87,55 @@ main = do
   unless hintSet $
     putStrLn "Warning: Linear texture filtering not enabled!"
 
-  window <-
-    SDL.createWindow
-      "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
-  SDL.showWindow window
+  SDL.withWindow "SDL Tutorial" SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight} $ \window -> do
+    SDL.showWindow window
 
-  renderer <-
-    SDL.createRenderer
-      window
-      (-1)
-      (SDL.RendererConfig
-         { SDL.rendererAccelerated = True
-         , SDL.rendererSoftware = False
-         , SDL.rendererTargetTexture = False
-         , SDL.rendererPresentVSync = True
-         })
+    renderer <-
+      SDL.createRenderer
+        window
+        (-1)
+        (SDL.RendererConfig
+           { SDL.rendererAccelerated = True
+           , SDL.rendererSoftware = False
+           , SDL.rendererTargetTexture = False
+           , SDL.rendererPresentVSync = True
+           })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+    SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
 
-  buttonSpriteSheet <- loadTexture renderer "examples/lazyfoo/button.bmp"
+    buttonSpriteSheet <- loadTexture renderer "examples/lazyfoo/button.bmp"
 
-  let loop buttons = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
+    let loop buttons = do
+          let collectEvents = do
+                e <- SDL.pollEvent
+                case e of
+                  Nothing -> return []
+                  Just e' -> (e' :) <$> collectEvents
 
-        events <- collectEvents
-        mousePos <- SDL.getMouseState
+          events <- collectEvents
+          mousePos <- SDL.getMouseState
 
-        let (Any quit, Endo updateButton) =
-              foldMap (\case
-                         SDL.QuitEvent -> (Any True, mempty)
-                         e -> (mempty, Endo (handleEvent mousePos e))) $
-              map SDL.eventPayload events
+          let (Any quit, Endo updateButton) =
+                foldMap (\case
+                           SDL.QuitEvent -> (Any True, mempty)
+                           e -> (mempty, Endo (handleEvent mousePos e))) $
+                map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-        SDL.renderClear renderer
+          SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+          SDL.renderClear renderer
 
-        let buttons' = map (\b -> updateButton b) buttons
-        for_ buttons' (renderButton renderer buttonSpriteSheet)
+          let buttons' = map (\b -> updateButton b) buttons
+          for_ buttons' (renderButton renderer buttonSpriteSheet)
 
-        SDL.renderPresent renderer
+          SDL.renderPresent renderer
 
-        unless quit (loop buttons')
+          unless quit (loop buttons')
 
-  loop (let newButton xy = Button xy MouseOut
-        in [ newButton (P (V2 0 0))
-           , newButton (P (V2 (screenWidth - buttonWidth) 0))
-           , newButton (P (V2 0 (screenHeight - buttonHeight)))
-           , newButton (P (V2 screenWidth screenHeight - buttonSize))
-           ])
+    loop (let newButton xy = Button xy MouseOut
+          in [ newButton (P (V2 0 0))
+             , newButton (P (V2 (screenWidth - buttonWidth) 0))
+             , newButton (P (V2 0 (screenHeight - buttonHeight)))
+             , newButton (P (V2 screenWidth screenHeight - buttonSize))
+             ])
 
-  SDL.destroyRenderer renderer
-  SDL.destroyWindow window
-  SDL.quit
+    SDL.quit

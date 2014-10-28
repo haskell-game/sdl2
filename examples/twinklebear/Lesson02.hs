@@ -3,7 +3,6 @@ module TwinkleBear.Lesson02 (main) where
 
 
 import Prelude hiding (init)
-import Control.Applicative
 import Control.Monad
 import Foreign.C.Types
 import Linear
@@ -22,7 +21,7 @@ data RenderPos = Centered | At (Point V2 CInt)
 loadTexture :: SDL.Renderer -> FilePath -> IO SDL.Texture
 loadTexture renderer path = do
   bmp <- SDL.loadBMP path
-  SDL.createTextureFromSurface renderer bmp <* SDL.freeSurface bmp
+  SDL.createTextureFromSurface renderer bmp
 
 
 renderTexture :: SDL.Renderer -> SDL.Texture -> RenderPos -> IO ()
@@ -53,21 +52,16 @@ main = do
   let winConfig = SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
       rdrConfig = SDL.defaultRenderer { SDL.rendererAccelerated = True }
 
-  window <- SDL.createWindow "Lesson 2" winConfig
-  renderer <- SDL.createRenderer window (-1) rdrConfig
+  SDL.withWindow "Lesson 2" winConfig $ \window -> do
+    renderer <- SDL.createRenderer window (-1) rdrConfig
 
-  background <- getDataFileName "examples/twinklebear/background.bmp" >>= loadTexture renderer
-  image <- getDataFileName "examples/twinklebear/smiley.bmp" >>= loadTexture renderer
+    background <- getDataFileName "examples/twinklebear/background.bmp" >>= loadTexture renderer
+    image <- getDataFileName "examples/twinklebear/smiley.bmp" >>= loadTexture renderer
 
-  renderTiledBackground renderer background
-  renderTexture renderer image Centered
-  SDL.renderPresent renderer
+    renderTiledBackground renderer background
+    renderTexture renderer image Centered
+    SDL.renderPresent renderer
 
-  SDL.delay 2000
+    SDL.delay 2000
 
-  SDL.destroyTexture image
-  SDL.destroyTexture background
-  SDL.destroyRenderer renderer
-  SDL.destroyWindow window
-
-  SDL.quit
+    SDL.quit

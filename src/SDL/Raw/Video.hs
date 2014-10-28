@@ -84,7 +84,9 @@ module SDL.Raw.Video (
 	createTexture,
 	createTextureFromSurface,
 	destroyRenderer,
+	destroyRendererFunPtr,
 	destroyTexture,
+	destroyTextureFunPtr,
 	getNumRenderDrivers,
 	getRenderDrawBlendMode,
 	getRenderDrawColor,
@@ -164,6 +166,7 @@ module SDL.Raw.Video (
 	fillRect,
 	fillRects,
 	freeSurface,
+	freeSurfaceFunPtr,
 	getClipRect,
 	getColorKey,
 	getSurfaceAlphaMod,
@@ -285,7 +288,9 @@ foreign import ccall "SDL.h SDL_CreateSoftwareRenderer" createSoftwareRenderer :
 foreign import ccall "SDL.h SDL_CreateTexture" createTexture :: Renderer -> Word32 -> CInt -> CInt -> CInt -> IO Texture
 foreign import ccall "SDL.h SDL_CreateTextureFromSurface" createTextureFromSurface :: Renderer -> Ptr Surface -> IO Texture
 foreign import ccall "SDL.h SDL_DestroyRenderer" destroyRenderer :: Renderer -> IO ()
+foreign import ccall "SDL.h &SDL_DestroyRenderer" destroyRendererFunPtr :: FunPtr (Renderer -> IO ())
 foreign import ccall "SDL.h SDL_DestroyTexture" destroyTexture :: Texture -> IO ()
+foreign import ccall "SDL.h &SDL_DestroyTexture" destroyTextureFunPtr :: FunPtr (Texture -> IO ())
 foreign import ccall "SDL.h SDL_GetNumRenderDrivers" getNumRenderDrivers :: IO CInt
 foreign import ccall "SDL.h SDL_GetRenderDrawBlendMode" getRenderDrawBlendMode :: Renderer -> Ptr BlendMode -> IO Int
 foreign import ccall "SDL.h SDL_GetRenderDrawColor" getRenderDrawColor :: Renderer -> Ptr Word8 -> Ptr Word8 -> Ptr Word8 -> Ptr Word8 -> IO CInt
@@ -362,6 +367,7 @@ foreign import ccall "SDL.h SDL_CreateRGBSurfaceFrom" createRGBSurfaceFrom :: Pt
 foreign import ccall "SDL.h SDL_FillRect" fillRect :: Ptr Surface -> Ptr Rect -> Word32 -> IO CInt
 foreign import ccall "SDL.h SDL_FillRects" fillRects :: Ptr Surface -> Ptr Rect -> CInt -> Word32 -> IO CInt
 foreign import ccall "SDL.h SDL_FreeSurface" freeSurface :: Ptr Surface -> IO ()
+foreign import ccall "SDL.h &SDL_FreeSurface" freeSurfaceFunPtr :: FunPtr (Ptr Surface -> IO ())
 foreign import ccall "SDL.h SDL_GetClipRect" getClipRect :: Ptr Surface -> Ptr Rect -> IO ()
 foreign import ccall "SDL.h SDL_GetColorKey" getColorKey :: Ptr Surface -> Ptr Word32 -> IO CInt
 foreign import ccall "SDL.h SDL_GetSurfaceAlphaMod" getSurfaceAlphaMod :: Ptr Surface -> Ptr Word8 -> IO CInt

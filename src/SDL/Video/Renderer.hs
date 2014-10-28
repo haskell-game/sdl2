@@ -10,10 +10,8 @@ module SDL.Video.Renderer
   , createTexture
   , createTextureFromSurface
   , convertSurface
-  , destroyTexture
   , fillRect
   , fillRects
-  , freeSurface
   , loadBMP
   , mapRGB
   , getWindowSurface
@@ -77,6 +75,7 @@ import Foreign.C.Types
 import Foreign.Marshal.Alloc
 import Foreign.Marshal.Utils
 import Foreign.Ptr
+import Foreign.ForeignPtr.Safe
 import Foreign.Storable
 import Linear
 import Linear.Affine (Point(P))
@@ -90,26 +89,29 @@ import qualified Data.Vector.Storable as SV
 import qualified SDL.Raw as Raw
 
 blitSurface :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
-blitSurface (Surface src) srcRect (Surface dst) dstRect =
+blitSurface (Surface src') srcRect (Surface dst') dstRect =
   throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
   maybeWith with srcRect $ \srcPtr ->
   maybeWith with dstRect $ \dstPtr ->
+  withForeignPtr src' $ \src ->
+  withForeignPtr dst' $ \dst ->
   Raw.blitSurface src (castPtr srcPtr) dst (castPtr dstPtr)
 
 createTexture :: Renderer -> PixelFormat -> TextureAccess -> V2 CInt -> IO Texture
-createTexture (Renderer r) fmt access (V2 w h) =
-  fmap Texture $
-  throwIfNull "SDL.Video.Renderer.createTexture" "SDL_CreateTexture" $
-  Raw.createTexture r (toNumber fmt) (toNumber access) w h
+createTexture (Renderer r) fmt access (V2 w h) = do
+  texturePtr <-
+    throwIfNull "SDL.Video.Renderer.createTexture" "SDL_CreateTexture" $
+    withForeignPtr r $ \rptr ->
+    Raw.createTexture rptr (toNumber fmt) (toNumber access) w h
+  Texture <$> newForeignPtr Raw.destroyTextureFunPtr texturePtr
 
 createTextureFromSurface :: Renderer -> Surface -> IO Texture
-createTextureFromSurface (Renderer r) (Surface s) =
-  fmap Texture $
-  throwIfNull "SDL.Video.createTextureFromSurface" "SDL_CreateTextureFromSurface" $
-  Raw.createTextureFromSurface r s
-
-destroyTexture :: Texture -> IO ()
-destroyTexture (Texture t) = Raw.destroyTexture t
+createTextureFromSurface (Renderer r) (Surface s) = do
+  texturePtr <-
+    throwIfNull "SDL.Video.createTextureFromSurface" "SDL_CreateTextureFromSurface" $
+    withForeignPtr r $ \rptr ->
+    withForeignPtr s (Raw.createTextureFromSurface rptr)
+  Texture <$> newForeignPtr Raw.destroyTextureFunPtr texturePtr
 
 data TextureAccess
   = TextureAccessStatic
@@ -144,7 +146,8 @@ queryTexture (Texture tex) =
   alloca $ \wPtr ->
   alloca $ \hPtr -> do
     throwIfNeg_ "SDL.Video.queryTexture" "SDL_QueryTexture" $
-      Raw.queryTexture tex pfPtr acPtr wPtr hPtr
+      withForeignPtr tex $ \texPtr ->
+      Raw.queryTexture texPtr pfPtr acPtr wPtr hPtr
     TextureInfo <$>
       fmap fromNumber (peek pfPtr) <*>
       fmap fromNumber (peek acPtr) <*>
@@ -152,28 +155,27 @@ queryTexture (Texture tex) =
       peek hPtr
 
 fillRect :: Surface -> Maybe (Rectangle CInt) -> Word32 -> IO ()
-fillRect (Surface s) rect col =
+fillRect (Surface s') rect col =
   throwIfNeg_ "SDL.Video.fillRect" "SDL_FillRect" $
   maybeWith with rect $ \rectPtr ->
+  withForeignPtr s' $ \s ->
   Raw.fillRect s (castPtr rectPtr) col
 
 fillRects :: Surface -> SV.Vector (Rectangle CInt) -> Word32 -> IO ()
-fillRects (Surface s) rects col = do
+fillRects (Surface s') rects col = do
   throwIfNeg_ "SDL.Video.fillRects" "SDL_FillRects" $
     SV.unsafeWith rects $ \rp ->
+      withForeignPtr s' $ \s ->
       Raw.fillRects s
                     (castPtr rp)
                     (fromIntegral (SV.length rects))
                     col
 
-freeSurface :: Surface -> IO ()
-freeSurface (Surface s) = Raw.freeSurface s
-
 loadBMP :: FilePath -> IO Surface
-loadBMP filePath =
-  fmap Surface $
-  throwIfNull "SDL.Video.loadBMP" "SDL_LoadBMP" $
-  withCString filePath $ Raw.loadBMP
+loadBMP filePath = do
+  surfacePtr <- throwIfNull "SDL.Video.loadBMP" "SDL_LoadBMP" $
+    withCString filePath $ Raw.loadBMP
+  Surface <$> newForeignPtr Raw.freeSurfaceFunPtr surfacePtr
 
 newtype SurfacePixelFormat = SurfacePixelFormat (Ptr Raw.PixelFormat)
   deriving (Eq, Typeable)
@@ -187,31 +189,35 @@ mapRGB (SurfacePixelFormat fmt) (V3 r g b) = Raw.mapRGB fmt r g b
 -- sure. surface->{w,h} are immutable, but do we need to guarantee that pointers
 -- aren't reused by *different* surfaces?
 surfaceDimensions :: Surface -> IO (V2 CInt)
-surfaceDimensions (Surface s) = (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> peek s
+surfaceDimensions (Surface s) = (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> withForeignPtr s peek
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->format is immutable, but do we need to guarantee that pointers
 -- aren't reused by *different* surfaces?
 surfaceFormat :: Surface -> IO SurfacePixelFormat
-surfaceFormat (Surface s) = SurfacePixelFormat . Raw.surfaceFormat <$> peek s
+surfaceFormat (Surface s) = SurfacePixelFormat . Raw.surfaceFormat <$> withForeignPtr s peek
 
-getWindowSurface :: Window -> IO Surface
-getWindowSurface (Window w) =
-  fmap Surface $
-  throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
-  Raw.getWindowSurface w
+getWindowSurface :: Window s -> IO Surface
+getWindowSurface (Window w) = do
+  surfacePtr <- throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
+    Raw.getWindowSurface w
+
+  -- The window owns this surface, so we don't need a finalizer
+  Surface <$> newForeignPtr_ surfacePtr
 
 setRenderDrawBlendMode :: Renderer -> BlendMode -> IO ()
 setRenderDrawBlendMode (Renderer r) bm =
   throwIfNeg_ "SDL.Video.setRenderDrawBlendMode" "SDL_RenderDrawBlendMode" $
-  Raw.setRenderDrawBlendMode r (toNumber bm)
+  withForeignPtr r $ \rptr ->
+    Raw.setRenderDrawBlendMode rptr (toNumber bm)
 
 setRenderDrawColor :: Renderer -> V4 Word8 -> IO ()
 setRenderDrawColor (Renderer re) (V4 r g b a) =
   throwIfNeg_ "SDL.Video.setRenderDrawColor" "SDL_SetRenderDrawColor" $
-  Raw.setRenderDrawColor re r g b a
+  withForeignPtr re $ \rptr ->
+    Raw.setRenderDrawColor rptr r g b a
 
-updateWindowSurface :: Window -> IO ()
+updateWindowSurface :: Window s -> IO ()
 updateWindowSurface (Window w) =
   throwIfNeg_ "SDL.Video.updateWindowSurface" "SDL_UpdateWindowSurface" $
     Raw.updateWindowSurface w
@@ -243,74 +249,85 @@ instance Storable a => Storable (Rectangle a) where
     poke (castPtr ptr) o
     poke (castPtr (ptr `plusPtr` sizeOf o)) s
 
-newtype Surface = Surface (Ptr Raw.Surface)
+newtype Surface = Surface (ForeignPtr Raw.Surface)
   deriving (Eq, Typeable)
 
-newtype Texture = Texture Raw.Texture
+newtype Texture = Texture (ForeignPtr ())
   deriving (Eq, Typeable)
 
 renderDrawRect :: Renderer -> Rectangle CInt -> IO ()
 renderDrawRect (Renderer r) rect =
   throwIfNeg_ "SDL.Video.renderDrawRect" "SDL_RenderDrawRect" $
-  with rect (Raw.renderDrawRect r . castPtr)
+  withForeignPtr r $ \rptr ->
+    with rect (Raw.renderDrawRect rptr . castPtr)
 
 renderDrawRects :: Renderer -> SV.Vector (Rectangle CInt) -> IO ()
 renderDrawRects (Renderer r) rects =
   throwIfNeg_ "SDL.Video.renderDrawRects" "SDL_RenderDrawRects" $
   SV.unsafeWith rects $ \rp ->
-    Raw.renderDrawRects r
-                        (castPtr rp)
-                        (fromIntegral (SV.length rects))
+    withForeignPtr r $ \rptr ->
+      Raw.renderDrawRects rptr
+                          (castPtr rp)
+                          (fromIntegral (SV.length rects))
 
 renderFillRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
 renderFillRect (Renderer r) rect = do
   throwIfNeg_ "SDL.Video.renderFillRect" "SDL_RenderFillRect" $
-    maybeWith with rect $ \rPtr ->
-      Raw.renderFillRect r
-                         (castPtr rPtr)
+    maybeWith with rect $ \rectPtr ->
+    withForeignPtr r $ \rptr ->
+      Raw.renderFillRect rptr
+                         (castPtr rectPtr)
 
 renderFillRects :: Renderer -> SV.Vector (Rectangle CInt) -> IO ()
 renderFillRects (Renderer r) rects = do
   throwIfNeg_ "SDL.Video.renderFillRects" "SDL_RenderFillRects" $
     SV.unsafeWith rects $ \rp ->
-      Raw.renderFillRects r
+    withForeignPtr r $ \rptr ->
+      Raw.renderFillRects rptr
                           (castPtr rp)
                           (fromIntegral (SV.length rects))
 
 renderClear :: Renderer -> IO ()
 renderClear (Renderer r) =
   throwIfNeg_ "SDL.Video.renderClear" "SDL_RenderClear" $
-  Raw.renderClear r
+  withForeignPtr r Raw.renderClear
 
 renderSetScale :: Renderer -> V2 CFloat -> IO ()
 renderSetScale (Renderer r) (V2 x y) =
   throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
-  Raw.renderSetScale r x y
+  withForeignPtr r $ \rptr ->
+    Raw.renderSetScale rptr x y
 
 renderSetLogicalSize :: Renderer -> V2 CInt -> IO ()
 renderSetLogicalSize (Renderer r) (V2 x y) =
   throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $
-  Raw.renderSetLogicalSize r x y
+  withForeignPtr r $ \rptr ->
+    Raw.renderSetLogicalSize rptr x y
 
 renderSetClipRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
 renderSetClipRect (Renderer r) rect =
   throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
-  maybeWith with rect $ Raw.renderSetClipRect r . castPtr
+  withForeignPtr r $ \rptr ->
+    maybeWith with rect $ Raw.renderSetClipRect rptr . castPtr
 
 renderSetViewport :: Renderer -> Maybe (Rectangle CInt) -> IO ()
 renderSetViewport (Renderer r) rect =
   throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
-  maybeWith with rect $ Raw.renderSetViewport r . castPtr
+  withForeignPtr r $ \rptr ->
+    maybeWith with rect $ Raw.renderSetViewport rptr . castPtr
 
 renderPresent :: Renderer -> IO ()
-renderPresent (Renderer r) = Raw.renderPresent r
+renderPresent (Renderer r) =
+  withForeignPtr r Raw.renderPresent
 
 renderCopy :: Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> IO ()
 renderCopy (Renderer r) (Texture t) srcRect dstRect =
   throwIfNeg_ "SDL.Video.renderCopy" "SDL_RenderCopy" $
   maybeWith with srcRect $ \src ->
   maybeWith with dstRect $ \dst ->
-  Raw.renderCopy r t (castPtr src) (castPtr dst)
+  withForeignPtr r $ \rptr ->
+  withForeignPtr t $ \tptr ->
+  Raw.renderCopy rptr tptr (castPtr src) (castPtr dst)
 
 renderCopyEx :: Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> CDouble -> Maybe (Point V2 CInt) -> V2 Bool -> IO ()
 renderCopyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
@@ -318,7 +335,9 @@ renderCopyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
   maybeWith with srcRect $ \src ->
   maybeWith with dstRect $ \dst ->
   maybeWith with center $ \c ->
-  Raw.renderCopyEx r t (castPtr src) (castPtr dst) theta (castPtr c)
+  withForeignPtr r $ \rptr ->
+  withForeignPtr t $ \tptr ->
+  Raw.renderCopyEx rptr tptr (castPtr src) (castPtr dst) theta (castPtr c)
                    (case flips of
                       V2 x y -> (if x then Raw.rendererFlipHorizontal else 0) .|.
                                (if y then Raw.rendererFlipVertical else 0))
@@ -326,64 +345,73 @@ renderCopyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
 renderDrawLine :: Renderer -> Point V2 CInt -> Point V2 CInt -> IO ()
 renderDrawLine (Renderer r) (P (V2 x y)) (P (V2 x' y')) =
   throwIfNeg_ "SDL.Video.renderDrawLine" "SDL_RenderDrawLine" $
-  Raw.renderDrawLine r x y x' y'
+  withForeignPtr r $ \rptr ->
+    Raw.renderDrawLine rptr x y x' y'
 
 renderDrawLines :: Renderer -> SV.Vector (Point V2 CInt) -> IO ()
 renderDrawLines (Renderer r) points =
   throwIfNeg_ "SDL.Video.renderDrawLines" "SDL_RenderDrawLines" $
   SV.unsafeWith points $ \cp ->
-    Raw.renderDrawLines r
+    withForeignPtr r $ \rptr ->
+    Raw.renderDrawLines rptr
                         (castPtr cp)
                         (fromIntegral (SV.length points))
 
 renderDrawPoint :: Renderer -> Point V2 CInt -> IO ()
 renderDrawPoint (Renderer r) (P (V2 x y)) =
   throwIfNeg_ "SDL.Video.renderDrawPoint" "SDL_RenderDrawPoint" $
-  Raw.renderDrawPoint r x y
+  withForeignPtr r $ \rptr ->
+    Raw.renderDrawPoint rptr x y
 
 renderDrawPoints :: Renderer -> SV.Vector (Point V2 CInt) -> IO ()
 renderDrawPoints (Renderer r) points =
   throwIfNeg_ "SDL.Video.renderDrawPoints" "SDL_RenderDrawPoints" $
   SV.unsafeWith points $ \cp ->
-    Raw.renderDrawPoints r
+    withForeignPtr r $ \rptr ->
+    Raw.renderDrawPoints rptr
                          (castPtr cp)
                          (fromIntegral (SV.length points))
 
 convertSurface :: Surface -> SurfacePixelFormat -> IO Surface
-convertSurface (Surface s) (SurfacePixelFormat fmt) =
-  fmap Surface $
-  throwIfNull "SDL.Video.Renderer.convertSurface" "SDL_ConvertSurface" $
-  Raw.convertSurface s fmt 0
+convertSurface (Surface s') (SurfacePixelFormat fmt) = do
+  surfacePtr <- throwIfNull "SDL.Video.Renderer.convertSurface" "SDL_ConvertSurface" $
+    withForeignPtr s' $ \s ->
+    Raw.convertSurface s fmt 0
+  Surface <$> newForeignPtr Raw.freeSurfaceFunPtr surfacePtr
 
 blitScaled :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
-blitScaled (Surface src) srcRect (Surface dst) dstRect =
+blitScaled (Surface src') srcRect (Surface dst') dstRect =
   throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
   maybeWith with srcRect $ \srcPtr ->
   maybeWith with dstRect $ \dstPtr ->
+  withForeignPtr src' $ \src ->
+  withForeignPtr dst' $ \dst ->
   Raw.blitScaled src (castPtr srcPtr) dst (castPtr dstPtr)
 
 setColorKey :: Surface -> Maybe Word32 -> IO ()
-setColorKey (Surface s) key =
+setColorKey (Surface s') key =
   throwIfNeg_ "SDL.Video.Renderer.setColorKey" "SDL_SetColorKey" $
   case key of
     Nothing ->
       alloca $ \keyPtr -> do
         -- TODO Error checking?
-        ret <- Raw.getColorKey s keyPtr
+        ret <- withForeignPtr s' $ \s -> Raw.getColorKey s keyPtr
         if ret == -1
           -- if ret == -1 then there is no key enabled, so we have nothing to
           -- do.
           then return 0
           else do key' <- peek keyPtr
-                  Raw.setColorKey s 0 key'
+                  withForeignPtr s' $ \s -> Raw.setColorKey s 0 key'
 
-    Just key' -> do
+    Just key' ->
+      withForeignPtr s' $ \s ->
       Raw.setColorKey s 1 key'
 
 setTextureColorMod :: Texture -> V3 Word8 -> IO ()
 setTextureColorMod (Texture t) (V3 r g b) =
   throwIfNeg_ "SDL.Video.Renderer.setTextureColorMod" "SDL_SetTextureColorMod" $
-  Raw.setTextureColorMod t r g b
+  withForeignPtr t $ \tptr ->
+  Raw.setTextureColorMod tptr r g b
 
 data PixelFormat
   = Unknown
@@ -550,9 +578,10 @@ fromRawRendererInfo (Raw.RendererInfo name flgs ntf tfs mtw mth) = do
     return $ RendererInfo name' (fromNumber flgs) ntf (fmap fromNumber tfs) mtw mth
 
 getRendererInfo :: Renderer -> IO RendererInfo
-getRendererInfo (Renderer renderer) =
+getRendererInfo (Renderer r) =
   alloca $ \rptr -> do
     throwIfNeg_ "getRendererInfo" "SDL_GetRendererInfo" $
+      withForeignPtr r $ \renderer ->
       Raw.getRendererInfo renderer rptr
     peek rptr >>= fromRawRendererInfo
 
@@ -569,16 +598,19 @@ getRenderDriverInfo = do
 setTextureAlphaMod :: Texture -> Word8 -> IO ()
 setTextureAlphaMod (Texture t) alpha =
   throwIfNeg_ "SDL.Video.Renderer.setTextureAlphaMod" "SDL_SetTextureAlphaMod" $
-  Raw.setTextureAlphaMod t alpha
+  withForeignPtr t $ \tptr ->
+  Raw.setTextureAlphaMod tptr alpha
 
 setTextureBlendMode :: Texture -> BlendMode -> IO ()
 setTextureBlendMode (Texture t) bm =
   throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMoe" $
-  Raw.setTextureBlendMode t (toNumber bm)
+  withForeignPtr t $ \tptr ->
+  Raw.setTextureBlendMode tptr (toNumber bm)
 
 setRenderTarget :: Renderer -> Maybe Texture -> IO ()
 setRenderTarget (Renderer r) texture =
   throwIfNeg_ "SDL.Video.Renderer.setRenderTarget" "SDL_SetRenderTarget" $
+  withForeignPtr r $ \rptr ->
   case texture of
-    Nothing -> Raw.setRenderTarget r nullPtr
-    Just (Texture t) -> Raw.setRenderTarget r t
+    Nothing -> Raw.setRenderTarget rptr nullPtr
+    Just (Texture t) -> withForeignPtr t (Raw.setRenderTarget rptr)

@@ -3,7 +3,6 @@ module TwinkleBear.Lesson04 (main) where
 
 
 import Prelude hiding (init)
-import Control.Applicative
 import Control.Monad
 import Foreign.C.Types
 import Linear
@@ -22,7 +21,7 @@ data RenderPos = Centered | At (Point V2 CInt)
 loadTexture :: SDL.Renderer -> FilePath -> IO SDL.Texture
 loadTexture renderer path = do
   bmp <- SDL.loadBMP path
-  SDL.createTextureFromSurface renderer bmp <* SDL.freeSurface bmp
+  SDL.createTextureFromSurface renderer bmp
 
 
 renderTexture :: SDL.Renderer -> SDL.Texture -> RenderPos -> IO ()
@@ -43,27 +42,23 @@ main = do
 
   let winConfig = SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
 
-  window <- SDL.createWindow "Lesson 4" winConfig
-  renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
+  SDL.withWindow "Lesson 4" winConfig $ \window -> do
+    renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
 
-  image <- getDataFileName "examples/twinklebear/event-driven.bmp" >>= loadTexture renderer
+    image <- getDataFileName "examples/twinklebear/event-driven.bmp" >>= loadTexture renderer
 
-  let loop = do
-        renderTexture renderer image Centered
-        SDL.renderPresent renderer
+    let loop = do
+          renderTexture renderer image Centered
+          SDL.renderPresent renderer
 
-        quit <- fmap (\ev -> case SDL.eventPayload ev of
-            SDL.QuitEvent -> True
-            (SDL.KeyboardEvent _ SDL.KeyDown _ _ _) -> True
-            (SDL.MouseButtonEvent _ SDL.MouseButtonDown _ _ _ _ _) -> True
-            _ -> False) SDL.waitEvent
+          quit <- fmap (\ev -> case SDL.eventPayload ev of
+              SDL.QuitEvent -> True
+              (SDL.KeyboardEvent _ SDL.KeyDown _ _ _) -> True
+              (SDL.MouseButtonEvent _ SDL.MouseButtonDown _ _ _ _ _) -> True
+              _ -> False) SDL.waitEvent
 
-        unless quit loop
+          unless quit loop
 
-  loop
+    loop
 
-  SDL.destroyTexture image
-  SDL.destroyRenderer renderer
-  SDL.destroyWindow window
-
-  SDL.quit
+    SDL.quit

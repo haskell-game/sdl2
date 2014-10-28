@@ -1,19 +1,19 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RecordWildCards #-}
 module SDL.Video
   ( module SDL.Video.OpenGL
   , module SDL.Video.Renderer
 
   -- * Window Management
   , Window
-  , createWindow
+  , withWindow
   , defaultWindow
   , WindowConfig(..)
   , WindowMode(..)
   , WindowPosition(..)
-  , destroyWindow
 
   -- * Window Actions
   , hideWindow
@@ -36,7 +36,6 @@ module SDL.Video
 
   -- * Renderer Management
   , createRenderer
-  , destroyRenderer
 
   -- * Clipboard Handling
   , getClipboardText
@@ -93,19 +92,22 @@ import qualified SDL.Raw as Raw
 -- | Create a window with the given title and configuration.
 --
 -- Throws 'SDLException' on failure.
-createWindow :: Text -> WindowConfig -> IO Window
-createWindow title config = do
+withWindow :: Text -> WindowConfig -> (forall s. Window s -> IO a) -> IO a
+withWindow title config m = do
   case windowOpenGL config of
     Just glcfg -> setGLAttributes glcfg
     Nothing    -> return ()
 
-  BS.useAsCString (Text.encodeUtf8 title) $ \title' -> do
+  window <- BS.useAsCString (Text.encodeUtf8 title) $ \title' -> do
     let create = Raw.createWindow title'
     let create' (V2 w h) = case windowPosition config of
           Centered -> create Raw.windowPosCentered Raw.windowPosCentered w h
           Wherever -> create Raw.windowPosUndefined Raw.windowPosUndefined w h
           Absolute (P (V2 x y)) -> create x y w h
     create' (windowSize config) flags >>= return . Window
+
+  m window
+
   where
     flags = foldr (.|.) 0
       [ if windowBorder config then 0 else Raw.windowFlagBorderless
@@ -182,13 +184,8 @@ data WindowPosition
   | Absolute (Point V2 CInt)
   deriving (Eq, Show, Typeable)
 
--- | Destroy the given window. The 'Window' handler may not be used
--- afterwards.
-destroyWindow :: Window -> IO ()
-destroyWindow (Window w) = Raw.destroyWindow w
-
 -- | Set whether the window should have a border or not.
-setWindowBordered :: Window -> Bool -> IO ()
+setWindowBordered :: Window s -> Bool -> IO ()
 setWindowBordered (Window w) = Raw.setWindowBordered w
 
 -- | Set the window's brightness, where 0.0 is completely dark and 1.0 is
@@ -196,19 +193,19 @@ setWindowBordered (Window w) = Raw.setWindowBordered w
 --
 -- Throws 'SDLException' if the hardware does not support gamma
 -- correction, or if the system has run out of memory.
-setWindowBrightness :: Window -> Float -> IO ()
+setWindowBrightness :: Window s -> Float -> IO ()
 setWindowBrightness (Window w) brightness = do
   throwIfNot0_ "SDL.Video.setWindowBrightness" "SDL_SetWindowBrightness" $
     Raw.setWindowBrightness w $ realToFrac brightness
 
 -- | Set whether the mouse shall be confined to the window.
-setWindowGrab :: Window -> Bool -> IO ()
+setWindowGrab :: Window s -> Bool -> IO ()
 setWindowGrab (Window w) = Raw.setWindowGrab w
 
 -- | Change between window modes.
 --
 -- Throws 'SDLException' on failure.
-setWindowMode :: Window -> WindowMode -> IO ()
+setWindowMode :: Window s -> WindowMode -> IO ()
 setWindowMode (Window w) mode =
   throwIfNot0_ "SDL.Video.setWindowMode" "SDL_SetWindowFullscreen" $
     case mode of
@@ -219,7 +216,7 @@ setWindowMode (Window w) mode =
       Windowed -> Raw.restoreWindow w >> return 0
 
 -- | Set the position of the window.
-setWindowPosition :: Window -> WindowPosition -> IO ()
+setWindowPosition :: Window s -> WindowPosition -> IO ()
 setWindowPosition (Window w) pos = case pos of
   Centered -> let u = Raw.windowPosCentered in Raw.setWindowPosition w u u
   Wherever -> let u = Raw.windowPosUndefined in Raw.setWindowPosition w u u
@@ -227,11 +224,11 @@ setWindowPosition (Window w) pos = case pos of
 
 -- | Set the size of the window. Values beyond the maximum supported size are
 -- clamped.
-setWindowSize :: Window -> V2 CInt -> IO ()
+setWindowSize :: Window s -> V2 CInt -> IO ()
 setWindowSize (Window win) (V2 w h) = Raw.setWindowSize win w h
 
 -- | Set the title of the window.
-setWindowTitle :: Window -> Text -> IO ()
+setWindowTitle :: Window s -> Text -> IO ()
 setWindowTitle (Window w) title =
   BS.useAsCString (Text.encodeUtf8 title) $
     Raw.setWindowTitle w
@@ -257,11 +254,11 @@ setClipboardText str = do
   throwIfNot0_ "SDL.Video.setClipboardText" "SDL_SetClipboardText" $
     BS.useAsCString (Text.encodeUtf8 str) Raw.setClipboardText
 
-hideWindow :: Window -> IO ()
+hideWindow :: Window s -> IO ()
 hideWindow (Window w) = Raw.hideWindow w
 
 -- | Raise the window above other windows and set the input focus.
-raiseWindow :: Window -> IO ()
+raiseWindow :: Window s -> IO ()
 raiseWindow (Window w) = Raw.raiseWindow w
 
 -- | Disable screen savers.
@@ -276,10 +273,10 @@ enableScreenSaver = Raw.enableScreenSaver
 isScreenSaverEnabled :: IO Bool
 isScreenSaverEnabled = Raw.isScreenSaverEnabled
 
-showWindow :: Window -> IO ()
+showWindow :: Window s -> IO ()
 showWindow (Window w) = Raw.showWindow w
 
-setWindowGammaRamp :: Window -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> IO ()
+setWindowGammaRamp :: Window s -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> IO ()
 setWindowGammaRamp (Window w) r g b = do
   unless (all ((== 256) . SV.length) $ catMaybes [r,g,b]) $
     error "setWindowGammaRamp requires 256 element in each colour channel"
@@ -359,7 +356,7 @@ getDisplays = do
 -- writing your messages to @stderr@ too.
 --
 -- Throws 'SDLException' if there are no available video targets.
-showSimpleMessageBox :: Maybe Window -> MessageKind -> Text -> Text -> IO ()
+showSimpleMessageBox :: Maybe (Window s) -> MessageKind -> Text -> Text -> IO ()
 showSimpleMessageBox window kind title message =
   throwIfNot0_ "SDL.Video.showSimpleMessageBox" "SDL_ShowSimpleMessageBox" $ do
     BS.useAsCString (Text.encodeUtf8 title) $ \title' ->
@@ -381,31 +378,31 @@ instance ToNumber MessageKind Word32 where
   toNumber Warning = Raw.messageBoxFlagWarning
   toNumber Information = Raw.messageBoxFlagInformation
 
-setWindowMaximumSize :: Window -> V2 CInt -> IO ()
+setWindowMaximumSize :: Window s -> V2 CInt -> IO ()
 setWindowMaximumSize (Window win) (V2 w h) = Raw.setWindowMaximumSize win w h
 
-setWindowMinimumSize :: Window -> V2 CInt -> IO ()
+setWindowMinimumSize :: Window s -> V2 CInt -> IO ()
 setWindowMinimumSize (Window win) (V2 w h) = Raw.setWindowMinimumSize win w h
 
-getWindowMaximumSize :: Window -> IO (V2 CInt)
+getWindowMaximumSize :: Window s -> IO (V2 CInt)
 getWindowMaximumSize (Window w) =
   alloca $ \wptr ->
   alloca $ \hptr -> do
     Raw.getWindowMaximumSize w wptr hptr
     V2 <$> peek wptr <*> peek hptr
 
-getWindowMinimumSize :: Window -> IO (V2 CInt)
+getWindowMinimumSize :: Window s -> IO (V2 CInt)
 getWindowMinimumSize (Window w) =
   alloca $ \wptr ->
   alloca $ \hptr -> do
     Raw.getWindowMinimumSize w wptr hptr
     V2 <$> peek wptr <*> peek hptr
 
-createRenderer :: Window -> CInt -> RendererConfig -> IO Renderer
-createRenderer (Window w) driver config =
-  fmap Renderer $
+-- | Create a new 'Renderer' attached to a specific 'Window'. The 'Renderer' will be automatically destroyed upon garbage collection.
+createRenderer :: Window s -> CInt -> RendererConfig -> IO Renderer
+createRenderer (Window w) driver config = do
+  ptr <-
     throwIfNull "SDL.Video.createRenderer" "SDL_CreateRenderer" $
-    Raw.createRenderer w driver (toNumber config)
+      Raw.createRenderer w driver (toNumber config)
 
-destroyRenderer :: Renderer -> IO ()
-destroyRenderer (Renderer r) = Raw.destroyRenderer r
+  Renderer <$> newForeignPtr Raw.destroyRendererFunPtr ptr
