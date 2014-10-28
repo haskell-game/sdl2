@@ -1,7 +1,8 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE IncoherentInstances #-}
 module SDL.Video.Renderer
@@ -74,15 +75,14 @@ module SDL.Video.Renderer
 import Prelude hiding (foldr)
 
 import Control.Applicative
-import Control.Monad
 import Control.Monad.Fix
 import Control.Monad.Trans
+import Control.Monad.Reader
 import Control.Monad.RWS.Class
 import Control.Monad.Cont.Class
 import Control.Monad.Error.Class
 import Data.Bits
 import Data.Foldable
-import Data.Monoid
 import Data.Text (Text)
 import Data.Traversable
 import Data.Typeable
@@ -104,68 +104,20 @@ import qualified Data.ByteString as BS
 import qualified Data.Vector.Storable as SV
 import qualified SDL.Raw as Raw
 
-newtype RenderT m a = RenderT { runRenderT :: Renderer -> m a }
+newtype RenderT m a = RenderT (ReaderT Renderer m a)
+                      deriving (Functor, Applicative, Alternative,
+                                Monad, MonadIO, MonadReader Renderer, MonadPlus,
+                                MonadTrans, MonadFix, MonadCont, MonadState s, MonadWriter w, MonadError e)
 type RenderM a = RenderT IO a
 
 withRenderer :: MonadIO m => Renderer -> RenderT m a -> m a
-withRenderer r prg = runRenderT prg r
-
-instance Functor m => Functor (RenderT m) where
-  fmap f x = RenderT $ \r -> f `fmap` (runRenderT x r)
-
-instance Applicative m => Applicative (RenderT m) where
-  pure x = RenderT $ \_ -> pure x
-  f <*> x = RenderT $ \r -> (runRenderT f r) <*> (runRenderT x r)
-
-instance Monad m => Monad (RenderT m) where
-  return x = RenderT $ \_ -> return x
-  x >>= f = RenderT $ \r -> do
-    x' <- runRenderT x r
-    runRenderT (f x') r
-
-instance MonadIO m => MonadIO (RenderT m) where
-  liftIO prg = RenderT $ \_ -> liftIO prg
-
-instance MonadTrans RenderT where
-  lift prg = RenderT $ \_ -> prg
-
-instance (MonadFix m) => MonadFix (RenderT m) where
-  mfix f = RenderT $ \r -> mfix $ \x -> runRenderT (f x) r
+withRenderer r (RenderT prg) = runReaderT prg r
 
 class (Functor m, Applicative m, MonadIO m) => MonadRender m where
   getRenderer :: m Renderer
 
 instance (Functor m, Applicative m, MonadIO m) => MonadRender (RenderT m) where
-  getRenderer = RenderT $ \r -> return r
-
-instance (Functor m, Applicative m, MonadIO m) => MonadReader Renderer (RenderT m) where
-  ask = getRenderer
-  local f prg = RenderT $ \r -> runRenderT prg (f r)
-
-instance MonadReader r m => MonadReader r (RenderT m) where
-  ask = RenderT $ \_ -> ask
-  local f prg = RenderT $ \r -> local f $ runRenderT prg r
-
-instance MonadState s m => MonadState s (RenderT m) where
-  get = RenderT $ \_ -> get
-  put x = RenderT $ \_ -> put x
-
-instance (Monoid w, MonadWriter w m) => MonadWriter w (RenderT m) where
-  tell x = RenderT $ \_ -> tell x
-  listen prg = RenderT $ \r -> listen (runRenderT prg r)
-  pass prg = RenderT $ \r -> pass (runRenderT prg r)
-
-instance MonadRWS r w s m => MonadRWS r w s (RenderT m)
-
-instance MonadError e m => MonadError e (RenderT m) where
-  throwError = lift . throwError
-  m `catchError` h =  RenderT $ \r ->
-    runRenderT m r `catchError` \e -> runRenderT (h e) r
-
-instance MonadCont m => MonadCont (RenderT m) where
-  callCC f = RenderT $ \r ->
-    callCC $ \c ->
-    runRenderT (f (\a -> RenderT $ \_ -> c a)) r
+  getRenderer = ask
 
 liftRender :: MonadIO m => m a -> RenderT m a
 liftRender = lift
