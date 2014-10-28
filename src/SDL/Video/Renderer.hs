@@ -1,13 +1,14 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 module SDL.Video.Renderer
   ( Renderer
   , RenderMT
   , RenderM
   , MonadRender(..)
   , liftRender
-  , liftIOToRender
   , withRenderer
 
   -- * Drawing Primitives
@@ -70,9 +71,15 @@ module SDL.Video.Renderer
 import Prelude hiding (foldr)
 
 import Control.Applicative
-import Control.Monad.IO.Class
+import Control.Monad
+import Control.Monad.Fix
+import Control.Monad.Trans
+import Control.Monad.RWS.Class
+import Control.Monad.Cont.Class
+import Control.Monad.Error.Class
 import Data.Bits
 import Data.Foldable
+import Data.Monoid
 import Data.Text (Text)
 import Data.Traversable
 import Data.Typeable
@@ -97,12 +104,6 @@ import qualified SDL.Raw as Raw
 newtype RenderMT m a = RenderMT { runRenderMT :: Renderer -> m a }
 type RenderM a = RenderMT IO a
 
-liftRender :: MonadIO m => m a -> RenderMT m a
-liftRender prg = RenderMT $ \_ -> prg
-
-liftIOToRender :: IO a -> RenderM a
-liftIOToRender = liftRender
-
 withRenderer :: MonadIO m => Renderer -> RenderMT m a -> m a
 withRenderer r prg = runRenderMT prg r
 
@@ -122,11 +123,49 @@ instance Monad m => Monad (RenderMT m) where
 instance MonadIO m => MonadIO (RenderMT m) where
   liftIO prg = RenderMT $ \_ -> liftIO prg
 
+instance MonadTrans RenderMT where
+  lift prg = RenderMT $ \_ -> prg
+
+instance (MonadFix m) => MonadFix (RenderMT m) where
+  mfix f = RenderMT $ \r -> mfix $ \x -> runRenderMT (f x) r
+
 class (Functor m, Applicative m, MonadIO m) => MonadRender m where
   getRenderer :: m Renderer
 
-instance (Applicative m, MonadIO m) => MonadRender (RenderMT m) where
+instance (Functor m, Applicative m, MonadIO m) => MonadRender (RenderMT m) where
   getRenderer = RenderMT $ \r -> return r
+
+instance (Functor m, Applicative m, MonadIO m) => MonadReader Renderer (RenderMT m) where
+  ask = getRenderer
+  local f prg = RenderMT $ \r -> runRenderMT prg (f r)
+
+instance MonadReader r m => MonadReader r (RenderMT m) where
+  ask = RenderMT $ \_ -> ask
+  local f prg = RenderMT $ \r -> local f $ runRenderMT prg r
+
+instance MonadState s m => MonadState s (RenderMT m) where
+  get = RenderMT $ \_ -> get
+  put x = RenderMT $ \_ -> put x
+
+instance (Monoid w, MonadWriter w m) => MonadWriter w (RenderMT m) where
+  tell x = RenderMT $ \_ -> tell x
+  listen prg = RenderMT $ \r -> listen (runRenderMT prg r)
+  pass prg = RenderMT $ \r -> pass (runRenderMT prg r)
+
+instance MonadRWS r w s m => MonadRWS r w s (RenderMT m)
+
+instance MonadError e m => MonadError e (RenderMT m) where
+  throwError = lift . throwError
+  m `catchError` h =  RenderMT $ \r ->
+    runRenderMT m r `catchError` \e -> runRenderMT (h e) r
+
+instance MonadCont m => MonadCont (RenderMT m) where
+  callCC f = RenderMT $ \r ->
+    callCC $ \c ->
+    runRenderMT (f (\a -> RenderMT $ \_ -> c a)) r
+
+liftRender :: MonadIO m => m a -> RenderMT m a
+liftRender = lift
 
 blitSurface :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
 blitSurface (Surface src) srcRect (Surface dst) dstRect =
