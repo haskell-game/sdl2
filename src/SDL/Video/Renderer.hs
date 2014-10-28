@@ -15,6 +15,7 @@ module SDL.Video.Renderer
   -- * Drawing Primitives
   , blitScaled
   , blitSurface
+  , createTexture
   , createTextureFromSurface
   , convertSurface
   , destroyTexture
@@ -27,6 +28,7 @@ module SDL.Video.Renderer
   , setColorKey
   , setRenderDrawBlendMode
   , setRenderDrawColor
+  , setRenderTarget
   , setTextureAlphaMod
   , setTextureBlendMode
   , setTextureColorMod
@@ -175,6 +177,13 @@ blitSurface (Surface src) srcRect (Surface dst) dstRect =
   maybeWith with dstRect $ \dstPtr ->
   Raw.blitSurface src (castPtr srcPtr) dst (castPtr dstPtr)
 
+createTexture :: MonadRender m => PixelFormat -> TextureAccess -> V2 CInt -> m Texture
+createTexture fmt access (V2 w h) = do
+  (Renderer r) <- getRenderer  
+  fmap Texture $ liftIO $
+    throwIfNull "SDL.Video.Renderer.createTexture" "SDL_CreateTexture" $
+    Raw.createTexture r (toNumber fmt) (toNumber access) w h
+
 createTextureFromSurface :: MonadRender m => Surface -> m Texture
 createTextureFromSurface (Surface s) = do
   (Renderer r) <- getRenderer
@@ -197,6 +206,12 @@ instance FromNumber TextureAccess CInt where
     n | n == Raw.textureAccessStreaming -> TextureAccessStreaming
     n | n == Raw.textureAccessTarget -> TextureAccessTarget
     _ -> error "Unknown value"
+
+instance ToNumber TextureAccess CInt where
+  toNumber t = case t of
+    TextureAccessStatic -> Raw.textureAccessStatic
+    TextureAccessStreaming -> Raw.textureAccessStreaming
+    TextureAccessTarget -> Raw.textureAccessTarget
 
 data TextureInfo = TextureInfo
   { texturePixelFormat :: PixelFormat
@@ -574,6 +589,46 @@ instance FromNumber PixelFormat Word32 where
     n | n == Raw.pixelFormatYVYU -> YVYU
     _ -> error "fromNumber: not numbered"
 
+instance ToNumber PixelFormat Word32 where
+  toNumber pf = case pf of
+    Unknown -> Raw.pixelFormatUnknown
+    Index1LSB -> Raw.pixelFormatIndex1LSB
+    Index1MSB -> Raw.pixelFormatIndex1MSB
+    Index4LSB -> Raw.pixelFormatIndex4LSB
+    Index4MSB -> Raw.pixelFormatIndex4MSB
+    Index8 -> Raw.pixelFormatIndex8
+    RGB332 -> Raw.pixelFormatRGB332
+    RGB444 -> Raw.pixelFormatRGB444
+    RGB555 -> Raw.pixelFormatRGB555
+    BGR555 -> Raw.pixelFormatBGR555
+    ARGB4444 -> Raw.pixelFormatARGB4444
+    RGBA4444 -> Raw.pixelFormatRGBA4444
+    ABGR4444 -> Raw.pixelFormatABGR4444
+    BGRA4444 -> Raw.pixelFormatBGRA4444
+    ARGB1555 -> Raw.pixelFormatARGB1555
+    RGBA5551 -> Raw.pixelFormatRGBA5551
+    ABGR1555 -> Raw.pixelFormatABGR1555
+    BGRA5551 -> Raw.pixelFormatBGRA5551
+    RGB565 -> Raw.pixelFormatRGB565
+    BGR565 -> Raw.pixelFormatBGR565
+    RGB24 -> Raw.pixelFormatRGB24
+    BGR24 -> Raw.pixelFormatBGR24
+    RGB888 -> Raw.pixelFormatRGB888
+    RGBX8888 -> Raw.pixelFormatRGBX8888
+    BGR888 -> Raw.pixelFormatBGR888
+    BGRX8888 -> Raw.pixelFormatBGRX8888
+    ARGB8888 -> Raw.pixelFormatARGB8888
+    RGBA8888 -> Raw.pixelFormatRGBA8888
+    ABGR8888 -> Raw.pixelFormatABGR8888
+    BGRA8888 -> Raw.pixelFormatBGRA8888
+    ARGB2101010 -> Raw.pixelFormatARGB2101010
+    YV12 -> Raw.pixelFormatYV12
+    IYUV -> Raw.pixelFormatIYUV
+    YUY2 -> Raw.pixelFormatYUY2
+    UYVY -> Raw.pixelFormatUYVY
+    YVYU -> Raw.pixelFormatYVYU
+
+
 data RendererConfig = RendererConfig
   { rendererSoftware      :: Bool
   , rendererAccelerated   :: Bool
@@ -647,3 +702,10 @@ setTextureBlendMode :: Texture -> BlendMode -> IO ()
 setTextureBlendMode (Texture t) bm =
   throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMoe" $
   Raw.setTextureBlendMode t (toNumber bm)
+
+setRenderTarget :: Renderer -> Maybe Texture -> IO ()
+setRenderTarget (Renderer r) texture =
+  throwIfNeg_ "SDL.Video.Renderer.setRenderTarget" "SDL_SetRenderTarget" $
+  case texture of
+    Nothing -> Raw.setRenderTarget r nullPtr
+    Just (Texture t) -> Raw.setRenderTarget r t
