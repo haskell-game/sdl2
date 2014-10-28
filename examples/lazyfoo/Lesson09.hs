@@ -39,7 +39,6 @@ main = do
 
     textureSurface <- getDataFileName "examples/lazyfoo/viewport.bmp" >>= SDL.loadBMP
     texture <- SDL.createTextureFromSurface renderer textureSurface
-    SDL.freeSurface textureSurface
 
     let loop = do
           let collectEvents = do

@@ -12,7 +12,6 @@ module SDL.Video.Renderer
   , convertSurface
   , fillRect
   , fillRects
-  , freeSurface
   , loadBMP
   , mapRGB
   , getWindowSurface
@@ -90,10 +89,12 @@ import qualified Data.Vector.Storable as SV
 import qualified SDL.Raw as Raw
 
 blitSurface :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
-blitSurface (Surface src) srcRect (Surface dst) dstRect =
+blitSurface (Surface src') srcRect (Surface dst') dstRect =
   throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
   maybeWith with srcRect $ \srcPtr ->
   maybeWith with dstRect $ \dstPtr ->
+  withForeignPtr src' $ \src ->
+  withForeignPtr dst' $ \dst ->
   Raw.blitSurface src (castPtr srcPtr) dst (castPtr dstPtr)
 
 createTexture :: Renderer -> PixelFormat -> TextureAccess -> V2 CInt -> IO Texture
@@ -109,7 +110,7 @@ createTextureFromSurface (Renderer r) (Surface s) = do
   texturePtr <-
     throwIfNull "SDL.Video.createTextureFromSurface" "SDL_CreateTextureFromSurface" $
     withForeignPtr r $ \rptr ->
-    Raw.createTextureFromSurface rptr s
+    withForeignPtr s (Raw.createTextureFromSurface rptr)
   Texture <$> newForeignPtr Raw.destroyTextureFunPtr texturePtr
 
 data TextureAccess
@@ -154,28 +155,27 @@ queryTexture (Texture tex) =
       peek hPtr
 
 fillRect :: Surface -> Maybe (Rectangle CInt) -> Word32 -> IO ()
-fillRect (Surface s) rect col =
+fillRect (Surface s') rect col =
   throwIfNeg_ "SDL.Video.fillRect" "SDL_FillRect" $
   maybeWith with rect $ \rectPtr ->
+  withForeignPtr s' $ \s ->
   Raw.fillRect s (castPtr rectPtr) col
 
 fillRects :: Surface -> SV.Vector (Rectangle CInt) -> Word32 -> IO ()
-fillRects (Surface s) rects col = do
+fillRects (Surface s') rects col = do
   throwIfNeg_ "SDL.Video.fillRects" "SDL_FillRects" $
     SV.unsafeWith rects $ \rp ->
+      withForeignPtr s' $ \s ->
       Raw.fillRects s
                     (castPtr rp)
                     (fromIntegral (SV.length rects))
                     col
 
-freeSurface :: Surface -> IO ()
-freeSurface (Surface s) = Raw.freeSurface s
-
 loadBMP :: FilePath -> IO Surface
-loadBMP filePath =
-  fmap Surface $
-  throwIfNull "SDL.Video.loadBMP" "SDL_LoadBMP" $
-  withCString filePath $ Raw.loadBMP
+loadBMP filePath = do
+  surfacePtr <- throwIfNull "SDL.Video.loadBMP" "SDL_LoadBMP" $
+    withCString filePath $ Raw.loadBMP
+  Surface <$> newForeignPtr Raw.freeSurfaceFunPtr surfacePtr
 
 newtype SurfacePixelFormat = SurfacePixelFormat (Ptr Raw.PixelFormat)
   deriving (Eq, Typeable)
@@ -189,19 +189,21 @@ mapRGB (SurfacePixelFormat fmt) (V3 r g b) = Raw.mapRGB fmt r g b
 -- sure. surface->{w,h} are immutable, but do we need to guarantee that pointers
 -- aren't reused by *different* surfaces?
 surfaceDimensions :: Surface -> IO (V2 CInt)
-surfaceDimensions (Surface s) = (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> peek s
+surfaceDimensions (Surface s) = (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> withForeignPtr s peek
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->format is immutable, but do we need to guarantee that pointers
 -- aren't reused by *different* surfaces?
 surfaceFormat :: Surface -> IO SurfacePixelFormat
-surfaceFormat (Surface s) = SurfacePixelFormat . Raw.surfaceFormat <$> peek s
+surfaceFormat (Surface s) = SurfacePixelFormat . Raw.surfaceFormat <$> withForeignPtr s peek
 
 getWindowSurface :: Window s -> IO Surface
-getWindowSurface (Window w) =
-  fmap Surface $
-  throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
-  Raw.getWindowSurface w
+getWindowSurface (Window w) = do
+  surfacePtr <- throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
+    Raw.getWindowSurface w
+
+  -- The window owns this surface, so we don't need a finalizer
+  Surface <$> newForeignPtr_ surfacePtr
 
 setRenderDrawBlendMode :: Renderer -> BlendMode -> IO ()
 setRenderDrawBlendMode (Renderer r) bm =
@@ -247,7 +249,7 @@ instance Storable a => Storable (Rectangle a) where
     poke (castPtr ptr) o
     poke (castPtr (ptr `plusPtr` sizeOf o)) s
 
-newtype Surface = Surface (Ptr Raw.Surface)
+newtype Surface = Surface (ForeignPtr Raw.Surface)
   deriving (Eq, Typeable)
 
 newtype Texture = Texture (ForeignPtr ())
@@ -371,34 +373,38 @@ renderDrawPoints (Renderer r) points =
                          (fromIntegral (SV.length points))
 
 convertSurface :: Surface -> SurfacePixelFormat -> IO Surface
-convertSurface (Surface s) (SurfacePixelFormat fmt) =
-  fmap Surface $
-  throwIfNull "SDL.Video.Renderer.convertSurface" "SDL_ConvertSurface" $
-  Raw.convertSurface s fmt 0
+convertSurface (Surface s') (SurfacePixelFormat fmt) = do
+  surfacePtr <- throwIfNull "SDL.Video.Renderer.convertSurface" "SDL_ConvertSurface" $
+    withForeignPtr s' $ \s ->
+    Raw.convertSurface s fmt 0
+  Surface <$> newForeignPtr Raw.freeSurfaceFunPtr surfacePtr
 
 blitScaled :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
-blitScaled (Surface src) srcRect (Surface dst) dstRect =
+blitScaled (Surface src') srcRect (Surface dst') dstRect =
   throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
   maybeWith with srcRect $ \srcPtr ->
   maybeWith with dstRect $ \dstPtr ->
+  withForeignPtr src' $ \src ->
+  withForeignPtr dst' $ \dst ->
   Raw.blitScaled src (castPtr srcPtr) dst (castPtr dstPtr)
 
 setColorKey :: Surface -> Maybe Word32 -> IO ()
-setColorKey (Surface s) key =
+setColorKey (Surface s') key =
   throwIfNeg_ "SDL.Video.Renderer.setColorKey" "SDL_SetColorKey" $
   case key of
     Nothing ->
       alloca $ \keyPtr -> do
         -- TODO Error checking?
-        ret <- Raw.getColorKey s keyPtr
+        ret <- withForeignPtr s' $ \s -> Raw.getColorKey s keyPtr
         if ret == -1
           -- if ret == -1 then there is no key enabled, so we have nothing to
           -- do.
           then return 0
           else do key' <- peek keyPtr
-                  Raw.setColorKey s 0 key'
+                  withForeignPtr s' $ \s -> Raw.setColorKey s 0 key'
 
-    Just key' -> do
+    Just key' ->
+      withForeignPtr s' $ \s ->
       Raw.setColorKey s 1 key'
 
 setTextureColorMod :: Texture -> V3 Word8 -> IO ()

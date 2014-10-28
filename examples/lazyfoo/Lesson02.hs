@@ -23,6 +23,5 @@ main = do
     SDL.blitSurface helloWorld Nothing screenSurface Nothing
     SDL.updateWindowSurface window
     threadDelay 2000000
-    SDL.freeSurface helloWorld
 
   SDL.quit

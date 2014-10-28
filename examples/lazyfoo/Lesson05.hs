@@ -16,7 +16,7 @@ loadSurface :: SDL.Surface -> FilePath -> IO SDL.Surface
 loadSurface screenSurface path = do
   loadedSurface <- getDataFileName path >>= SDL.loadBMP
   desiredFormat <- SDL.surfaceFormat screenSurface
-  SDL.convertSurface loadedSurface desiredFormat <* SDL.freeSurface loadedSurface
+  SDL.convertSurface loadedSurface desiredFormat
 
 main :: IO ()
 main = do
@@ -44,7 +44,5 @@ main = do
         unless quit loop
 
     loop
-
-    SDL.freeSurface stretchedSurface
 
   SDL.quit

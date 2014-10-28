@@ -29,7 +29,6 @@ loadTexture r filePath = do
   key <- SDL.mapRGB format (V3 0 maxBound maxBound)
   SDL.setColorKey surface (Just key)
   t <- SDL.createTextureFromSurface r surface
-  SDL.freeSurface surface
   return (Texture t size)
 
 renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> Maybe CDouble -> Maybe (Point V2 CInt) -> Maybe (V2 Bool) -> IO ()

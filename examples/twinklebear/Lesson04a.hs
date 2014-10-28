@@ -27,7 +27,7 @@ data RenderPos = Centered | At (Point V2 CInt)
 loadTexture :: SDL.Renderer -> FilePath -> IO SDL.Texture
 loadTexture renderer path = do
   bmp <- SDL.loadBMP path
-  SDL.createTextureFromSurface renderer bmp <* SDL.freeSurface bmp
+  SDL.createTextureFromSurface renderer bmp
 
 
 renderTexture :: SDL.Renderer -> SDL.Texture -> RenderPos -> IO ()

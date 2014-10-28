@@ -26,7 +26,6 @@ main = do
 
     bmp <- getDataFileName "examples/twinkleBear/hello.bmp" >>= SDL.loadBMP
     tex <- SDL.createTextureFromSurface renderer bmp
-    SDL.freeSurface bmp
 
     SDL.renderClear renderer
     SDL.renderCopy renderer tex Nothing Nothing

@@ -166,6 +166,7 @@ module SDL.Raw.Video (
 	fillRect,
 	fillRects,
 	freeSurface,
+	freeSurfaceFunPtr,
 	getClipRect,
 	getColorKey,
 	getSurfaceAlphaMod,
@@ -366,6 +367,7 @@ foreign import ccall "SDL.h SDL_CreateRGBSurfaceFrom" createRGBSurfaceFrom :: Pt
 foreign import ccall "SDL.h SDL_FillRect" fillRect :: Ptr Surface -> Ptr Rect -> Word32 -> IO CInt
 foreign import ccall "SDL.h SDL_FillRects" fillRects :: Ptr Surface -> Ptr Rect -> CInt -> Word32 -> IO CInt
 foreign import ccall "SDL.h SDL_FreeSurface" freeSurface :: Ptr Surface -> IO ()
+foreign import ccall "SDL.h &SDL_FreeSurface" freeSurfaceFunPtr :: FunPtr (Ptr Surface -> IO ())
 foreign import ccall "SDL.h SDL_GetClipRect" getClipRect :: Ptr Surface -> Ptr Rect -> IO ()
 foreign import ccall "SDL.h SDL_GetColorKey" getColorKey :: Ptr Surface -> Ptr Word32 -> IO CInt
 foreign import ccall "SDL.h SDL_GetSurfaceAlphaMod" getSurfaceAlphaMod :: Ptr Surface -> Ptr Word8 -> IO CInt

@@ -38,6 +38,5 @@ main = do
         unless quit loop
 
     loop
-    SDL.freeSurface xOut
 
   SDL.quit

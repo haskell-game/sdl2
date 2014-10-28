@@ -66,5 +66,4 @@ main = do
 
     loop surfaceDefault
 
-    mapM_ SDL.freeSurface [ surfaceDefault, surfaceUp, surfaceDown, surfaceRight, surfaceLeft ]
   SDL.quit
