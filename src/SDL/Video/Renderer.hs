@@ -20,6 +20,7 @@ module SDL.Video.Renderer
   , setColorKey
   , setRenderDrawBlendMode
   , setRenderDrawColor
+  , setRenderTarget
   , setTextureAlphaMod
   , setTextureBlendMode
   , setTextureColorMod
@@ -574,3 +575,10 @@ setTextureBlendMode :: Texture -> BlendMode -> IO ()
 setTextureBlendMode (Texture t) bm =
   throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMoe" $
   Raw.setTextureBlendMode t (toNumber bm)
+
+setRenderTarget :: Renderer -> Maybe Texture -> IO ()
+setRenderTarget (Renderer r) texture =
+  throwIfNeg_ "SDL.Video.Renderer.setRenderTarget" "SDL_SetRenderTarget" $
+  case texture of
+    Nothing -> Raw.setRenderTarget r nullPtr
+    Just (Texture t) -> Raw.setRenderTarget r t
