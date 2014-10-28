@@ -201,7 +201,7 @@ surfaceDimensions (Surface s) = (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> peek 
 surfaceFormat :: Surface -> IO SurfacePixelFormat
 surfaceFormat (Surface s) = SurfacePixelFormat . Raw.surfaceFormat <$> peek s
 
-getWindowSurface :: Window -> IO Surface
+getWindowSurface :: Window s -> IO Surface
 getWindowSurface (Window w) =
   fmap Surface $
   throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
@@ -219,7 +219,7 @@ setRenderDrawColor (Renderer re) (V4 r g b a) =
   withForeignPtr re $ \rptr ->
     Raw.setRenderDrawColor rptr r g b a
 
-updateWindowSurface :: Window -> IO ()
+updateWindowSurface :: Window s -> IO ()
 updateWindowSurface (Window w) =
   throwIfNeg_ "SDL.Video.updateWindowSurface" "SDL_UpdateWindowSurface" $
     Raw.updateWindowSurface w

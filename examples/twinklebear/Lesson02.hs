@@ -53,21 +53,19 @@ main = do
   let winConfig = SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
       rdrConfig = SDL.defaultRenderer { SDL.rendererAccelerated = True }
 
-  window <- SDL.createWindow "Lesson 2" winConfig
-  renderer <- SDL.createRenderer window (-1) rdrConfig
+  SDL.withWindow "Lesson 2" winConfig $ \window -> do
+    renderer <- SDL.createRenderer window (-1) rdrConfig
 
-  background <- getDataFileName "examples/twinklebear/background.bmp" >>= loadTexture renderer
-  image <- getDataFileName "examples/twinklebear/smiley.bmp" >>= loadTexture renderer
+    background <- getDataFileName "examples/twinklebear/background.bmp" >>= loadTexture renderer
+    image <- getDataFileName "examples/twinklebear/smiley.bmp" >>= loadTexture renderer
 
-  renderTiledBackground renderer background
-  renderTexture renderer image Centered
-  SDL.renderPresent renderer
+    renderTiledBackground renderer background
+    renderTexture renderer image Centered
+    SDL.renderPresent renderer
 
-  SDL.delay 2000
+    SDL.delay 2000
 
-  SDL.destroyTexture image
-  SDL.destroyTexture background
-  SDL.destroyRenderer renderer
-  SDL.destroyWindow window
+    SDL.destroyTexture image
+    SDL.destroyTexture background
 
-  SDL.quit
+    SDL.quit

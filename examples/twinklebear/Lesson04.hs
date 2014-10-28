@@ -43,27 +43,25 @@ main = do
 
   let winConfig = SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
 
-  window <- SDL.createWindow "Lesson 4" winConfig
-  renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
+  SDL.withWindow "Lesson 4" winConfig $ \window -> do
+    renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
 
-  image <- getDataFileName "examples/twinklebear/event-driven.bmp" >>= loadTexture renderer
+    image <- getDataFileName "examples/twinklebear/event-driven.bmp" >>= loadTexture renderer
 
-  let loop = do
-        renderTexture renderer image Centered
-        SDL.renderPresent renderer
+    let loop = do
+          renderTexture renderer image Centered
+          SDL.renderPresent renderer
 
-        quit <- fmap (\ev -> case SDL.eventPayload ev of
-            SDL.QuitEvent -> True
-            (SDL.KeyboardEvent _ SDL.KeyDown _ _ _) -> True
-            (SDL.MouseButtonEvent _ SDL.MouseButtonDown _ _ _ _ _) -> True
-            _ -> False) SDL.waitEvent
+          quit <- fmap (\ev -> case SDL.eventPayload ev of
+              SDL.QuitEvent -> True
+              (SDL.KeyboardEvent _ SDL.KeyDown _ _ _) -> True
+              (SDL.MouseButtonEvent _ SDL.MouseButtonDown _ _ _ _ _) -> True
+              _ -> False) SDL.waitEvent
 
-        unless quit loop
+          unless quit loop
 
-  loop
+    loop
 
-  SDL.destroyTexture image
-  SDL.destroyRenderer renderer
-  SDL.destroyWindow window
+    SDL.destroyTexture image
 
-  SDL.quit
+    SDL.quit

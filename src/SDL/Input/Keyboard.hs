@@ -109,7 +109,7 @@ hasScreenKeyboardSupport :: IO Bool
 hasScreenKeyboardSupport = Raw.hasScreenKeyboardSupport
 
 -- | Check whether the screen keyboard is shown for the given window.
-isScreenKeyboardShown :: Window -> IO Bool
+isScreenKeyboardShown :: Window s -> IO Bool
 isScreenKeyboardShown (Window w) = Raw.isScreenKeyboardShown w
 
 getScancodeName :: Scancode -> IO String

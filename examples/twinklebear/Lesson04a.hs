@@ -48,47 +48,45 @@ main = do
 
   let winConfig = SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
 
-  window <- SDL.createWindow "Lesson 4a" winConfig
-  renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
+  SDL.withWindow "Lesson 4a" winConfig $ \window -> do
+    renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
 
-  image <- getDataFileName "examples/twinklebear/ladybeetle.bmp" >>= loadTexture renderer
+    image <- getDataFileName "examples/twinklebear/ladybeetle.bmp" >>= loadTexture renderer
 
-  let loop imgPos = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
-        events <- collectEvents
+    let loop imgPos = do
+          let collectEvents = do
+                e <- SDL.pollEvent
+                case e of
+                  Nothing -> return []
+                  Just e' -> (e' :) <$> collectEvents
+          events <- collectEvents
 
-        let (Any quit, Sum posDelta) =
-              foldMap (\case
-                SDL.QuitEvent -> (Any True, mempty)
-                SDL.KeyboardEvent{..} ->
-                  if | keyboardEventKeyMotion == SDL.KeyDown ->
-                         let scancode = SDL.keysymScancode keyboardEventKeysym
-                         in if | scancode == SDL.ScancodeUp    -> (Any False, Sum (V2    0  (-10)))
-                               | scancode == SDL.ScancodeDown  -> (Any False, Sum (V2    0    10 ))
-                               | scancode == SDL.ScancodeLeft  -> (Any False, Sum (V2 (-10)    0 ))
-                               | scancode == SDL.ScancodeRight -> (Any False, Sum (V2   10     0 ))
-                               | scancode == SDL.ScancodeQ     -> (Any True,  mempty)
-                               | otherwise -> mempty
-                     | otherwise -> mempty
-                _ -> mempty) $
-              map SDL.eventPayload events
+          let (Any quit, Sum posDelta) =
+                foldMap (\case
+                  SDL.QuitEvent -> (Any True, mempty)
+                  SDL.KeyboardEvent{..} ->
+                    if | keyboardEventKeyMotion == SDL.KeyDown ->
+                           let scancode = SDL.keysymScancode keyboardEventKeysym
+                           in if | scancode == SDL.ScancodeUp    -> (Any False, Sum (V2    0  (-10)))
+                                 | scancode == SDL.ScancodeDown  -> (Any False, Sum (V2    0    10 ))
+                                 | scancode == SDL.ScancodeLeft  -> (Any False, Sum (V2 (-10)    0 ))
+                                 | scancode == SDL.ScancodeRight -> (Any False, Sum (V2   10     0 ))
+                                 | scancode == SDL.ScancodeQ     -> (Any True,  mempty)
+                                 | otherwise -> mempty
+                       | otherwise -> mempty
+                  _ -> mempty) $
+                map SDL.eventPayload events
 
-            imgPos' = imgPos + posDelta
+              imgPos' = imgPos + posDelta
 
-        SDL.renderClear renderer
-        renderTexture renderer image $ At (P imgPos')
-        SDL.renderPresent renderer
+          SDL.renderClear renderer
+          renderTexture renderer image $ At (P imgPos')
+          SDL.renderPresent renderer
 
-        unless quit $ loop imgPos'
+          unless quit $ loop imgPos'
 
-  loop $ (V2 100 100)
+    loop $ (V2 100 100)
 
-  SDL.destroyTexture image
-  SDL.destroyRenderer renderer
-  SDL.destroyWindow window
+    SDL.destroyTexture image
 
-  SDL.quit
+    SDL.quit

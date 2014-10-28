@@ -17,7 +17,7 @@ newtype WindowID = WindowID Word32
 newtype Joystick = Joystick { joystickPtr :: Raw.Joystick }
   deriving (Eq, Typeable)
 
-newtype Window = Window (Raw.Window)
+newtype Window s = Window (Raw.Window)
   deriving (Eq, Typeable)
 
 newtype Renderer = Renderer (ForeignPtr ())

@@ -63,13 +63,13 @@ newtype GLContext = GLContext Raw.GLContext
 --
 -- Throws 'SDLException' if the window wasn't configured with OpenGL
 -- support, or if context creation fails.
-glCreateContext :: Window -> IO GLContext
+glCreateContext :: Window s -> IO GLContext
 glCreateContext (Window w) =
   GLContext <$> throwIfNull "SDL.Video.glCreateContext" "SDL_GL_CreateContext"
     (Raw.glCreateContext w)
 
 -- | Throws 'SDLException' on failure.
-glMakeCurrent :: Window -> GLContext -> IO ()
+glMakeCurrent :: Window s -> GLContext -> IO ()
 glMakeCurrent (Window w) (GLContext ctx) =
   throwIfNeg_ "SDL.Video.OpenGL.glMakeCurrent" "SDL_GL_MakeCurrent" $
     Raw.glMakeCurrent w ctx
@@ -80,7 +80,7 @@ glDeleteContext (GLContext ctx) = Raw.glDeleteContext ctx
 -- | Replace the contents of the front buffer with the back buffer's. The
 -- contents of the back buffer are undefined, clear them with @glClear@ or
 -- equivalent before drawing to them again.
-glSwapWindow :: Window -> IO ()
+glSwapWindow :: Window s -> IO ()
 glSwapWindow (Window w) = Raw.glSwapWindow w
 
 data SwapInterval

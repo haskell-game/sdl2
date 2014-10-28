@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Input.Mouse
@@ -84,10 +85,10 @@ data MouseMotion
   deriving (Eq, Show, Typeable)
 
 data WarpMouseOrigin
-  = WarpInWindow Window
+  = forall s. WarpInWindow (Window s)
   | WarpCurrentFocus
   -- WarpGlobal -- Needs 2.0.4
-  deriving (Eq, Typeable)
+  deriving (Typeable)
 
 warpMouse :: WarpMouseOrigin -> V2 CInt -> IO ()
 warpMouse (WarpInWindow (Window w)) (V2 x y) = Raw.warpMouseInWindow w x y

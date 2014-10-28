@@ -14,17 +14,15 @@ screenWidth, screenHeight :: CInt
 main :: IO ()
 main = do
   SDL.initialize [SDL.InitVideo]
-  window <- SDL.createWindow "SDL Tutorial" SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
-  SDL.showWindow window
-  screenSurface <- SDL.getWindowSurface window
+  SDL.withWindow "SDL Tutorial" SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight } $ \window -> do
+    SDL.showWindow window
+    screenSurface <- SDL.getWindowSurface window
 
-  helloWorld <- getDataFileName "examples/lazyfoo/hello_world.bmp" >>= SDL.loadBMP
+    helloWorld <- getDataFileName "examples/lazyfoo/hello_world.bmp" >>= SDL.loadBMP
 
-  SDL.blitSurface helloWorld Nothing screenSurface Nothing
-  SDL.updateWindowSurface window
+    SDL.blitSurface helloWorld Nothing screenSurface Nothing
+    SDL.updateWindowSurface window
+    threadDelay 2000000
+    SDL.freeSurface helloWorld
 
-  threadDelay 2000000
-
-  SDL.destroyWindow window
-  SDL.freeSurface helloWorld
   SDL.quit

@@ -38,50 +38,45 @@ main = do
   unless hintSet $
     putStrLn "Warning: Linear texture filtering not enabled!"
 
-  window <-
-    SDL.createWindow
-      "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
-  SDL.showWindow window
+  SDL.withWindow "SDL Tutorial" SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight} $ \window -> do
+    SDL.showWindow window
 
-  renderer <-
-    SDL.createRenderer
-      window
-      (-1)
-      (SDL.RendererConfig
-         { SDL.rendererAccelerated = True
-         , SDL.rendererSoftware = False
-         , SDL.rendererTargetTexture = False
-         , SDL.rendererPresentVSync = False
-         })
+    renderer <-
+      SDL.createRenderer
+        window
+        (-1)
+        (SDL.RendererConfig
+           { SDL.rendererAccelerated = True
+           , SDL.rendererSoftware = False
+           , SDL.rendererTargetTexture = False
+           , SDL.rendererPresentVSync = False
+           })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+    SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
 
-  fooTexture <- loadTexture renderer "examples/lazyfoo/foo.bmp"
-  backgroundTexture <- loadTexture renderer "examples/lazyfoo/background.bmp"
+    fooTexture <- loadTexture renderer "examples/lazyfoo/foo.bmp"
+    backgroundTexture <- loadTexture renderer "examples/lazyfoo/background.bmp"
 
-  let loop = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
-        events <- collectEvents
+    let loop = do
+          let collectEvents = do
+                e <- SDL.pollEvent
+                case e of
+                  Nothing -> return []
+                  Just e' -> (e' :) <$> collectEvents
+          events <- collectEvents
 
-        let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
+          let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-        SDL.renderClear renderer
+          SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+          SDL.renderClear renderer
 
-        renderTexture renderer backgroundTexture 0
-        renderTexture renderer fooTexture (P (V2 240 190))
+          renderTexture renderer backgroundTexture 0
+          renderTexture renderer fooTexture (P (V2 240 190))
 
-        SDL.renderPresent renderer
+          SDL.renderPresent renderer
 
-        unless quit loop
+          unless quit loop
 
-  loop
+    loop
 
-  SDL.destroyRenderer renderer
-  SDL.destroyWindow window
-  SDL.quit
+    SDL.quit

@@ -21,21 +21,19 @@ main = do
                                      , SDL.rendererPresentVSync  = True
                                      , SDL.rendererTargetTexture = True }
 
-  window <- SDL.createWindow "Hello World!" winConfig
-  renderer <- SDL.createRenderer window (-1) rdrConfig
+  SDL.withWindow "Hello World!" winConfig $ \window -> do
+    renderer <- SDL.createRenderer window (-1) rdrConfig
 
-  bmp <- getDataFileName "examples/twinkleBear/hello.bmp" >>= SDL.loadBMP
-  tex <- SDL.createTextureFromSurface renderer bmp
-  SDL.freeSurface bmp
+    bmp <- getDataFileName "examples/twinkleBear/hello.bmp" >>= SDL.loadBMP
+    tex <- SDL.createTextureFromSurface renderer bmp
+    SDL.freeSurface bmp
 
-  SDL.renderClear renderer
-  SDL.renderCopy renderer tex Nothing Nothing
-  SDL.renderPresent renderer
+    SDL.renderClear renderer
+    SDL.renderCopy renderer tex Nothing Nothing
+    SDL.renderPresent renderer
 
-  SDL.delay 2000
+    SDL.delay 2000
 
-  SDL.destroyTexture tex
-  SDL.destroyRenderer renderer
-  SDL.destroyWindow window
+    SDL.destroyTexture tex
 
-  SDL.quit
+    SDL.quit

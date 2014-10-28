@@ -44,57 +44,52 @@ main = do
   unless hintSet $
     putStrLn "Warning: Linear texture filtering not enabled!"
 
-  window <-
-    SDL.createWindow
-      "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
-  SDL.showWindow window
+  SDL.withWindow "SDL Tutorial" SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight} $ \window -> do
+    SDL.showWindow window
 
-  renderer <-
-    SDL.createRenderer
-      window
-      (-1)
-      (SDL.RendererConfig
-         { SDL.rendererAccelerated = True
-         , SDL.rendererSoftware = False
-         , SDL.rendererTargetTexture = False
-         , SDL.rendererPresentVSync = True
-         })
+    renderer <-
+      SDL.createRenderer
+        window
+        (-1)
+        (SDL.RendererConfig
+           { SDL.rendererAccelerated = True
+           , SDL.rendererSoftware = False
+           , SDL.rendererTargetTexture = False
+           , SDL.rendererPresentVSync = True
+           })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+    SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
 
-  spriteSheetTexture <- loadTexture renderer "examples/lazyfoo/animation.bmp"
-  let spriteSize = V2 64 205
-      clip1 = SDL.Rectangle (P (V2 0 0)) spriteSize
-      clip2 = SDL.Rectangle (P (V2 64 0)) spriteSize
-      clip3 = SDL.Rectangle (P (V2 128 0)) spriteSize
-      clip4 = SDL.Rectangle (P (V2 196 0)) spriteSize
+    spriteSheetTexture <- loadTexture renderer "examples/lazyfoo/animation.bmp"
+    let spriteSize = V2 64 205
+        clip1 = SDL.Rectangle (P (V2 0 0)) spriteSize
+        clip2 = SDL.Rectangle (P (V2 64 0)) spriteSize
+        clip3 = SDL.Rectangle (P (V2 128 0)) spriteSize
+        clip4 = SDL.Rectangle (P (V2 196 0)) spriteSize
 
-  let loop (frame:frames) = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
-        events <- collectEvents
+    let loop (frame:frames) = do
+          let collectEvents = do
+                e <- SDL.pollEvent
+                case e of
+                  Nothing -> return []
+                  Just e' -> (e' :) <$> collectEvents
+          events <- collectEvents
 
-        let (Any quit) =
-              foldMap (\case
-                         SDL.QuitEvent -> (Any True)
-                         _ -> mempty) $
-              map SDL.eventPayload events
+          let (Any quit) =
+                foldMap (\case
+                           SDL.QuitEvent -> (Any True)
+                           _ -> mempty) $
+                map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-        SDL.renderClear renderer
+          SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+          SDL.renderClear renderer
 
-        renderTexture renderer spriteSheetTexture (P (fmap (`div` 2) (V2 screenWidth screenHeight) - fmap (`div` 2) spriteSize)) (Just frame)
+          renderTexture renderer spriteSheetTexture (P (fmap (`div` 2) (V2 screenWidth screenHeight) - fmap (`div` 2) spriteSize)) (Just frame)
 
-        SDL.renderPresent renderer
+          SDL.renderPresent renderer
 
-        unless quit (loop frames)
+          unless quit (loop frames)
 
-  loop (cycle ([clip1, clip2, clip3, clip4] >>= replicate 4))
+    loop (cycle ([clip1, clip2, clip3, clip4] >>= replicate 4))
 
-  SDL.destroyRenderer renderer
-  SDL.destroyWindow window
-  SDL.quit
+    SDL.quit

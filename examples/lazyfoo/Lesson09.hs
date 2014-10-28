@@ -21,57 +21,52 @@ main = do
   unless hintSet $
     putStrLn "Warning: Linear texture filtering not enabled!"
 
-  window <-
-    SDL.createWindow
-      "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
-  SDL.showWindow window
+  SDL.withWindow "SDL Tutorial" SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight} $ \window -> do
+    SDL.showWindow window
 
-  renderer <-
-    SDL.createRenderer
-      window
-      (-1)
-      (SDL.RendererConfig
-         { SDL.rendererAccelerated = True
-         , SDL.rendererSoftware = False
-         , SDL.rendererTargetTexture = False
-         , SDL.rendererPresentVSync = False
-         })
+    renderer <-
+      SDL.createRenderer
+        window
+        (-1)
+        (SDL.RendererConfig
+           { SDL.rendererAccelerated = True
+           , SDL.rendererSoftware = False
+           , SDL.rendererTargetTexture = False
+           , SDL.rendererPresentVSync = False
+           })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+    SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
 
-  textureSurface <- getDataFileName "examples/lazyfoo/viewport.bmp" >>= SDL.loadBMP
-  texture <- SDL.createTextureFromSurface renderer textureSurface
-  SDL.freeSurface textureSurface
+    textureSurface <- getDataFileName "examples/lazyfoo/viewport.bmp" >>= SDL.loadBMP
+    texture <- SDL.createTextureFromSurface renderer textureSurface
+    SDL.freeSurface textureSurface
 
-  let loop = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
-        events <- collectEvents
+    let loop = do
+          let collectEvents = do
+                e <- SDL.pollEvent
+                case e of
+                  Nothing -> return []
+                  Just e' -> (e' :) <$> collectEvents
+          events <- collectEvents
 
-        let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
+          let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-        SDL.renderClear renderer
+          SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+          SDL.renderClear renderer
 
-        SDL.renderSetViewport renderer (Just $ SDL.Rectangle (P (V2 0 0)) (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
-        SDL.renderCopy renderer texture Nothing Nothing
+          SDL.renderSetViewport renderer (Just $ SDL.Rectangle (P (V2 0 0)) (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
+          SDL.renderCopy renderer texture Nothing Nothing
 
-        SDL.renderSetViewport renderer (Just $ SDL.Rectangle (P (V2 (screenWidth `div` 2) 0)) (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
-        SDL.renderCopy renderer texture Nothing Nothing
+          SDL.renderSetViewport renderer (Just $ SDL.Rectangle (P (V2 (screenWidth `div` 2) 0)) (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
+          SDL.renderCopy renderer texture Nothing Nothing
 
-        SDL.renderSetViewport renderer (Just $ SDL.Rectangle (P (V2 0 (screenHeight `div` 2))) (V2 screenWidth (screenHeight `div` 2)))
-        SDL.renderCopy renderer texture Nothing Nothing
+          SDL.renderSetViewport renderer (Just $ SDL.Rectangle (P (V2 0 (screenHeight `div` 2))) (V2 screenWidth (screenHeight `div` 2)))
+          SDL.renderCopy renderer texture Nothing Nothing
 
-        SDL.renderPresent renderer
+          SDL.renderPresent renderer
 
-        unless quit loop
+          unless quit loop
 
-  loop
+    loop
 
-  SDL.destroyRenderer renderer
-  SDL.destroyWindow window
-  SDL.quit
+    SDL.quit

@@ -53,49 +53,46 @@ main = do
 
   let winConfig = SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
 
-  window <- SDL.createWindow "Lesson 5" winConfig
-  renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
+  SDL.withWindow "Lesson 5" winConfig $ \window -> do
+    renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
 
-  spriteSheet <- getDataFileName "examples/twinklebear/spritesheet.bmp" >>= loadTexture renderer
-  let [spriteOne, spriteTwo, spriteThree, spriteFour] =
-        [ SDL.Rectangle (P (V2 (x * spriteWidth) (y * spriteHeight))) (V2 spriteWidth spriteHeight)
-          | x <- [0..1], y <- [0..1] ]
+    spriteSheet <- getDataFileName "examples/twinklebear/spritesheet.bmp" >>= loadTexture renderer
+    let [spriteOne, spriteTwo, spriteThree, spriteFour] =
+          [ SDL.Rectangle (P (V2 (x * spriteWidth) (y * spriteHeight))) (V2 spriteWidth spriteHeight)
+            | x <- [0..1], y <- [0..1] ]
 
-  let loop spriteRect = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
-        events <- collectEvents
+    let loop spriteRect = do
+          let collectEvents = do
+                e <- SDL.pollEvent
+                case e of
+                  Nothing -> return []
+                  Just e' -> (e' :) <$> collectEvents
+          events <- collectEvents
 
-        let (Any quit, Last newSpriteRect) =
-              foldMap (\case
-                SDL.QuitEvent -> (Any True, mempty)
-                SDL.KeyboardEvent{..} ->
-                  if | keyboardEventKeyMotion == SDL.KeyDown ->
-                         let scancode = SDL.keysymScancode keyboardEventKeysym
-                         in if | scancode == SDL.Scancode1 -> (Any False, Last (Just spriteOne))
-                               | scancode == SDL.Scancode2 -> (Any False, Last (Just spriteTwo))
-                               | scancode == SDL.Scancode3 -> (Any False, Last (Just spriteThree))
-                               | scancode == SDL.Scancode4 -> (Any False, Last (Just spriteFour))
-                               | scancode == SDL.ScancodeQ -> (Any True,  mempty)
-                               | otherwise -> mempty
-                     | otherwise -> mempty
-                _ -> mempty) $
-              map SDL.eventPayload events
+          let (Any quit, Last newSpriteRect) =
+                foldMap (\case
+                  SDL.QuitEvent -> (Any True, mempty)
+                  SDL.KeyboardEvent{..} ->
+                    if | keyboardEventKeyMotion == SDL.KeyDown ->
+                           let scancode = SDL.keysymScancode keyboardEventKeysym
+                           in if | scancode == SDL.Scancode1 -> (Any False, Last (Just spriteOne))
+                                 | scancode == SDL.Scancode2 -> (Any False, Last (Just spriteTwo))
+                                 | scancode == SDL.Scancode3 -> (Any False, Last (Just spriteThree))
+                                 | scancode == SDL.Scancode4 -> (Any False, Last (Just spriteFour))
+                                 | scancode == SDL.ScancodeQ -> (Any True,  mempty)
+                                 | otherwise -> mempty
+                       | otherwise -> mempty
+                  _ -> mempty) $
+                map SDL.eventPayload events
 
-            spriteRect' = newSpriteRect <|> spriteRect
+              spriteRect' = newSpriteRect <|> spriteRect
 
-        SDL.renderClear renderer
-        renderTexture renderer spriteSheet spriteRect' Centered
-        SDL.renderPresent renderer
+          SDL.renderClear renderer
+          renderTexture renderer spriteSheet spriteRect' Centered
+          SDL.renderPresent renderer
 
-        unless quit $ loop spriteRect'
+          unless quit $ loop spriteRect'
 
-  loop $ Just spriteOne
+    loop $ Just spriteOne
 
-  SDL.destroyRenderer renderer
-  SDL.destroyWindow window
-
-  SDL.quit
+    SDL.quit
