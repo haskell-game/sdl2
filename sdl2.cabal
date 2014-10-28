@@ -254,6 +254,15 @@ executable lazyfoo-lesson-16
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson16
 
+executable lazyfoo-lesson-18
+  if flag(NoExamples)
+    buildable: False
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  hs-source-dirs: examples/lazyfoo
+  main-is: Lesson18.hs
+  default-language: Haskell2010
+  ghc-options: -Wall -main-is Lazyfoo.Lesson18
+
 executable twinklebear-lesson-01
   if flag(NoExamples)
     buildable: False
