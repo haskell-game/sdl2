@@ -65,7 +65,4 @@ main = do
 
     SDL.delay 2000
 
-    SDL.destroyTexture image
-    SDL.destroyTexture background
-
     SDL.quit

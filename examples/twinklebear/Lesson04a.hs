@@ -87,6 +87,4 @@ main = do
 
     loop $ (V2 100 100)
 
-    SDL.destroyTexture image
-
     SDL.quit

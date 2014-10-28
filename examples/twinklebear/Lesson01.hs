@@ -34,6 +34,4 @@ main = do
 
     SDL.delay 2000
 
-    SDL.destroyTexture tex
-
     SDL.quit

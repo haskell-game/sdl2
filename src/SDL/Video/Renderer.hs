@@ -10,7 +10,6 @@ module SDL.Video.Renderer
   , createTexture
   , createTextureFromSurface
   , convertSurface
-  , destroyTexture
   , fillRect
   , fillRects
   , freeSurface
@@ -112,9 +111,6 @@ createTextureFromSurface (Renderer r) (Surface s) = do
     withForeignPtr r $ \rptr ->
     Raw.createTextureFromSurface rptr s
   Texture <$> newForeignPtr Raw.destroyTextureFunPtr texturePtr
-
-destroyTexture :: Texture -> IO ()
-destroyTexture (Texture t) = withForeignPtr t Raw.destroyTexture
 
 data TextureAccess
   = TextureAccessStatic

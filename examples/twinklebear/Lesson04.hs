@@ -62,6 +62,4 @@ main = do
 
     loop
 
-    SDL.destroyTexture image
-
     SDL.quit
