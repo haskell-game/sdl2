@@ -1,11 +1,13 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Input.Joystick
-  ( availableJoysticks
+  ( numJoysticks
+  , availableJoysticks
   , JoystickDevice
   , joystickDeviceName
 
   , openJoystick
+  , getJoystickID
   , Joystick
   , buttonPressed
   ) where
@@ -31,9 +33,12 @@ data JoystickDevice = JoystickDevice
   , joystickDeviceId :: CInt
   } deriving (Eq, Show, Typeable)
 
+numJoysticks :: IO (CInt)
+numJoysticks = throwIfNeg "SDL.Input.Joystick.availableJoysticks" "SDL_NumJoysticks" Raw.numJoysticks
+
 availableJoysticks :: IO (V.Vector JoystickDevice)
 availableJoysticks = do
-  n <- throwIfNeg "SDL.Input.Joystick.availableJoysticks" "SDL_NumJoysticks" Raw.numJoysticks
+  n <- numJoysticks
   fmap (V.fromList) $
     for [0 .. (n - 1)] $ \i -> do
       cstr <-
@@ -49,7 +54,12 @@ openJoystick :: JoystickDevice -> IO Joystick
 openJoystick (JoystickDevice _ x) =
   fmap Joystick $
   throwIfNull "SDL.Input.Joystick.openJoystick" "SDL_OpenJoystick" $
-    Raw.joystickOpen x
+  Raw.joystickOpen x
+
+getJoystickID :: Joystick -> IO (Int32)
+getJoystickID (Joystick j) =
+  throwIfNeg "SDL.Input.Joystick.getJoystickID" "SDL_JoystickInstanceID" $
+  Raw.joystickInstanceID j
 
 buttonPressed :: Joystick -> CInt -> IO Bool
 buttonPressed (Joystick j) buttonIndex = (== 1) <$> Raw.joystickGetButton j buttonIndex
