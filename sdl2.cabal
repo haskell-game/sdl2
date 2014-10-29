@@ -269,7 +269,7 @@ executable lazyfoo-lesson-19
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson19.hs
   default-language: Haskell2010
-  ghc-options: -Wall -Werror -main-is Lazyfoo.Lesson19
+  ghc-options: -Wall -main-is Lazyfoo.Lesson19
 
 executable lazyfoo-lesson-43
   if flag(NoExamples)
