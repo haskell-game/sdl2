@@ -22,6 +22,7 @@ import Foreign.Marshal.Alloc
 import Foreign.Storable
 import Linear
 import SDL.Exception
+import SDL.Internal.Types (Joystick(..))
 
 import qualified Data.Vector as V
 import qualified Data.ByteString as BS
@@ -46,9 +47,6 @@ availableJoysticks = do
           Raw.joystickNameForIndex i
       name <- Text.decodeUtf8 <$> BS.packCString cstr
       return (JoystickDevice name i)
-
-newtype Joystick = Joystick Raw.Joystick
-  deriving (Eq, Typeable)
 
 openJoystick :: JoystickDevice -> IO Joystick
 openJoystick (JoystickDevice _ x) =
