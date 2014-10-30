@@ -22,9 +22,6 @@ import Paths_sdl2 (getDataFileName)
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
 
-joystickDeadZone :: Int16
-joystickDeadZone = 8000
-
 data Texture = Texture SDL.Texture (V2 CInt)
 
 loadTexture :: SDL.Renderer -> FilePath -> IO Texture
@@ -50,9 +47,6 @@ renderTexture r (Texture t size) xy clip theta center flips =
                       center
                       (fromMaybe (pure False) flips)
 
-textureSize :: Texture -> V2 CInt
-textureSize (Texture _ sz) = sz
-
 getJoystick :: IO (SDL.Joystick)
 getJoystick = do
   joysticks <- SDL.availableJoysticks
@@ -61,7 +55,6 @@ getJoystick = do
               else return (joysticks V.! 0)
 
   SDL.openJoystick joystick
-
 
 main :: IO ()
 main = do
