@@ -143,6 +143,8 @@ main = do
 
   loop (0, 0)
 
+  SDL.closeJoystick joystick
+
   SDL.destroyRenderer renderer
   SDL.destroyWindow window
   SDL.quit

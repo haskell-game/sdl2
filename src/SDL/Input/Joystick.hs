@@ -3,13 +3,16 @@
 module SDL.Input.Joystick
   ( numJoysticks
   , availableJoysticks
-  , JoystickDevice
-  , joystickDeviceName
+  , JoystickDevice(..)
 
   , openJoystick
+  , closeJoystick
+
   , getJoystickID
   , Joystick
   , buttonPressed
+  , ballDelta
+  , axisPosition
   ) where
 
 import Control.Applicative
@@ -53,6 +56,9 @@ openJoystick (JoystickDevice _ x) =
   fmap Joystick $
   throwIfNull "SDL.Input.Joystick.openJoystick" "SDL_OpenJoystick" $
   Raw.joystickOpen x
+
+closeJoystick :: Joystick -> IO ()
+closeJoystick (Joystick j) = Raw.joystickClose j
 
 getJoystickID :: Joystick -> IO (Int32)
 getJoystickID (Joystick j) =
