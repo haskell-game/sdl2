@@ -6,6 +6,10 @@ module SDL.Haptic
   , availableHapticDeviceIds
   , OpenHapticDevice(..)
   , openHaptic
+  , closeHaptic
+  , hapticRumbleInit
+  , hapticRumblePlay
+  , hapticRumbleStop
   , HapticDevice
   , hapticDeviceName
   , hapticDeviceNumAxes
@@ -78,6 +82,24 @@ openHaptic o = do
           Raw.hapticNumAxes ptr
 
   return (HapticDevice ptr n axes)
+
+closeHaptic :: HapticDevice -> IO ()
+closeHaptic (HapticDevice h _ _) = Raw.hapticClose h
+
+hapticRumbleInit :: HapticDevice -> IO ()
+hapticRumbleInit (HapticDevice h _ _) =
+  SDLEx.throwIfNeg_ "SDL.Haptic.hapticRumbleInit" "SDL_HapticRumbleInit" $
+  Raw.hapticRumbleInit h
+
+hapticRumblePlay :: HapticDevice -> CFloat -> Word32 -> IO ()
+hapticRumblePlay (HapticDevice h _ _) strength length =
+  SDLEx.throwIfNot0_ "SDL.Haptic.hapticRumblePlay" "SDL_HapticRumblePlay" $
+  Raw.hapticRumblePlay h strength length
+
+hapticRumbleStop :: HapticDevice -> IO ()
+hapticRumbleStop (HapticDevice h _ _) =
+  SDLEx.throwIfNot0_ "SDL.Haptic.hapticRumbleStop" "SDL_HapticRumbleStop" $
+  Raw.hapticRumbleStop h
 
 data EffectEnvelope = EffectEnvelope
   { envelopeAttackLength :: Word16
