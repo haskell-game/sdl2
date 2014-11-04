@@ -47,7 +47,7 @@ data KeyState = KeyPressed | KeyReleased
 
 instance FromNumber KeyState Word8 where
   fromNumber n' = case n' of
-    n | n == Raw.keyPressed -> KeyReleased
+    n | n == Raw.keyPressed -> KeyPressed
     n | n == Raw.keyReleased -> KeyReleased
 
 data EventPayload
