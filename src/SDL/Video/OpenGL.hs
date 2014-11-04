@@ -74,6 +74,14 @@ glMakeCurrent (Window w) (GLContext ctx) =
   throwIfNeg_ "SDL.Video.OpenGL.glMakeCurrent" "SDL_GL_MakeCurrent" $
     Raw.glMakeCurrent w ctx
 
+-- | Delete the given OpenGL context.
+--
+-- You /must/ make sure that there are no pending commands in the OpenGL
+-- command queue, the driver may still be processing commands even if you have
+-- stopped issuing them!
+--
+-- The @glFinish@ command will block until the command queue has been fully
+-- processed. You should call that function before deleting a context.
 glDeleteContext :: GLContext -> IO ()
 glDeleteContext (GLContext ctx) = Raw.glDeleteContext ctx
 
