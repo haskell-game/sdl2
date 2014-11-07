@@ -111,7 +111,7 @@ library
   build-depends:
     base >= 4.0 && < 4.8,
     bytestring >= 0.10.4.0 && < 0.11,
-    linear >= 1.10.1.2 && < 1.11,
+    linear >= 1.10.1.2 && < 1.12,
     text >= 1.1.0.0 && < 1.3,
     vector >= 0.10.9.0 && < 0.11
 
@@ -121,7 +121,7 @@ library
 executable lazyfoo-lesson-01
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
+  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.12, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson01.hs
   default-language: Haskell2010
@@ -130,7 +130,7 @@ executable lazyfoo-lesson-01
 executable lazyfoo-lesson-02
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
+  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.12, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson02.hs
   default-language: Haskell2010
@@ -139,7 +139,7 @@ executable lazyfoo-lesson-02
 executable lazyfoo-lesson-03
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
+  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.12, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson03.hs
   default-language: Haskell2010
@@ -148,7 +148,7 @@ executable lazyfoo-lesson-03
 executable lazyfoo-lesson-04
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
+  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.12, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson04.hs
   default-language: Haskell2010
@@ -157,7 +157,7 @@ executable lazyfoo-lesson-04
 executable lazyfoo-lesson-05
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
+  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.12, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson05.hs
   default-language: Haskell2010
@@ -166,7 +166,7 @@ executable lazyfoo-lesson-05
 executable lazyfoo-lesson-07
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
+  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.12, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson07.hs
   default-language: Haskell2010
@@ -175,7 +175,7 @@ executable lazyfoo-lesson-07
 executable lazyfoo-lesson-08
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
+  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.12, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson08.hs
   default-language: Haskell2010
@@ -184,7 +184,7 @@ executable lazyfoo-lesson-08
 executable lazyfoo-lesson-09
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
+  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.12, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson09.hs
   default-language: Haskell2010
@@ -193,7 +193,7 @@ executable lazyfoo-lesson-09
 executable lazyfoo-lesson-10
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.11, sdl2
+  build-depends: base >= 4.0 && < 4.8, linear >= 1.10.1.2 && < 1.12, sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson10.hs
   default-language: Haskell2010
@@ -202,7 +202,7 @@ executable lazyfoo-lesson-10
 executable lazyfoo-lesson-11
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson11.hs
   default-language: Haskell2010
@@ -211,7 +211,7 @@ executable lazyfoo-lesson-11
 executable lazyfoo-lesson-12
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson12.hs
   default-language: Haskell2010
@@ -220,7 +220,7 @@ executable lazyfoo-lesson-12
 executable lazyfoo-lesson-13
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson13.hs
   default-language: Haskell2010
@@ -229,7 +229,7 @@ executable lazyfoo-lesson-13
 executable lazyfoo-lesson-14
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson14.hs
   default-language: Haskell2010
@@ -238,7 +238,7 @@ executable lazyfoo-lesson-14
 executable lazyfoo-lesson-15
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson15.hs
   default-language: Haskell2010
@@ -247,7 +247,7 @@ executable lazyfoo-lesson-15
 executable lazyfoo-lesson-16
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson16.hs
   default-language: Haskell2010
@@ -256,7 +256,7 @@ executable lazyfoo-lesson-16
 executable lazyfoo-lesson-18
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson18.hs
   default-language: Haskell2010
@@ -265,7 +265,7 @@ executable lazyfoo-lesson-18
 executable lazyfoo-lesson-19
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , vector >= 0.10.9.0 && < 0.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , vector >= 0.10.9.0 && < 0.11 , sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson19.hs
   default-language: Haskell2010
@@ -283,7 +283,7 @@ executable lazyfoo-lesson-20
 executable lazyfoo-lesson-43
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , sdl2
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson43.hs
   default-language: Haskell2010
@@ -292,7 +292,7 @@ executable lazyfoo-lesson-43
 executable twinklebear-lesson-01
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , sdl2
   hs-source-dirs: examples/twinklebear
   main-is: Lesson01.hs
   default-language: Haskell2010
@@ -301,7 +301,7 @@ executable twinklebear-lesson-01
 executable twinklebear-lesson-02
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , sdl2
   hs-source-dirs: examples/twinklebear
   main-is: Lesson02.hs
   default-language: Haskell2010
@@ -310,7 +310,7 @@ executable twinklebear-lesson-02
 executable twinklebear-lesson-04
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , sdl2
   hs-source-dirs: examples/twinklebear
   main-is: Lesson04.hs
   default-language: Haskell2010
@@ -319,7 +319,7 @@ executable twinklebear-lesson-04
 executable twinklebear-lesson-04a
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , sdl2
   hs-source-dirs: examples/twinklebear
   main-is: Lesson04a.hs
   default-language: Haskell2010
@@ -328,7 +328,7 @@ executable twinklebear-lesson-04a
 executable twinklebear-lesson-05
   if flag(NoExamples)
     buildable: False
-  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.11 , sdl2
+  build-depends: base >= 4.0 && < 4.8 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.12 , sdl2
   hs-source-dirs: examples/twinklebear
   main-is: Lesson05.hs
   default-language: Haskell2010

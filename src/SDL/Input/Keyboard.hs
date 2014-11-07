@@ -360,7 +360,7 @@ data Scancode
   | ScancodeApp1
   | ScancodeApp2
   | ScancodeNum
-  deriving (Eq, Show, Typeable)
+  deriving (Eq, Ord, Show, Typeable)
 
 instance FromNumber Scancode Word32 where
   fromNumber n' = case n' of
@@ -1089,7 +1089,7 @@ data Keycode
   | KeycodeKbdIllumUp
   | KeycodeEject
   | KeycodeSleep
-  deriving (Eq, Show, Typeable)
+  deriving (Eq, Ord, Show, Typeable)
 
 instance FromNumber Keycode Int32 where
   fromNumber n' = case n' of
