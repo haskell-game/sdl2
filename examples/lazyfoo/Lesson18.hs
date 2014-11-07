@@ -21,23 +21,26 @@ screenWidth, screenHeight :: CInt
 
 data Texture = Texture SDL.Texture (V2 CInt)
 
-loadTexture :: SDL.Renderer -> FilePath -> IO Texture
-loadTexture r filePath = do
-  surface <- getDataFileName filePath >>= SDL.loadBMP
-  size <- SDL.surfaceDimensions surface
-  format <- SDL.surfaceFormat surface
-  key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.setColorKey surface (Just key)
-  t <- SDL.createTextureFromSurface r surface
-  SDL.freeSurface surface
+loadTexture :: FilePath -> SDL.RenderM Texture
+loadTexture filePath = do
+  (surface, size) <- SDL.liftRender loadSurface
+  t <- SDL.createTextureFromSurface surface
+  SDL.liftRender $ SDL.freeSurface surface
   return (Texture t size)
+    where
+      loadSurface = do
+        surface <- getDataFileName filePath >>= SDL.loadBMP
+        size <- SDL.surfaceDimensions surface
+        format <- SDL.surfaceFormat surface
+        key <- SDL.mapRGB format (V3 0 maxBound maxBound)
+        SDL.setColorKey surface (Just key)
+        return (surface, size)
 
-renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> Maybe CDouble -> Maybe (Point V2 CInt) -> Maybe (V2 Bool) -> IO ()
-renderTexture r (Texture t size) xy clip theta center flips =
+renderTexture :: Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> Maybe CDouble -> Maybe (Point V2 CInt) -> Maybe (V2 Bool) -> SDL.RenderM ()
+renderTexture (Texture t size) xy clip theta center flips =
   let dstSize =
         maybe size (\(SDL.Rectangle _ size') ->  size') clip
-  in SDL.renderCopyEx r
-                      t
+  in SDL.renderCopyEx t
                       clip
                       (Just (SDL.Rectangle xy dstSize))
                       (fromMaybe 0 theta)
@@ -68,43 +71,47 @@ main = do
          , SDL.rendererPresentVSync = True
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  SDL.withRenderer renderer $ do
+    SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
 
-  pressTexture <- loadTexture renderer "examples/lazyfoo/press.bmp"
-  upTexture <- loadTexture renderer "examples/lazyfoo/up.bmp"
-  downTexture <- loadTexture renderer "examples/lazyfoo/down.bmp"
-  leftTexture <- loadTexture renderer "examples/lazyfoo/left.bmp"
-  rightTexture <- loadTexture renderer "examples/lazyfoo/right.bmp"
+    pressTexture <- loadTexture "examples/lazyfoo/press.bmp"
+    upTexture <- loadTexture "examples/lazyfoo/up.bmp"
+    downTexture <- loadTexture "examples/lazyfoo/down.bmp"
+    leftTexture <- loadTexture "examples/lazyfoo/left.bmp"
+    rightTexture <- loadTexture "examples/lazyfoo/right.bmp"
 
-  let
-    loop = do
-      let collectEvents = do
-            e <- SDL.pollEvent
-            case e of
-              Nothing -> return []
-              Just e' -> (e' :) <$> collectEvents
+    let
+      loop = do
+        let collectEvents = do
+              e <- SDL.pollEvent
+              case e of
+                Nothing -> return []
+                Just e' -> (e' :) <$> collectEvents
 
-      events <- map SDL.eventPayload <$> collectEvents
-      let quit = any (== SDL.QuitEvent) events
+        (keyMap, quit) <- SDL.liftRender $ do
+          events <- map SDL.eventPayload <$> collectEvents
+          let quit = any (== SDL.QuitEvent) events
 
-      keyMap <- SDL.getKeyboardState
-      let texture =
-            if | keyMap SDL.ScancodeUp -> upTexture
-               | keyMap SDL.ScancodeDown -> downTexture
-               | keyMap SDL.ScancodeLeft -> leftTexture
-               | keyMap SDL.ScancodeRight -> rightTexture
-               | otherwise -> pressTexture
+          keyMap <- SDL.getKeyboardState
+          return (keyMap, quit)
 
-      SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-      SDL.renderClear renderer
+        let texture =
+              if | keyMap SDL.ScancodeUp -> upTexture
+                 | keyMap SDL.ScancodeDown -> downTexture
+                 | keyMap SDL.ScancodeLeft -> leftTexture
+                 | keyMap SDL.ScancodeRight -> rightTexture
+                 | otherwise -> pressTexture
 
-      renderTexture renderer texture 0 Nothing Nothing Nothing Nothing
+        SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
+        SDL.renderClear
 
-      SDL.renderPresent renderer
+        renderTexture texture 0 Nothing Nothing Nothing Nothing
 
-      unless quit loop
+        SDL.renderPresent
 
-  loop
+        unless quit loop
+
+    loop
 
   SDL.destroyWindow window
   SDL.quit

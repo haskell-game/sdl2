@@ -21,23 +21,26 @@ screenWidth, screenHeight :: CInt
 
 data Texture = Texture SDL.Texture (V2 CInt)
 
-loadTexture :: SDL.Renderer -> FilePath -> IO Texture
-loadTexture r filePath = do
-  surface <- getDataFileName filePath >>= SDL.loadBMP
-  size <- SDL.surfaceDimensions surface
-  format <- SDL.surfaceFormat surface
-  key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.setColorKey surface (Just key)
-  t <- SDL.createTextureFromSurface r surface
-  SDL.freeSurface surface
+loadTexture :: FilePath -> SDL.RenderM Texture
+loadTexture filePath = do
+  (surface, size) <- SDL.liftRender loadSurface
+  t <- SDL.createTextureFromSurface surface
+  SDL.liftRender $ SDL.freeSurface surface
   return (Texture t size)
+    where
+      loadSurface = do
+        surface <- getDataFileName filePath >>= SDL.loadBMP
+        size <- SDL.surfaceDimensions surface
+        format <- SDL.surfaceFormat surface
+        key <- SDL.mapRGB format (V3 0 maxBound maxBound)
+        SDL.setColorKey surface (Just key)
+        return (surface, size)
 
-renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> Maybe CDouble -> Maybe (Point V2 CInt) -> Maybe (V2 Bool) -> IO ()
-renderTexture r (Texture t size) xy clip theta center flips =
+renderTexture :: Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> Maybe CDouble -> Maybe (Point V2 CInt) -> Maybe (V2 Bool) -> SDL.RenderM ()
+renderTexture (Texture t size) xy clip theta center flips =
   let dstSize =
         maybe size (\(SDL.Rectangle _ size') ->  size') clip
-  in SDL.renderCopyEx r
-                      t
+  in SDL.renderCopyEx t
                       clip
                       (Just (SDL.Rectangle xy dstSize))
                       (fromMaybe 0 theta)
@@ -72,9 +75,10 @@ main = do
          , SDL.rendererPresentVSync = True
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  arrowTexture <- SDL.withRenderer renderer $ do
+    SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
 
-  arrowTexture <- loadTexture renderer "examples/lazyfoo/arrow.bmp"
+    loadTexture "examples/lazyfoo/arrow.bmp"
 
   let loop theta flips = do
         let collectEvents = do
@@ -101,14 +105,18 @@ main = do
                          _ -> mempty) $
               map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-        SDL.renderClear renderer
-
-        let theta' = theta + phi
+            theta' = theta + phi
             flips' = fromMaybe flips newFlips
-        renderTexture renderer arrowTexture (P (fmap (`div` 2) (V2 screenWidth screenHeight) - fmap (`div` 2) (textureSize arrowTexture))) Nothing (Just theta') Nothing (Just flips')
 
-        SDL.renderPresent renderer
+        SDL.withRenderer renderer $ do
+          SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
+          SDL.renderClear
+
+          renderTexture arrowTexture
+                        (P (fmap (`div` 2) (V2 screenWidth screenHeight) - fmap (`div` 2) (textureSize arrowTexture)))
+                        Nothing (Just theta') Nothing (Just flips')
+
+          SDL.renderPresent
 
         unless quit (loop theta' flips')
 

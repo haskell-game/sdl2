@@ -20,21 +20,25 @@ screenWidth, screenHeight :: CInt
 
 data Texture = Texture SDL.Texture (V2 CInt)
 
-loadTexture :: SDL.Renderer -> FilePath -> IO Texture
-loadTexture r filePath = do
-  surface <- getDataFileName filePath >>= SDL.loadBMP
-  size <- SDL.surfaceDimensions surface
-  format <- SDL.surfaceFormat surface
-  key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.setColorKey surface (Just key)
-  t <- SDL.createTextureFromSurface r surface
-  SDL.freeSurface surface
+loadTexture :: FilePath -> SDL.RenderM Texture
+loadTexture filePath = do
+  (surface, size) <- SDL.liftRender loadSurface
+  t <- SDL.createTextureFromSurface surface
+  SDL.liftRender $ SDL.freeSurface surface
   return (Texture t size)
+    where
+      loadSurface = do
+        surface <- getDataFileName filePath >>= SDL.loadBMP
+        size <- SDL.surfaceDimensions surface
+        format <- SDL.surfaceFormat surface
+        key <- SDL.mapRGB format (V3 0 maxBound maxBound)
+        SDL.setColorKey surface (Just key)
+        return (surface, size)
 
-renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> IO ()
-renderTexture r (Texture t size) xy clip =
-  let dstSize = maybe size (\(SDL.Rectangle _ size') -> size') clip
-  in SDL.renderCopy r t clip (Just (SDL.Rectangle xy dstSize))
+renderTexture :: Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> SDL.RenderM ()
+renderTexture (Texture t size) xy clip =
+  let dstSize = maybe size (\(SDL.Rectangle _ size') ->  size') clip
+  in SDL.renderCopy t clip (Just (SDL.Rectangle xy dstSize))
 
 main :: IO ()
 main = do
@@ -61,9 +65,11 @@ main = do
          , SDL.rendererPresentVSync = True
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  spriteSheetTexture <- SDL.withRenderer renderer $ do
+    SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
 
-  spriteSheetTexture <- loadTexture renderer "examples/lazyfoo/animation.bmp"
+    loadTexture "examples/lazyfoo/animation.bmp"
+
   let spriteSize = V2 64 205
       clip1 = SDL.Rectangle (P (V2 0 0)) spriteSize
       clip2 = SDL.Rectangle (P (V2 64 0)) spriteSize
@@ -84,12 +90,13 @@ main = do
                          _ -> mempty) $
               map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-        SDL.renderClear renderer
+        SDL.withRenderer renderer $ do
+          SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
+          SDL.renderClear
 
-        renderTexture renderer spriteSheetTexture (P (fmap (`div` 2) (V2 screenWidth screenHeight) - fmap (`div` 2) spriteSize)) (Just frame)
+          renderTexture spriteSheetTexture (P (fmap (`div` 2) (V2 screenWidth screenHeight) - fmap (`div` 2) spriteSize)) (Just frame)
 
-        SDL.renderPresent renderer
+          SDL.renderPresent
 
         unless quit (loop frames)
 

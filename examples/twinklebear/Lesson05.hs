@@ -29,22 +29,22 @@ type ClipRect = Maybe (SDL.Rectangle CInt)
 data RenderPos = Centered | At (Point V2 CInt)
 
 
-loadTexture :: SDL.Renderer -> FilePath -> IO SDL.Texture
-loadTexture renderer path = do
-  bmp <- SDL.loadBMP path
-  SDL.createTextureFromSurface renderer bmp <* SDL.freeSurface bmp
+loadTexture :: FilePath -> SDL.RenderM SDL.Texture
+loadTexture path = do
+  bmp <- SDL.liftRender $ getDataFileName path >>= SDL.loadBMP
+  SDL.createTextureFromSurface bmp <* (SDL.liftRender $ SDL.freeSurface bmp)
 
 
-renderTexture :: SDL.Renderer -> SDL.Texture -> ClipRect -> RenderPos -> IO ()
-renderTexture renderer tex clipRect pos = do
-  ti <- SDL.queryTexture tex
+renderTexture :: SDL.Texture -> ClipRect -> RenderPos -> SDL.RenderM ()
+renderTexture tex clipRect pos = do
+  ti <- SDL.liftRender $ SDL.queryTexture tex
   let (w, h) = (SDL.textureWidth ti, SDL.textureHeight ti)
       pos'   = case pos of
         At p     -> p
         Centered -> let cntr a b = (a - b) `div` 2
                     in P $ V2 (cntr screenWidth w) (cntr screenHeight h)
       extent = (V2 w h)
-  SDL.renderCopy renderer tex clipRect (Just $ SDL.Rectangle pos' extent)
+  SDL.renderCopy tex clipRect (Just $ SDL.Rectangle pos' extent)
 
 
 main :: IO ()
@@ -56,12 +56,12 @@ main = do
   window <- SDL.createWindow "Lesson 5" winConfig
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
 
-  spriteSheet <- getDataFileName "examples/twinklebear/spritesheet.bmp" >>= loadTexture renderer
+  spriteSheet <- SDL.withRenderer renderer $ loadTexture "examples/twinklebear/spritesheet.bmp"
   let [spriteOne, spriteTwo, spriteThree, spriteFour] =
         [ SDL.Rectangle (P (V2 (x * spriteWidth) (y * spriteHeight))) (V2 spriteWidth spriteHeight)
           | x <- [0..1], y <- [0..1] ]
 
-  let loop spriteRect = do
+      loop spriteRect = do
         let collectEvents = do
               e <- SDL.pollEvent
               case e of
@@ -87,9 +87,10 @@ main = do
 
             spriteRect' = newSpriteRect <|> spriteRect
 
-        SDL.renderClear renderer
-        renderTexture renderer spriteSheet spriteRect' Centered
-        SDL.renderPresent renderer
+        SDL.withRenderer renderer $ do
+          SDL.renderClear
+          renderTexture spriteSheet spriteRect' Centered
+          SDL.renderPresent
 
         unless quit $ loop spriteRect'
 

@@ -19,31 +19,30 @@ screenWidth, screenHeight :: CInt
 data RenderPos = Centered | At (Point V2 CInt)
 
 
-loadTexture :: SDL.Renderer -> FilePath -> IO SDL.Texture
-loadTexture renderer path = do
-  bmp <- SDL.loadBMP path
-  SDL.createTextureFromSurface renderer bmp <* SDL.freeSurface bmp
+loadTexture :: FilePath -> SDL.RenderM SDL.Texture
+loadTexture path = do
+  bmp <- SDL.liftRender $ getDataFileName path >>= SDL.loadBMP
+  SDL.createTextureFromSurface bmp <* (SDL.liftRender $ SDL.freeSurface bmp)
 
-
-renderTexture :: SDL.Renderer -> SDL.Texture -> RenderPos -> IO ()
-renderTexture renderer tex pos = do
-  ti <- SDL.queryTexture tex
+renderTexture :: SDL.Texture -> RenderPos -> SDL.RenderM ()
+renderTexture tex pos = do
+  ti <- SDL.liftRender $ SDL.queryTexture tex
   let (w, h) = (SDL.textureWidth ti, SDL.textureHeight ti)
       pos'   = case pos of
         At p     -> p
         Centered -> let cntr a b = (a - b) `div` 2
                     in P $ V2 (cntr screenWidth w) (cntr screenHeight h)
       extent = (V2 w h)
-  SDL.renderCopy renderer tex Nothing (Just $ SDL.Rectangle pos' extent)
+  SDL.renderCopy tex Nothing (Just $ SDL.Rectangle pos' extent)
 
 
-renderTiledBackground :: SDL.Renderer -> SDL.Texture -> IO ()
-renderTiledBackground renderer tex = do
-  ti <- SDL.queryTexture tex
+renderTiledBackground :: SDL.Texture -> SDL.RenderM ()
+renderTiledBackground tex = do
+  ti <- SDL.liftRender $ SDL.queryTexture tex
   let (w, h) = (SDL.textureWidth ti, SDL.textureHeight ti)
       grid   = [ At . P $ V2 (x*w) (y*h) | x <- [ 0..screenWidth  `div` w ],
                                            y <- [ 0..screenHeight `div` h ]]
-  forM_ grid (renderTexture renderer tex)
+  forM_ grid (renderTexture tex)
 
 
 main :: IO ()
@@ -56,17 +55,20 @@ main = do
   window <- SDL.createWindow "Lesson 2" winConfig
   renderer <- SDL.createRenderer window (-1) rdrConfig
 
-  background <- getDataFileName "examples/twinklebear/background.bmp" >>= loadTexture renderer
-  image <- getDataFileName "examples/twinklebear/smiley.bmp" >>= loadTexture renderer
+  SDL.withRenderer renderer $ do
+    background <- loadTexture "examples/twinklebear/background.bmp"
+    image <- loadTexture "examples/twinklebear/smiley.bmp"
 
-  renderTiledBackground renderer background
-  renderTexture renderer image Centered
-  SDL.renderPresent renderer
+    renderTiledBackground background
+    renderTexture image Centered
+    SDL.renderPresent
 
-  SDL.delay 2000
+    SDL.liftRender $ do
+      SDL.delay 2000
 
-  SDL.destroyTexture image
-  SDL.destroyTexture background
+      SDL.destroyTexture image
+      SDL.destroyTexture background
+
   SDL.destroyRenderer renderer
   SDL.destroyWindow window
 

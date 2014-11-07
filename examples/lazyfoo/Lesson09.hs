@@ -38,11 +38,13 @@ main = do
          , SDL.rendererPresentVSync = False
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  texture <- SDL.withRenderer renderer $ do
+    SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
 
-  textureSurface <- getDataFileName "examples/lazyfoo/viewport.bmp" >>= SDL.loadBMP
-  texture <- SDL.createTextureFromSurface renderer textureSurface
-  SDL.freeSurface textureSurface
+    textureSurface <- SDL.liftRender $ getDataFileName "examples/lazyfoo/viewport.bmp" >>= SDL.loadBMP
+    tex <- SDL.createTextureFromSurface textureSurface
+    SDL.liftRender $ SDL.freeSurface textureSurface
+    return tex
 
   let loop = do
         let collectEvents = do
@@ -54,19 +56,20 @@ main = do
 
         let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
-        SDL.renderClear renderer
+        SDL.withRenderer renderer $ do
+          SDL.setRenderDrawColor (V4 maxBound maxBound maxBound maxBound)
+          SDL.renderClear
 
-        SDL.renderSetViewport renderer (Just $ SDL.Rectangle (P (V2 0 0)) (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
-        SDL.renderCopy renderer texture Nothing Nothing
+          SDL.renderSetViewport (Just $ SDL.Rectangle (P (V2 0 0)) (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
+          SDL.renderCopy texture Nothing Nothing
 
-        SDL.renderSetViewport renderer (Just $ SDL.Rectangle (P (V2 (screenWidth `div` 2) 0)) (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
-        SDL.renderCopy renderer texture Nothing Nothing
+          SDL.renderSetViewport (Just $ SDL.Rectangle (P (V2 (screenWidth `div` 2) 0)) (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
+          SDL.renderCopy texture Nothing Nothing
 
-        SDL.renderSetViewport renderer (Just $ SDL.Rectangle (P (V2 0 (screenHeight `div` 2))) (V2 screenWidth (screenHeight `div` 2)))
-        SDL.renderCopy renderer texture Nothing Nothing
+          SDL.renderSetViewport (Just $ SDL.Rectangle (P (V2 0 (screenHeight `div` 2))) (V2 screenWidth (screenHeight `div` 2)))
+          SDL.renderCopy texture Nothing Nothing
 
-        SDL.renderPresent renderer
+          SDL.renderPresent
 
         unless quit loop
 
