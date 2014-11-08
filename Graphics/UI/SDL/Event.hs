@@ -225,7 +225,7 @@ foreign import ccall "SDL.h SDL_IsGameController" isGameController :: CInt -> IO
 quitRequested :: IO Bool
 quitRequested = do
 	pumpEvents
-	ev <- peepEvents nullPtr 0 eventActionPeekEvent eventTypeQuit eventTypeQuit
+	ev <- peepEvents nullPtr 0 SDL_PEEKEVENT SDL_QUIT SDL_QUIT
 	return $ ev > 0
 
 joystickGetDeviceGUID :: CInt -> IO JoystickGUID

@@ -1,5 +1,5 @@
 name:                sdl2
-version:             1.2.0
+version:             1.3.0
 synopsis:            Low-level bindings to SDL2
 description:         Low-level bindings to the SDL2 library, version 2.0.3.
 license:             BSD3
@@ -42,12 +42,6 @@ library
     Graphics.UI.SDL.Types
     Graphics.UI.SDL.Video
 
-  other-modules:
-    Graphics.UI.SDL.Enum.Internal
-
-  if impl(ghc>=7.8)
-    exposed-modules: Graphics.UI.SDL.Enum.Pattern
-
   c-sources:
     cbits/sdlhelper.c
 
@@ -65,7 +59,7 @@ library
     sdl2 >= 2.0.3
 
   build-depends:
-    base == 4.*
+    base >= 4.7 && < 5
 
   default-language:
     Haskell2010

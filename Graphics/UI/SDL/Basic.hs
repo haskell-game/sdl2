@@ -84,22 +84,22 @@ foreign import ccall "SDL.h SDL_GetRevisionNumber" getRevisionNumber :: IO CInt
 foreign import ccall "SDL.h SDL_GetVersion" getVersion :: Ptr Version -> IO ()
 
 log :: CString -> IO ()
-log = logMessage logCategoryApplication logPriorityInfo
+log = logMessage SDL_LOG_CATEGORY_APPLICATION SDL_LOG_PRIORITY_INFO
 
 logCritical :: CInt -> CString -> IO ()
-logCritical category = logMessage category logPriorityCritical
+logCritical category = logMessage category SDL_LOG_PRIORITY_CRITICAL
 
 logDebug :: CInt -> CString -> IO ()
-logDebug category = logMessage category logPriorityDebug
+logDebug category = logMessage category SDL_LOG_PRIORITY_DEBUG
 
 logError :: CInt -> CString -> IO ()
-logError category = logMessage category logPriorityError
+logError category = logMessage category SDL_LOG_PRIORITY_ERROR
 
 logInfo :: CInt -> CString -> IO ()
-logInfo category = logMessage category logPriorityInfo
+logInfo category = logMessage category SDL_LOG_PRIORITY_INFO
 
 logVerbose :: CInt -> CString -> IO ()
-logVerbose category = logMessage category logPriorityVerbose
+logVerbose category = logMessage category SDL_LOG_PRIORITY_VERBOSE
 
 logWarn :: CInt -> CString -> IO ()
-logWarn category = logMessage category logPriorityWarn
+logWarn category = logMessage category SDL_LOG_PRIORITY_WARN
