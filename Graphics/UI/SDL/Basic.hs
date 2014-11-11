@@ -1,48 +1,48 @@
 module Graphics.UI.SDL.Basic (
-	-- * Initialization and Shutdown
-	init,
-	initSubSystem,
-	quit,
-	quitSubSystem,
-	setMainReady,
-	wasInit,
+  -- * Initialization and Shutdown
+  init,
+  initSubSystem,
+  quit,
+  quitSubSystem,
+  setMainReady,
+  wasInit,
 
-	-- * Configuration Variables
-	addHintCallback,
-	clearHints,
-	delHintCallback,
-	getHint,
-	setHint,
-	setHintWithPriority,
+  -- * Configuration Variables
+  addHintCallback,
+  clearHints,
+  delHintCallback,
+  getHint,
+  setHint,
+  setHintWithPriority,
 
-	-- * Error Handling
-	clearError,
-	getError,
-	setError,
+  -- * Error Handling
+  clearError,
+  getError,
+  setError,
 
-	-- * Log Handling
-	log,
-	logCritical,
-	logDebug,
-	logError,
-	logGetOutputFunction,
-	logGetPriority,
-	logInfo,
-	logMessage,
-	logResetPriorities,
-	logSetAllPriority,
-	logSetOutputFunction,
-	logSetPriority,
-	logVerbose,
-	logWarn,
+  -- * Log Handling
+  log,
+  logCritical,
+  logDebug,
+  logError,
+  logGetOutputFunction,
+  logGetPriority,
+  logInfo,
+  logMessage,
+  logResetPriorities,
+  logSetAllPriority,
+  logSetOutputFunction,
+  logSetPriority,
+  logVerbose,
+  logWarn,
 
-	-- * Assertions
-	-- | Use Haskell's own assertion primitives rather than SDL's.
+  -- * Assertions
+  -- | Use Haskell's own assertion primitives rather than SDL's.
 
-	-- * Querying SDL Version
-	getRevision,
-	getRevisionNumber,
-	getVersion
+  -- * Querying SDL Version
+  getRevision,
+  getRevisionNumber,
+  getVersion
 ) where
 
 import Foreign.C.String

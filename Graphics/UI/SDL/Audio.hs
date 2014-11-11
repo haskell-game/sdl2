@@ -1,31 +1,31 @@
 module Graphics.UI.SDL.Audio (
-	-- * Audio Device Management, Playing and Recording
-	audioInit,
-	audioQuit,
-	buildAudioCVT,
-	closeAudio,
-	closeAudioDevice,
-	convertAudio,
-	freeWAV,
-	getAudioDeviceName,
-	getAudioDeviceStatus,
-	getAudioDriver,
-	getAudioStatus,
-	getCurrentAudioDriver,
-	getNumAudioDevices,
-	getNumAudioDrivers,
-	loadWAV,
-	loadWAV_RW,
-	lockAudio,
-	lockAudioDevice,
-	mixAudio,
-	mixAudioFormat,
-	openAudio,
-	openAudioDevice,
-	pauseAudio,
-	pauseAudioDevice,
-	unlockAudio,
-	unlockAudioDevice
+  -- * Audio Device Management, Playing and Recording
+  audioInit,
+  audioQuit,
+  buildAudioCVT,
+  closeAudio,
+  closeAudioDevice,
+  convertAudio,
+  freeWAV,
+  getAudioDeviceName,
+  getAudioDeviceStatus,
+  getAudioDriver,
+  getAudioStatus,
+  getCurrentAudioDriver,
+  getNumAudioDevices,
+  getNumAudioDrivers,
+  loadWAV,
+  loadWAV_RW,
+  lockAudio,
+  lockAudioDevice,
+  mixAudio,
+  mixAudioFormat,
+  openAudio,
+  openAudioDevice,
+  pauseAudio,
+  pauseAudioDevice,
+  unlockAudio,
+  unlockAudioDevice
 ) where
 
 import Data.Word
@@ -64,5 +64,5 @@ foreign import ccall "SDL.h SDL_UnlockAudioDevice" unlockAudioDevice :: AudioDev
 
 loadWAV :: CString -> Ptr AudioSpec -> Ptr (Ptr Word8) -> Ptr Word32 -> IO (Ptr AudioSpec)
 loadWAV file spec audio_buf audio_len = do
-	rw <- withCString "rb" $ rwFromFile file
-	loadWAV_RW rw 1 spec audio_buf audio_len
+  rw <- withCString "rb" $ rwFromFile file
+  loadWAV_RW rw 1 spec audio_buf audio_len

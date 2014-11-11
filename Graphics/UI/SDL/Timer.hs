@@ -1,11 +1,11 @@
 module Graphics.UI.SDL.Timer (
-	-- * Timer Support
-	addTimer,
-	delay,
-	getPerformanceCounter,
-	getPerformanceFrequency,
-	getTicks,
-	removeTimer
+  -- * Timer Support
+  addTimer,
+  delay,
+  getPerformanceCounter,
+  getPerformanceFrequency,
+  getTicks,
+  removeTimer
 ) where
 
 import Data.Word

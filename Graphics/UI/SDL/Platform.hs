@@ -1,6 +1,6 @@
 module Graphics.UI.SDL.Platform (
-	-- * Platform Detection
-	getPlatform
+  -- * Platform Detection
+  getPlatform
 ) where
 
 import Foreign.C.String

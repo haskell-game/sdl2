@@ -1,49 +1,49 @@
 module Graphics.UI.SDL.Thread (
-	-- * Thread Management
-	createThread,
-	detachThread,
-	getThreadID,
-	getThreadName,
-	setThreadPriority,
-	tlsCreate,
-	tlsGet,
-	tlsSet,
-	threadID,
-	waitThread,
+  -- * Thread Management
+  createThread,
+  detachThread,
+  getThreadID,
+  getThreadName,
+  setThreadPriority,
+  tlsCreate,
+  tlsGet,
+  tlsSet,
+  threadID,
+  waitThread,
 
-	-- * Thread Synchronization Primitives
-	condBroadcast,
-	condSignal,
-	condWait,
-	condWaitTimeout,
-	createCond,
-	createMutex,
-	createSemaphore,
-	destroyCond,
-	destroyMutex,
-	destroySemaphore,
-	lockMutex,
-	semPost,
-	semTryWait,
-	semValue,
-	semWait,
-	semWaitTimeout,
-	tryLockMutex,
-	unlockMutex,
+  -- * Thread Synchronization Primitives
+  condBroadcast,
+  condSignal,
+  condWait,
+  condWaitTimeout,
+  createCond,
+  createMutex,
+  createSemaphore,
+  destroyCond,
+  destroyMutex,
+  destroySemaphore,
+  lockMutex,
+  semPost,
+  semTryWait,
+  semValue,
+  semWait,
+  semWaitTimeout,
+  tryLockMutex,
+  unlockMutex,
 
-	-- * Atomic Operations
-	atomicAdd,
-	atomicCAS,
-	atomicCASPtr,
-	atomicDecRef,
-	atomicGet,
-	atomicGetPtr,
-	atomicIncRef,
-	atomicLock,
-	atomicSet,
-	atomicSetPtr,
-	atomicTryLock,
-	atomicUnlock
+  -- * Atomic Operations
+  atomicAdd,
+  atomicCAS,
+  atomicCASPtr,
+  atomicDecRef,
+  atomicGet,
+  atomicGetPtr,
+  atomicIncRef,
+  atomicLock,
+  atomicSet,
+  atomicSetPtr,
+  atomicTryLock,
+  atomicUnlock
 ) where
 
 import Data.Word
@@ -96,8 +96,8 @@ foreign import ccall "SDL.h SDL_AtomicUnlock" atomicUnlock :: Ptr SpinLock -> IO
 
 atomicDecRef :: Ptr Atomic -> IO Bool
 atomicDecRef a = do
-	old <- atomicAdd a (-1)
-	return $ old == 1
+  old <- atomicAdd a (-1)
+  return $ old == 1
 
 atomicIncRef :: Ptr Atomic -> IO CInt
 atomicIncRef a = atomicAdd a 1

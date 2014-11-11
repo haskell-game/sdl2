@@ -1,32 +1,32 @@
 module Graphics.UI.SDL.Filesystem (
-	-- * Filesystem Paths
-	getBasePath,
-	getPrefPath,
+  -- * Filesystem Paths
+  getBasePath,
+  getPrefPath,
 
-	-- * File I/O Abstraction
-	allocRW,
-	freeRW,
-	rwFromConstMem,
-	rwFromFP,
-	rwFromFile,
-	rwFromMem,
-	rwClose,
-	rwRead,
-	rwSeek,
-	rwTell,
-	rwWrite,
-	readBE16,
-	readBE32,
-	readBE64,
-	readLE16,
-	readLE32,
-	readLE64,
-	writeBE16,
-	writeBE32,
-	writeBE64,
-	writeLE16,
-	writeLE32,
-	writeLE64
+  -- * File I/O Abstraction
+  allocRW,
+  freeRW,
+  rwFromConstMem,
+  rwFromFP,
+  rwFromFile,
+  rwFromMem,
+  rwClose,
+  rwRead,
+  rwSeek,
+  rwTell,
+  rwWrite,
+  readBE16,
+  readBE32,
+  readBE64,
+  readLE16,
+  readLE32,
+  readLE64,
+  writeBE16,
+  writeBE32,
+  writeBE64,
+  writeLE16,
+  writeLE32,
+  writeLE64
 ) where
 
 import Data.Int

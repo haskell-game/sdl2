@@ -1,6 +1,6 @@
 module Graphics.UI.SDL.Power (
-	-- * Power Management Status
-	getPowerInfo
+  -- * Power Management Status
+  getPowerInfo
 ) where
 
 import Foreign.C.Types
