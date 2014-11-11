@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PatternSynonyms #-}
 module SDL.Power
   ( -- * Power Status
     getPowerInfo
@@ -23,7 +24,7 @@ import qualified SDL.Raw as Raw
 getPowerInfo :: IO PowerState
 getPowerInfo = do
   -- TODO: SDL_GetPowerInfo does not set an SDL error
-  fromNumber <$> throwIf (== Raw.powerStateUnknown)
+  fromNumber <$> throwIf (== Raw.SDL_POWERSTATE_UNKNOWN)
     "SDL.Power.getPowerInfo" "SDL_GetPowerInfo"
     (Raw.getPowerInfo nullPtr nullPtr)
 
@@ -40,8 +41,8 @@ data BatteryState
 
 instance FromNumber PowerState Word32 where
   fromNumber n' = case n' of
-    n | n == Raw.powerStateOnBattery -> Battery Draining
-    n | n == Raw.powerStateNoBattery -> Mains
-    n | n == Raw.powerStateCharging -> Battery Charging
-    n | n == Raw.powerStateCharged -> Battery Charged
+    n | n == Raw.SDL_POWERSTATE_ON_BATTERY -> Battery Draining
+    n | n == Raw.SDL_POWERSTATE_NO_BATTERY -> Mains
+    n | n == Raw.SDL_POWERSTATE_CHARGING -> Battery Charging
+    n | n == Raw.SDL_POWERSTATE_CHARGED -> Battery Charged
     _ -> error "fromNumber: not numbered"

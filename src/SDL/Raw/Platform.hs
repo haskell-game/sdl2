@@ -1,6 +1,6 @@
 module SDL.Raw.Platform (
-	-- * Platform Detection
-	getPlatform
+  -- * Platform Detection
+  getPlatform
 ) where
 
 import Foreign.C.String

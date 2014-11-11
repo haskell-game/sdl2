@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PatternSynonyms #-}
 module SDL.Input.Mouse
   ( -- * Relative Mouse Mode
     setRelativeMouseMode
@@ -74,8 +75,8 @@ data MouseDevice
 
 instance FromNumber MouseDevice Word32 where
   fromNumber n' = case n' of
-    n | n == Raw.touchMouseID -> Touch
-    n | otherwise -> Mouse $ fromIntegral n
+    Raw.SDL_TOUCH_MOUSEID -> Touch
+    n -> Mouse $ fromIntegral n
 
 -- | Are buttons being pressed or released?
 data MouseMotion

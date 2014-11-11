@@ -2,6 +2,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PatternSynonyms #-}
 module SDL.Video
   ( module SDL.Video.OpenGL
   , module SDL.Video.Renderer
@@ -102,38 +103,38 @@ createWindow title config = do
   BS.useAsCString (Text.encodeUtf8 title) $ \title' -> do
     let create = Raw.createWindow title'
     let create' (V2 w h) = case windowPosition config of
-          Centered -> create Raw.windowPosCentered Raw.windowPosCentered w h
-          Wherever -> create Raw.windowPosUndefined Raw.windowPosUndefined w h
+          Centered -> let u = Raw.SDL_WINDOWPOS_CENTERED in create u u w h
+          Wherever -> let u = Raw.SDL_WINDOWPOS_UNDEFINED in create u u w h
           Absolute (P (V2 x y)) -> create x y w h
     create' (windowSize config) flags >>= return . Window
   where
     flags = foldr (.|.) 0
-      [ if windowBorder config then 0 else Raw.windowFlagBorderless
-      , if windowHighDPI config then Raw.windowFlagAllowHighDPI else 0
-      , if windowInputGrabbed config then Raw.windowFlagInputGrabbed else 0
+      [ if windowBorder config then 0 else Raw.SDL_WINDOW_BORDERLESS
+      , if windowHighDPI config then Raw.SDL_WINDOW_ALLOW_HIGHDPI else 0
+      , if windowInputGrabbed config then Raw.SDL_WINDOW_INPUT_GRABBED else 0
       , toNumber $ windowMode config
-      , if isJust $ windowOpenGL config then Raw.windowFlagOpenGL else 0
-      , if windowResizable config then Raw.windowFlagResizable else 0
+      , if isJust $ windowOpenGL config then Raw.SDL_WINDOW_OPENGL else 0
+      , if windowResizable config then Raw.SDL_WINDOW_RESIZABLE else 0
       ]
     setGLAttributes (OpenGLConfig (V4 r g b a) d s p) = do
       let (msk, v0, v1, flg) = case p of
-            Core Debug v0' v1' -> (Raw.glProfileCore, v0', v1', Raw.glContextFlagDebug)
-            Core Normal v0' v1' -> (Raw.glProfileCore, v0', v1', 0)
-            Compatibility Debug v0' v1' -> (Raw.glProfileCompatibility, v0', v1', Raw.glContextFlagDebug)
-            Compatibility Normal v0' v1' -> (Raw.glProfileCompatibility, v0', v1', 0)
-            ES Debug v0' v1' -> (Raw.glProfileES, v0', v1', Raw.glContextFlagDebug)
-            ES Normal v0' v1' -> (Raw.glProfileES, v0', v1', 0)
+            Core Debug v0' v1' -> (Raw.SDL_GL_CONTEXT_PROFILE_CORE, v0', v1', Raw.SDL_GL_CONTEXT_DEBUG_FLAG)
+            Core Normal v0' v1' -> (Raw.SDL_GL_CONTEXT_PROFILE_CORE, v0', v1', 0)
+            Compatibility Debug v0' v1' -> (Raw.SDL_GL_CONTEXT_PROFILE_COMPATIBILITY, v0', v1', Raw.SDL_GL_CONTEXT_DEBUG_FLAG)
+            Compatibility Normal v0' v1' -> (Raw.SDL_GL_CONTEXT_PROFILE_COMPATIBILITY, v0', v1', 0)
+            ES Debug v0' v1' -> (Raw.SDL_GL_CONTEXT_PROFILE_ES, v0', v1', Raw.SDL_GL_CONTEXT_DEBUG_FLAG)
+            ES Normal v0' v1' -> (Raw.SDL_GL_CONTEXT_PROFILE_ES, v0', v1', 0)
       mapM_ (throwIfNeg_ "SDL.Video.createWindow" "SDL_GL_SetAttribute" . uncurry Raw.glSetAttribute) $
-        [ (Raw.glAttrRedSize, r)
-        , (Raw.glAttrGreenSize, g)
-        , (Raw.glAttrBlueSize, b)
-        , (Raw.glAttrAlphaSize, a)
-        , (Raw.glAttrDepthSize, d)
-        , (Raw.glAttrStencilSize, s)
-        , (Raw.glAttrContextProfileMask, msk)
-        , (Raw.glAttrContextMajorVersion, v0)
-        , (Raw.glAttrContextMinorVersion, v1)
-        , (Raw.glAttrContextFlags, flg)
+        [ (Raw.SDL_GL_RED_SIZE, r)
+        , (Raw.SDL_GL_GREEN_SIZE, g)
+        , (Raw.SDL_GL_BLUE_SIZE, b)
+        , (Raw.SDL_GL_ALPHA_SIZE, a)
+        , (Raw.SDL_GL_DEPTH_SIZE, d)
+        , (Raw.SDL_GL_STENCIL_SIZE, s)
+        , (Raw.SDL_GL_CONTEXT_PROFILE_MASK, msk)
+        , (Raw.SDL_GL_CONTEXT_MAJOR_VERSION, v0)
+        , (Raw.SDL_GL_CONTEXT_MINOR_VERSION, v1)
+        , (Raw.SDL_GL_CONTEXT_FLAGS, flg)
         ]
 
 -- | Default configuration for windows. Use the record update syntax to
@@ -170,10 +171,10 @@ data WindowMode
   deriving (Eq, Show, Typeable)
 
 instance ToNumber WindowMode Word32 where
-  toNumber Fullscreen = Raw.windowFlagFullscreen
-  toNumber FullscreenDesktop = Raw.windowFlagFullscreenDesktop
-  toNumber Maximized = Raw.windowFlagMaximized
-  toNumber Minimized = Raw.windowFlagMinimized
+  toNumber Fullscreen = Raw.SDL_WINDOW_FULLSCREEN
+  toNumber FullscreenDesktop = Raw.SDL_WINDOW_FULLSCREEN_DESKTOP
+  toNumber Maximized = Raw.SDL_WINDOW_MAXIMIZED
+  toNumber Minimized = Raw.SDL_WINDOW_MINIMIZED
   toNumber Windowed = 0
 
 data WindowPosition
@@ -212,8 +213,8 @@ setWindowMode :: Window -> WindowMode -> IO ()
 setWindowMode (Window w) mode =
   throwIfNot0_ "SDL.Video.setWindowMode" "SDL_SetWindowFullscreen" $
     case mode of
-      Fullscreen -> Raw.setWindowFullscreen w Raw.windowFlagFullscreen
-      FullscreenDesktop -> Raw.setWindowFullscreen w Raw.windowFlagFullscreenDesktop
+      Fullscreen -> Raw.setWindowFullscreen w Raw.SDL_WINDOW_FULLSCREEN
+      FullscreenDesktop -> Raw.setWindowFullscreen w Raw.SDL_WINDOW_FULLSCREEN_DESKTOP
       Maximized -> Raw.setWindowFullscreen w 0 <* Raw.maximizeWindow w
       Minimized -> Raw.minimizeWindow w >> return 0
       Windowed -> Raw.restoreWindow w >> return 0
@@ -221,8 +222,8 @@ setWindowMode (Window w) mode =
 -- | Set the position of the window.
 setWindowPosition :: Window -> WindowPosition -> IO ()
 setWindowPosition (Window w) pos = case pos of
-  Centered -> let u = Raw.windowPosCentered in Raw.setWindowPosition w u u
-  Wherever -> let u = Raw.windowPosUndefined in Raw.setWindowPosition w u u
+  Centered -> let u = Raw.SDL_WINDOWPOS_CENTERED in Raw.setWindowPosition w u u
+  Wherever -> let u = Raw.SDL_WINDOWPOS_UNDEFINED in Raw.setWindowPosition w u u
   Absolute (P (V2 x y)) -> Raw.setWindowPosition w x y
 
 -- | Set the size of the window. Values beyond the maximum supported size are
@@ -377,9 +378,9 @@ data MessageKind
   deriving (Eq, Show, Typeable)
 
 instance ToNumber MessageKind Word32 where
-  toNumber Error = Raw.messageBoxFlagError
-  toNumber Warning = Raw.messageBoxFlagWarning
-  toNumber Information = Raw.messageBoxFlagInformation
+  toNumber Error = Raw.SDL_MESSAGEBOX_ERROR
+  toNumber Warning = Raw.SDL_MESSAGEBOX_WARNING
+  toNumber Information = Raw.SDL_MESSAGEBOX_INFORMATION
 
 setWindowMaximumSize :: Window -> V2 CInt -> IO ()
 setWindowMaximumSize (Window win) (V2 w h) = Raw.setWindowMaximumSize win w h

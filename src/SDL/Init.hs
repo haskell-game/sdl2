@@ -31,15 +31,15 @@ data InitFlag
   deriving (Eq, Show, Typeable)
 
 instance ToNumber InitFlag Word32 where
-  toNumber InitTimer = Raw.initFlagTimer
-  toNumber InitAudio = Raw.initFlagAudio
-  toNumber InitVideo = Raw.initFlagVideo
-  toNumber InitJoystick = Raw.initFlagJoystick
-  toNumber InitHaptic = Raw.initFlagHaptic
-  toNumber InitGameController = Raw.initFlagGameController
-  toNumber InitEvents = Raw.initFlagEvents
-  toNumber InitEverything = Raw.initFlagEverything
-  toNumber InitNoParachute = Raw.initFlagNoParachute
+  toNumber InitTimer = Raw.SDL_INIT_TIMER
+  toNumber InitAudio = Raw.SDL_INIT_AUDIO
+  toNumber InitVideo = Raw.SDL_INIT_VIDEO
+  toNumber InitJoystick = Raw.SDL_INIT_JOYSTICK
+  toNumber InitHaptic = Raw.SDL_INIT_HAPTIC
+  toNumber InitGameController = Raw.SDL_INIT_GAMECONTROLLER
+  toNumber InitEvents = Raw.SDL_INIT_EVENTS
+  toNumber InitEverything = Raw.SDL_INIT_EVERYTHING
+  toNumber InitNoParachute = Raw.SDL_INIT_NOPARACHUTE
 
 -- | Initializes SDL and the given subsystems. Do not call any SDL functions
 -- prior to this one, unless otherwise documented that you may do so.

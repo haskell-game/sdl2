@@ -1,6 +1,6 @@
-module SDL.Raw.Power (  --
-	-- * Power Management Status
-	getPowerInfo
+module SDL.Raw.Power (
+  -- * Power Management Status
+  getPowerInfo
 ) where
 
 import Foreign.C.Types

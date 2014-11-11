@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE PatternSynonyms #-}
 module SDL.Input.Keyboard
   ( -- * Keyboard Modifiers
     getModState
@@ -63,32 +64,32 @@ data KeyModifier = KeyModifier
 
 instance FromNumber KeyModifier Word32 where
   fromNumber m' = let m = m' in KeyModifier
-    { keyModifierLeftShift  = m .&. Raw.keymodLShift > 0
-    , keyModifierRightShift = m .&. Raw.keymodRShift > 0
-    , keyModifierLeftCtrl   = m .&. Raw.keymodLCtrl  > 0
-    , keyModifierRightCtrl  = m .&. Raw.keymodRCtrl  > 0
-    , keyModifierLeftAlt    = m .&. Raw.keymodLAlt   > 0
-    , keyModifierRightAlt   = m .&. Raw.keymodRAlt   > 0
-    , keyModifierLeftGUI    = m .&. Raw.keymodLGUI   > 0
-    , keyModifierRightGUI   = m .&. Raw.keymodRGUI   > 0
-    , keyModifierNumLock    = m .&. Raw.keymodNum    > 0
-    , keyModifierCapsLock   = m .&. Raw.keymodCaps   > 0
-    , keyModifierAltGr      = m .&. Raw.keymodMode   > 0
+    { keyModifierLeftShift  = m .&. Raw.KMOD_LSHIFT > 0
+    , keyModifierRightShift = m .&. Raw.KMOD_RSHIFT > 0
+    , keyModifierLeftCtrl   = m .&. Raw.KMOD_LCTRL  > 0
+    , keyModifierRightCtrl  = m .&. Raw.KMOD_RCTRL  > 0
+    , keyModifierLeftAlt    = m .&. Raw.KMOD_LALT   > 0
+    , keyModifierRightAlt   = m .&. Raw.KMOD_RALT   > 0
+    , keyModifierLeftGUI    = m .&. Raw.KMOD_LGUI   > 0
+    , keyModifierRightGUI   = m .&. Raw.KMOD_RGUI   > 0
+    , keyModifierNumLock    = m .&. Raw.KMOD_NUM    > 0
+    , keyModifierCapsLock   = m .&. Raw.KMOD_CAPS   > 0
+    , keyModifierAltGr      = m .&. Raw.KMOD_MODE   > 0
     }
 
 instance ToNumber KeyModifier Word32 where
   toNumber m = foldr (.|.) 0
-    [ if keyModifierLeftShift m  then Raw.keymodLShift else 0
-    , if keyModifierRightShift m then Raw.keymodRShift else 0
-    , if keyModifierLeftCtrl m   then Raw.keymodLCtrl  else 0
-    , if keyModifierRightCtrl m  then Raw.keymodRCtrl  else 0
-    , if keyModifierLeftAlt m    then Raw.keymodLAlt   else 0
-    , if keyModifierRightAlt m   then Raw.keymodRAlt   else 0
-    , if keyModifierLeftGUI m    then Raw.keymodLGUI   else 0
-    , if keyModifierRightGUI m   then Raw.keymodRGUI   else 0
-    , if keyModifierNumLock m    then Raw.keymodNum    else 0
-    , if keyModifierCapsLock m   then Raw.keymodCaps   else 0
-    , if keyModifierAltGr m      then Raw.keymodMode   else 0
+    [ if keyModifierLeftShift m  then Raw.KMOD_LSHIFT else 0
+    , if keyModifierRightShift m then Raw.KMOD_RSHIFT else 0
+    , if keyModifierLeftCtrl m   then Raw.KMOD_LCTRL  else 0
+    , if keyModifierRightCtrl m  then Raw.KMOD_RCTRL  else 0
+    , if keyModifierLeftAlt m    then Raw.KMOD_LALT   else 0
+    , if keyModifierRightAlt m   then Raw.KMOD_RALT   else 0
+    , if keyModifierLeftGUI m    then Raw.KMOD_LGUI   else 0
+    , if keyModifierRightGUI m   then Raw.KMOD_RGUI   else 0
+    , if keyModifierNumLock m    then Raw.KMOD_NUM    else 0
+    , if keyModifierCapsLock m   then Raw.KMOD_CAPS   else 0
+    , if keyModifierAltGr m      then Raw.KMOD_MODE   else 0
     ]
 
 -- | Set the rectangle used to type text inputs and start accepting text input
@@ -364,493 +365,493 @@ data Scancode
 
 instance FromNumber Scancode Word32 where
   fromNumber n' = case n' of
-    n | n == Raw.scancodeUnknown -> ScancodeUnknown
-    n | n == Raw.scancodeA -> ScancodeA
-    n | n == Raw.scancodeB -> ScancodeB
-    n | n == Raw.scancodeC -> ScancodeC
-    n | n == Raw.scancodeD -> ScancodeD
-    n | n == Raw.scancodeE -> ScancodeE
-    n | n == Raw.scancodeF -> ScancodeF
-    n | n == Raw.scancodeG -> ScancodeG
-    n | n == Raw.scancodeH -> ScancodeH
-    n | n == Raw.scancodeI -> ScancodeI
-    n | n == Raw.scancodeJ -> ScancodeJ
-    n | n == Raw.scancodeK -> ScancodeK
-    n | n == Raw.scancodeL -> ScancodeL
-    n | n == Raw.scancodeM -> ScancodeM
-    n | n == Raw.scancodeN -> ScancodeN
-    n | n == Raw.scancodeO -> ScancodeO
-    n | n == Raw.scancodeP -> ScancodeP
-    n | n == Raw.scancodeQ -> ScancodeQ
-    n | n == Raw.scancodeR -> ScancodeR
-    n | n == Raw.scancodeS -> ScancodeS
-    n | n == Raw.scancodeT -> ScancodeT
-    n | n == Raw.scancodeU -> ScancodeU
-    n | n == Raw.scancodeV -> ScancodeV
-    n | n == Raw.scancodeW -> ScancodeW
-    n | n == Raw.scancodeX -> ScancodeX
-    n | n == Raw.scancodeY -> ScancodeY
-    n | n == Raw.scancodeZ -> ScancodeZ
-    n | n == Raw.scancode1 -> Scancode1
-    n | n == Raw.scancode2 -> Scancode2
-    n | n == Raw.scancode3 -> Scancode3
-    n | n == Raw.scancode4 -> Scancode4
-    n | n == Raw.scancode5 -> Scancode5
-    n | n == Raw.scancode6 -> Scancode6
-    n | n == Raw.scancode7 -> Scancode7
-    n | n == Raw.scancode8 -> Scancode8
-    n | n == Raw.scancode9 -> Scancode9
-    n | n == Raw.scancode0 -> Scancode0
-    n | n == Raw.scancodeReturn -> ScancodeReturn
-    n | n == Raw.scancodeEscape -> ScancodeEscape
-    n | n == Raw.scancodeBackspace -> ScancodeBackspace
-    n | n == Raw.scancodeTab -> ScancodeTab
-    n | n == Raw.scancodeSpace -> ScancodeSpace
-    n | n == Raw.scancodeMinus -> ScancodeMinus
-    n | n == Raw.scancodeEquals -> ScancodeEquals
-    n | n == Raw.scancodeLeftBracket -> ScancodeLeftBracket
-    n | n == Raw.scancodeRightBracket -> ScancodeRightBracket
-    n | n == Raw.scancodeBackslash -> ScancodeBackslash
-    n | n == Raw.scancodeNonUSHash -> ScancodeNonUSHash
-    n | n == Raw.scancodeSemicolon -> ScancodeSemicolon
-    n | n == Raw.scancodeApostrophe -> ScancodeApostrophe
-    n | n == Raw.scancodeGrave -> ScancodeGrave
-    n | n == Raw.scancodeComma -> ScancodeComma
-    n | n == Raw.scancodePeriod -> ScancodePeriod
-    n | n == Raw.scancodeSlash -> ScancodeSlash
-    n | n == Raw.scancodeCapsLock -> ScancodeCapsLock
-    n | n == Raw.scancodeF1 -> ScancodeF1
-    n | n == Raw.scancodeF2 -> ScancodeF2
-    n | n == Raw.scancodeF3 -> ScancodeF3
-    n | n == Raw.scancodeF4 -> ScancodeF4
-    n | n == Raw.scancodeF5 -> ScancodeF5
-    n | n == Raw.scancodeF6 -> ScancodeF6
-    n | n == Raw.scancodeF7 -> ScancodeF7
-    n | n == Raw.scancodeF8 -> ScancodeF8
-    n | n == Raw.scancodeF9 -> ScancodeF9
-    n | n == Raw.scancodeF10 -> ScancodeF10
-    n | n == Raw.scancodeF11 -> ScancodeF11
-    n | n == Raw.scancodeF12 -> ScancodeF12
-    n | n == Raw.scancodePrintScreen -> ScancodePrintScreen
-    n | n == Raw.scancodeScrollLock -> ScancodeScrollLock
-    n | n == Raw.scancodePause -> ScancodePause
-    n | n == Raw.scancodeInsert -> ScancodeInsert
-    n | n == Raw.scancodeHome -> ScancodeHome
-    n | n == Raw.scancodePageUp -> ScancodePageUp
-    n | n == Raw.scancodeDelete -> ScancodeDelete
-    n | n == Raw.scancodeEnd -> ScancodeEnd
-    n | n == Raw.scancodePageDown -> ScancodePageDown
-    n | n == Raw.scancodeRight -> ScancodeRight
-    n | n == Raw.scancodeLeft -> ScancodeLeft
-    n | n == Raw.scancodeDown -> ScancodeDown
-    n | n == Raw.scancodeUp -> ScancodeUp
-    n | n == Raw.scancodeNumLockClear -> ScancodeNumLockClear
-    n | n == Raw.scancodeKPDivide -> ScancodeKPDivide
-    n | n == Raw.scancodeKPMultiply -> ScancodeKPMultiply
-    n | n == Raw.scancodeKPMinus -> ScancodeKPMinus
-    n | n == Raw.scancodeKPPlus -> ScancodeKPPlus
-    n | n == Raw.scancodeKPEnter -> ScancodeKPEnter
-    n | n == Raw.scancodeKP1 -> ScancodeKP1
-    n | n == Raw.scancodeKP2 -> ScancodeKP2
-    n | n == Raw.scancodeKP3 -> ScancodeKP3
-    n | n == Raw.scancodeKP4 -> ScancodeKP4
-    n | n == Raw.scancodeKP5 -> ScancodeKP5
-    n | n == Raw.scancodeKP6 -> ScancodeKP6
-    n | n == Raw.scancodeKP7 -> ScancodeKP7
-    n | n == Raw.scancodeKP8 -> ScancodeKP8
-    n | n == Raw.scancodeKP9 -> ScancodeKP9
-    n | n == Raw.scancodeKP0 -> ScancodeKP0
-    n | n == Raw.scancodeKPPeriod -> ScancodeKPPeriod
-    n | n == Raw.scancodeNonUSBackslash -> ScancodeNonUSBackslash
-    n | n == Raw.scancodeApplication -> ScancodeApplication
-    n | n == Raw.scancodePower -> ScancodePower
-    n | n == Raw.scancodeKPEquals -> ScancodeKPEquals
-    n | n == Raw.scancodeF13 -> ScancodeF13
-    n | n == Raw.scancodeF14 -> ScancodeF14
-    n | n == Raw.scancodeF15 -> ScancodeF15
-    n | n == Raw.scancodeF16 -> ScancodeF16
-    n | n == Raw.scancodeF17 -> ScancodeF17
-    n | n == Raw.scancodeF18 -> ScancodeF18
-    n | n == Raw.scancodeF19 -> ScancodeF19
-    n | n == Raw.scancodeF20 -> ScancodeF20
-    n | n == Raw.scancodeF21 -> ScancodeF21
-    n | n == Raw.scancodeF22 -> ScancodeF22
-    n | n == Raw.scancodeF23 -> ScancodeF23
-    n | n == Raw.scancodeF24 -> ScancodeF24
-    n | n == Raw.scancodeExecute -> ScancodeExecute
-    n | n == Raw.scancodeHelp -> ScancodeHelp
-    n | n == Raw.scancodeMenu -> ScancodeMenu
-    n | n == Raw.scancodeSelect -> ScancodeSelect
-    n | n == Raw.scancodeStop -> ScancodeStop
-    n | n == Raw.scancodeAgain -> ScancodeAgain
-    n | n == Raw.scancodeUndo -> ScancodeUndo
-    n | n == Raw.scancodeCut -> ScancodeCut
-    n | n == Raw.scancodeCopy -> ScancodeCopy
-    n | n == Raw.scancodePaste -> ScancodePaste
-    n | n == Raw.scancodeFind -> ScancodeFind
-    n | n == Raw.scancodeMute -> ScancodeMute
-    n | n == Raw.scancodeVolumeUp -> ScancodeVolumeUp
-    n | n == Raw.scancodeVolumeDown -> ScancodeVolumeDown
-    n | n == Raw.scancodeKPComma -> ScancodeKPComma
-    n | n == Raw.scancodeEqualsAs400 -> ScancodeEqualsAs400
-    n | n == Raw.scancodeInternational1 -> ScancodeInternational1
-    n | n == Raw.scancodeInternational2 -> ScancodeInternational2
-    n | n == Raw.scancodeInternational3 -> ScancodeInternational3
-    n | n == Raw.scancodeInternational4 -> ScancodeInternational4
-    n | n == Raw.scancodeInternational5 -> ScancodeInternational5
-    n | n == Raw.scancodeInternational6 -> ScancodeInternational6
-    n | n == Raw.scancodeInternational7 -> ScancodeInternational7
-    n | n == Raw.scancodeInternational8 -> ScancodeInternational8
-    n | n == Raw.scancodeInternational9 -> ScancodeInternational9
-    n | n == Raw.scancodeLang1 -> ScancodeLang1
-    n | n == Raw.scancodeLang2 -> ScancodeLang2
-    n | n == Raw.scancodeLang3 -> ScancodeLang3
-    n | n == Raw.scancodeLang4 -> ScancodeLang4
-    n | n == Raw.scancodeLang5 -> ScancodeLang5
-    n | n == Raw.scancodeLang6 -> ScancodeLang6
-    n | n == Raw.scancodeLang7 -> ScancodeLang7
-    n | n == Raw.scancodeLang8 -> ScancodeLang8
-    n | n == Raw.scancodeLang9 -> ScancodeLang9
-    n | n == Raw.scancodeAltErase -> ScancodeAltErase
-    n | n == Raw.scancodeSysReq -> ScancodeSysReq
-    n | n == Raw.scancodeCancel -> ScancodeCancel
-    n | n == Raw.scancodeClear -> ScancodeClear
-    n | n == Raw.scancodePrior -> ScancodePrior
-    n | n == Raw.scancodeReturn2 -> ScancodeReturn2
-    n | n == Raw.scancodeSeparator -> ScancodeSeparator
-    n | n == Raw.scancodeOut -> ScancodeOut
-    n | n == Raw.scancodeOper -> ScancodeOper
-    n | n == Raw.scancodeClearAgain -> ScancodeClearAgain
-    n | n == Raw.scancodeCrSel -> ScancodeCrSel
-    n | n == Raw.scancodeExSel -> ScancodeExSel
-    n | n == Raw.scancodeKP00 -> ScancodeKP00
-    n | n == Raw.scancodeKP000 -> ScancodeKP000
-    n | n == Raw.scancodeThousandsSeparator -> ScancodeThousandsSeparator
-    n | n == Raw.scancodeDecimalSeparator -> ScancodeDecimalSeparator
-    n | n == Raw.scancodeCurrencyUnit -> ScancodeCurrencyUnit
-    n | n == Raw.scancodeCurrencySubunit -> ScancodeCurrencySubunit
-    n | n == Raw.scancodeLeftParen -> ScancodeLeftParen
-    n | n == Raw.scancodeRightParen -> ScancodeRightParen
-    n | n == Raw.scancodeLeftBrace -> ScancodeLeftBrace
-    n | n == Raw.scancodeRightBrace -> ScancodeRightBrace
-    n | n == Raw.scancodeKPTab -> ScancodeKPTab
-    n | n == Raw.scancodeKPBackspace -> ScancodeKPBackspace
-    n | n == Raw.scancodeKPA -> ScancodeKPA
-    n | n == Raw.scancodeKPB -> ScancodeKPB
-    n | n == Raw.scancodeKPC -> ScancodeKPC
-    n | n == Raw.scancodeKPD -> ScancodeKPD
-    n | n == Raw.scancodeKPE -> ScancodeKPE
-    n | n == Raw.scancodeKPF -> ScancodeKPF
-    n | n == Raw.scancodeKPXOR -> ScancodeKPXOR
-    n | n == Raw.scancodeKPPower -> ScancodeKPPower
-    n | n == Raw.scancodeKPPercent -> ScancodeKPPercent
-    n | n == Raw.scancodeKPLess -> ScancodeKPLess
-    n | n == Raw.scancodeKPGreater -> ScancodeKPGreater
-    n | n == Raw.scancodeKPAmpersand -> ScancodeKPAmpersand
-    n | n == Raw.scancodeKPDBLAmpersand -> ScancodeKPDBLAmpersand
-    n | n == Raw.scancodeKPVerticalBar -> ScancodeKPVerticalBar
-    n | n == Raw.scancodeKPDBLVerticalBar -> ScancodeKPDBLVerticalBar
-    n | n == Raw.scancodeKPColon -> ScancodeKPColon
-    n | n == Raw.scancodeKPHash -> ScancodeKPHash
-    n | n == Raw.scancodeKPSpace -> ScancodeKPSpace
-    n | n == Raw.scancodeKPAt -> ScancodeKPAt
-    n | n == Raw.scancodeKPExclam -> ScancodeKPExclam
-    n | n == Raw.scancodeKPMemStore -> ScancodeKPMemStore
-    n | n == Raw.scancodeKPMemRecall -> ScancodeKPMemRecall
-    n | n == Raw.scancodeKPMemClear -> ScancodeKPMemClear
-    n | n == Raw.scancodeKPMemAdd -> ScancodeKPMemAdd
-    n | n == Raw.scancodeKPMemSubtract -> ScancodeKPMemSubtract
-    n | n == Raw.scancodeKPMemMultiply -> ScancodeKPMemMultiply
-    n | n == Raw.scancodeKPMemDivide -> ScancodeKPMemDivide
-    n | n == Raw.scancodeKPPlusMinus -> ScancodeKPPlusMinus
-    n | n == Raw.scancodeKPClear -> ScancodeKPClear
-    n | n == Raw.scancodeKPClearEntry -> ScancodeKPClearEntry
-    n | n == Raw.scancodeKPBinary -> ScancodeKPBinary
-    n | n == Raw.scancodeKPOctal -> ScancodeKPOctal
-    n | n == Raw.scancodeKPDecimal -> ScancodeKPDecimal
-    n | n == Raw.scancodeKPHexadecimal -> ScancodeKPHexadecimal
-    n | n == Raw.scancodeLCtrl -> ScancodeLCtrl
-    n | n == Raw.scancodeLShift -> ScancodeLShift
-    n | n == Raw.scancodeLAlt -> ScancodeLAlt
-    n | n == Raw.scancodeLGUI -> ScancodeLGUI
-    n | n == Raw.scancodeRCtrl -> ScancodeRCtrl
-    n | n == Raw.scancodeRShift -> ScancodeRShift
-    n | n == Raw.scancodeRAlt -> ScancodeRAlt
-    n | n == Raw.scancodeRGUI -> ScancodeRGUI
-    n | n == Raw.scancodeMode -> ScancodeMode
-    n | n == Raw.scancodeAudioNext -> ScancodeAudioNext
-    n | n == Raw.scancodeAudioPrev -> ScancodeAudioPrev
-    n | n == Raw.scancodeAudioStop -> ScancodeAudioStop
-    n | n == Raw.scancodeAudioPlay -> ScancodeAudioPlay
-    n | n == Raw.scancodeAudioMute -> ScancodeAudioMute
-    n | n == Raw.scancodeMediaSelect -> ScancodeMediaSelect
-    n | n == Raw.scancodeWWW -> ScancodeWWW
-    n | n == Raw.scancodeMail -> ScancodeMail
-    n | n == Raw.scancodeCalculator -> ScancodeCalculator
-    n | n == Raw.scancodeComputer -> ScancodeComputer
-    n | n == Raw.scancodeACSearch -> ScancodeACSearch
-    n | n == Raw.scancodeACHome -> ScancodeACHome
-    n | n == Raw.scancodeACBack -> ScancodeACBack
-    n | n == Raw.scancodeACForward -> ScancodeACForward
-    n | n == Raw.scancodeACStop -> ScancodeACStop
-    n | n == Raw.scancodeACRefresh -> ScancodeACRefresh
-    n | n == Raw.scancodeACBookmarks -> ScancodeACBookmarks
-    n | n == Raw.scancodeBrightnessDown -> ScancodeBrightnessDown
-    n | n == Raw.scancodeBrightnessUp -> ScancodeBrightnessUp
-    n | n == Raw.scancodeDisplaySwitch -> ScancodeDisplaySwitch
-    n | n == Raw.scancodeKBDIllumToggle -> ScancodeKBDIllumToggle
-    n | n == Raw.scancodeKBDIllumDown -> ScancodeKBDIllumDown
-    n | n == Raw.scancodeKBDIllumUp -> ScancodeKBDIllumUp
-    n | n == Raw.scancodeEject -> ScancodeEject
-    n | n == Raw.scancodeSleep -> ScancodeSleep
-    n | n == Raw.scancodeApp1 -> ScancodeApp1
-    n | n == Raw.scancodeApp2 -> ScancodeApp2
-    n | n == Raw.scancodeNum -> ScancodeNum
+    Raw.SDL_SCANCODE_UNKNOWN -> ScancodeUnknown
+    Raw.SDL_SCANCODE_A -> ScancodeA
+    Raw.SDL_SCANCODE_B -> ScancodeB
+    Raw.SDL_SCANCODE_C -> ScancodeC
+    Raw.SDL_SCANCODE_D -> ScancodeD
+    Raw.SDL_SCANCODE_E -> ScancodeE
+    Raw.SDL_SCANCODE_F -> ScancodeF
+    Raw.SDL_SCANCODE_G -> ScancodeG
+    Raw.SDL_SCANCODE_H -> ScancodeH
+    Raw.SDL_SCANCODE_I -> ScancodeI
+    Raw.SDL_SCANCODE_J -> ScancodeJ
+    Raw.SDL_SCANCODE_K -> ScancodeK
+    Raw.SDL_SCANCODE_L -> ScancodeL
+    Raw.SDL_SCANCODE_M -> ScancodeM
+    Raw.SDL_SCANCODE_N -> ScancodeN
+    Raw.SDL_SCANCODE_O -> ScancodeO
+    Raw.SDL_SCANCODE_P -> ScancodeP
+    Raw.SDL_SCANCODE_Q -> ScancodeQ
+    Raw.SDL_SCANCODE_R -> ScancodeR
+    Raw.SDL_SCANCODE_S -> ScancodeS
+    Raw.SDL_SCANCODE_T -> ScancodeT
+    Raw.SDL_SCANCODE_U -> ScancodeU
+    Raw.SDL_SCANCODE_V -> ScancodeV
+    Raw.SDL_SCANCODE_W -> ScancodeW
+    Raw.SDL_SCANCODE_X -> ScancodeX
+    Raw.SDL_SCANCODE_Y -> ScancodeY
+    Raw.SDL_SCANCODE_Z -> ScancodeZ
+    Raw.SDL_SCANCODE_1 -> Scancode1
+    Raw.SDL_SCANCODE_2 -> Scancode2
+    Raw.SDL_SCANCODE_3 -> Scancode3
+    Raw.SDL_SCANCODE_4 -> Scancode4
+    Raw.SDL_SCANCODE_5 -> Scancode5
+    Raw.SDL_SCANCODE_6 -> Scancode6
+    Raw.SDL_SCANCODE_7 -> Scancode7
+    Raw.SDL_SCANCODE_8 -> Scancode8
+    Raw.SDL_SCANCODE_9 -> Scancode9
+    Raw.SDL_SCANCODE_0 -> Scancode0
+    Raw.SDL_SCANCODE_RETURN -> ScancodeReturn
+    Raw.SDL_SCANCODE_ESCAPE -> ScancodeEscape
+    Raw.SDL_SCANCODE_BACKSPACE -> ScancodeBackspace
+    Raw.SDL_SCANCODE_TAB -> ScancodeTab
+    Raw.SDL_SCANCODE_SPACE -> ScancodeSpace
+    Raw.SDL_SCANCODE_MINUS -> ScancodeMinus
+    Raw.SDL_SCANCODE_EQUALS -> ScancodeEquals
+    Raw.SDL_SCANCODE_LEFTBRACKET -> ScancodeLeftBracket
+    Raw.SDL_SCANCODE_RIGHTBRACKET -> ScancodeRightBracket
+    Raw.SDL_SCANCODE_BACKSLASH -> ScancodeBackslash
+    Raw.SDL_SCANCODE_NONUSHASH -> ScancodeNonUSHash
+    Raw.SDL_SCANCODE_SEMICOLON -> ScancodeSemicolon
+    Raw.SDL_SCANCODE_APOSTROPHE -> ScancodeApostrophe
+    Raw.SDL_SCANCODE_GRAVE -> ScancodeGrave
+    Raw.SDL_SCANCODE_COMMA -> ScancodeComma
+    Raw.SDL_SCANCODE_PERIOD -> ScancodePeriod
+    Raw.SDL_SCANCODE_SLASH -> ScancodeSlash
+    Raw.SDL_SCANCODE_CAPSLOCK -> ScancodeCapsLock
+    Raw.SDL_SCANCODE_F1 -> ScancodeF1
+    Raw.SDL_SCANCODE_F2 -> ScancodeF2
+    Raw.SDL_SCANCODE_F3 -> ScancodeF3
+    Raw.SDL_SCANCODE_F4 -> ScancodeF4
+    Raw.SDL_SCANCODE_F5 -> ScancodeF5
+    Raw.SDL_SCANCODE_F6 -> ScancodeF6
+    Raw.SDL_SCANCODE_F7 -> ScancodeF7
+    Raw.SDL_SCANCODE_F8 -> ScancodeF8
+    Raw.SDL_SCANCODE_F9 -> ScancodeF9
+    Raw.SDL_SCANCODE_F10 -> ScancodeF10
+    Raw.SDL_SCANCODE_F11 -> ScancodeF11
+    Raw.SDL_SCANCODE_F12 -> ScancodeF12
+    Raw.SDL_SCANCODE_PRINTSCREEN -> ScancodePrintScreen
+    Raw.SDL_SCANCODE_SCROLLLOCK -> ScancodeScrollLock
+    Raw.SDL_SCANCODE_PAUSE -> ScancodePause
+    Raw.SDL_SCANCODE_INSERT -> ScancodeInsert
+    Raw.SDL_SCANCODE_HOME -> ScancodeHome
+    Raw.SDL_SCANCODE_PAGEUP -> ScancodePageUp
+    Raw.SDL_SCANCODE_DELETE -> ScancodeDelete
+    Raw.SDL_SCANCODE_END -> ScancodeEnd
+    Raw.SDL_SCANCODE_PAGEDOWN -> ScancodePageDown
+    Raw.SDL_SCANCODE_RIGHT -> ScancodeRight
+    Raw.SDL_SCANCODE_LEFT -> ScancodeLeft
+    Raw.SDL_SCANCODE_DOWN -> ScancodeDown
+    Raw.SDL_SCANCODE_UP -> ScancodeUp
+    Raw.SDL_SCANCODE_NUMLOCKCLEAR -> ScancodeNumLockClear
+    Raw.SDL_SCANCODE_KP_DIVIDE -> ScancodeKPDivide
+    Raw.SDL_SCANCODE_KP_MULTIPLY -> ScancodeKPMultiply
+    Raw.SDL_SCANCODE_KP_MINUS -> ScancodeKPMinus
+    Raw.SDL_SCANCODE_KP_PLUS -> ScancodeKPPlus
+    Raw.SDL_SCANCODE_KP_ENTER -> ScancodeKPEnter
+    Raw.SDL_SCANCODE_KP_1 -> ScancodeKP1
+    Raw.SDL_SCANCODE_KP_2 -> ScancodeKP2
+    Raw.SDL_SCANCODE_KP_3 -> ScancodeKP3
+    Raw.SDL_SCANCODE_KP_4 -> ScancodeKP4
+    Raw.SDL_SCANCODE_KP_5 -> ScancodeKP5
+    Raw.SDL_SCANCODE_KP_6 -> ScancodeKP6
+    Raw.SDL_SCANCODE_KP_7 -> ScancodeKP7
+    Raw.SDL_SCANCODE_KP_8 -> ScancodeKP8
+    Raw.SDL_SCANCODE_KP_9 -> ScancodeKP9
+    Raw.SDL_SCANCODE_KP_0 -> ScancodeKP0
+    Raw.SDL_SCANCODE_KP_PERIOD -> ScancodeKPPeriod
+    Raw.SDL_SCANCODE_NONUSBACKSLASH -> ScancodeNonUSBackslash
+    Raw.SDL_SCANCODE_APPLICATION -> ScancodeApplication
+    Raw.SDL_SCANCODE_POWER -> ScancodePower
+    Raw.SDL_SCANCODE_KP_EQUALS -> ScancodeKPEquals
+    Raw.SDL_SCANCODE_F13 -> ScancodeF13
+    Raw.SDL_SCANCODE_F14 -> ScancodeF14
+    Raw.SDL_SCANCODE_F15 -> ScancodeF15
+    Raw.SDL_SCANCODE_F16 -> ScancodeF16
+    Raw.SDL_SCANCODE_F17 -> ScancodeF17
+    Raw.SDL_SCANCODE_F18 -> ScancodeF18
+    Raw.SDL_SCANCODE_F19 -> ScancodeF19
+    Raw.SDL_SCANCODE_F20 -> ScancodeF20
+    Raw.SDL_SCANCODE_F21 -> ScancodeF21
+    Raw.SDL_SCANCODE_F22 -> ScancodeF22
+    Raw.SDL_SCANCODE_F23 -> ScancodeF23
+    Raw.SDL_SCANCODE_F24 -> ScancodeF24
+    Raw.SDL_SCANCODE_EXECUTE -> ScancodeExecute
+    Raw.SDL_SCANCODE_HELP -> ScancodeHelp
+    Raw.SDL_SCANCODE_MENU -> ScancodeMenu
+    Raw.SDL_SCANCODE_SELECT -> ScancodeSelect
+    Raw.SDL_SCANCODE_STOP -> ScancodeStop
+    Raw.SDL_SCANCODE_AGAIN -> ScancodeAgain
+    Raw.SDL_SCANCODE_UNDO -> ScancodeUndo
+    Raw.SDL_SCANCODE_CUT -> ScancodeCut
+    Raw.SDL_SCANCODE_COPY -> ScancodeCopy
+    Raw.SDL_SCANCODE_PASTE -> ScancodePaste
+    Raw.SDL_SCANCODE_FIND -> ScancodeFind
+    Raw.SDL_SCANCODE_MUTE -> ScancodeMute
+    Raw.SDL_SCANCODE_VOLUMEUP -> ScancodeVolumeUp
+    Raw.SDL_SCANCODE_VOLUMEDOWN -> ScancodeVolumeDown
+    Raw.SDL_SCANCODE_KP_COMMA -> ScancodeKPComma
+    Raw.SDL_SCANCODE_KP_EQUALSAS400 -> ScancodeEqualsAs400
+    Raw.SDL_SCANCODE_INTERNATIONAL1 -> ScancodeInternational1
+    Raw.SDL_SCANCODE_INTERNATIONAL2 -> ScancodeInternational2
+    Raw.SDL_SCANCODE_INTERNATIONAL3 -> ScancodeInternational3
+    Raw.SDL_SCANCODE_INTERNATIONAL4 -> ScancodeInternational4
+    Raw.SDL_SCANCODE_INTERNATIONAL5 -> ScancodeInternational5
+    Raw.SDL_SCANCODE_INTERNATIONAL6 -> ScancodeInternational6
+    Raw.SDL_SCANCODE_INTERNATIONAL7 -> ScancodeInternational7
+    Raw.SDL_SCANCODE_INTERNATIONAL8 -> ScancodeInternational8
+    Raw.SDL_SCANCODE_INTERNATIONAL9 -> ScancodeInternational9
+    Raw.SDL_SCANCODE_LANG1 -> ScancodeLang1
+    Raw.SDL_SCANCODE_LANG2 -> ScancodeLang2
+    Raw.SDL_SCANCODE_LANG3 -> ScancodeLang3
+    Raw.SDL_SCANCODE_LANG4 -> ScancodeLang4
+    Raw.SDL_SCANCODE_LANG5 -> ScancodeLang5
+    Raw.SDL_SCANCODE_LANG6 -> ScancodeLang6
+    Raw.SDL_SCANCODE_LANG7 -> ScancodeLang7
+    Raw.SDL_SCANCODE_LANG8 -> ScancodeLang8
+    Raw.SDL_SCANCODE_LANG9 -> ScancodeLang9
+    Raw.SDL_SCANCODE_ALTERASE -> ScancodeAltErase
+    Raw.SDL_SCANCODE_SYSREQ -> ScancodeSysReq
+    Raw.SDL_SCANCODE_CANCEL -> ScancodeCancel
+    Raw.SDL_SCANCODE_CLEAR -> ScancodeClear
+    Raw.SDL_SCANCODE_PRIOR -> ScancodePrior
+    Raw.SDL_SCANCODE_RETURN2 -> ScancodeReturn2
+    Raw.SDL_SCANCODE_SEPARATOR -> ScancodeSeparator
+    Raw.SDL_SCANCODE_OUT -> ScancodeOut
+    Raw.SDL_SCANCODE_OPER -> ScancodeOper
+    Raw.SDL_SCANCODE_CLEARAGAIN -> ScancodeClearAgain
+    Raw.SDL_SCANCODE_CRSEL -> ScancodeCrSel
+    Raw.SDL_SCANCODE_EXSEL -> ScancodeExSel
+    Raw.SDL_SCANCODE_KP_00 -> ScancodeKP00
+    Raw.SDL_SCANCODE_KP_000 -> ScancodeKP000
+    Raw.SDL_SCANCODE_THOUSANDSSEPARATOR -> ScancodeThousandsSeparator
+    Raw.SDL_SCANCODE_DECIMALSEPARATOR -> ScancodeDecimalSeparator
+    Raw.SDL_SCANCODE_CURRENCYUNIT -> ScancodeCurrencyUnit
+    Raw.SDL_SCANCODE_CURRENCYSUBUNIT -> ScancodeCurrencySubunit
+    Raw.SDL_SCANCODE_KP_LEFTPAREN -> ScancodeLeftParen
+    Raw.SDL_SCANCODE_KP_RIGHTPAREN -> ScancodeRightParen
+    Raw.SDL_SCANCODE_KP_LEFTBRACE -> ScancodeLeftBrace
+    Raw.SDL_SCANCODE_KP_RIGHTBRACE -> ScancodeRightBrace
+    Raw.SDL_SCANCODE_KP_TAB -> ScancodeKPTab
+    Raw.SDL_SCANCODE_KP_BACKSPACE -> ScancodeKPBackspace
+    Raw.SDL_SCANCODE_KP_A -> ScancodeKPA
+    Raw.SDL_SCANCODE_KP_B -> ScancodeKPB
+    Raw.SDL_SCANCODE_KP_C -> ScancodeKPC
+    Raw.SDL_SCANCODE_KP_D -> ScancodeKPD
+    Raw.SDL_SCANCODE_KP_E -> ScancodeKPE
+    Raw.SDL_SCANCODE_KP_F -> ScancodeKPF
+    Raw.SDL_SCANCODE_KP_XOR -> ScancodeKPXOR
+    Raw.SDL_SCANCODE_KP_POWER -> ScancodeKPPower
+    Raw.SDL_SCANCODE_KP_PERCENT -> ScancodeKPPercent
+    Raw.SDL_SCANCODE_KP_LESS -> ScancodeKPLess
+    Raw.SDL_SCANCODE_KP_GREATER -> ScancodeKPGreater
+    Raw.SDL_SCANCODE_KP_AMPERSAND -> ScancodeKPAmpersand
+    Raw.SDL_SCANCODE_KP_DBLAMPERSAND -> ScancodeKPDBLAmpersand
+    Raw.SDL_SCANCODE_KP_VERTICALBAR -> ScancodeKPVerticalBar
+    Raw.SDL_SCANCODE_KP_DBLVERTICALBAR -> ScancodeKPDBLVerticalBar
+    Raw.SDL_SCANCODE_KP_COLON -> ScancodeKPColon
+    Raw.SDL_SCANCODE_KP_HASH -> ScancodeKPHash
+    Raw.SDL_SCANCODE_KP_SPACE -> ScancodeKPSpace
+    Raw.SDL_SCANCODE_KP_AT -> ScancodeKPAt
+    Raw.SDL_SCANCODE_KP_EXCLAM -> ScancodeKPExclam
+    Raw.SDL_SCANCODE_KP_MEMSTORE -> ScancodeKPMemStore
+    Raw.SDL_SCANCODE_KP_MEMRECALL -> ScancodeKPMemRecall
+    Raw.SDL_SCANCODE_KP_MEMCLEAR -> ScancodeKPMemClear
+    Raw.SDL_SCANCODE_KP_MEMADD -> ScancodeKPMemAdd
+    Raw.SDL_SCANCODE_KP_MEMSUBTRACT -> ScancodeKPMemSubtract
+    Raw.SDL_SCANCODE_KP_MEMMULTIPLY -> ScancodeKPMemMultiply
+    Raw.SDL_SCANCODE_KP_MEMDIVIDE -> ScancodeKPMemDivide
+    Raw.SDL_SCANCODE_KP_PLUSMINUS -> ScancodeKPPlusMinus
+    Raw.SDL_SCANCODE_KP_CLEAR -> ScancodeKPClear
+    Raw.SDL_SCANCODE_KP_CLEARENTRY -> ScancodeKPClearEntry
+    Raw.SDL_SCANCODE_KP_BINARY -> ScancodeKPBinary
+    Raw.SDL_SCANCODE_KP_OCTAL -> ScancodeKPOctal
+    Raw.SDL_SCANCODE_KP_DECIMAL -> ScancodeKPDecimal
+    Raw.SDL_SCANCODE_KP_HEXADECIMAL -> ScancodeKPHexadecimal
+    Raw.SDL_SCANCODE_LCTRL -> ScancodeLCtrl
+    Raw.SDL_SCANCODE_LSHIFT -> ScancodeLShift
+    Raw.SDL_SCANCODE_LALT -> ScancodeLAlt
+    Raw.SDL_SCANCODE_LGUI -> ScancodeLGUI
+    Raw.SDL_SCANCODE_RCTRL -> ScancodeRCtrl
+    Raw.SDL_SCANCODE_RSHIFT -> ScancodeRShift
+    Raw.SDL_SCANCODE_RALT -> ScancodeRAlt
+    Raw.SDL_SCANCODE_RGUI -> ScancodeRGUI
+    Raw.SDL_SCANCODE_MODE -> ScancodeMode
+    Raw.SDL_SCANCODE_AUDIONEXT -> ScancodeAudioNext
+    Raw.SDL_SCANCODE_AUDIOPREV -> ScancodeAudioPrev
+    Raw.SDL_SCANCODE_AUDIOSTOP -> ScancodeAudioStop
+    Raw.SDL_SCANCODE_AUDIOPLAY -> ScancodeAudioPlay
+    Raw.SDL_SCANCODE_AUDIOMUTE -> ScancodeAudioMute
+    Raw.SDL_SCANCODE_MEDIASELECT -> ScancodeMediaSelect
+    Raw.SDL_SCANCODE_WWW -> ScancodeWWW
+    Raw.SDL_SCANCODE_MAIL -> ScancodeMail
+    Raw.SDL_SCANCODE_CALCULATOR -> ScancodeCalculator
+    Raw.SDL_SCANCODE_COMPUTER -> ScancodeComputer
+    Raw.SDL_SCANCODE_AC_SEARCH -> ScancodeACSearch
+    Raw.SDL_SCANCODE_AC_HOME -> ScancodeACHome
+    Raw.SDL_SCANCODE_AC_BACK -> ScancodeACBack
+    Raw.SDL_SCANCODE_AC_FORWARD -> ScancodeACForward
+    Raw.SDL_SCANCODE_AC_STOP -> ScancodeACStop
+    Raw.SDL_SCANCODE_AC_REFRESH -> ScancodeACRefresh
+    Raw.SDL_SCANCODE_AC_BOOKMARKS -> ScancodeACBookmarks
+    Raw.SDL_SCANCODE_BRIGHTNESSDOWN -> ScancodeBrightnessDown
+    Raw.SDL_SCANCODE_BRIGHTNESSUP -> ScancodeBrightnessUp
+    Raw.SDL_SCANCODE_DISPLAYSWITCH -> ScancodeDisplaySwitch
+    Raw.SDL_SCANCODE_KBDILLUMTOGGLE -> ScancodeKBDIllumToggle
+    Raw.SDL_SCANCODE_KBDILLUMDOWN -> ScancodeKBDIllumDown
+    Raw.SDL_SCANCODE_KBDILLUMUP -> ScancodeKBDIllumUp
+    Raw.SDL_SCANCODE_EJECT -> ScancodeEject
+    Raw.SDL_SCANCODE_SLEEP -> ScancodeSleep
+    Raw.SDL_SCANCODE_APP1 -> ScancodeApp1
+    Raw.SDL_SCANCODE_APP2 -> ScancodeApp2
+    Raw.SDL_NUM_SCANCODES -> ScancodeNum
     _ -> error "fromNumber: not numbered"
 
 instance ToNumber Scancode Word32 where
-  toNumber ScancodeUnknown = Raw.scancodeUnknown
-  toNumber ScancodeA = Raw.scancodeA
-  toNumber ScancodeB = Raw.scancodeB
-  toNumber ScancodeC = Raw.scancodeC
-  toNumber ScancodeD = Raw.scancodeD
-  toNumber ScancodeE = Raw.scancodeE
-  toNumber ScancodeF = Raw.scancodeF
-  toNumber ScancodeG = Raw.scancodeG
-  toNumber ScancodeH = Raw.scancodeH
-  toNumber ScancodeI = Raw.scancodeI
-  toNumber ScancodeJ = Raw.scancodeJ
-  toNumber ScancodeK = Raw.scancodeK
-  toNumber ScancodeL = Raw.scancodeL
-  toNumber ScancodeM = Raw.scancodeM
-  toNumber ScancodeN = Raw.scancodeN
-  toNumber ScancodeO = Raw.scancodeO
-  toNumber ScancodeP = Raw.scancodeP
-  toNumber ScancodeQ = Raw.scancodeQ
-  toNumber ScancodeR = Raw.scancodeR
-  toNumber ScancodeS = Raw.scancodeS
-  toNumber ScancodeT = Raw.scancodeT
-  toNumber ScancodeU = Raw.scancodeU
-  toNumber ScancodeV = Raw.scancodeV
-  toNumber ScancodeW = Raw.scancodeW
-  toNumber ScancodeX = Raw.scancodeX
-  toNumber ScancodeY = Raw.scancodeY
-  toNumber ScancodeZ = Raw.scancodeZ
-  toNumber Scancode1 = Raw.scancode1
-  toNumber Scancode2 = Raw.scancode2
-  toNumber Scancode3 = Raw.scancode3
-  toNumber Scancode4 = Raw.scancode4
-  toNumber Scancode5 = Raw.scancode5
-  toNumber Scancode6 = Raw.scancode6
-  toNumber Scancode7 = Raw.scancode7
-  toNumber Scancode8 = Raw.scancode8
-  toNumber Scancode9 = Raw.scancode9
-  toNumber Scancode0 = Raw.scancode0
-  toNumber ScancodeReturn = Raw.scancodeReturn
-  toNumber ScancodeEscape = Raw.scancodeEscape
-  toNumber ScancodeBackspace = Raw.scancodeBackspace
-  toNumber ScancodeTab = Raw.scancodeTab
-  toNumber ScancodeSpace = Raw.scancodeSpace
-  toNumber ScancodeMinus = Raw.scancodeMinus
-  toNumber ScancodeEquals = Raw.scancodeEquals
-  toNumber ScancodeLeftBracket = Raw.scancodeLeftBracket
-  toNumber ScancodeRightBracket = Raw.scancodeRightBracket
-  toNumber ScancodeBackslash = Raw.scancodeBackslash
-  toNumber ScancodeNonUSHash = Raw.scancodeNonUSHash
-  toNumber ScancodeSemicolon = Raw.scancodeSemicolon
-  toNumber ScancodeApostrophe = Raw.scancodeApostrophe
-  toNumber ScancodeGrave = Raw.scancodeGrave
-  toNumber ScancodeComma = Raw.scancodeComma
-  toNumber ScancodePeriod = Raw.scancodePeriod
-  toNumber ScancodeSlash = Raw.scancodeSlash
-  toNumber ScancodeCapsLock = Raw.scancodeCapsLock
-  toNumber ScancodeF1 = Raw.scancodeF1
-  toNumber ScancodeF2 = Raw.scancodeF2
-  toNumber ScancodeF3 = Raw.scancodeF3
-  toNumber ScancodeF4 = Raw.scancodeF4
-  toNumber ScancodeF5 = Raw.scancodeF5
-  toNumber ScancodeF6 = Raw.scancodeF6
-  toNumber ScancodeF7 = Raw.scancodeF7
-  toNumber ScancodeF8 = Raw.scancodeF8
-  toNumber ScancodeF9 = Raw.scancodeF9
-  toNumber ScancodeF10 = Raw.scancodeF10
-  toNumber ScancodeF11 = Raw.scancodeF11
-  toNumber ScancodeF12 = Raw.scancodeF12
-  toNumber ScancodePrintScreen = Raw.scancodePrintScreen
-  toNumber ScancodeScrollLock = Raw.scancodeScrollLock
-  toNumber ScancodePause = Raw.scancodePause
-  toNumber ScancodeInsert = Raw.scancodeInsert
-  toNumber ScancodeHome = Raw.scancodeHome
-  toNumber ScancodePageUp = Raw.scancodePageUp
-  toNumber ScancodeDelete = Raw.scancodeDelete
-  toNumber ScancodeEnd = Raw.scancodeEnd
-  toNumber ScancodePageDown = Raw.scancodePageDown
-  toNumber ScancodeRight = Raw.scancodeRight
-  toNumber ScancodeLeft = Raw.scancodeLeft
-  toNumber ScancodeDown = Raw.scancodeDown
-  toNumber ScancodeUp = Raw.scancodeUp
-  toNumber ScancodeNumLockClear = Raw.scancodeNumLockClear
-  toNumber ScancodeKPDivide = Raw.scancodeKPDivide
-  toNumber ScancodeKPMultiply = Raw.scancodeKPMultiply
-  toNumber ScancodeKPMinus = Raw.scancodeKPMinus
-  toNumber ScancodeKPPlus = Raw.scancodeKPPlus
-  toNumber ScancodeKPEnter = Raw.scancodeKPEnter
-  toNumber ScancodeKP1 = Raw.scancodeKP1
-  toNumber ScancodeKP2 = Raw.scancodeKP2
-  toNumber ScancodeKP3 = Raw.scancodeKP3
-  toNumber ScancodeKP4 = Raw.scancodeKP4
-  toNumber ScancodeKP5 = Raw.scancodeKP5
-  toNumber ScancodeKP6 = Raw.scancodeKP6
-  toNumber ScancodeKP7 = Raw.scancodeKP7
-  toNumber ScancodeKP8 = Raw.scancodeKP8
-  toNumber ScancodeKP9 = Raw.scancodeKP9
-  toNumber ScancodeKP0 = Raw.scancodeKP0
-  toNumber ScancodeKPPeriod = Raw.scancodeKPPeriod
-  toNumber ScancodeNonUSBackslash = Raw.scancodeNonUSBackslash
-  toNumber ScancodeApplication = Raw.scancodeApplication
-  toNumber ScancodePower = Raw.scancodePower
-  toNumber ScancodeKPEquals = Raw.scancodeKPEquals
-  toNumber ScancodeF13 = Raw.scancodeF13
-  toNumber ScancodeF14 = Raw.scancodeF14
-  toNumber ScancodeF15 = Raw.scancodeF15
-  toNumber ScancodeF16 = Raw.scancodeF16
-  toNumber ScancodeF17 = Raw.scancodeF17
-  toNumber ScancodeF18 = Raw.scancodeF18
-  toNumber ScancodeF19 = Raw.scancodeF19
-  toNumber ScancodeF20 = Raw.scancodeF20
-  toNumber ScancodeF21 = Raw.scancodeF21
-  toNumber ScancodeF22 = Raw.scancodeF22
-  toNumber ScancodeF23 = Raw.scancodeF23
-  toNumber ScancodeF24 = Raw.scancodeF24
-  toNumber ScancodeExecute = Raw.scancodeExecute
-  toNumber ScancodeHelp = Raw.scancodeHelp
-  toNumber ScancodeMenu = Raw.scancodeMenu
-  toNumber ScancodeSelect = Raw.scancodeSelect
-  toNumber ScancodeStop = Raw.scancodeStop
-  toNumber ScancodeAgain = Raw.scancodeAgain
-  toNumber ScancodeUndo = Raw.scancodeUndo
-  toNumber ScancodeCut = Raw.scancodeCut
-  toNumber ScancodeCopy = Raw.scancodeCopy
-  toNumber ScancodePaste = Raw.scancodePaste
-  toNumber ScancodeFind = Raw.scancodeFind
-  toNumber ScancodeMute = Raw.scancodeMute
-  toNumber ScancodeVolumeUp = Raw.scancodeVolumeUp
-  toNumber ScancodeVolumeDown = Raw.scancodeVolumeDown
-  toNumber ScancodeKPComma = Raw.scancodeKPComma
-  toNumber ScancodeEqualsAs400 = Raw.scancodeEqualsAs400
-  toNumber ScancodeInternational1 = Raw.scancodeInternational1
-  toNumber ScancodeInternational2 = Raw.scancodeInternational2
-  toNumber ScancodeInternational3 = Raw.scancodeInternational3
-  toNumber ScancodeInternational4 = Raw.scancodeInternational4
-  toNumber ScancodeInternational5 = Raw.scancodeInternational5
-  toNumber ScancodeInternational6 = Raw.scancodeInternational6
-  toNumber ScancodeInternational7 = Raw.scancodeInternational7
-  toNumber ScancodeInternational8 = Raw.scancodeInternational8
-  toNumber ScancodeInternational9 = Raw.scancodeInternational9
-  toNumber ScancodeLang1 = Raw.scancodeLang1
-  toNumber ScancodeLang2 = Raw.scancodeLang2
-  toNumber ScancodeLang3 = Raw.scancodeLang3
-  toNumber ScancodeLang4 = Raw.scancodeLang4
-  toNumber ScancodeLang5 = Raw.scancodeLang5
-  toNumber ScancodeLang6 = Raw.scancodeLang6
-  toNumber ScancodeLang7 = Raw.scancodeLang7
-  toNumber ScancodeLang8 = Raw.scancodeLang8
-  toNumber ScancodeLang9 = Raw.scancodeLang9
-  toNumber ScancodeAltErase = Raw.scancodeAltErase
-  toNumber ScancodeSysReq = Raw.scancodeSysReq
-  toNumber ScancodeCancel = Raw.scancodeCancel
-  toNumber ScancodeClear = Raw.scancodeClear
-  toNumber ScancodePrior = Raw.scancodePrior
-  toNumber ScancodeReturn2 = Raw.scancodeReturn2
-  toNumber ScancodeSeparator = Raw.scancodeSeparator
-  toNumber ScancodeOut = Raw.scancodeOut
-  toNumber ScancodeOper = Raw.scancodeOper
-  toNumber ScancodeClearAgain = Raw.scancodeClearAgain
-  toNumber ScancodeCrSel = Raw.scancodeCrSel
-  toNumber ScancodeExSel = Raw.scancodeExSel
-  toNumber ScancodeKP00 = Raw.scancodeKP00
-  toNumber ScancodeKP000 = Raw.scancodeKP000
-  toNumber ScancodeThousandsSeparator = Raw.scancodeThousandsSeparator
-  toNumber ScancodeDecimalSeparator = Raw.scancodeDecimalSeparator
-  toNumber ScancodeCurrencyUnit = Raw.scancodeCurrencyUnit
-  toNumber ScancodeCurrencySubunit = Raw.scancodeCurrencySubunit
-  toNumber ScancodeLeftParen = Raw.scancodeLeftParen
-  toNumber ScancodeRightParen = Raw.scancodeRightParen
-  toNumber ScancodeLeftBrace = Raw.scancodeLeftBrace
-  toNumber ScancodeRightBrace = Raw.scancodeRightBrace
-  toNumber ScancodeKPTab = Raw.scancodeKPTab
-  toNumber ScancodeKPBackspace = Raw.scancodeKPBackspace
-  toNumber ScancodeKPA = Raw.scancodeKPA
-  toNumber ScancodeKPB = Raw.scancodeKPB
-  toNumber ScancodeKPC = Raw.scancodeKPC
-  toNumber ScancodeKPD = Raw.scancodeKPD
-  toNumber ScancodeKPE = Raw.scancodeKPE
-  toNumber ScancodeKPF = Raw.scancodeKPF
-  toNumber ScancodeKPXOR = Raw.scancodeKPXOR
-  toNumber ScancodeKPPower = Raw.scancodeKPPower
-  toNumber ScancodeKPPercent = Raw.scancodeKPPercent
-  toNumber ScancodeKPLess = Raw.scancodeKPLess
-  toNumber ScancodeKPGreater = Raw.scancodeKPGreater
-  toNumber ScancodeKPAmpersand = Raw.scancodeKPAmpersand
-  toNumber ScancodeKPDBLAmpersand = Raw.scancodeKPDBLAmpersand
-  toNumber ScancodeKPVerticalBar = Raw.scancodeKPVerticalBar
-  toNumber ScancodeKPDBLVerticalBar = Raw.scancodeKPDBLVerticalBar
-  toNumber ScancodeKPColon = Raw.scancodeKPColon
-  toNumber ScancodeKPHash = Raw.scancodeKPHash
-  toNumber ScancodeKPSpace = Raw.scancodeKPSpace
-  toNumber ScancodeKPAt = Raw.scancodeKPAt
-  toNumber ScancodeKPExclam = Raw.scancodeKPExclam
-  toNumber ScancodeKPMemStore = Raw.scancodeKPMemStore
-  toNumber ScancodeKPMemRecall = Raw.scancodeKPMemRecall
-  toNumber ScancodeKPMemClear = Raw.scancodeKPMemClear
-  toNumber ScancodeKPMemAdd = Raw.scancodeKPMemAdd
-  toNumber ScancodeKPMemSubtract = Raw.scancodeKPMemSubtract
-  toNumber ScancodeKPMemMultiply = Raw.scancodeKPMemMultiply
-  toNumber ScancodeKPMemDivide = Raw.scancodeKPMemDivide
-  toNumber ScancodeKPPlusMinus = Raw.scancodeKPPlusMinus
-  toNumber ScancodeKPClear = Raw.scancodeKPClear
-  toNumber ScancodeKPClearEntry = Raw.scancodeKPClearEntry
-  toNumber ScancodeKPBinary = Raw.scancodeKPBinary
-  toNumber ScancodeKPOctal = Raw.scancodeKPOctal
-  toNumber ScancodeKPDecimal = Raw.scancodeKPDecimal
-  toNumber ScancodeKPHexadecimal = Raw.scancodeKPHexadecimal
-  toNumber ScancodeLCtrl = Raw.scancodeLCtrl
-  toNumber ScancodeLShift = Raw.scancodeLShift
-  toNumber ScancodeLAlt = Raw.scancodeLAlt
-  toNumber ScancodeLGUI = Raw.scancodeLGUI
-  toNumber ScancodeRCtrl = Raw.scancodeRCtrl
-  toNumber ScancodeRShift = Raw.scancodeRShift
-  toNumber ScancodeRAlt = Raw.scancodeRAlt
-  toNumber ScancodeRGUI = Raw.scancodeRGUI
-  toNumber ScancodeMode = Raw.scancodeMode
-  toNumber ScancodeAudioNext = Raw.scancodeAudioNext
-  toNumber ScancodeAudioPrev = Raw.scancodeAudioPrev
-  toNumber ScancodeAudioStop = Raw.scancodeAudioStop
-  toNumber ScancodeAudioPlay = Raw.scancodeAudioPlay
-  toNumber ScancodeAudioMute = Raw.scancodeAudioMute
-  toNumber ScancodeMediaSelect = Raw.scancodeMediaSelect
-  toNumber ScancodeWWW = Raw.scancodeWWW
-  toNumber ScancodeMail = Raw.scancodeMail
-  toNumber ScancodeCalculator = Raw.scancodeCalculator
-  toNumber ScancodeComputer = Raw.scancodeComputer
-  toNumber ScancodeACSearch = Raw.scancodeACSearch
-  toNumber ScancodeACHome = Raw.scancodeACHome
-  toNumber ScancodeACBack = Raw.scancodeACBack
-  toNumber ScancodeACForward = Raw.scancodeACForward
-  toNumber ScancodeACStop = Raw.scancodeACStop
-  toNumber ScancodeACRefresh = Raw.scancodeACRefresh
-  toNumber ScancodeACBookmarks = Raw.scancodeACBookmarks
-  toNumber ScancodeBrightnessDown = Raw.scancodeBrightnessDown
-  toNumber ScancodeBrightnessUp = Raw.scancodeBrightnessUp
-  toNumber ScancodeDisplaySwitch = Raw.scancodeDisplaySwitch
-  toNumber ScancodeKBDIllumToggle = Raw.scancodeKBDIllumToggle
-  toNumber ScancodeKBDIllumDown = Raw.scancodeKBDIllumDown
-  toNumber ScancodeKBDIllumUp = Raw.scancodeKBDIllumUp
-  toNumber ScancodeEject = Raw.scancodeEject
-  toNumber ScancodeSleep = Raw.scancodeSleep
-  toNumber ScancodeApp1 = Raw.scancodeApp1
-  toNumber ScancodeApp2 = Raw.scancodeApp2
-  toNumber ScancodeNum = Raw.scancodeNum
+  toNumber ScancodeUnknown = Raw.SDL_SCANCODE_UNKNOWN
+  toNumber ScancodeA = Raw.SDL_SCANCODE_A
+  toNumber ScancodeB = Raw.SDL_SCANCODE_B
+  toNumber ScancodeC = Raw.SDL_SCANCODE_C
+  toNumber ScancodeD = Raw.SDL_SCANCODE_D
+  toNumber ScancodeE = Raw.SDL_SCANCODE_E
+  toNumber ScancodeF = Raw.SDL_SCANCODE_F
+  toNumber ScancodeG = Raw.SDL_SCANCODE_G
+  toNumber ScancodeH = Raw.SDL_SCANCODE_H
+  toNumber ScancodeI = Raw.SDL_SCANCODE_I
+  toNumber ScancodeJ = Raw.SDL_SCANCODE_J
+  toNumber ScancodeK = Raw.SDL_SCANCODE_K
+  toNumber ScancodeL = Raw.SDL_SCANCODE_L
+  toNumber ScancodeM = Raw.SDL_SCANCODE_M
+  toNumber ScancodeN = Raw.SDL_SCANCODE_N
+  toNumber ScancodeO = Raw.SDL_SCANCODE_O
+  toNumber ScancodeP = Raw.SDL_SCANCODE_P
+  toNumber ScancodeQ = Raw.SDL_SCANCODE_Q
+  toNumber ScancodeR = Raw.SDL_SCANCODE_R
+  toNumber ScancodeS = Raw.SDL_SCANCODE_S
+  toNumber ScancodeT = Raw.SDL_SCANCODE_T
+  toNumber ScancodeU = Raw.SDL_SCANCODE_U
+  toNumber ScancodeV = Raw.SDL_SCANCODE_V
+  toNumber ScancodeW = Raw.SDL_SCANCODE_W
+  toNumber ScancodeX = Raw.SDL_SCANCODE_X
+  toNumber ScancodeY = Raw.SDL_SCANCODE_Y
+  toNumber ScancodeZ = Raw.SDL_SCANCODE_Z
+  toNumber Scancode1 = Raw.SDL_SCANCODE_1
+  toNumber Scancode2 = Raw.SDL_SCANCODE_2
+  toNumber Scancode3 = Raw.SDL_SCANCODE_3
+  toNumber Scancode4 = Raw.SDL_SCANCODE_4
+  toNumber Scancode5 = Raw.SDL_SCANCODE_5
+  toNumber Scancode6 = Raw.SDL_SCANCODE_6
+  toNumber Scancode7 = Raw.SDL_SCANCODE_7
+  toNumber Scancode8 = Raw.SDL_SCANCODE_8
+  toNumber Scancode9 = Raw.SDL_SCANCODE_9
+  toNumber Scancode0 = Raw.SDL_SCANCODE_0
+  toNumber ScancodeReturn = Raw.SDL_SCANCODE_RETURN
+  toNumber ScancodeEscape = Raw.SDL_SCANCODE_ESCAPE
+  toNumber ScancodeBackspace = Raw.SDL_SCANCODE_BACKSPACE
+  toNumber ScancodeTab = Raw.SDL_SCANCODE_TAB
+  toNumber ScancodeSpace = Raw.SDL_SCANCODE_SPACE
+  toNumber ScancodeMinus = Raw.SDL_SCANCODE_MINUS
+  toNumber ScancodeEquals = Raw.SDL_SCANCODE_EQUALS
+  toNumber ScancodeLeftBracket = Raw.SDL_SCANCODE_LEFTBRACKET
+  toNumber ScancodeRightBracket = Raw.SDL_SCANCODE_RIGHTBRACKET
+  toNumber ScancodeBackslash = Raw.SDL_SCANCODE_BACKSLASH
+  toNumber ScancodeNonUSHash = Raw.SDL_SCANCODE_NONUSHASH
+  toNumber ScancodeSemicolon = Raw.SDL_SCANCODE_SEMICOLON
+  toNumber ScancodeApostrophe = Raw.SDL_SCANCODE_APOSTROPHE
+  toNumber ScancodeGrave = Raw.SDL_SCANCODE_GRAVE
+  toNumber ScancodeComma = Raw.SDL_SCANCODE_COMMA
+  toNumber ScancodePeriod = Raw.SDL_SCANCODE_PERIOD
+  toNumber ScancodeSlash = Raw.SDL_SCANCODE_SLASH
+  toNumber ScancodeCapsLock = Raw.SDL_SCANCODE_CAPSLOCK
+  toNumber ScancodeF1 = Raw.SDL_SCANCODE_F1
+  toNumber ScancodeF2 = Raw.SDL_SCANCODE_F2
+  toNumber ScancodeF3 = Raw.SDL_SCANCODE_F3
+  toNumber ScancodeF4 = Raw.SDL_SCANCODE_F4
+  toNumber ScancodeF5 = Raw.SDL_SCANCODE_F5
+  toNumber ScancodeF6 = Raw.SDL_SCANCODE_F6
+  toNumber ScancodeF7 = Raw.SDL_SCANCODE_F7
+  toNumber ScancodeF8 = Raw.SDL_SCANCODE_F8
+  toNumber ScancodeF9 = Raw.SDL_SCANCODE_F9
+  toNumber ScancodeF10 = Raw.SDL_SCANCODE_F10
+  toNumber ScancodeF11 = Raw.SDL_SCANCODE_F11
+  toNumber ScancodeF12 = Raw.SDL_SCANCODE_F12
+  toNumber ScancodePrintScreen = Raw.SDL_SCANCODE_PRINTSCREEN
+  toNumber ScancodeScrollLock = Raw.SDL_SCANCODE_SCROLLLOCK
+  toNumber ScancodePause = Raw.SDL_SCANCODE_PAUSE
+  toNumber ScancodeInsert = Raw.SDL_SCANCODE_INSERT
+  toNumber ScancodeHome = Raw.SDL_SCANCODE_HOME
+  toNumber ScancodePageUp = Raw.SDL_SCANCODE_PAGEUP
+  toNumber ScancodeDelete = Raw.SDL_SCANCODE_DELETE
+  toNumber ScancodeEnd = Raw.SDL_SCANCODE_END
+  toNumber ScancodePageDown = Raw.SDL_SCANCODE_PAGEDOWN
+  toNumber ScancodeRight = Raw.SDL_SCANCODE_RIGHT
+  toNumber ScancodeLeft = Raw.SDL_SCANCODE_LEFT
+  toNumber ScancodeDown = Raw.SDL_SCANCODE_DOWN
+  toNumber ScancodeUp = Raw.SDL_SCANCODE_UP
+  toNumber ScancodeNumLockClear = Raw.SDL_SCANCODE_NUMLOCKCLEAR
+  toNumber ScancodeKPDivide = Raw.SDL_SCANCODE_KP_DIVIDE
+  toNumber ScancodeKPMultiply = Raw.SDL_SCANCODE_KP_MULTIPLY
+  toNumber ScancodeKPMinus = Raw.SDL_SCANCODE_KP_MINUS
+  toNumber ScancodeKPPlus = Raw.SDL_SCANCODE_KP_PLUS
+  toNumber ScancodeKPEnter = Raw.SDL_SCANCODE_KP_ENTER
+  toNumber ScancodeKP1 = Raw.SDL_SCANCODE_KP_1
+  toNumber ScancodeKP2 = Raw.SDL_SCANCODE_KP_2
+  toNumber ScancodeKP3 = Raw.SDL_SCANCODE_KP_3
+  toNumber ScancodeKP4 = Raw.SDL_SCANCODE_KP_4
+  toNumber ScancodeKP5 = Raw.SDL_SCANCODE_KP_5
+  toNumber ScancodeKP6 = Raw.SDL_SCANCODE_KP_6
+  toNumber ScancodeKP7 = Raw.SDL_SCANCODE_KP_7
+  toNumber ScancodeKP8 = Raw.SDL_SCANCODE_KP_8
+  toNumber ScancodeKP9 = Raw.SDL_SCANCODE_KP_9
+  toNumber ScancodeKP0 = Raw.SDL_SCANCODE_KP_0
+  toNumber ScancodeKPPeriod = Raw.SDL_SCANCODE_KP_PERIOD
+  toNumber ScancodeNonUSBackslash = Raw.SDL_SCANCODE_NONUSBACKSLASH
+  toNumber ScancodeApplication = Raw.SDL_SCANCODE_APPLICATION
+  toNumber ScancodePower = Raw.SDL_SCANCODE_POWER
+  toNumber ScancodeKPEquals = Raw.SDL_SCANCODE_KP_EQUALS
+  toNumber ScancodeF13 = Raw.SDL_SCANCODE_F13
+  toNumber ScancodeF14 = Raw.SDL_SCANCODE_F14
+  toNumber ScancodeF15 = Raw.SDL_SCANCODE_F15
+  toNumber ScancodeF16 = Raw.SDL_SCANCODE_F16
+  toNumber ScancodeF17 = Raw.SDL_SCANCODE_F17
+  toNumber ScancodeF18 = Raw.SDL_SCANCODE_F18
+  toNumber ScancodeF19 = Raw.SDL_SCANCODE_F19
+  toNumber ScancodeF20 = Raw.SDL_SCANCODE_F20
+  toNumber ScancodeF21 = Raw.SDL_SCANCODE_F21
+  toNumber ScancodeF22 = Raw.SDL_SCANCODE_F22
+  toNumber ScancodeF23 = Raw.SDL_SCANCODE_F23
+  toNumber ScancodeF24 = Raw.SDL_SCANCODE_F24
+  toNumber ScancodeExecute = Raw.SDL_SCANCODE_EXECUTE
+  toNumber ScancodeHelp = Raw.SDL_SCANCODE_HELP
+  toNumber ScancodeMenu = Raw.SDL_SCANCODE_MENU
+  toNumber ScancodeSelect = Raw.SDL_SCANCODE_SELECT
+  toNumber ScancodeStop = Raw.SDL_SCANCODE_STOP
+  toNumber ScancodeAgain = Raw.SDL_SCANCODE_AGAIN
+  toNumber ScancodeUndo = Raw.SDL_SCANCODE_UNDO
+  toNumber ScancodeCut = Raw.SDL_SCANCODE_CUT
+  toNumber ScancodeCopy = Raw.SDL_SCANCODE_COPY
+  toNumber ScancodePaste = Raw.SDL_SCANCODE_PASTE
+  toNumber ScancodeFind = Raw.SDL_SCANCODE_FIND
+  toNumber ScancodeMute = Raw.SDL_SCANCODE_MUTE
+  toNumber ScancodeVolumeUp = Raw.SDL_SCANCODE_VOLUMEUP
+  toNumber ScancodeVolumeDown = Raw.SDL_SCANCODE_VOLUMEDOWN
+  toNumber ScancodeKPComma = Raw.SDL_SCANCODE_KP_COMMA
+  toNumber ScancodeEqualsAs400 = Raw.SDL_SCANCODE_KP_EQUALSAS400
+  toNumber ScancodeInternational1 = Raw.SDL_SCANCODE_INTERNATIONAL1
+  toNumber ScancodeInternational2 = Raw.SDL_SCANCODE_INTERNATIONAL2
+  toNumber ScancodeInternational3 = Raw.SDL_SCANCODE_INTERNATIONAL3
+  toNumber ScancodeInternational4 = Raw.SDL_SCANCODE_INTERNATIONAL4
+  toNumber ScancodeInternational5 = Raw.SDL_SCANCODE_INTERNATIONAL5
+  toNumber ScancodeInternational6 = Raw.SDL_SCANCODE_INTERNATIONAL6
+  toNumber ScancodeInternational7 = Raw.SDL_SCANCODE_INTERNATIONAL7
+  toNumber ScancodeInternational8 = Raw.SDL_SCANCODE_INTERNATIONAL8
+  toNumber ScancodeInternational9 = Raw.SDL_SCANCODE_INTERNATIONAL9
+  toNumber ScancodeLang1 = Raw.SDL_SCANCODE_LANG1
+  toNumber ScancodeLang2 = Raw.SDL_SCANCODE_LANG2
+  toNumber ScancodeLang3 = Raw.SDL_SCANCODE_LANG3
+  toNumber ScancodeLang4 = Raw.SDL_SCANCODE_LANG4
+  toNumber ScancodeLang5 = Raw.SDL_SCANCODE_LANG5
+  toNumber ScancodeLang6 = Raw.SDL_SCANCODE_LANG6
+  toNumber ScancodeLang7 = Raw.SDL_SCANCODE_LANG7
+  toNumber ScancodeLang8 = Raw.SDL_SCANCODE_LANG8
+  toNumber ScancodeLang9 = Raw.SDL_SCANCODE_LANG9
+  toNumber ScancodeAltErase = Raw.SDL_SCANCODE_ALTERASE
+  toNumber ScancodeSysReq = Raw.SDL_SCANCODE_SYSREQ
+  toNumber ScancodeCancel = Raw.SDL_SCANCODE_CANCEL
+  toNumber ScancodeClear = Raw.SDL_SCANCODE_CLEAR
+  toNumber ScancodePrior = Raw.SDL_SCANCODE_PRIOR
+  toNumber ScancodeReturn2 = Raw.SDL_SCANCODE_RETURN2
+  toNumber ScancodeSeparator = Raw.SDL_SCANCODE_SEPARATOR
+  toNumber ScancodeOut = Raw.SDL_SCANCODE_OUT
+  toNumber ScancodeOper = Raw.SDL_SCANCODE_OPER
+  toNumber ScancodeClearAgain = Raw.SDL_SCANCODE_CLEARAGAIN
+  toNumber ScancodeCrSel = Raw.SDL_SCANCODE_CRSEL
+  toNumber ScancodeExSel = Raw.SDL_SCANCODE_EXSEL
+  toNumber ScancodeKP00 = Raw.SDL_SCANCODE_KP_00
+  toNumber ScancodeKP000 = Raw.SDL_SCANCODE_KP_000
+  toNumber ScancodeThousandsSeparator = Raw.SDL_SCANCODE_THOUSANDSSEPARATOR
+  toNumber ScancodeDecimalSeparator = Raw.SDL_SCANCODE_DECIMALSEPARATOR
+  toNumber ScancodeCurrencyUnit = Raw.SDL_SCANCODE_CURRENCYUNIT
+  toNumber ScancodeCurrencySubunit = Raw.SDL_SCANCODE_CURRENCYSUBUNIT
+  toNumber ScancodeLeftParen = Raw.SDL_SCANCODE_KP_LEFTPAREN
+  toNumber ScancodeRightParen = Raw.SDL_SCANCODE_KP_RIGHTPAREN
+  toNumber ScancodeLeftBrace = Raw.SDL_SCANCODE_KP_LEFTBRACE
+  toNumber ScancodeRightBrace = Raw.SDL_SCANCODE_KP_RIGHTBRACE
+  toNumber ScancodeKPTab = Raw.SDL_SCANCODE_KP_TAB
+  toNumber ScancodeKPBackspace = Raw.SDL_SCANCODE_KP_BACKSPACE
+  toNumber ScancodeKPA = Raw.SDL_SCANCODE_KP_A
+  toNumber ScancodeKPB = Raw.SDL_SCANCODE_KP_B
+  toNumber ScancodeKPC = Raw.SDL_SCANCODE_KP_C
+  toNumber ScancodeKPD = Raw.SDL_SCANCODE_KP_D
+  toNumber ScancodeKPE = Raw.SDL_SCANCODE_KP_E
+  toNumber ScancodeKPF = Raw.SDL_SCANCODE_KP_F
+  toNumber ScancodeKPXOR = Raw.SDL_SCANCODE_KP_XOR
+  toNumber ScancodeKPPower = Raw.SDL_SCANCODE_KP_POWER
+  toNumber ScancodeKPPercent = Raw.SDL_SCANCODE_KP_PERCENT
+  toNumber ScancodeKPLess = Raw.SDL_SCANCODE_KP_LESS
+  toNumber ScancodeKPGreater = Raw.SDL_SCANCODE_KP_GREATER
+  toNumber ScancodeKPAmpersand = Raw.SDL_SCANCODE_KP_AMPERSAND
+  toNumber ScancodeKPDBLAmpersand = Raw.SDL_SCANCODE_KP_DBLAMPERSAND
+  toNumber ScancodeKPVerticalBar = Raw.SDL_SCANCODE_KP_VERTICALBAR
+  toNumber ScancodeKPDBLVerticalBar = Raw.SDL_SCANCODE_KP_DBLVERTICALBAR
+  toNumber ScancodeKPColon = Raw.SDL_SCANCODE_KP_COLON
+  toNumber ScancodeKPHash = Raw.SDL_SCANCODE_KP_HASH
+  toNumber ScancodeKPSpace = Raw.SDL_SCANCODE_KP_SPACE
+  toNumber ScancodeKPAt = Raw.SDL_SCANCODE_KP_AT
+  toNumber ScancodeKPExclam = Raw.SDL_SCANCODE_KP_EXCLAM
+  toNumber ScancodeKPMemStore = Raw.SDL_SCANCODE_KP_MEMSTORE
+  toNumber ScancodeKPMemRecall = Raw.SDL_SCANCODE_KP_MEMRECALL
+  toNumber ScancodeKPMemClear = Raw.SDL_SCANCODE_KP_MEMCLEAR
+  toNumber ScancodeKPMemAdd = Raw.SDL_SCANCODE_KP_MEMADD
+  toNumber ScancodeKPMemSubtract = Raw.SDL_SCANCODE_KP_MEMSUBTRACT
+  toNumber ScancodeKPMemMultiply = Raw.SDL_SCANCODE_KP_MEMMULTIPLY
+  toNumber ScancodeKPMemDivide = Raw.SDL_SCANCODE_KP_MEMDIVIDE
+  toNumber ScancodeKPPlusMinus = Raw.SDL_SCANCODE_KP_PLUSMINUS
+  toNumber ScancodeKPClear = Raw.SDL_SCANCODE_KP_CLEAR
+  toNumber ScancodeKPClearEntry = Raw.SDL_SCANCODE_KP_CLEARENTRY
+  toNumber ScancodeKPBinary = Raw.SDL_SCANCODE_KP_BINARY
+  toNumber ScancodeKPOctal = Raw.SDL_SCANCODE_KP_OCTAL
+  toNumber ScancodeKPDecimal = Raw.SDL_SCANCODE_KP_DECIMAL
+  toNumber ScancodeKPHexadecimal = Raw.SDL_SCANCODE_KP_HEXADECIMAL
+  toNumber ScancodeLCtrl = Raw.SDL_SCANCODE_LCTRL
+  toNumber ScancodeLShift = Raw.SDL_SCANCODE_LSHIFT
+  toNumber ScancodeLAlt = Raw.SDL_SCANCODE_LALT
+  toNumber ScancodeLGUI = Raw.SDL_SCANCODE_LGUI
+  toNumber ScancodeRCtrl = Raw.SDL_SCANCODE_RCTRL
+  toNumber ScancodeRShift = Raw.SDL_SCANCODE_RSHIFT
+  toNumber ScancodeRAlt = Raw.SDL_SCANCODE_RALT
+  toNumber ScancodeRGUI = Raw.SDL_SCANCODE_RGUI
+  toNumber ScancodeMode = Raw.SDL_SCANCODE_MODE
+  toNumber ScancodeAudioNext = Raw.SDL_SCANCODE_AUDIONEXT
+  toNumber ScancodeAudioPrev = Raw.SDL_SCANCODE_AUDIOPREV
+  toNumber ScancodeAudioStop = Raw.SDL_SCANCODE_AUDIOSTOP
+  toNumber ScancodeAudioPlay = Raw.SDL_SCANCODE_AUDIOPLAY
+  toNumber ScancodeAudioMute = Raw.SDL_SCANCODE_AUDIOMUTE
+  toNumber ScancodeMediaSelect = Raw.SDL_SCANCODE_MEDIASELECT
+  toNumber ScancodeWWW = Raw.SDL_SCANCODE_WWW
+  toNumber ScancodeMail = Raw.SDL_SCANCODE_MAIL
+  toNumber ScancodeCalculator = Raw.SDL_SCANCODE_CALCULATOR
+  toNumber ScancodeComputer = Raw.SDL_SCANCODE_COMPUTER
+  toNumber ScancodeACSearch = Raw.SDL_SCANCODE_AC_SEARCH
+  toNumber ScancodeACHome = Raw.SDL_SCANCODE_AC_HOME
+  toNumber ScancodeACBack = Raw.SDL_SCANCODE_AC_BACK
+  toNumber ScancodeACForward = Raw.SDL_SCANCODE_AC_FORWARD
+  toNumber ScancodeACStop = Raw.SDL_SCANCODE_AC_STOP
+  toNumber ScancodeACRefresh = Raw.SDL_SCANCODE_AC_REFRESH
+  toNumber ScancodeACBookmarks = Raw.SDL_SCANCODE_AC_BOOKMARKS
+  toNumber ScancodeBrightnessDown = Raw.SDL_SCANCODE_BRIGHTNESSDOWN
+  toNumber ScancodeBrightnessUp = Raw.SDL_SCANCODE_BRIGHTNESSUP
+  toNumber ScancodeDisplaySwitch = Raw.SDL_SCANCODE_DISPLAYSWITCH
+  toNumber ScancodeKBDIllumToggle = Raw.SDL_SCANCODE_KBDILLUMTOGGLE
+  toNumber ScancodeKBDIllumDown = Raw.SDL_SCANCODE_KBDILLUMDOWN
+  toNumber ScancodeKBDIllumUp = Raw.SDL_SCANCODE_KBDILLUMUP
+  toNumber ScancodeEject = Raw.SDL_SCANCODE_EJECT
+  toNumber ScancodeSleep = Raw.SDL_SCANCODE_SLEEP
+  toNumber ScancodeApp1 = Raw.SDL_SCANCODE_APP1
+  toNumber ScancodeApp2 = Raw.SDL_SCANCODE_APP2
+  toNumber ScancodeNum = Raw.SDL_NUM_SCANCODES
 
 data Keycode
   = KeycodeUnknown
@@ -1093,481 +1094,481 @@ data Keycode
 
 instance FromNumber Keycode Int32 where
   fromNumber n' = case n' of
-    n | n == Raw.keycodeUnknown -> KeycodeUnknown
-    n | n == Raw.keycodeReturn -> KeycodeReturn
-    n | n == Raw.keycodeEscape -> KeycodeEscape
-    n | n == Raw.keycodeBackspace -> KeycodeBackspace
-    n | n == Raw.keycodeTab -> KeycodeTab
-    n | n == Raw.keycodeSpace -> KeycodeSpace
-    n | n == Raw.keycodeExclaim -> KeycodeExclaim
-    n | n == Raw.keycodeQuoteDbl -> KeycodeQuoteDbl
-    n | n == Raw.keycodeHash -> KeycodeHash
-    n | n == Raw.keycodePercent -> KeycodePercent
-    n | n == Raw.keycodeDollar -> KeycodeDollar
-    n | n == Raw.keycodeAmpersand -> KeycodeAmpersand
-    n | n == Raw.keycodeQuote -> KeycodeQuote
-    n | n == Raw.keycodeLeftParen -> KeycodeLeftParen
-    n | n == Raw.keycodeRightParen -> KeycodeRightParen
-    n | n == Raw.keycodeAsterisk -> KeycodeAsterisk
-    n | n == Raw.keycodePlus -> KeycodePlus
-    n | n == Raw.keycodeComma -> KeycodeComma
-    n | n == Raw.keycodeMinus -> KeycodeMinus
-    n | n == Raw.keycodePeriod -> KeycodePeriod
-    n | n == Raw.keycodeSlash -> KeycodeSlash
-    n | n == Raw.keycode0 -> Keycode0
-    n | n == Raw.keycode1 -> Keycode1
-    n | n == Raw.keycode2 -> Keycode2
-    n | n == Raw.keycode3 -> Keycode3
-    n | n == Raw.keycode4 -> Keycode4
-    n | n == Raw.keycode5 -> Keycode5
-    n | n == Raw.keycode6 -> Keycode6
-    n | n == Raw.keycode7 -> Keycode7
-    n | n == Raw.keycode8 -> Keycode8
-    n | n == Raw.keycode9 -> Keycode9
-    n | n == Raw.keycodeColon -> KeycodeColon
-    n | n == Raw.keycodeSemicolon -> KeycodeSemicolon
-    n | n == Raw.keycodeLess -> KeycodeLess
-    n | n == Raw.keycodeEquals -> KeycodeEquals
-    n | n == Raw.keycodeGreater -> KeycodeGreater
-    n | n == Raw.keycodeQuestion -> KeycodeQuestion
-    n | n == Raw.keycodeAt -> KeycodeAt
-    n | n == Raw.keycodeLeftBracket -> KeycodeLeftBracket
-    n | n == Raw.keycodeBackslash -> KeycodeBackslash
-    n | n == Raw.keycodeRightBracket -> KeycodeRightBracket
-    n | n == Raw.keycodeCaret -> KeycodeCaret
-    n | n == Raw.keycodeUnderscore -> KeycodeUnderscore
-    n | n == Raw.keycodeBackquote -> KeycodeBackquote
-    n | n == Raw.keycodeA -> KeycodeA
-    n | n == Raw.keycodeB -> KeycodeB
-    n | n == Raw.keycodeC -> KeycodeC
-    n | n == Raw.keycodeD -> KeycodeD
-    n | n == Raw.keycodeE -> KeycodeE
-    n | n == Raw.keycodeF -> KeycodeF
-    n | n == Raw.keycodeG -> KeycodeG
-    n | n == Raw.keycodeH -> KeycodeH
-    n | n == Raw.keycodeI -> KeycodeI
-    n | n == Raw.keycodeJ -> KeycodeJ
-    n | n == Raw.keycodeK -> KeycodeK
-    n | n == Raw.keycodeL -> KeycodeL
-    n | n == Raw.keycodeM -> KeycodeM
-    n | n == Raw.keycodeN -> KeycodeN
-    n | n == Raw.keycodeO -> KeycodeO
-    n | n == Raw.keycodeP -> KeycodeP
-    n | n == Raw.keycodeQ -> KeycodeQ
-    n | n == Raw.keycodeR -> KeycodeR
-    n | n == Raw.keycodeS -> KeycodeS
-    n | n == Raw.keycodeT -> KeycodeT
-    n | n == Raw.keycodeU -> KeycodeU
-    n | n == Raw.keycodeV -> KeycodeV
-    n | n == Raw.keycodeW -> KeycodeW
-    n | n == Raw.keycodeX -> KeycodeX
-    n | n == Raw.keycodeY -> KeycodeY
-    n | n == Raw.keycodeZ -> KeycodeZ
-    n | n == Raw.keycodeCapsLock -> KeycodeCapsLock
-    n | n == Raw.keycodeF1 -> KeycodeF1
-    n | n == Raw.keycodeF2 -> KeycodeF2
-    n | n == Raw.keycodeF3 -> KeycodeF3
-    n | n == Raw.keycodeF4 -> KeycodeF4
-    n | n == Raw.keycodeF5 -> KeycodeF5
-    n | n == Raw.keycodeF6 -> KeycodeF6
-    n | n == Raw.keycodeF7 -> KeycodeF7
-    n | n == Raw.keycodeF8 -> KeycodeF8
-    n | n == Raw.keycodeF9 -> KeycodeF9
-    n | n == Raw.keycodeF10 -> KeycodeF10
-    n | n == Raw.keycodeF11 -> KeycodeF11
-    n | n == Raw.keycodeF12 -> KeycodeF12
-    n | n == Raw.keycodePrintScreen -> KeycodePrintScreen
-    n | n == Raw.keycodeScrollLock -> KeycodeScrollLock
-    n | n == Raw.keycodePause -> KeycodePause
-    n | n == Raw.keycodeInsert -> KeycodeInsert
-    n | n == Raw.keycodeHome -> KeycodeHome
-    n | n == Raw.keycodePageUp -> KeycodePageUp
-    n | n == Raw.keycodeDelete -> KeycodeDelete
-    n | n == Raw.keycodeEnd -> KeycodeEnd
-    n | n == Raw.keycodePageDown -> KeycodePageDown
-    n | n == Raw.keycodeRight -> KeycodeRight
-    n | n == Raw.keycodeLeft -> KeycodeLeft
-    n | n == Raw.keycodeDown -> KeycodeDown
-    n | n == Raw.keycodeUp -> KeycodeUp
-    n | n == Raw.keycodeNumLockClear -> KeycodeNumLockClear
-    n | n == Raw.keycodeKPDivide -> KeycodeKPDivide
-    n | n == Raw.keycodeKPMultiply -> KeycodeKPMultiply
-    n | n == Raw.keycodeKPMinus -> KeycodeKPMinus
-    n | n == Raw.keycodeKPPlus -> KeycodeKPPlus
-    n | n == Raw.keycodeKPEnter -> KeycodeKPEnter
-    n | n == Raw.keycodeKP1 -> KeycodeKP1
-    n | n == Raw.keycodeKP2 -> KeycodeKP2
-    n | n == Raw.keycodeKP3 -> KeycodeKP3
-    n | n == Raw.keycodeKP4 -> KeycodeKP4
-    n | n == Raw.keycodeKP5 -> KeycodeKP5
-    n | n == Raw.keycodeKP6 -> KeycodeKP6
-    n | n == Raw.keycodeKP7 -> KeycodeKP7
-    n | n == Raw.keycodeKP8 -> KeycodeKP8
-    n | n == Raw.keycodeKP9 -> KeycodeKP9
-    n | n == Raw.keycodeKP0 -> KeycodeKP0
-    n | n == Raw.keycodeKPPeriod -> KeycodeKPPeriod
-    n | n == Raw.keycodeApplication -> KeycodeApplication
-    n | n == Raw.keycodePower -> KeycodePower
-    n | n == Raw.keycodeKPEquals -> KeycodeKPEquals
-    n | n == Raw.keycodeF13 -> KeycodeF13
-    n | n == Raw.keycodeF14 -> KeycodeF14
-    n | n == Raw.keycodeF15 -> KeycodeF15
-    n | n == Raw.keycodeF16 -> KeycodeF16
-    n | n == Raw.keycodeF17 -> KeycodeF17
-    n | n == Raw.keycodeF18 -> KeycodeF18
-    n | n == Raw.keycodeF19 -> KeycodeF19
-    n | n == Raw.keycodeF20 -> KeycodeF20
-    n | n == Raw.keycodeF21 -> KeycodeF21
-    n | n == Raw.keycodeF22 -> KeycodeF22
-    n | n == Raw.keycodeF23 -> KeycodeF23
-    n | n == Raw.keycodeF24 -> KeycodeF24
-    n | n == Raw.keycodeExecute -> KeycodeExecute
-    n | n == Raw.keycodeHelp -> KeycodeHelp
-    n | n == Raw.keycodeMenu -> KeycodeMenu
-    n | n == Raw.keycodeSelect -> KeycodeSelect
-    n | n == Raw.keycodeStop -> KeycodeStop
-    n | n == Raw.keycodeAgain -> KeycodeAgain
-    n | n == Raw.keycodeUndo -> KeycodeUndo
-    n | n == Raw.keycodeCut -> KeycodeCut
-    n | n == Raw.keycodeCopy -> KeycodeCopy
-    n | n == Raw.keycodePaste -> KeycodePaste
-    n | n == Raw.keycodeFind -> KeycodeFind
-    n | n == Raw.keycodeMute -> KeycodeMute
-    n | n == Raw.keycodeVolumeUp -> KeycodeVolumeUp
-    n | n == Raw.keycodeVolumeDown -> KeycodeVolumeDown
-    n | n == Raw.keycodeKPComma -> KeycodeKPComma
-    n | n == Raw.keycodeKPEqualsAS400 -> KeycodeKPEqualsAS400
-    n | n == Raw.keycodeAltErase -> KeycodeAltErase
-    n | n == Raw.keycodeSysReq -> KeycodeSysReq
-    n | n == Raw.keycodeCancel -> KeycodeCancel
-    n | n == Raw.keycodeClear -> KeycodeClear
-    n | n == Raw.keycodePrior -> KeycodePrior
-    n | n == Raw.keycodeReturn2 -> KeycodeReturn2
-    n | n == Raw.keycodeSeparator -> KeycodeSeparator
-    n | n == Raw.keycodeOut -> KeycodeOut
-    n | n == Raw.keycodeOper -> KeycodeOper
-    n | n == Raw.keycodeClearAgain -> KeycodeClearAgain
-    n | n == Raw.keycodeCrSel -> KeycodeCrSel
-    n | n == Raw.keycodeExSel -> KeycodeExSel
-    n | n == Raw.keycodeKP00 -> KeycodeKP00
-    n | n == Raw.keycodeKP000 -> KeycodeKP000
-    n | n == Raw.keycodeThousandsSeparator -> KeycodeThousandsSeparator
-    n | n == Raw.keycodeDecimalSeparator -> KeycodeDecimalSeparator
-    n | n == Raw.keycodeCurrencyUnit -> KeycodeCurrencyUnit
-    n | n == Raw.keycodeCurrencySubunit -> KeycodeCurrencySubunit
-    n | n == Raw.keycodeKPLeftParen -> KeycodeKPLeftParen
-    n | n == Raw.keycodeKPRightParen -> KeycodeKPRightParen
-    n | n == Raw.keycodeKPLeftBrace -> KeycodeKPLeftBrace
-    n | n == Raw.keycodeKPRightBrace -> KeycodeKPRightBrace
-    n | n == Raw.keycodeKPTab -> KeycodeKPTab
-    n | n == Raw.keycodeKPBackspace -> KeycodeKPBackspace
-    n | n == Raw.keycodeKPA -> KeycodeKPA
-    n | n == Raw.keycodeKPB -> KeycodeKPB
-    n | n == Raw.keycodeKPC -> KeycodeKPC
-    n | n == Raw.keycodeKPD -> KeycodeKPD
-    n | n == Raw.keycodeKPE -> KeycodeKPE
-    n | n == Raw.keycodeKPF -> KeycodeKPF
-    n | n == Raw.keycodeKPXor -> KeycodeKPXor
-    n | n == Raw.keycodeKPPower -> KeycodeKPPower
-    n | n == Raw.keycodeKPPercent -> KeycodeKPPercent
-    n | n == Raw.keycodeKPLess -> KeycodeKPLess
-    n | n == Raw.keycodeKPGreater -> KeycodeKPGreater
-    n | n == Raw.keycodeKPAmpersand -> KeycodeKPAmpersand
-    n | n == Raw.keycodeKPDblAmpersand -> KeycodeKPDblAmpersand
-    n | n == Raw.keycodeKPVecticalBar -> KeycodeKPVecticalBar
-    n | n == Raw.keycodeKPDblVerticalBar -> KeycodeKPDblVerticalBar
-    n | n == Raw.keycodeKPColon -> KeycodeKPColon
-    n | n == Raw.keycodeKPHash -> KeycodeKPHash
-    n | n == Raw.keycodeKPSpace -> KeycodeKPSpace
-    n | n == Raw.keycodeKPAt -> KeycodeKPAt
-    n | n == Raw.keycodeKPExclam -> KeycodeKPExclam
-    n | n == Raw.keycodeKPMemStore -> KeycodeKPMemStore
-    n | n == Raw.keycodeKPMemRecall -> KeycodeKPMemRecall
-    n | n == Raw.keycodeKPMemClear -> KeycodeKPMemClear
-    n | n == Raw.keycodeKPMemAdd -> KeycodeKPMemAdd
-    n | n == Raw.keycodeKPMemSubtract -> KeycodeKPMemSubtract
-    n | n == Raw.keycodeKPMemMultiply -> KeycodeKPMemMultiply
-    n | n == Raw.keycodeKPMemDivide -> KeycodeKPMemDivide
-    n | n == Raw.keycodeKPPlusMinus -> KeycodeKPPlusMinus
-    n | n == Raw.keycodeKPClear -> KeycodeKPClear
-    n | n == Raw.keycodeKPClearEntry -> KeycodeKPClearEntry
-    n | n == Raw.keycodeKPBinary -> KeycodeKPBinary
-    n | n == Raw.keycodeKPOctal -> KeycodeKPOctal
-    n | n == Raw.keycodeKPDecimal -> KeycodeKPDecimal
-    n | n == Raw.keycodeKPHexadecimal -> KeycodeKPHexadecimal
-    n | n == Raw.keycodeLCtrl -> KeycodeLCtrl
-    n | n == Raw.keycodeLShift -> KeycodeLShift
-    n | n == Raw.keycodeLAlt -> KeycodeLAlt
-    n | n == Raw.keycodeLGUI -> KeycodeLGUI
-    n | n == Raw.keycodeRCtrl -> KeycodeRCtrl
-    n | n == Raw.keycodeRShift -> KeycodeRShift
-    n | n == Raw.keycodeRAlt -> KeycodeRAlt
-    n | n == Raw.keycodeRGUI -> KeycodeRGUI
-    n | n == Raw.keycodeMode -> KeycodeMode
-    n | n == Raw.keycodeAudioNext -> KeycodeAudioNext
-    n | n == Raw.keycodeAudioPrev -> KeycodeAudioPrev
-    n | n == Raw.keycodeAudioStop -> KeycodeAudioStop
-    n | n == Raw.keycodeAudioPlay -> KeycodeAudioPlay
-    n | n == Raw.keycodeAudioMute -> KeycodeAudioMute
-    n | n == Raw.keycodeMediaSelect -> KeycodeMediaSelect
-    n | n == Raw.keycodeWWW -> KeycodeWWW
-    n | n == Raw.keycodeMail -> KeycodeMail
-    n | n == Raw.keycodeCalculator -> KeycodeCalculator
-    n | n == Raw.keycodeComputer -> KeycodeComputer
-    n | n == Raw.keycodeACSearch -> KeycodeACSearch
-    n | n == Raw.keycodeACHome -> KeycodeACHome
-    n | n == Raw.keycodeACBack -> KeycodeACBack
-    n | n == Raw.keycodeACForward -> KeycodeACForward
-    n | n == Raw.keycodeACStop -> KeycodeACStop
-    n | n == Raw.keycodeACRefresh -> KeycodeACRefresh
-    n | n == Raw.keycodeACBookmarks -> KeycodeACBookmarks
-    n | n == Raw.keycodeBrightnessDown -> KeycodeBrightnessDown
-    n | n == Raw.keycodeBrightnessUp -> KeycodeBrightnessUp
-    n | n == Raw.keycodeDisplaySwitch -> KeycodeDisplaySwitch
-    n | n == Raw.keycodeKbdIllumToggle -> KeycodeKbdIllumToggle
-    n | n == Raw.keycodeKbdIllumDown -> KeycodeKbdIllumDown
-    n | n == Raw.keycodeKbdIllumUp -> KeycodeKbdIllumUp
-    n | n == Raw.keycodeEject -> KeycodeEject
-    n | n == Raw.keycodeSleep -> KeycodeSleep
+    Raw.SDLK_UNKNOWN -> KeycodeUnknown
+    Raw.SDLK_RETURN -> KeycodeReturn
+    Raw.SDLK_ESCAPE -> KeycodeEscape
+    Raw.SDLK_BACKSPACE -> KeycodeBackspace
+    Raw.SDLK_TAB -> KeycodeTab
+    Raw.SDLK_SPACE -> KeycodeSpace
+    Raw.SDLK_EXCLAIM -> KeycodeExclaim
+    Raw.SDLK_QUOTEDBL -> KeycodeQuoteDbl
+    Raw.SDLK_HASH -> KeycodeHash
+    Raw.SDLK_PERCENT -> KeycodePercent
+    Raw.SDLK_DOLLAR -> KeycodeDollar
+    Raw.SDLK_AMPERSAND -> KeycodeAmpersand
+    Raw.SDLK_QUOTE -> KeycodeQuote
+    Raw.SDLK_LEFTPAREN -> KeycodeLeftParen
+    Raw.SDLK_RIGHTPAREN -> KeycodeRightParen
+    Raw.SDLK_ASTERISK -> KeycodeAsterisk
+    Raw.SDLK_PLUS -> KeycodePlus
+    Raw.SDLK_COMMA -> KeycodeComma
+    Raw.SDLK_MINUS -> KeycodeMinus
+    Raw.SDLK_PERIOD -> KeycodePeriod
+    Raw.SDLK_SLASH -> KeycodeSlash
+    Raw.SDLK_0 -> Keycode0
+    Raw.SDLK_1 -> Keycode1
+    Raw.SDLK_2 -> Keycode2
+    Raw.SDLK_3 -> Keycode3
+    Raw.SDLK_4 -> Keycode4
+    Raw.SDLK_5 -> Keycode5
+    Raw.SDLK_6 -> Keycode6
+    Raw.SDLK_7 -> Keycode7
+    Raw.SDLK_8 -> Keycode8
+    Raw.SDLK_9 -> Keycode9
+    Raw.SDLK_COLON -> KeycodeColon
+    Raw.SDLK_SEMICOLON -> KeycodeSemicolon
+    Raw.SDLK_LESS -> KeycodeLess
+    Raw.SDLK_EQUALS -> KeycodeEquals
+    Raw.SDLK_GREATER -> KeycodeGreater
+    Raw.SDLK_QUESTION -> KeycodeQuestion
+    Raw.SDLK_AT -> KeycodeAt
+    Raw.SDLK_LEFTBRACKET -> KeycodeLeftBracket
+    Raw.SDLK_BACKSLASH -> KeycodeBackslash
+    Raw.SDLK_RIGHTBRACKET -> KeycodeRightBracket
+    Raw.SDLK_CARET -> KeycodeCaret
+    Raw.SDLK_UNDERSCORE -> KeycodeUnderscore
+    Raw.SDLK_BACKQUOTE -> KeycodeBackquote
+    Raw.SDLK_a -> KeycodeA
+    Raw.SDLK_b -> KeycodeB
+    Raw.SDLK_c -> KeycodeC
+    Raw.SDLK_d -> KeycodeD
+    Raw.SDLK_e -> KeycodeE
+    Raw.SDLK_f -> KeycodeF
+    Raw.SDLK_g -> KeycodeG
+    Raw.SDLK_h -> KeycodeH
+    Raw.SDLK_i -> KeycodeI
+    Raw.SDLK_j -> KeycodeJ
+    Raw.SDLK_k -> KeycodeK
+    Raw.SDLK_l -> KeycodeL
+    Raw.SDLK_m -> KeycodeM
+    Raw.SDLK_n -> KeycodeN
+    Raw.SDLK_o -> KeycodeO
+    Raw.SDLK_p -> KeycodeP
+    Raw.SDLK_q -> KeycodeQ
+    Raw.SDLK_r -> KeycodeR
+    Raw.SDLK_s -> KeycodeS
+    Raw.SDLK_t -> KeycodeT
+    Raw.SDLK_u -> KeycodeU
+    Raw.SDLK_v -> KeycodeV
+    Raw.SDLK_w -> KeycodeW
+    Raw.SDLK_x -> KeycodeX
+    Raw.SDLK_y -> KeycodeY
+    Raw.SDLK_z -> KeycodeZ
+    Raw.SDLK_CAPSLOCK -> KeycodeCapsLock
+    Raw.SDLK_F1 -> KeycodeF1
+    Raw.SDLK_F2 -> KeycodeF2
+    Raw.SDLK_F3 -> KeycodeF3
+    Raw.SDLK_F4 -> KeycodeF4
+    Raw.SDLK_F5 -> KeycodeF5
+    Raw.SDLK_F6 -> KeycodeF6
+    Raw.SDLK_F7 -> KeycodeF7
+    Raw.SDLK_F8 -> KeycodeF8
+    Raw.SDLK_F9 -> KeycodeF9
+    Raw.SDLK_F10 -> KeycodeF10
+    Raw.SDLK_F11 -> KeycodeF11
+    Raw.SDLK_F12 -> KeycodeF12
+    Raw.SDLK_PRINTSCREEN -> KeycodePrintScreen
+    Raw.SDLK_SCROLLLOCK -> KeycodeScrollLock
+    Raw.SDLK_PAUSE -> KeycodePause
+    Raw.SDLK_INSERT -> KeycodeInsert
+    Raw.SDLK_HOME -> KeycodeHome
+    Raw.SDLK_PAGEUP -> KeycodePageUp
+    Raw.SDLK_DELETE -> KeycodeDelete
+    Raw.SDLK_END -> KeycodeEnd
+    Raw.SDLK_PAGEDOWN -> KeycodePageDown
+    Raw.SDLK_RIGHT -> KeycodeRight
+    Raw.SDLK_LEFT -> KeycodeLeft
+    Raw.SDLK_DOWN -> KeycodeDown
+    Raw.SDLK_UP -> KeycodeUp
+    Raw.SDLK_NUMLOCKCLEAR -> KeycodeNumLockClear
+    Raw.SDLK_KP_DIVIDE -> KeycodeKPDivide
+    Raw.SDLK_KP_MULTIPLY -> KeycodeKPMultiply
+    Raw.SDLK_KP_MINUS -> KeycodeKPMinus
+    Raw.SDLK_KP_PLUS -> KeycodeKPPlus
+    Raw.SDLK_KP_ENTER -> KeycodeKPEnter
+    Raw.SDLK_KP_1 -> KeycodeKP1
+    Raw.SDLK_KP_2 -> KeycodeKP2
+    Raw.SDLK_KP_3 -> KeycodeKP3
+    Raw.SDLK_KP_4 -> KeycodeKP4
+    Raw.SDLK_KP_5 -> KeycodeKP5
+    Raw.SDLK_KP_6 -> KeycodeKP6
+    Raw.SDLK_KP_7 -> KeycodeKP7
+    Raw.SDLK_KP_8 -> KeycodeKP8
+    Raw.SDLK_KP_9 -> KeycodeKP9
+    Raw.SDLK_KP_0 -> KeycodeKP0
+    Raw.SDLK_KP_PERIOD -> KeycodeKPPeriod
+    Raw.SDLK_APPLICATION -> KeycodeApplication
+    Raw.SDLK_POWER -> KeycodePower
+    Raw.SDLK_KP_EQUALS -> KeycodeKPEquals
+    Raw.SDLK_F13 -> KeycodeF13
+    Raw.SDLK_F14 -> KeycodeF14
+    Raw.SDLK_F15 -> KeycodeF15
+    Raw.SDLK_F16 -> KeycodeF16
+    Raw.SDLK_F17 -> KeycodeF17
+    Raw.SDLK_F18 -> KeycodeF18
+    Raw.SDLK_F19 -> KeycodeF19
+    Raw.SDLK_F20 -> KeycodeF20
+    Raw.SDLK_F21 -> KeycodeF21
+    Raw.SDLK_F22 -> KeycodeF22
+    Raw.SDLK_F23 -> KeycodeF23
+    Raw.SDLK_F24 -> KeycodeF24
+    Raw.SDLK_EXECUTE -> KeycodeExecute
+    Raw.SDLK_HELP -> KeycodeHelp
+    Raw.SDLK_MENU -> KeycodeMenu
+    Raw.SDLK_SELECT -> KeycodeSelect
+    Raw.SDLK_STOP -> KeycodeStop
+    Raw.SDLK_AGAIN -> KeycodeAgain
+    Raw.SDLK_UNDO -> KeycodeUndo
+    Raw.SDLK_CUT -> KeycodeCut
+    Raw.SDLK_COPY -> KeycodeCopy
+    Raw.SDLK_PASTE -> KeycodePaste
+    Raw.SDLK_FIND -> KeycodeFind
+    Raw.SDLK_MUTE -> KeycodeMute
+    Raw.SDLK_VOLUMEUP -> KeycodeVolumeUp
+    Raw.SDLK_VOLUMEDOWN -> KeycodeVolumeDown
+    Raw.SDLK_KP_COMMA -> KeycodeKPComma
+    Raw.SDLK_KP_EQUALSAS400 -> KeycodeKPEqualsAS400
+    Raw.SDLK_ALTERASE -> KeycodeAltErase
+    Raw.SDLK_SYSREQ -> KeycodeSysReq
+    Raw.SDLK_CANCEL -> KeycodeCancel
+    Raw.SDLK_CLEAR -> KeycodeClear
+    Raw.SDLK_PRIOR -> KeycodePrior
+    Raw.SDLK_RETURN2 -> KeycodeReturn2
+    Raw.SDLK_SEPARATOR -> KeycodeSeparator
+    Raw.SDLK_OUT -> KeycodeOut
+    Raw.SDLK_OPER -> KeycodeOper
+    Raw.SDLK_CLEARAGAIN -> KeycodeClearAgain
+    Raw.SDLK_CRSEL -> KeycodeCrSel
+    Raw.SDLK_EXSEL -> KeycodeExSel
+    Raw.SDLK_KP_00 -> KeycodeKP00
+    Raw.SDLK_KP_000 -> KeycodeKP000
+    Raw.SDLK_THOUSANDSSEPARATOR -> KeycodeThousandsSeparator
+    Raw.SDLK_DECIMALSEPARATOR -> KeycodeDecimalSeparator
+    Raw.SDLK_CURRENCYUNIT -> KeycodeCurrencyUnit
+    Raw.SDLK_CURRENCYSUBUNIT -> KeycodeCurrencySubunit
+    Raw.SDLK_KP_LEFTPAREN -> KeycodeKPLeftParen
+    Raw.SDLK_KP_RIGHTPAREN -> KeycodeKPRightParen
+    Raw.SDLK_KP_LEFTBRACE -> KeycodeKPLeftBrace
+    Raw.SDLK_KP_RIGHTBRACE -> KeycodeKPRightBrace
+    Raw.SDLK_KP_TAB -> KeycodeKPTab
+    Raw.SDLK_KP_BACKSPACE -> KeycodeKPBackspace
+    Raw.SDLK_KP_A -> KeycodeKPA
+    Raw.SDLK_KP_B -> KeycodeKPB
+    Raw.SDLK_KP_C -> KeycodeKPC
+    Raw.SDLK_KP_D -> KeycodeKPD
+    Raw.SDLK_KP_E -> KeycodeKPE
+    Raw.SDLK_KP_F -> KeycodeKPF
+    Raw.SDLK_KP_XOR -> KeycodeKPXor
+    Raw.SDLK_KP_POWER -> KeycodeKPPower
+    Raw.SDLK_KP_PERCENT -> KeycodeKPPercent
+    Raw.SDLK_KP_LESS -> KeycodeKPLess
+    Raw.SDLK_KP_GREATER -> KeycodeKPGreater
+    Raw.SDLK_KP_AMPERSAND -> KeycodeKPAmpersand
+    Raw.SDLK_KP_DBLAMPERSAND -> KeycodeKPDblAmpersand
+    Raw.SDLK_KP_VERTICALBAR -> KeycodeKPVecticalBar
+    Raw.SDLK_KP_DBLVERTICALBAR -> KeycodeKPDblVerticalBar
+    Raw.SDLK_KP_COLON -> KeycodeKPColon
+    Raw.SDLK_KP_HASH -> KeycodeKPHash
+    Raw.SDLK_KP_SPACE -> KeycodeKPSpace
+    Raw.SDLK_KP_AT -> KeycodeKPAt
+    Raw.SDLK_KP_EXCLAM -> KeycodeKPExclam
+    Raw.SDLK_KP_MEMSTORE -> KeycodeKPMemStore
+    Raw.SDLK_KP_MEMRECALL -> KeycodeKPMemRecall
+    Raw.SDLK_KP_MEMCLEAR -> KeycodeKPMemClear
+    Raw.SDLK_KP_MEMADD -> KeycodeKPMemAdd
+    Raw.SDLK_KP_MEMSUBTRACT -> KeycodeKPMemSubtract
+    Raw.SDLK_KP_MEMMULTIPLY -> KeycodeKPMemMultiply
+    Raw.SDLK_KP_MEMDIVIDE -> KeycodeKPMemDivide
+    Raw.SDLK_KP_PLUSMINUS -> KeycodeKPPlusMinus
+    Raw.SDLK_KP_CLEAR -> KeycodeKPClear
+    Raw.SDLK_KP_CLEARENTRY -> KeycodeKPClearEntry
+    Raw.SDLK_KP_BINARY -> KeycodeKPBinary
+    Raw.SDLK_KP_OCTAL -> KeycodeKPOctal
+    Raw.SDLK_KP_DECIMAL -> KeycodeKPDecimal
+    Raw.SDLK_KP_HEXADECIMAL -> KeycodeKPHexadecimal
+    Raw.SDLK_LCTRL -> KeycodeLCtrl
+    Raw.SDLK_LSHIFT -> KeycodeLShift
+    Raw.SDLK_LALT -> KeycodeLAlt
+    Raw.SDLK_LGUI -> KeycodeLGUI
+    Raw.SDLK_RCTRL -> KeycodeRCtrl
+    Raw.SDLK_RSHIFT -> KeycodeRShift
+    Raw.SDLK_RALT -> KeycodeRAlt
+    Raw.SDLK_RGUI -> KeycodeRGUI
+    Raw.SDLK_MODE -> KeycodeMode
+    Raw.SDLK_AUDIONEXT -> KeycodeAudioNext
+    Raw.SDLK_AUDIOPREV -> KeycodeAudioPrev
+    Raw.SDLK_AUDIOSTOP -> KeycodeAudioStop
+    Raw.SDLK_AUDIOPLAY -> KeycodeAudioPlay
+    Raw.SDLK_AUDIOMUTE -> KeycodeAudioMute
+    Raw.SDLK_MEDIASELECT -> KeycodeMediaSelect
+    Raw.SDLK_WWW -> KeycodeWWW
+    Raw.SDLK_MAIL -> KeycodeMail
+    Raw.SDLK_CALCULATOR -> KeycodeCalculator
+    Raw.SDLK_COMPUTER -> KeycodeComputer
+    Raw.SDLK_AC_SEARCH -> KeycodeACSearch
+    Raw.SDLK_AC_HOME -> KeycodeACHome
+    Raw.SDLK_AC_BACK -> KeycodeACBack
+    Raw.SDLK_AC_FORWARD -> KeycodeACForward
+    Raw.SDLK_AC_STOP -> KeycodeACStop
+    Raw.SDLK_AC_REFRESH -> KeycodeACRefresh
+    Raw.SDLK_AC_BOOKMARKS -> KeycodeACBookmarks
+    Raw.SDLK_BRIGHTNESSDOWN -> KeycodeBrightnessDown
+    Raw.SDLK_BRIGHTNESSUP -> KeycodeBrightnessUp
+    Raw.SDLK_DISPLAYSWITCH -> KeycodeDisplaySwitch
+    Raw.SDLK_KBDILLUMTOGGLE -> KeycodeKbdIllumToggle
+    Raw.SDLK_KBDILLUMDOWN -> KeycodeKbdIllumDown
+    Raw.SDLK_KBDILLUMUP -> KeycodeKbdIllumUp
+    Raw.SDLK_EJECT -> KeycodeEject
+    Raw.SDLK_SLEEP -> KeycodeSleep
     _ -> error "fromNumber: not numbered"
 
 instance ToNumber Keycode Int32 where
-  toNumber KeycodeUnknown = Raw.keycodeUnknown
-  toNumber KeycodeReturn = Raw.keycodeReturn
-  toNumber KeycodeEscape = Raw.keycodeEscape
-  toNumber KeycodeBackspace = Raw.keycodeBackspace
-  toNumber KeycodeTab = Raw.keycodeTab
-  toNumber KeycodeSpace = Raw.keycodeSpace
-  toNumber KeycodeExclaim = Raw.keycodeExclaim
-  toNumber KeycodeQuoteDbl = Raw.keycodeQuoteDbl
-  toNumber KeycodeHash = Raw.keycodeHash
-  toNumber KeycodePercent = Raw.keycodePercent
-  toNumber KeycodeDollar = Raw.keycodeDollar
-  toNumber KeycodeAmpersand = Raw.keycodeAmpersand
-  toNumber KeycodeQuote = Raw.keycodeQuote
-  toNumber KeycodeLeftParen = Raw.keycodeLeftParen
-  toNumber KeycodeRightParen = Raw.keycodeRightParen
-  toNumber KeycodeAsterisk = Raw.keycodeAsterisk
-  toNumber KeycodePlus = Raw.keycodePlus
-  toNumber KeycodeComma = Raw.keycodeComma
-  toNumber KeycodeMinus = Raw.keycodeMinus
-  toNumber KeycodePeriod = Raw.keycodePeriod
-  toNumber KeycodeSlash = Raw.keycodeSlash
-  toNumber Keycode0 = Raw.keycode0
-  toNumber Keycode1 = Raw.keycode1
-  toNumber Keycode2 = Raw.keycode2
-  toNumber Keycode3 = Raw.keycode3
-  toNumber Keycode4 = Raw.keycode4
-  toNumber Keycode5 = Raw.keycode5
-  toNumber Keycode6 = Raw.keycode6
-  toNumber Keycode7 = Raw.keycode7
-  toNumber Keycode8 = Raw.keycode8
-  toNumber Keycode9 = Raw.keycode9
-  toNumber KeycodeColon = Raw.keycodeColon
-  toNumber KeycodeSemicolon = Raw.keycodeSemicolon
-  toNumber KeycodeLess = Raw.keycodeLess
-  toNumber KeycodeEquals = Raw.keycodeEquals
-  toNumber KeycodeGreater = Raw.keycodeGreater
-  toNumber KeycodeQuestion = Raw.keycodeQuestion
-  toNumber KeycodeAt = Raw.keycodeAt
-  toNumber KeycodeLeftBracket = Raw.keycodeLeftBracket
-  toNumber KeycodeBackslash = Raw.keycodeBackslash
-  toNumber KeycodeRightBracket = Raw.keycodeRightBracket
-  toNumber KeycodeCaret = Raw.keycodeCaret
-  toNumber KeycodeUnderscore = Raw.keycodeUnderscore
-  toNumber KeycodeBackquote = Raw.keycodeBackquote
-  toNumber KeycodeA = Raw.keycodeA
-  toNumber KeycodeB = Raw.keycodeB
-  toNumber KeycodeC = Raw.keycodeC
-  toNumber KeycodeD = Raw.keycodeD
-  toNumber KeycodeE = Raw.keycodeE
-  toNumber KeycodeF = Raw.keycodeF
-  toNumber KeycodeG = Raw.keycodeG
-  toNumber KeycodeH = Raw.keycodeH
-  toNumber KeycodeI = Raw.keycodeI
-  toNumber KeycodeJ = Raw.keycodeJ
-  toNumber KeycodeK = Raw.keycodeK
-  toNumber KeycodeL = Raw.keycodeL
-  toNumber KeycodeM = Raw.keycodeM
-  toNumber KeycodeN = Raw.keycodeN
-  toNumber KeycodeO = Raw.keycodeO
-  toNumber KeycodeP = Raw.keycodeP
-  toNumber KeycodeQ = Raw.keycodeQ
-  toNumber KeycodeR = Raw.keycodeR
-  toNumber KeycodeS = Raw.keycodeS
-  toNumber KeycodeT = Raw.keycodeT
-  toNumber KeycodeU = Raw.keycodeU
-  toNumber KeycodeV = Raw.keycodeV
-  toNumber KeycodeW = Raw.keycodeW
-  toNumber KeycodeX = Raw.keycodeX
-  toNumber KeycodeY = Raw.keycodeY
-  toNumber KeycodeZ = Raw.keycodeZ
-  toNumber KeycodeCapsLock = Raw.keycodeCapsLock
-  toNumber KeycodeF1 = Raw.keycodeF1
-  toNumber KeycodeF2 = Raw.keycodeF2
-  toNumber KeycodeF3 = Raw.keycodeF3
-  toNumber KeycodeF4 = Raw.keycodeF4
-  toNumber KeycodeF5 = Raw.keycodeF5
-  toNumber KeycodeF6 = Raw.keycodeF6
-  toNumber KeycodeF7 = Raw.keycodeF7
-  toNumber KeycodeF8 = Raw.keycodeF8
-  toNumber KeycodeF9 = Raw.keycodeF9
-  toNumber KeycodeF10 = Raw.keycodeF10
-  toNumber KeycodeF11 = Raw.keycodeF11
-  toNumber KeycodeF12 = Raw.keycodeF12
-  toNumber KeycodePrintScreen = Raw.keycodePrintScreen
-  toNumber KeycodeScrollLock = Raw.keycodeScrollLock
-  toNumber KeycodePause = Raw.keycodePause
-  toNumber KeycodeInsert = Raw.keycodeInsert
-  toNumber KeycodeHome = Raw.keycodeHome
-  toNumber KeycodePageUp = Raw.keycodePageUp
-  toNumber KeycodeDelete = Raw.keycodeDelete
-  toNumber KeycodeEnd = Raw.keycodeEnd
-  toNumber KeycodePageDown = Raw.keycodePageDown
-  toNumber KeycodeRight = Raw.keycodeRight
-  toNumber KeycodeLeft = Raw.keycodeLeft
-  toNumber KeycodeDown = Raw.keycodeDown
-  toNumber KeycodeUp = Raw.keycodeUp
-  toNumber KeycodeNumLockClear = Raw.keycodeNumLockClear
-  toNumber KeycodeKPDivide = Raw.keycodeKPDivide
-  toNumber KeycodeKPMultiply = Raw.keycodeKPMultiply
-  toNumber KeycodeKPMinus = Raw.keycodeKPMinus
-  toNumber KeycodeKPPlus = Raw.keycodeKPPlus
-  toNumber KeycodeKPEnter = Raw.keycodeKPEnter
-  toNumber KeycodeKP1 = Raw.keycodeKP1
-  toNumber KeycodeKP2 = Raw.keycodeKP2
-  toNumber KeycodeKP3 = Raw.keycodeKP3
-  toNumber KeycodeKP4 = Raw.keycodeKP4
-  toNumber KeycodeKP5 = Raw.keycodeKP5
-  toNumber KeycodeKP6 = Raw.keycodeKP6
-  toNumber KeycodeKP7 = Raw.keycodeKP7
-  toNumber KeycodeKP8 = Raw.keycodeKP8
-  toNumber KeycodeKP9 = Raw.keycodeKP9
-  toNumber KeycodeKP0 = Raw.keycodeKP0
-  toNumber KeycodeKPPeriod = Raw.keycodeKPPeriod
-  toNumber KeycodeApplication = Raw.keycodeApplication
-  toNumber KeycodePower = Raw.keycodePower
-  toNumber KeycodeKPEquals = Raw.keycodeKPEquals
-  toNumber KeycodeF13 = Raw.keycodeF13
-  toNumber KeycodeF14 = Raw.keycodeF14
-  toNumber KeycodeF15 = Raw.keycodeF15
-  toNumber KeycodeF16 = Raw.keycodeF16
-  toNumber KeycodeF17 = Raw.keycodeF17
-  toNumber KeycodeF18 = Raw.keycodeF18
-  toNumber KeycodeF19 = Raw.keycodeF19
-  toNumber KeycodeF20 = Raw.keycodeF20
-  toNumber KeycodeF21 = Raw.keycodeF21
-  toNumber KeycodeF22 = Raw.keycodeF22
-  toNumber KeycodeF23 = Raw.keycodeF23
-  toNumber KeycodeF24 = Raw.keycodeF24
-  toNumber KeycodeExecute = Raw.keycodeExecute
-  toNumber KeycodeHelp = Raw.keycodeHelp
-  toNumber KeycodeMenu = Raw.keycodeMenu
-  toNumber KeycodeSelect = Raw.keycodeSelect
-  toNumber KeycodeStop = Raw.keycodeStop
-  toNumber KeycodeAgain = Raw.keycodeAgain
-  toNumber KeycodeUndo = Raw.keycodeUndo
-  toNumber KeycodeCut = Raw.keycodeCut
-  toNumber KeycodeCopy = Raw.keycodeCopy
-  toNumber KeycodePaste = Raw.keycodePaste
-  toNumber KeycodeFind = Raw.keycodeFind
-  toNumber KeycodeMute = Raw.keycodeMute
-  toNumber KeycodeVolumeUp = Raw.keycodeVolumeUp
-  toNumber KeycodeVolumeDown = Raw.keycodeVolumeDown
-  toNumber KeycodeKPComma = Raw.keycodeKPComma
-  toNumber KeycodeKPEqualsAS400 = Raw.keycodeKPEqualsAS400
-  toNumber KeycodeAltErase = Raw.keycodeAltErase
-  toNumber KeycodeSysReq = Raw.keycodeSysReq
-  toNumber KeycodeCancel = Raw.keycodeCancel
-  toNumber KeycodeClear = Raw.keycodeClear
-  toNumber KeycodePrior = Raw.keycodePrior
-  toNumber KeycodeReturn2 = Raw.keycodeReturn2
-  toNumber KeycodeSeparator = Raw.keycodeSeparator
-  toNumber KeycodeOut = Raw.keycodeOut
-  toNumber KeycodeOper = Raw.keycodeOper
-  toNumber KeycodeClearAgain = Raw.keycodeClearAgain
-  toNumber KeycodeCrSel = Raw.keycodeCrSel
-  toNumber KeycodeExSel = Raw.keycodeExSel
-  toNumber KeycodeKP00 = Raw.keycodeKP00
-  toNumber KeycodeKP000 = Raw.keycodeKP000
-  toNumber KeycodeThousandsSeparator = Raw.keycodeThousandsSeparator
-  toNumber KeycodeDecimalSeparator = Raw.keycodeDecimalSeparator
-  toNumber KeycodeCurrencyUnit = Raw.keycodeCurrencyUnit
-  toNumber KeycodeCurrencySubunit = Raw.keycodeCurrencySubunit
-  toNumber KeycodeKPLeftParen = Raw.keycodeKPLeftParen
-  toNumber KeycodeKPRightParen = Raw.keycodeKPRightParen
-  toNumber KeycodeKPLeftBrace = Raw.keycodeKPLeftBrace
-  toNumber KeycodeKPRightBrace = Raw.keycodeKPRightBrace
-  toNumber KeycodeKPTab = Raw.keycodeKPTab
-  toNumber KeycodeKPBackspace = Raw.keycodeKPBackspace
-  toNumber KeycodeKPA = Raw.keycodeKPA
-  toNumber KeycodeKPB = Raw.keycodeKPB
-  toNumber KeycodeKPC = Raw.keycodeKPC
-  toNumber KeycodeKPD = Raw.keycodeKPD
-  toNumber KeycodeKPE = Raw.keycodeKPE
-  toNumber KeycodeKPF = Raw.keycodeKPF
-  toNumber KeycodeKPXor = Raw.keycodeKPXor
-  toNumber KeycodeKPPower = Raw.keycodeKPPower
-  toNumber KeycodeKPPercent = Raw.keycodeKPPercent
-  toNumber KeycodeKPLess = Raw.keycodeKPLess
-  toNumber KeycodeKPGreater = Raw.keycodeKPGreater
-  toNumber KeycodeKPAmpersand = Raw.keycodeKPAmpersand
-  toNumber KeycodeKPDblAmpersand = Raw.keycodeKPDblAmpersand
-  toNumber KeycodeKPVecticalBar = Raw.keycodeKPVecticalBar
-  toNumber KeycodeKPDblVerticalBar = Raw.keycodeKPDblVerticalBar
-  toNumber KeycodeKPColon = Raw.keycodeKPColon
-  toNumber KeycodeKPHash = Raw.keycodeKPHash
-  toNumber KeycodeKPSpace = Raw.keycodeKPSpace
-  toNumber KeycodeKPAt = Raw.keycodeKPAt
-  toNumber KeycodeKPExclam = Raw.keycodeKPExclam
-  toNumber KeycodeKPMemStore = Raw.keycodeKPMemStore
-  toNumber KeycodeKPMemRecall = Raw.keycodeKPMemRecall
-  toNumber KeycodeKPMemClear = Raw.keycodeKPMemClear
-  toNumber KeycodeKPMemAdd = Raw.keycodeKPMemAdd
-  toNumber KeycodeKPMemSubtract = Raw.keycodeKPMemSubtract
-  toNumber KeycodeKPMemMultiply = Raw.keycodeKPMemMultiply
-  toNumber KeycodeKPMemDivide = Raw.keycodeKPMemDivide
-  toNumber KeycodeKPPlusMinus = Raw.keycodeKPPlusMinus
-  toNumber KeycodeKPClear = Raw.keycodeKPClear
-  toNumber KeycodeKPClearEntry = Raw.keycodeKPClearEntry
-  toNumber KeycodeKPBinary = Raw.keycodeKPBinary
-  toNumber KeycodeKPOctal = Raw.keycodeKPOctal
-  toNumber KeycodeKPDecimal = Raw.keycodeKPDecimal
-  toNumber KeycodeKPHexadecimal = Raw.keycodeKPHexadecimal
-  toNumber KeycodeLCtrl = Raw.keycodeLCtrl
-  toNumber KeycodeLShift = Raw.keycodeLShift
-  toNumber KeycodeLAlt = Raw.keycodeLAlt
-  toNumber KeycodeLGUI = Raw.keycodeLGUI
-  toNumber KeycodeRCtrl = Raw.keycodeRCtrl
-  toNumber KeycodeRShift = Raw.keycodeRShift
-  toNumber KeycodeRAlt = Raw.keycodeRAlt
-  toNumber KeycodeRGUI = Raw.keycodeRGUI
-  toNumber KeycodeMode = Raw.keycodeMode
-  toNumber KeycodeAudioNext = Raw.keycodeAudioNext
-  toNumber KeycodeAudioPrev = Raw.keycodeAudioPrev
-  toNumber KeycodeAudioStop = Raw.keycodeAudioStop
-  toNumber KeycodeAudioPlay = Raw.keycodeAudioPlay
-  toNumber KeycodeAudioMute = Raw.keycodeAudioMute
-  toNumber KeycodeMediaSelect = Raw.keycodeMediaSelect
-  toNumber KeycodeWWW = Raw.keycodeWWW
-  toNumber KeycodeMail = Raw.keycodeMail
-  toNumber KeycodeCalculator = Raw.keycodeCalculator
-  toNumber KeycodeComputer = Raw.keycodeComputer
-  toNumber KeycodeACSearch = Raw.keycodeACSearch
-  toNumber KeycodeACHome = Raw.keycodeACHome
-  toNumber KeycodeACBack = Raw.keycodeACBack
-  toNumber KeycodeACForward = Raw.keycodeACForward
-  toNumber KeycodeACStop = Raw.keycodeACStop
-  toNumber KeycodeACRefresh = Raw.keycodeACRefresh
-  toNumber KeycodeACBookmarks = Raw.keycodeACBookmarks
-  toNumber KeycodeBrightnessDown = Raw.keycodeBrightnessDown
-  toNumber KeycodeBrightnessUp = Raw.keycodeBrightnessUp
-  toNumber KeycodeDisplaySwitch = Raw.keycodeDisplaySwitch
-  toNumber KeycodeKbdIllumToggle = Raw.keycodeKbdIllumToggle
-  toNumber KeycodeKbdIllumDown = Raw.keycodeKbdIllumDown
-  toNumber KeycodeKbdIllumUp = Raw.keycodeKbdIllumUp
-  toNumber KeycodeEject = Raw.keycodeEject
-  toNumber KeycodeSleep = Raw.keycodeSleep
+  toNumber KeycodeUnknown = Raw.SDLK_UNKNOWN
+  toNumber KeycodeReturn = Raw.SDLK_RETURN
+  toNumber KeycodeEscape = Raw.SDLK_ESCAPE
+  toNumber KeycodeBackspace = Raw.SDLK_BACKSPACE
+  toNumber KeycodeTab = Raw.SDLK_TAB
+  toNumber KeycodeSpace = Raw.SDLK_SPACE
+  toNumber KeycodeExclaim = Raw.SDLK_EXCLAIM
+  toNumber KeycodeQuoteDbl = Raw.SDLK_QUOTEDBL
+  toNumber KeycodeHash = Raw.SDLK_HASH
+  toNumber KeycodePercent = Raw.SDLK_PERCENT
+  toNumber KeycodeDollar = Raw.SDLK_DOLLAR
+  toNumber KeycodeAmpersand = Raw.SDLK_AMPERSAND
+  toNumber KeycodeQuote = Raw.SDLK_QUOTE
+  toNumber KeycodeLeftParen = Raw.SDLK_LEFTPAREN
+  toNumber KeycodeRightParen = Raw.SDLK_RIGHTPAREN
+  toNumber KeycodeAsterisk = Raw.SDLK_ASTERISK
+  toNumber KeycodePlus = Raw.SDLK_PLUS
+  toNumber KeycodeComma = Raw.SDLK_COMMA
+  toNumber KeycodeMinus = Raw.SDLK_MINUS
+  toNumber KeycodePeriod = Raw.SDLK_PERIOD
+  toNumber KeycodeSlash = Raw.SDLK_SLASH
+  toNumber Keycode0 = Raw.SDLK_0
+  toNumber Keycode1 = Raw.SDLK_1
+  toNumber Keycode2 = Raw.SDLK_2
+  toNumber Keycode3 = Raw.SDLK_3
+  toNumber Keycode4 = Raw.SDLK_4
+  toNumber Keycode5 = Raw.SDLK_5
+  toNumber Keycode6 = Raw.SDLK_6
+  toNumber Keycode7 = Raw.SDLK_7
+  toNumber Keycode8 = Raw.SDLK_8
+  toNumber Keycode9 = Raw.SDLK_9
+  toNumber KeycodeColon = Raw.SDLK_COLON
+  toNumber KeycodeSemicolon = Raw.SDLK_SEMICOLON
+  toNumber KeycodeLess = Raw.SDLK_LESS
+  toNumber KeycodeEquals = Raw.SDLK_EQUALS
+  toNumber KeycodeGreater = Raw.SDLK_GREATER
+  toNumber KeycodeQuestion = Raw.SDLK_QUESTION
+  toNumber KeycodeAt = Raw.SDLK_AT
+  toNumber KeycodeLeftBracket = Raw.SDLK_LEFTBRACKET
+  toNumber KeycodeBackslash = Raw.SDLK_BACKSLASH
+  toNumber KeycodeRightBracket = Raw.SDLK_RIGHTBRACKET
+  toNumber KeycodeCaret = Raw.SDLK_CARET
+  toNumber KeycodeUnderscore = Raw.SDLK_UNDERSCORE
+  toNumber KeycodeBackquote = Raw.SDLK_BACKQUOTE
+  toNumber KeycodeA = Raw.SDLK_a
+  toNumber KeycodeB = Raw.SDLK_b
+  toNumber KeycodeC = Raw.SDLK_c
+  toNumber KeycodeD = Raw.SDLK_d
+  toNumber KeycodeE = Raw.SDLK_e
+  toNumber KeycodeF = Raw.SDLK_f
+  toNumber KeycodeG = Raw.SDLK_g
+  toNumber KeycodeH = Raw.SDLK_h
+  toNumber KeycodeI = Raw.SDLK_i
+  toNumber KeycodeJ = Raw.SDLK_j
+  toNumber KeycodeK = Raw.SDLK_k
+  toNumber KeycodeL = Raw.SDLK_l
+  toNumber KeycodeM = Raw.SDLK_m
+  toNumber KeycodeN = Raw.SDLK_n
+  toNumber KeycodeO = Raw.SDLK_o
+  toNumber KeycodeP = Raw.SDLK_p
+  toNumber KeycodeQ = Raw.SDLK_q
+  toNumber KeycodeR = Raw.SDLK_r
+  toNumber KeycodeS = Raw.SDLK_s
+  toNumber KeycodeT = Raw.SDLK_t
+  toNumber KeycodeU = Raw.SDLK_u
+  toNumber KeycodeV = Raw.SDLK_v
+  toNumber KeycodeW = Raw.SDLK_w
+  toNumber KeycodeX = Raw.SDLK_x
+  toNumber KeycodeY = Raw.SDLK_y
+  toNumber KeycodeZ = Raw.SDLK_z
+  toNumber KeycodeCapsLock = Raw.SDLK_CAPSLOCK
+  toNumber KeycodeF1 = Raw.SDLK_F1
+  toNumber KeycodeF2 = Raw.SDLK_F2
+  toNumber KeycodeF3 = Raw.SDLK_F3
+  toNumber KeycodeF4 = Raw.SDLK_F4
+  toNumber KeycodeF5 = Raw.SDLK_F5
+  toNumber KeycodeF6 = Raw.SDLK_F6
+  toNumber KeycodeF7 = Raw.SDLK_F7
+  toNumber KeycodeF8 = Raw.SDLK_F8
+  toNumber KeycodeF9 = Raw.SDLK_F9
+  toNumber KeycodeF10 = Raw.SDLK_F10
+  toNumber KeycodeF11 = Raw.SDLK_F11
+  toNumber KeycodeF12 = Raw.SDLK_F12
+  toNumber KeycodePrintScreen = Raw.SDLK_PRINTSCREEN
+  toNumber KeycodeScrollLock = Raw.SDLK_SCROLLLOCK
+  toNumber KeycodePause = Raw.SDLK_PAUSE
+  toNumber KeycodeInsert = Raw.SDLK_INSERT
+  toNumber KeycodeHome = Raw.SDLK_HOME
+  toNumber KeycodePageUp = Raw.SDLK_PAGEUP
+  toNumber KeycodeDelete = Raw.SDLK_DELETE
+  toNumber KeycodeEnd = Raw.SDLK_END
+  toNumber KeycodePageDown = Raw.SDLK_PAGEDOWN
+  toNumber KeycodeRight = Raw.SDLK_RIGHT
+  toNumber KeycodeLeft = Raw.SDLK_LEFT
+  toNumber KeycodeDown = Raw.SDLK_DOWN
+  toNumber KeycodeUp = Raw.SDLK_UP
+  toNumber KeycodeNumLockClear = Raw.SDLK_NUMLOCKCLEAR
+  toNumber KeycodeKPDivide = Raw.SDLK_KP_DIVIDE
+  toNumber KeycodeKPMultiply = Raw.SDLK_KP_MULTIPLY
+  toNumber KeycodeKPMinus = Raw.SDLK_KP_MINUS
+  toNumber KeycodeKPPlus = Raw.SDLK_KP_PLUS
+  toNumber KeycodeKPEnter = Raw.SDLK_KP_ENTER
+  toNumber KeycodeKP1 = Raw.SDLK_KP_1
+  toNumber KeycodeKP2 = Raw.SDLK_KP_2
+  toNumber KeycodeKP3 = Raw.SDLK_KP_3
+  toNumber KeycodeKP4 = Raw.SDLK_KP_4
+  toNumber KeycodeKP5 = Raw.SDLK_KP_5
+  toNumber KeycodeKP6 = Raw.SDLK_KP_6
+  toNumber KeycodeKP7 = Raw.SDLK_KP_7
+  toNumber KeycodeKP8 = Raw.SDLK_KP_8
+  toNumber KeycodeKP9 = Raw.SDLK_KP_9
+  toNumber KeycodeKP0 = Raw.SDLK_KP_0
+  toNumber KeycodeKPPeriod = Raw.SDLK_KP_PERIOD
+  toNumber KeycodeApplication = Raw.SDLK_APPLICATION
+  toNumber KeycodePower = Raw.SDLK_POWER
+  toNumber KeycodeKPEquals = Raw.SDLK_KP_EQUALS
+  toNumber KeycodeF13 = Raw.SDLK_F13
+  toNumber KeycodeF14 = Raw.SDLK_F14
+  toNumber KeycodeF15 = Raw.SDLK_F15
+  toNumber KeycodeF16 = Raw.SDLK_F16
+  toNumber KeycodeF17 = Raw.SDLK_F17
+  toNumber KeycodeF18 = Raw.SDLK_F18
+  toNumber KeycodeF19 = Raw.SDLK_F19
+  toNumber KeycodeF20 = Raw.SDLK_F20
+  toNumber KeycodeF21 = Raw.SDLK_F21
+  toNumber KeycodeF22 = Raw.SDLK_F22
+  toNumber KeycodeF23 = Raw.SDLK_F23
+  toNumber KeycodeF24 = Raw.SDLK_F24
+  toNumber KeycodeExecute = Raw.SDLK_EXECUTE
+  toNumber KeycodeHelp = Raw.SDLK_HELP
+  toNumber KeycodeMenu = Raw.SDLK_MENU
+  toNumber KeycodeSelect = Raw.SDLK_SELECT
+  toNumber KeycodeStop = Raw.SDLK_STOP
+  toNumber KeycodeAgain = Raw.SDLK_AGAIN
+  toNumber KeycodeUndo = Raw.SDLK_UNDO
+  toNumber KeycodeCut = Raw.SDLK_CUT
+  toNumber KeycodeCopy = Raw.SDLK_COPY
+  toNumber KeycodePaste = Raw.SDLK_PASTE
+  toNumber KeycodeFind = Raw.SDLK_FIND
+  toNumber KeycodeMute = Raw.SDLK_MUTE
+  toNumber KeycodeVolumeUp = Raw.SDLK_VOLUMEUP
+  toNumber KeycodeVolumeDown = Raw.SDLK_VOLUMEDOWN
+  toNumber KeycodeKPComma = Raw.SDLK_KP_COMMA
+  toNumber KeycodeKPEqualsAS400 = Raw.SDLK_KP_EQUALSAS400
+  toNumber KeycodeAltErase = Raw.SDLK_ALTERASE
+  toNumber KeycodeSysReq = Raw.SDLK_SYSREQ
+  toNumber KeycodeCancel = Raw.SDLK_CANCEL
+  toNumber KeycodeClear = Raw.SDLK_CLEAR
+  toNumber KeycodePrior = Raw.SDLK_PRIOR
+  toNumber KeycodeReturn2 = Raw.SDLK_RETURN2
+  toNumber KeycodeSeparator = Raw.SDLK_SEPARATOR
+  toNumber KeycodeOut = Raw.SDLK_OUT
+  toNumber KeycodeOper = Raw.SDLK_OPER
+  toNumber KeycodeClearAgain = Raw.SDLK_CLEARAGAIN
+  toNumber KeycodeCrSel = Raw.SDLK_CRSEL
+  toNumber KeycodeExSel = Raw.SDLK_EXSEL
+  toNumber KeycodeKP00 = Raw.SDLK_KP_00
+  toNumber KeycodeKP000 = Raw.SDLK_KP_000
+  toNumber KeycodeThousandsSeparator = Raw.SDLK_THOUSANDSSEPARATOR
+  toNumber KeycodeDecimalSeparator = Raw.SDLK_DECIMALSEPARATOR
+  toNumber KeycodeCurrencyUnit = Raw.SDLK_CURRENCYUNIT
+  toNumber KeycodeCurrencySubunit = Raw.SDLK_CURRENCYSUBUNIT
+  toNumber KeycodeKPLeftParen = Raw.SDLK_KP_LEFTPAREN
+  toNumber KeycodeKPRightParen = Raw.SDLK_KP_RIGHTPAREN
+  toNumber KeycodeKPLeftBrace = Raw.SDLK_KP_LEFTBRACE
+  toNumber KeycodeKPRightBrace = Raw.SDLK_KP_RIGHTBRACE
+  toNumber KeycodeKPTab = Raw.SDLK_KP_TAB
+  toNumber KeycodeKPBackspace = Raw.SDLK_KP_BACKSPACE
+  toNumber KeycodeKPA = Raw.SDLK_KP_A
+  toNumber KeycodeKPB = Raw.SDLK_KP_B
+  toNumber KeycodeKPC = Raw.SDLK_KP_C
+  toNumber KeycodeKPD = Raw.SDLK_KP_D
+  toNumber KeycodeKPE = Raw.SDLK_KP_E
+  toNumber KeycodeKPF = Raw.SDLK_KP_F
+  toNumber KeycodeKPXor = Raw.SDLK_KP_XOR
+  toNumber KeycodeKPPower = Raw.SDLK_KP_POWER
+  toNumber KeycodeKPPercent = Raw.SDLK_KP_PERCENT
+  toNumber KeycodeKPLess = Raw.SDLK_KP_LESS
+  toNumber KeycodeKPGreater = Raw.SDLK_KP_GREATER
+  toNumber KeycodeKPAmpersand = Raw.SDLK_KP_AMPERSAND
+  toNumber KeycodeKPDblAmpersand = Raw.SDLK_KP_DBLAMPERSAND
+  toNumber KeycodeKPVecticalBar = Raw.SDLK_KP_VERTICALBAR
+  toNumber KeycodeKPDblVerticalBar = Raw.SDLK_KP_DBLVERTICALBAR
+  toNumber KeycodeKPColon = Raw.SDLK_KP_COLON
+  toNumber KeycodeKPHash = Raw.SDLK_KP_HASH
+  toNumber KeycodeKPSpace = Raw.SDLK_KP_SPACE
+  toNumber KeycodeKPAt = Raw.SDLK_KP_AT
+  toNumber KeycodeKPExclam = Raw.SDLK_KP_EXCLAM
+  toNumber KeycodeKPMemStore = Raw.SDLK_KP_MEMSTORE
+  toNumber KeycodeKPMemRecall = Raw.SDLK_KP_MEMRECALL
+  toNumber KeycodeKPMemClear = Raw.SDLK_KP_MEMCLEAR
+  toNumber KeycodeKPMemAdd = Raw.SDLK_KP_MEMADD
+  toNumber KeycodeKPMemSubtract = Raw.SDLK_KP_MEMSUBTRACT
+  toNumber KeycodeKPMemMultiply = Raw.SDLK_KP_MEMMULTIPLY
+  toNumber KeycodeKPMemDivide = Raw.SDLK_KP_MEMDIVIDE
+  toNumber KeycodeKPPlusMinus = Raw.SDLK_KP_PLUSMINUS
+  toNumber KeycodeKPClear = Raw.SDLK_KP_CLEAR
+  toNumber KeycodeKPClearEntry = Raw.SDLK_KP_CLEARENTRY
+  toNumber KeycodeKPBinary = Raw.SDLK_KP_BINARY
+  toNumber KeycodeKPOctal = Raw.SDLK_KP_OCTAL
+  toNumber KeycodeKPDecimal = Raw.SDLK_KP_DECIMAL
+  toNumber KeycodeKPHexadecimal = Raw.SDLK_KP_HEXADECIMAL
+  toNumber KeycodeLCtrl = Raw.SDLK_LCTRL
+  toNumber KeycodeLShift = Raw.SDLK_LSHIFT
+  toNumber KeycodeLAlt = Raw.SDLK_LALT
+  toNumber KeycodeLGUI = Raw.SDLK_LGUI
+  toNumber KeycodeRCtrl = Raw.SDLK_RCTRL
+  toNumber KeycodeRShift = Raw.SDLK_RSHIFT
+  toNumber KeycodeRAlt = Raw.SDLK_RALT
+  toNumber KeycodeRGUI = Raw.SDLK_RGUI
+  toNumber KeycodeMode = Raw.SDLK_MODE
+  toNumber KeycodeAudioNext = Raw.SDLK_AUDIONEXT
+  toNumber KeycodeAudioPrev = Raw.SDLK_AUDIOPREV
+  toNumber KeycodeAudioStop = Raw.SDLK_AUDIOSTOP
+  toNumber KeycodeAudioPlay = Raw.SDLK_AUDIOPLAY
+  toNumber KeycodeAudioMute = Raw.SDLK_AUDIOMUTE
+  toNumber KeycodeMediaSelect = Raw.SDLK_MEDIASELECT
+  toNumber KeycodeWWW = Raw.SDLK_WWW
+  toNumber KeycodeMail = Raw.SDLK_MAIL
+  toNumber KeycodeCalculator = Raw.SDLK_CALCULATOR
+  toNumber KeycodeComputer = Raw.SDLK_COMPUTER
+  toNumber KeycodeACSearch = Raw.SDLK_AC_SEARCH
+  toNumber KeycodeACHome = Raw.SDLK_AC_HOME
+  toNumber KeycodeACBack = Raw.SDLK_AC_BACK
+  toNumber KeycodeACForward = Raw.SDLK_AC_FORWARD
+  toNumber KeycodeACStop = Raw.SDLK_AC_STOP
+  toNumber KeycodeACRefresh = Raw.SDLK_AC_REFRESH
+  toNumber KeycodeACBookmarks = Raw.SDLK_AC_BOOKMARKS
+  toNumber KeycodeBrightnessDown = Raw.SDLK_BRIGHTNESSDOWN
+  toNumber KeycodeBrightnessUp = Raw.SDLK_BRIGHTNESSUP
+  toNumber KeycodeDisplaySwitch = Raw.SDLK_DISPLAYSWITCH
+  toNumber KeycodeKbdIllumToggle = Raw.SDLK_KBDILLUMTOGGLE
+  toNumber KeycodeKbdIllumDown = Raw.SDLK_KBDILLUMDOWN
+  toNumber KeycodeKbdIllumUp = Raw.SDLK_KBDILLUMUP
+  toNumber KeycodeEject = Raw.SDLK_EJECT
+  toNumber KeycodeSleep = Raw.SDLK_SLEEP
 
 data Keysym = Keysym
   { keysymScancode :: Scancode

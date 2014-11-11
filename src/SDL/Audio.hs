@@ -2,6 +2,7 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PatternSynonyms #-}
 module SDL.Audio
   ( -- * 'AudioFormat'
     AudioFormat
@@ -188,9 +189,9 @@ openAudioDevice OpenDeviceSpec{..} =
         return (audioDevice, spec)
 
   where
-  changes = foldl (.|.) 0 [ foldChangeable (const Raw.audioAllowFrequencyChange) (const 0) openDeviceFreq
-                          , foldChangeable (const Raw.audioAllowFormatChange) (const 0) openDeviceFormat
-                          , foldChangeable (const Raw.audioAllowChannelsChange) (const 0) openDeviceChannels
+  changes = foldl (.|.) 0 [ foldChangeable (const Raw.SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) (const 0) openDeviceFreq
+                          , foldChangeable (const Raw.SDL_AUDIO_ALLOW_FORMAT_CHANGE) (const 0) openDeviceFormat
+                          , foldChangeable (const Raw.SDL_AUDIO_ALLOW_CHANNELS_CHANGE) (const 0) openDeviceChannels
                           ]
 
   channelsToWord8 Mono = 1
@@ -238,11 +239,11 @@ data AudioDeviceStatus = Playing | Paused | Stopped
 audioDeviceStatus :: AudioDevice -> IO AudioDeviceStatus
 audioDeviceStatus (AudioDevice d) = SDLEx.fromC "SDL.Audio.audioDeviceStatus" "SDL_AudioStatus" readStatus <$> Raw.getAudioDeviceStatus d
   where
-  readStatus n
-    | n == Raw.audioStatusPlaying = Just Playing
-    | n == Raw.audioStatusStopped = Just Stopped
-    | n == Raw.audioStatusPaused = Just Paused
-    | otherwise = Nothing
+  readStatus n = case n of
+    Raw.SDL_AUDIO_PLAYING -> Just Playing
+    Raw.SDL_AUDIO_STOPPED -> Just Stopped
+    Raw.SDL_AUDIO_PAUSED -> Just Paused
+    _ -> Nothing
 
 -- clearQueuedAudio :: AudioDevice -> IO ()
 -- clearQueuedAudio (AudioDevice d) = Raw.clearQueuedAudio d

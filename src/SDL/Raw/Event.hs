@@ -1,112 +1,112 @@
 module SDL.Raw.Event (
-	-- * Event Handling
-	addEventWatch,
-	delEventWatch,
-	eventState,
-	filterEvents,
-	flushEvent,
-	flushEvents,
-	getEventFilter,
-	getNumTouchDevices,
-	getNumTouchFingers,
-	getTouchDevice,
-	getTouchFinger,
-	hasEvent,
-	hasEvents,
-	loadDollarTemplates,
-	peepEvents,
-	pollEvent,
-	pumpEvents,
-	pushEvent,
-	quitRequested,
-	recordGesture,
-	registerEvents,
-	saveAllDollarTemplates,
-	saveDollarTemplate,
-	setEventFilter,
-	waitEvent,
-	waitEventTimeout,
+  -- * Event Handling
+  addEventWatch,
+  delEventWatch,
+  eventState,
+  filterEvents,
+  flushEvent,
+  flushEvents,
+  getEventFilter,
+  getNumTouchDevices,
+  getNumTouchFingers,
+  getTouchDevice,
+  getTouchFinger,
+  hasEvent,
+  hasEvents,
+  loadDollarTemplates,
+  peepEvents,
+  pollEvent,
+  pumpEvents,
+  pushEvent,
+  quitRequested,
+  recordGesture,
+  registerEvents,
+  saveAllDollarTemplates,
+  saveDollarTemplate,
+  setEventFilter,
+  waitEvent,
+  waitEventTimeout,
 
-	-- * Keyboard Support
-	getKeyFromName,
-	getKeyFromScancode,
-	getKeyName,
-	getKeyboardFocus,
-	getKeyboardState,
-	getModState,
-	getScancodeFromKey,
-	getScancodeFromName,
-	getScancodeName,
-	hasScreenKeyboardSupport,
-	isScreenKeyboardShown,
-	isTextInputActive,
-	setModState,
-	setTextInputRect,
-	startTextInput,
-	stopTextInput,
+  -- * Keyboard Support
+  getKeyFromName,
+  getKeyFromScancode,
+  getKeyName,
+  getKeyboardFocus,
+  getKeyboardState,
+  getModState,
+  getScancodeFromKey,
+  getScancodeFromName,
+  getScancodeName,
+  hasScreenKeyboardSupport,
+  isScreenKeyboardShown,
+  isTextInputActive,
+  setModState,
+  setTextInputRect,
+  startTextInput,
+  stopTextInput,
 
-	-- * Mouse Support
-	createColorCursor,
-	createCursor,
-	createSystemCursor,
-	freeCursor,
-	getCursor,
-	getDefaultCursor,
-	getMouseFocus,
-	getMouseState,
-	getRelativeMouseMode,
-	getRelativeMouseState,
-	setCursor,
-	setRelativeMouseMode,
-	showCursor,
-	warpMouseInWindow,
+  -- * Mouse Support
+  createColorCursor,
+  createCursor,
+  createSystemCursor,
+  freeCursor,
+  getCursor,
+  getDefaultCursor,
+  getMouseFocus,
+  getMouseState,
+  getRelativeMouseMode,
+  getRelativeMouseState,
+  setCursor,
+  setRelativeMouseMode,
+  showCursor,
+  warpMouseInWindow,
 
-	-- * Joystick Support
-	joystickClose,
-	joystickEventState,
-	joystickGetAttached,
-	joystickGetAxis,
-	joystickGetBall,
-	joystickGetButton,
-	joystickGetDeviceGUID,
-	joystickGetGUID,
-	joystickGetGUIDFromString,
-	joystickGetGUIDString,
-	joystickGetHat,
-	joystickInstanceID,
-	joystickName,
-	joystickNameForIndex,
-	joystickNumAxes,
-	joystickNumBalls,
-	joystickNumButtons,
-	joystickNumHats,
-	joystickOpen,
-	joystickUpdate,
-	numJoysticks,
+  -- * Joystick Support
+  joystickClose,
+  joystickEventState,
+  joystickGetAttached,
+  joystickGetAxis,
+  joystickGetBall,
+  joystickGetButton,
+  joystickGetDeviceGUID,
+  joystickGetGUID,
+  joystickGetGUIDFromString,
+  joystickGetGUIDString,
+  joystickGetHat,
+  joystickInstanceID,
+  joystickName,
+  joystickNameForIndex,
+  joystickNumAxes,
+  joystickNumBalls,
+  joystickNumButtons,
+  joystickNumHats,
+  joystickOpen,
+  joystickUpdate,
+  numJoysticks,
 
-	-- * Game Controller Support
-	gameControllerAddMapping,
-	gameControllerAddMappingsFromFile,
-	gameControllerAddMappingsFromRW,
-	gameControllerClose,
-	gameControllerEventState,
-	gameControllerGetAttached,
-	gameControllerGetAxis,
-	gameControllerGetAxisFromString,
-	gameControllerGetBindForAxis,
-	gameControllerGetBindForButton,
-	gameControllerGetButton,
-	gameControllerGetButtonFromString,
-	gameControllerGetJoystick,
-	gameControllerGetStringForAxis,
-	gameControllerGetStringForButton,
-	gameControllerMapping,
-	gameControllerMappingForGUID,
-	gameControllerName,
-	gameControllerNameForIndex,
-	gameControllerOpen,
-	gameControllerUpdate,
-	isGameController
+  -- * Game Controller Support
+  gameControllerAddMapping,
+  gameControllerAddMappingsFromFile,
+  gameControllerAddMappingsFromRW,
+  gameControllerClose,
+  gameControllerEventState,
+  gameControllerGetAttached,
+  gameControllerGetAxis,
+  gameControllerGetAxisFromString,
+  gameControllerGetBindForAxis,
+  gameControllerGetBindForButton,
+  gameControllerGetButton,
+  gameControllerGetButtonFromString,
+  gameControllerGetJoystick,
+  gameControllerGetStringForAxis,
+  gameControllerGetStringForButton,
+  gameControllerMapping,
+  gameControllerMappingForGUID,
+  gameControllerName,
+  gameControllerNameForIndex,
+  gameControllerOpen,
+  gameControllerUpdate,
+  isGameController
 ) where
 
 import Data.Int
@@ -224,46 +224,46 @@ foreign import ccall "SDL.h SDL_IsGameController" isGameController :: CInt -> IO
 
 quitRequested :: IO Bool
 quitRequested = do
-	pumpEvents
-	ev <- peepEvents nullPtr 0 eventActionPeekEvent eventTypeQuit eventTypeQuit
-	return $ ev > 0
+  pumpEvents
+  ev <- peepEvents nullPtr 0 SDL_PEEKEVENT SDL_QUIT SDL_QUIT
+  return $ ev > 0
 
 joystickGetDeviceGUID :: CInt -> IO JoystickGUID
 joystickGetDeviceGUID device_index = alloca $ \ptr -> do
-	joystickGetDeviceGUID' device_index ptr
-	peek ptr
+  joystickGetDeviceGUID' device_index ptr
+  peek ptr
 
 joystickGetGUID :: Joystick -> IO JoystickGUID
 joystickGetGUID joystick = alloca $ \ptr -> do
-	joystickGetGUID' joystick ptr
-	peek ptr
+  joystickGetGUID' joystick ptr
+  peek ptr
 
 joystickGetGUIDFromString :: CString -> IO JoystickGUID
 joystickGetGUIDFromString pchGUID = alloca $ \ptr -> do
-	joystickGetGUIDFromString' pchGUID ptr
-	peek ptr
+  joystickGetGUIDFromString' pchGUID ptr
+  peek ptr
 
 joystickGetGUIDString :: JoystickGUID -> CString -> CInt -> IO ()
 joystickGetGUIDString guid pszGUID cbGUID = alloca $ \ptr -> do
-	poke ptr guid
-	joystickGetGUIDString' ptr pszGUID cbGUID
+  poke ptr guid
+  joystickGetGUIDString' ptr pszGUID cbGUID
 
 gameControllerAddMappingsFromFile :: CString -> IO CInt
 gameControllerAddMappingsFromFile file = do
-	rw <- withCString "rb" $ rwFromFile file
-	gameControllerAddMappingsFromRW rw 1
+  rw <- withCString "rb" $ rwFromFile file
+  gameControllerAddMappingsFromRW rw 1
 
 gameControllerGetBindForAxis :: GameController -> GameControllerAxis -> IO GameControllerButtonBind
 gameControllerGetBindForAxis gamecontroller axis = alloca $ \ptr -> do
-	gameControllerGetBindForAxis' gamecontroller axis ptr
-	peek ptr
+  gameControllerGetBindForAxis' gamecontroller axis ptr
+  peek ptr
 
 gameControllerGetBindForButton :: GameController -> GameControllerButton -> IO GameControllerButtonBind
 gameControllerGetBindForButton gamecontroller button = alloca $ \ptr -> do
-	gameControllerGetBindForButton' gamecontroller button ptr
-	peek ptr
+  gameControllerGetBindForButton' gamecontroller button ptr
+  peek ptr
 
 gameControllerMappingForGUID :: JoystickGUID -> IO CString
 gameControllerMappingForGUID guid = alloca $ \ptr -> do
-	poke ptr guid
-	gameControllerMappingForGUID' ptr
+  poke ptr guid
+  gameControllerMappingForGUID' ptr

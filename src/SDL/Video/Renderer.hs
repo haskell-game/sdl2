@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PatternSynonyms #-}
 module SDL.Video.Renderer
   ( Renderer
 
@@ -119,16 +120,16 @@ data TextureAccess
 
 instance FromNumber TextureAccess CInt where
   fromNumber n' = case n' of
-    n | n == Raw.textureAccessStatic -> TextureAccessStatic
-    n | n == Raw.textureAccessStreaming -> TextureAccessStreaming
-    n | n == Raw.textureAccessTarget -> TextureAccessTarget
+    Raw.SDL_TEXTUREACCESS_STATIC -> TextureAccessStatic
+    Raw.SDL_TEXTUREACCESS_STREAMING -> TextureAccessStreaming
+    Raw.SDL_TEXTUREACCESS_TARGET -> TextureAccessTarget
     _ -> error "Unknown value"
 
 instance ToNumber TextureAccess CInt where
   toNumber t = case t of
-    TextureAccessStatic -> Raw.textureAccessStatic
-    TextureAccessStreaming -> Raw.textureAccessStreaming
-    TextureAccessTarget -> Raw.textureAccessTarget
+    TextureAccessStatic -> Raw.SDL_TEXTUREACCESS_STATIC
+    TextureAccessStreaming -> Raw.SDL_TEXTUREACCESS_STREAMING
+    TextureAccessTarget -> Raw.SDL_TEXTUREACCESS_TARGET
 
 data TextureInfo = TextureInfo
   { texturePixelFormat :: PixelFormat
@@ -224,10 +225,10 @@ data BlendMode
   deriving (Eq, Show, Typeable)
 
 instance ToNumber BlendMode Word32 where
-  toNumber BlendNone = Raw.blendModeNone
-  toNumber BlendAlphaBlend = Raw.blendModeBlend
-  toNumber BlendAdditive = Raw.blendModeAdd
-  toNumber BlendMod = Raw.blendModeMod
+  toNumber BlendNone = Raw.SDL_BLENDMODE_NONE
+  toNumber BlendAlphaBlend = Raw.SDL_BLENDMODE_BLEND
+  toNumber BlendAdditive = Raw.SDL_BLENDMODE_ADD
+  toNumber BlendMod = Raw.SDL_BLENDMODE_MOD
 
 data Rectangle a = Rectangle (Point V2 a) (V2 a)
   deriving (Eq, Show, Typeable)
@@ -320,8 +321,8 @@ renderCopyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
   maybeWith with center $ \c ->
   Raw.renderCopyEx r t (castPtr src) (castPtr dst) theta (castPtr c)
                    (case flips of
-                      V2 x y -> (if x then Raw.rendererFlipHorizontal else 0) .|.
-                               (if y then Raw.rendererFlipVertical else 0))
+                      V2 x y -> (if x then Raw.SDL_FLIP_HORIZONTAL else 0) .|.
+                               (if y then Raw.SDL_FLIP_VERTICAL else 0))
 
 renderDrawLine :: Renderer -> Point V2 CInt -> Point V2 CInt -> IO ()
 renderDrawLine (Renderer r) (P (V2 x y)) (P (V2 x' y')) =
@@ -426,83 +427,82 @@ data PixelFormat
 
 instance FromNumber PixelFormat Word32 where
   fromNumber n' = case n' of
-    n | n == Raw.pixelFormatUnknown -> Unknown
-    n | n == Raw.pixelFormatIndex1LSB -> Index1LSB
-    n | n == Raw.pixelFormatIndex1MSB -> Index1MSB
-    n | n == Raw.pixelFormatIndex4LSB -> Index4LSB
-    n | n == Raw.pixelFormatIndex4MSB -> Index4MSB
-    n | n == Raw.pixelFormatIndex8 -> Index8
-    n | n == Raw.pixelFormatRGB332 -> RGB332
-    n | n == Raw.pixelFormatRGB444 -> RGB444
-    n | n == Raw.pixelFormatRGB555 -> RGB555
-    n | n == Raw.pixelFormatBGR555 -> BGR555
-    n | n == Raw.pixelFormatARGB4444 -> ARGB4444
-    n | n == Raw.pixelFormatRGBA4444 -> RGBA4444
-    n | n == Raw.pixelFormatABGR4444 -> ABGR4444
-    n | n == Raw.pixelFormatBGRA4444 -> BGRA4444
-    n | n == Raw.pixelFormatARGB1555 -> ARGB1555
-    n | n == Raw.pixelFormatRGBA5551 -> RGBA5551
-    n | n == Raw.pixelFormatABGR1555 -> ABGR1555
-    n | n == Raw.pixelFormatBGRA5551 -> BGRA5551
-    n | n == Raw.pixelFormatRGB565 -> RGB565
-    n | n == Raw.pixelFormatBGR565 -> BGR565
-    n | n == Raw.pixelFormatRGB24 -> RGB24
-    n | n == Raw.pixelFormatBGR24 -> BGR24
-    n | n == Raw.pixelFormatRGB888 -> RGB888
-    n | n == Raw.pixelFormatRGBX8888 -> RGBX8888
-    n | n == Raw.pixelFormatBGR888 -> BGR888
-    n | n == Raw.pixelFormatBGRX8888 -> BGRX8888
-    n | n == Raw.pixelFormatARGB8888 -> ARGB8888
-    n | n == Raw.pixelFormatRGBA8888 -> RGBA8888
-    n | n == Raw.pixelFormatABGR8888 -> ABGR8888
-    n | n == Raw.pixelFormatBGRA8888 -> BGRA8888
-    n | n == Raw.pixelFormatARGB2101010 -> ARGB2101010
-    n | n == Raw.pixelFormatYV12 -> YV12
-    n | n == Raw.pixelFormatIYUV -> IYUV
-    n | n == Raw.pixelFormatYUY2 -> YUY2
-    n | n == Raw.pixelFormatUYVY -> UYVY
-    n | n == Raw.pixelFormatYVYU -> YVYU
+    Raw.SDL_PIXELFORMAT_UNKNOWN -> Unknown
+    Raw.SDL_PIXELFORMAT_INDEX1LSB -> Index1LSB
+    Raw.SDL_PIXELFORMAT_INDEX1MSB -> Index1MSB
+    Raw.SDL_PIXELFORMAT_INDEX4LSB -> Index4LSB
+    Raw.SDL_PIXELFORMAT_INDEX4MSB -> Index4MSB
+    Raw.SDL_PIXELFORMAT_INDEX8 -> Index8
+    Raw.SDL_PIXELFORMAT_RGB332 -> RGB332
+    Raw.SDL_PIXELFORMAT_RGB444 -> RGB444
+    Raw.SDL_PIXELFORMAT_RGB555 -> RGB555
+    Raw.SDL_PIXELFORMAT_BGR555 -> BGR555
+    Raw.SDL_PIXELFORMAT_ARGB4444 -> ARGB4444
+    Raw.SDL_PIXELFORMAT_RGBA4444 -> RGBA4444
+    Raw.SDL_PIXELFORMAT_ABGR4444 -> ABGR4444
+    Raw.SDL_PIXELFORMAT_BGRA4444 -> BGRA4444
+    Raw.SDL_PIXELFORMAT_ARGB1555 -> ARGB1555
+    Raw.SDL_PIXELFORMAT_RGBA5551 -> RGBA5551
+    Raw.SDL_PIXELFORMAT_ABGR1555 -> ABGR1555
+    Raw.SDL_PIXELFORMAT_BGRA5551 -> BGRA5551
+    Raw.SDL_PIXELFORMAT_RGB565 -> RGB565
+    Raw.SDL_PIXELFORMAT_BGR565 -> BGR565
+    Raw.SDL_PIXELFORMAT_RGB24 -> RGB24
+    Raw.SDL_PIXELFORMAT_BGR24 -> BGR24
+    Raw.SDL_PIXELFORMAT_RGB888 -> RGB888
+    Raw.SDL_PIXELFORMAT_RGBX8888 -> RGBX8888
+    Raw.SDL_PIXELFORMAT_BGR888 -> BGR888
+    Raw.SDL_PIXELFORMAT_BGRX8888 -> BGRX8888
+    Raw.SDL_PIXELFORMAT_ARGB8888 -> ARGB8888
+    Raw.SDL_PIXELFORMAT_RGBA8888 -> RGBA8888
+    Raw.SDL_PIXELFORMAT_ABGR8888 -> ABGR8888
+    Raw.SDL_PIXELFORMAT_BGRA8888 -> BGRA8888
+    Raw.SDL_PIXELFORMAT_ARGB2101010 -> ARGB2101010
+    Raw.SDL_PIXELFORMAT_YV12 -> YV12
+    Raw.SDL_PIXELFORMAT_IYUV -> IYUV
+    Raw.SDL_PIXELFORMAT_YUY2 -> YUY2
+    Raw.SDL_PIXELFORMAT_UYVY -> UYVY
+    Raw.SDL_PIXELFORMAT_YVYU -> YVYU
     _ -> error "fromNumber: not numbered"
 
 instance ToNumber PixelFormat Word32 where
   toNumber pf = case pf of
-    Unknown -> Raw.pixelFormatUnknown
-    Index1LSB -> Raw.pixelFormatIndex1LSB
-    Index1MSB -> Raw.pixelFormatIndex1MSB
-    Index4LSB -> Raw.pixelFormatIndex4LSB
-    Index4MSB -> Raw.pixelFormatIndex4MSB
-    Index8 -> Raw.pixelFormatIndex8
-    RGB332 -> Raw.pixelFormatRGB332
-    RGB444 -> Raw.pixelFormatRGB444
-    RGB555 -> Raw.pixelFormatRGB555
-    BGR555 -> Raw.pixelFormatBGR555
-    ARGB4444 -> Raw.pixelFormatARGB4444
-    RGBA4444 -> Raw.pixelFormatRGBA4444
-    ABGR4444 -> Raw.pixelFormatABGR4444
-    BGRA4444 -> Raw.pixelFormatBGRA4444
-    ARGB1555 -> Raw.pixelFormatARGB1555
-    RGBA5551 -> Raw.pixelFormatRGBA5551
-    ABGR1555 -> Raw.pixelFormatABGR1555
-    BGRA5551 -> Raw.pixelFormatBGRA5551
-    RGB565 -> Raw.pixelFormatRGB565
-    BGR565 -> Raw.pixelFormatBGR565
-    RGB24 -> Raw.pixelFormatRGB24
-    BGR24 -> Raw.pixelFormatBGR24
-    RGB888 -> Raw.pixelFormatRGB888
-    RGBX8888 -> Raw.pixelFormatRGBX8888
-    BGR888 -> Raw.pixelFormatBGR888
-    BGRX8888 -> Raw.pixelFormatBGRX8888
-    ARGB8888 -> Raw.pixelFormatARGB8888
-    RGBA8888 -> Raw.pixelFormatRGBA8888
-    ABGR8888 -> Raw.pixelFormatABGR8888
-    BGRA8888 -> Raw.pixelFormatBGRA8888
-    ARGB2101010 -> Raw.pixelFormatARGB2101010
-    YV12 -> Raw.pixelFormatYV12
-    IYUV -> Raw.pixelFormatIYUV
-    YUY2 -> Raw.pixelFormatYUY2
-    UYVY -> Raw.pixelFormatUYVY
-    YVYU -> Raw.pixelFormatYVYU
-
+    Unknown -> Raw.SDL_PIXELFORMAT_UNKNOWN
+    Index1LSB -> Raw.SDL_PIXELFORMAT_INDEX1LSB
+    Index1MSB -> Raw.SDL_PIXELFORMAT_INDEX1MSB
+    Index4LSB -> Raw.SDL_PIXELFORMAT_INDEX4LSB
+    Index4MSB -> Raw.SDL_PIXELFORMAT_INDEX4MSB
+    Index8 -> Raw.SDL_PIXELFORMAT_INDEX8
+    RGB332 -> Raw.SDL_PIXELFORMAT_RGB332
+    RGB444 -> Raw.SDL_PIXELFORMAT_RGB444
+    RGB555 -> Raw.SDL_PIXELFORMAT_RGB555
+    BGR555 -> Raw.SDL_PIXELFORMAT_BGR555
+    ARGB4444 -> Raw.SDL_PIXELFORMAT_ARGB4444
+    RGBA4444 -> Raw.SDL_PIXELFORMAT_RGBA4444
+    ABGR4444 -> Raw.SDL_PIXELFORMAT_ABGR4444
+    BGRA4444 -> Raw.SDL_PIXELFORMAT_BGRA4444
+    ARGB1555 -> Raw.SDL_PIXELFORMAT_ARGB1555
+    RGBA5551 -> Raw.SDL_PIXELFORMAT_RGBA5551
+    ABGR1555 -> Raw.SDL_PIXELFORMAT_ABGR1555
+    BGRA5551 -> Raw.SDL_PIXELFORMAT_BGRA5551
+    RGB565 -> Raw.SDL_PIXELFORMAT_RGB565
+    BGR565 -> Raw.SDL_PIXELFORMAT_BGR565
+    RGB24 -> Raw.SDL_PIXELFORMAT_RGB24
+    BGR24 -> Raw.SDL_PIXELFORMAT_BGR24
+    RGB888 -> Raw.SDL_PIXELFORMAT_RGB888
+    RGBX8888 -> Raw.SDL_PIXELFORMAT_RGBX8888
+    BGR888 -> Raw.SDL_PIXELFORMAT_BGR888
+    BGRX8888 -> Raw.SDL_PIXELFORMAT_BGRX8888
+    ARGB8888 -> Raw.SDL_PIXELFORMAT_ARGB8888
+    RGBA8888 -> Raw.SDL_PIXELFORMAT_RGBA8888
+    ABGR8888 -> Raw.SDL_PIXELFORMAT_ABGR8888
+    BGRA8888 -> Raw.SDL_PIXELFORMAT_BGRA8888
+    ARGB2101010 -> Raw.SDL_PIXELFORMAT_ARGB2101010
+    YV12 -> Raw.SDL_PIXELFORMAT_YV12
+    IYUV -> Raw.SDL_PIXELFORMAT_IYUV
+    YUY2 -> Raw.SDL_PIXELFORMAT_YUY2
+    UYVY -> Raw.SDL_PIXELFORMAT_UYVY
+    YVYU -> Raw.SDL_PIXELFORMAT_YVYU
 
 data RendererConfig = RendererConfig
   { rendererSoftware      :: Bool
@@ -513,18 +513,18 @@ data RendererConfig = RendererConfig
 
 instance FromNumber RendererConfig Word32 where
   fromNumber n = RendererConfig
-    { rendererSoftware      = n .&. Raw.rendererFlagSoftware /= 0
-    , rendererAccelerated   = n .&. Raw.rendererFlagAccelerated /= 0
-    , rendererPresentVSync  = n .&. Raw.rendererFlagPresentVSync /= 0
-    , rendererTargetTexture = n .&. Raw.rendererFlagTargetTexture /= 0
+    { rendererSoftware      = n .&. Raw.SDL_RENDERER_SOFTWARE /= 0
+    , rendererAccelerated   = n .&. Raw.SDL_RENDERER_ACCELERATED /= 0
+    , rendererPresentVSync  = n .&. Raw.SDL_RENDERER_PRESENTVSYNC /= 0
+    , rendererTargetTexture = n .&. Raw.SDL_RENDERER_TARGETTEXTURE /= 0
     }
 
 instance ToNumber RendererConfig Word32 where
   toNumber config = foldr (.|.) 0
-    [ if rendererSoftware config then Raw.rendererFlagSoftware else 0
-    , if rendererAccelerated config then Raw.rendererFlagAccelerated else 0
-    , if rendererPresentVSync config then Raw.rendererFlagPresentVSync else 0
-    , if rendererTargetTexture config then Raw.rendererFlagTargetTexture else 0
+    [ if rendererSoftware config then Raw.SDL_RENDERER_SOFTWARE else 0
+    , if rendererAccelerated config then Raw.SDL_RENDERER_ACCELERATED else 0
+    , if rendererPresentVSync config then Raw.SDL_RENDERER_PRESENTVSYNC else 0
+    , if rendererTargetTexture config then Raw.SDL_RENDERER_TARGETTEXTURE else 0
     ]
 
 defaultRenderer :: RendererConfig

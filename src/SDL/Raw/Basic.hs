@@ -1,51 +1,50 @@
 module SDL.Raw.Basic (
-	-- * Initialization and Shutdown
-	init,
-	initSubSystem,
-	quit,
-	quitSubSystem,
-	setMainReady,
-	wasInit,
+  -- * Initialization and Shutdown
+  init,
+  initSubSystem,
+  quit,
+  quitSubSystem,
+  setMainReady,
+  wasInit,
 
-	-- * Configuration Variables
-	addHintCallback,
-	clearHints,
-	delHintCallback,
-	getHint,
-	setHint,
-	setHintWithPriority,
+  -- * Configuration Variables
+  addHintCallback,
+  clearHints,
+  delHintCallback,
+  getHint,
+  setHint,
+  setHintWithPriority,
 
-	-- * Error Handling
-	clearError,
-	getError,
-	setError,
+  -- * Error Handling
+  clearError,
+  getError,
+  setError,
 
-	-- * Log Handling
-	log,
-	logCritical,
-	logDebug,
-	logError,
-	logGetOutputFunction,
-	logGetPriority,
-	logInfo,
-	logMessage,
-	logResetPriorities,
-	logSetAllPriority,
-	logSetOutputFunction,
-	logSetPriority,
-	logVerbose,
-	logWarn,
+  -- * Log Handling
+  log,
+  logCritical,
+  logDebug,
+  logError,
+  logGetOutputFunction,
+  logGetPriority,
+  logInfo,
+  logMessage,
+  logResetPriorities,
+  logSetAllPriority,
+  logSetOutputFunction,
+  logSetPriority,
+  logVerbose,
+  logWarn,
 
-	-- * Assertions
-	-- | Use Haskell's own assertion primitives rather than SDL's.
+  -- * Assertions
+  -- | Use Haskell's own assertion primitives rather than SDL's.
 
-	-- * Querying SDL Version
-	getRevision,
-	getRevisionNumber,
-	getVersion
+  -- * Querying SDL Version
+  getRevision,
+  getRevisionNumber,
+  getVersion
 ) where
 
-import Data.Word
 import Foreign.C.String
 import Foreign.C.Types
 import Foreign.Ptr
@@ -58,7 +57,7 @@ foreign import ccall "SDL.h SDL_InitSubSystem" initSubSystem :: InitFlag -> IO C
 foreign import ccall "SDL.h SDL_Quit" quit :: IO ()
 foreign import ccall "SDL.h SDL_QuitSubSystem" quitSubSystem :: InitFlag -> IO ()
 foreign import ccall "SDL.h SDL_SetMainReady" setMainReady :: IO ()
-foreign import ccall "SDL.h SDL_WasInit" wasInit :: InitFlag -> IO Word32
+foreign import ccall "SDL.h SDL_WasInit" wasInit :: InitFlag -> IO InitFlag
 
 foreign import ccall "SDL.h SDL_AddHintCallback" addHintCallback :: CString -> HintCallback -> Ptr () -> IO ()
 foreign import ccall "SDL.h SDL_ClearHints" clearHints :: IO ()
@@ -84,22 +83,22 @@ foreign import ccall "SDL.h SDL_GetRevisionNumber" getRevisionNumber :: IO CInt
 foreign import ccall "SDL.h SDL_GetVersion" getVersion :: Ptr Version -> IO ()
 
 log :: CString -> IO ()
-log = logMessage logCategoryApplication logPriorityInfo
+log = logMessage SDL_LOG_CATEGORY_APPLICATION SDL_LOG_PRIORITY_INFO
 
 logCritical :: CInt -> CString -> IO ()
-logCritical category = logMessage category logPriorityCritical
+logCritical category = logMessage category SDL_LOG_PRIORITY_CRITICAL
 
 logDebug :: CInt -> CString -> IO ()
-logDebug category = logMessage category logPriorityDebug
+logDebug category = logMessage category SDL_LOG_PRIORITY_DEBUG
 
 logError :: CInt -> CString -> IO ()
-logError category = logMessage category logPriorityError
+logError category = logMessage category SDL_LOG_PRIORITY_ERROR
 
 logInfo :: CInt -> CString -> IO ()
-logInfo category = logMessage category logPriorityInfo
+logInfo category = logMessage category SDL_LOG_PRIORITY_INFO
 
 logVerbose :: CInt -> CString -> IO ()
-logVerbose category = logMessage category logPriorityVerbose
+logVerbose category = logMessage category SDL_LOG_PRIORITY_VERBOSE
 
 logWarn :: CInt -> CString -> IO ()
-logWarn category = logMessage category logPriorityWarn
+logWarn category = logMessage category SDL_LOG_PRIORITY_WARN

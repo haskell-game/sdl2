@@ -2,6 +2,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PatternSynonyms #-}
 module SDL.Event
   ( Event(..)
   , EventPayload(..)
@@ -47,8 +48,8 @@ data KeyState = KeyPressed | KeyReleased
 
 instance FromNumber KeyState Word8 where
   fromNumber n' = case n' of
-    n | n == Raw.keyPressed -> KeyPressed
-    n | n == Raw.keyReleased -> KeyReleased
+    Raw.SDL_PRESSED -> KeyPressed
+    Raw.SDL_RELEASED -> KeyReleased
 
 data EventPayload
   = WindowShown
@@ -222,44 +223,44 @@ fromRawKeysym (Raw.Keysym scancode keycode modifier) =
 convertRaw :: Raw.Event -> Event
 convertRaw (Raw.WindowEvent t ts a b c d) = Event ts $
   let w' = WindowID a in case b of
-    n | n == Raw.windowEventShown -> WindowShown w'
-    n | n == Raw.windowEventHidden -> WindowHidden w'
-    n | n == Raw.windowEventExposed -> WindowExposed w'
-    n | n == Raw.windowEventMoved -> WindowMoved w' (P (V2 c d))
-    n | n == Raw.windowEventResized -> WindowResized w' (V2 c d)
-    n | n == Raw.windowEventSizeChanged -> WindowSizeChanged w'
-    n | n == Raw.windowEventMinimized -> WindowMinimized w'
-    n | n == Raw.windowEventMaximized -> WindowMaximized w'
-    n | n == Raw.windowEventRestored -> WindowRestored w'
-    n | n == Raw.windowEventEnter -> WindowGainedMouseFocus w'
-    n | n == Raw.windowEventLeave -> WindowLostMouseFocus w'
-    n | n == Raw.windowEventFocusGained -> WindowGainedKeyboardFocus w'
-    n | n == Raw.windowEventFocusLost -> WindowLostKeyboardFocus w'
-    n | n == Raw.windowEventClose -> WindowClosed w'
+    Raw.SDL_WINDOWEVENT_SHOWN -> WindowShown w'
+    Raw.SDL_WINDOWEVENT_HIDDEN -> WindowHidden w'
+    Raw.SDL_WINDOWEVENT_EXPOSED -> WindowExposed w'
+    Raw.SDL_WINDOWEVENT_MOVED -> WindowMoved w' (P (V2 c d))
+    Raw.SDL_WINDOWEVENT_RESIZED -> WindowResized w' (V2 c d)
+    Raw.SDL_WINDOWEVENT_SIZE_CHANGED -> WindowSizeChanged w'
+    Raw.SDL_WINDOWEVENT_MINIMIZED -> WindowMinimized w'
+    Raw.SDL_WINDOWEVENT_MAXIMIZED -> WindowMaximized w'
+    Raw.SDL_WINDOWEVENT_RESTORED -> WindowRestored w'
+    Raw.SDL_WINDOWEVENT_ENTER -> WindowGainedMouseFocus w'
+    Raw.SDL_WINDOWEVENT_LEAVE -> WindowLostMouseFocus w'
+    Raw.SDL_WINDOWEVENT_FOCUS_GAINED -> WindowGainedKeyboardFocus w'
+    Raw.SDL_WINDOWEVENT_FOCUS_LOST -> WindowLostKeyboardFocus w'
+    Raw.SDL_WINDOWEVENT_CLOSE -> WindowClosed w'
     _ -> UnknownEvent t
-convertRaw (Raw.KeyboardEvent t ts a b c d)
-  = let motion | t == Raw.eventTypeKeyDown = KeyDown
-               | t == Raw.eventTypeKeyUp = KeyUp
-    in Event ts (KeyboardEvent (WindowID a) motion (fromNumber b) (c /= 0) (fromRawKeysym d))
+convertRaw (Raw.KeyboardEvent Raw.SDL_KEYDOWN ts a b c d) =
+  Event ts (KeyboardEvent (WindowID a) KeyDown (fromNumber b) (c /= 0) (fromRawKeysym d))
+convertRaw (Raw.KeyboardEvent Raw.SDL_KEYUP ts a b c d) =
+  Event ts (KeyboardEvent (WindowID a) KeyUp (fromNumber b) (c /= 0) (fromRawKeysym d))
 convertRaw (Raw.TextEditingEvent _ ts a b c d) = Event ts (TextEditingEvent (WindowID a) (ccharStringToText b) c d)
 convertRaw (Raw.TextInputEvent _ ts a b) = Event ts (TextInputEvent (WindowID a) (ccharStringToText b))
 convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g)
   = let buttons = catMaybes
-                  [ (Raw.buttonLMask `test` c) ButtonLeft
-                  , (Raw.buttonRMask `test` c) ButtonRight
-                  , (Raw.buttonMMask `test` c) ButtonMiddle
-                  , (Raw.buttonX1Mask `test` c) ButtonX1
-                  , (Raw.buttonX2Mask `test` c) ButtonX2 ]
+                  [ (Raw.SDL_BUTTON_LMASK `test` c) ButtonLeft
+                  , (Raw.SDL_BUTTON_RMASK `test` c) ButtonRight
+                  , (Raw.SDL_BUTTON_MMASK `test` c) ButtonMiddle
+                  , (Raw.SDL_BUTTON_X1MASK `test` c) ButtonX1
+                  , (Raw.SDL_BUTTON_X2MASK `test` c) ButtonX2 ]
      in Event ts (MouseMotionEvent (WindowID a) (fromNumber b) buttons (P (V2 d e)) (V2 f g))
   where mask `test` x = if mask .&. x /= 0 then Just else const Nothing
 convertRaw (Raw.MouseButtonEvent t ts a b c d e f g)
-  = let motion | t == Raw.eventTypeMouseButtonUp = MouseButtonUp
-               | t == Raw.eventTypeMouseButtonDown = MouseButtonDown
-        button | c == Raw.buttonLeft = ButtonLeft
-               | c == Raw.buttonMiddle = ButtonMiddle
-               | c == Raw.buttonRight = ButtonRight
-               | c == Raw.buttonX1 = ButtonX1
-               | c == Raw.buttonX2 = ButtonX2
+  = let motion | t == Raw.SDL_MOUSEBUTTONUP = MouseButtonUp
+               | t == Raw.SDL_MOUSEBUTTONDOWN = MouseButtonDown
+        button | c == Raw.SDL_BUTTON_LEFT = ButtonLeft
+               | c == Raw.SDL_BUTTON_MIDDLE = ButtonMiddle
+               | c == Raw.SDL_BUTTON_RIGHT = ButtonRight
+               | c == Raw.SDL_BUTTON_X1 = ButtonX1
+               | c == Raw.SDL_BUTTON_X2 = ButtonX2
                | otherwise = ButtonExtra $ fromIntegral c
     in Event ts (MouseButtonEvent (WindowID a) motion (fromNumber b) button d e (P (V2 f g)))
 convertRaw (Raw.MouseWheelEvent _ ts a b c d) = Event ts (MouseWheelEvent (WindowID a) (fromNumber b) (V2 c d))
