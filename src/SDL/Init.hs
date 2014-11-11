@@ -3,7 +3,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Init
   ( initialize
-  , initializeSubSystem
   , InitFlag(..)
   , quit
   , version
@@ -44,20 +43,13 @@ instance ToNumber InitFlag Word32 where
 -- | Initializes SDL and the given subsystems. Do not call any SDL functions
 -- prior to this one, unless otherwise documented that you may do so.
 --
+-- You may call this function again with additional subsystems to initialize.
+--
 -- Throws 'SDLEx.SDLException' if initialization fails.
 initialize :: Foldable f => f InitFlag -> IO ()
 initialize flags =
   SDLEx.throwIfNeg_ "SDL.Init.init" "SDL_Init" $
     Raw.init (foldFlags toNumber flags)
-
--- | Initialize individual subsystems. SDL needs to be initializied prior
--- to calls to this function.
---
--- Throws 'SDLEx.SDLException' if initialization fails.
-initializeSubSystem :: Foldable f => f InitFlag -> IO ()
-initializeSubSystem flags =
-  SDLEx.throwIfNeg_ "SDL.Init.initSubSystem" "SDL_InitSubSystem" $
-    Raw.initSubSystem (foldFlags toNumber flags)
 
 -- | Quit and shutdown SDL, freeing any resources that may have been in use.
 -- Do not call any SDL functions after you've called this function, unless
