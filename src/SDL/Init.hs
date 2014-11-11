@@ -11,10 +11,12 @@ module SDL.Init
 import Data.Bitmask (foldFlags)
 import Data.Foldable
 import Data.Typeable
-import Foreign
+import Data.Word
+import Foreign.Marshal.Alloc
+import Foreign.Storable
+import SDL.Exception
 import SDL.Internal.Numbered
 
-import qualified SDL.Exception as SDLEx
 import qualified SDL.Raw as Raw
 
 data InitFlag
@@ -46,7 +48,7 @@ instance ToNumber InitFlag Word32 where
 -- Throws 'SDLEx.SDLException' if initialization fails.
 initialize :: Foldable f => f InitFlag -> IO ()
 initialize flags =
-  SDLEx.throwIfNeg_ "SDL.Init.init" "SDL_Init" $
+  throwIfNeg_ "SDL.Init.init" "SDL_Init" $
     Raw.init (foldFlags toNumber flags)
 
 -- | Quit and shutdown SDL, freeing any resources that may have been in use.
