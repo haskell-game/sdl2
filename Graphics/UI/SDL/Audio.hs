@@ -52,7 +52,7 @@ foreign import ccall "SDL.h SDL_GetNumAudioDevices" getNumAudioDevices :: CInt -
 foreign import ccall "SDL.h SDL_GetNumAudioDrivers" getNumAudioDrivers :: IO CInt
 foreign import ccall "SDL.h SDL_LoadWAV_RW" loadWAV_RW :: Ptr RWops -> CInt -> Ptr AudioSpec -> Ptr (Ptr Word8) -> Ptr Word32 -> IO (Ptr AudioSpec)
 foreign import ccall "SDL.h SDL_LockAudio" lockAudio :: IO ()
-foreign import ccall "SDL.h SDL_LockAudioDevice" lockAudioDevice :: AudioDeviceID -> IO () 
+foreign import ccall "SDL.h SDL_LockAudioDevice" lockAudioDevice :: AudioDeviceID -> IO ()
 foreign import ccall "SDL.h SDL_MixAudio" mixAudio :: Ptr Word8 -> Ptr Word8 -> Word32 -> CInt -> IO ()
 foreign import ccall "SDL.h SDL_MixAudioFormat" mixAudioFormat :: Ptr Word8 -> Ptr Word8 -> AudioFormat -> Word32 -> CInt -> IO ()
 foreign import ccall "SDL.h SDL_OpenAudio" openAudio :: Ptr AudioSpec -> Ptr AudioSpec -> IO CInt

@@ -282,7 +282,7 @@ foreign import ccall "SDL.h SDL_VideoQuit" videoQuit :: IO ()
 
 foreign import ccall "SDL.h SDL_CreateRenderer" createRenderer :: Window -> CInt -> Word32 -> IO Renderer
 foreign import ccall "SDL.h SDL_CreateSoftwareRenderer" createSoftwareRenderer :: Ptr Surface -> IO Renderer
-foreign import ccall "SDL.h SDL_CreateTexture" createTexture :: Renderer -> Word32 -> CInt -> CInt -> CInt -> IO Texture 
+foreign import ccall "SDL.h SDL_CreateTexture" createTexture :: Renderer -> Word32 -> CInt -> CInt -> CInt -> IO Texture
 foreign import ccall "SDL.h SDL_CreateTextureFromSurface" createTextureFromSurface :: Renderer -> Ptr Surface -> IO Texture
 foreign import ccall "SDL.h SDL_DestroyRenderer" destroyRenderer :: Renderer -> IO ()
 foreign import ccall "SDL.h SDL_DestroyTexture" destroyTexture :: Texture -> IO ()
@@ -343,7 +343,7 @@ foreign import ccall "SDL.h SDL_MapRGB" mapRGB :: Ptr PixelFormat -> Word8 -> Wo
 foreign import ccall "SDL.h SDL_MapRGBA" mapRGBA :: Ptr PixelFormat -> Word8 -> Word8 -> Word8 -> Word8 -> IO Word32
 foreign import ccall "SDL.h SDL_MasksToPixelFormatEnum" masksToPixelFormatEnum :: CInt -> Word32 -> Word32 -> Word32 -> Word32 -> IO Word32
 foreign import ccall "SDL.h SDL_PixelFormatEnumToMasks" pixelFormatEnumToMasks :: Word32 -> Ptr CInt -> Ptr Word32 -> Ptr Word32 -> Ptr Word32 -> Ptr Word32 -> IO Bool
-foreign import ccall "SDL.h SDL_SetPaletteColors" setPaletteColors :: Ptr Palette -> Ptr Color -> CInt -> CInt -> IO CInt 
+foreign import ccall "SDL.h SDL_SetPaletteColors" setPaletteColors :: Ptr Palette -> Ptr Color -> CInt -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_SetPixelFormatPalette" setPixelFormatPalette :: Ptr PixelFormat -> Ptr Palette -> IO CInt
 
 foreign import ccall "SDL.h SDL_EnclosePoints" enclosePoints :: Ptr Point -> CInt -> Ptr Rect -> Ptr Rect -> IO Bool
