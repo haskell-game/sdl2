@@ -45,7 +45,6 @@ module Graphics.UI.SDL.Basic (
 	getVersion
 ) where
 
-import Data.Word
 import Foreign.C.String
 import Foreign.C.Types
 import Foreign.Ptr
@@ -58,7 +57,7 @@ foreign import ccall "SDL.h SDL_InitSubSystem" initSubSystem :: InitFlag -> IO C
 foreign import ccall "SDL.h SDL_Quit" quit :: IO ()
 foreign import ccall "SDL.h SDL_QuitSubSystem" quitSubSystem :: InitFlag -> IO ()
 foreign import ccall "SDL.h SDL_SetMainReady" setMainReady :: IO ()
-foreign import ccall "SDL.h SDL_WasInit" wasInit :: InitFlag -> IO Word32
+foreign import ccall "SDL.h SDL_WasInit" wasInit :: InitFlag -> IO InitFlag
 
 foreign import ccall "SDL.h SDL_AddHintCallback" addHintCallback :: CString -> HintCallback -> Ptr () -> IO ()
 foreign import ccall "SDL.h SDL_ClearHints" clearHints :: IO ()
