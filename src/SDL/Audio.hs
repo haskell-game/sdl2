@@ -44,18 +44,24 @@ module SDL.Audio
   ) where
 
 import Control.Applicative
+import Data.Bits
 import Data.Traversable (for)
-import Foreign
-import Foreign.C
+import Data.Word
+import Foreign.C.Types
+import Foreign.ForeignPtr
+import Foreign.Marshal.Alloc
+import Foreign.Marshal.Utils
+import Foreign.Ptr
+import Foreign.Storable
 import Data.Text (Text)
 import Data.Typeable
 import Data.Vector.Storable (Vector)
+import SDL.Exception
 
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
 import qualified Data.Vector as V
 import qualified Data.Vector.Storable as SV
-import qualified SDL.Exception as SDLEx
 import qualified SDL.Raw.Audio as Raw
 import qualified SDL.Raw.Enum as Raw
 import qualified SDL.Raw.Types as Raw
@@ -123,7 +129,7 @@ getAudioDeviceNames usage = do
     then return Nothing
     else fmap (Just . V.fromList) $
          for [0 .. (n - 1)] $ \i -> do
-           cstr <- SDLEx.throwIfNull "SDL.Audio.getAudioDeviceNames" "SDL_GetAudioDeviceName" $
+           cstr <- throwIfNull "SDL.Audio.getAudioDeviceNames" "SDL_GetAudioDeviceName" $
              Raw.getAudioDeviceName i usage'
            Text.decodeUtf8 <$> BS.packCString cstr
 
@@ -170,13 +176,13 @@ openAudioDevice OpenDeviceSpec{..} =
         copyBytes buffer vPtr (min (fromIntegral len) (fromIntegral len'))
     with (desiredSpec cb) $ \desiredSpecPtr ->
       alloca $ \actualSpecPtr -> do
-        devId <- SDLEx.throwIf0 "SDL.Audio.openAudioDevice" "SDL_OpenAudioDevice" $
+        devId <- throwIf0 "SDL.Audio.openAudioDevice" "SDL_OpenAudioDevice" $
           Raw.openAudioDevice cDevName (encodeUsage openDeviceUsage) desiredSpecPtr actualSpecPtr changes
         actual <- peek actualSpecPtr
         let audioDevice = AudioDevice devId
             spec = AudioSpec { audioSpecFreq = Raw.audioSpecFreq actual
                              , audioSpecFormat = AudioFormat (Raw.audioSpecFormat actual)
-                             , audioSpecChannels = SDLEx.fromC "SDL.Audio.openAudioDevice" "audioSpecChannels" readChannels (Raw.audioSpecChannels actual)
+                             , audioSpecChannels = fromC "SDL.Audio.openAudioDevice" "audioSpecChannels" readChannels (Raw.audioSpecChannels actual)
                              , _audioSpecSilence = Raw.audioSpecSilence actual
                              , _audioSpecSize = Raw.audioSpecSize actual
                              , audioSpecSamples = Raw.audioSpecSamples actual
@@ -233,7 +239,7 @@ data AudioDeviceStatus = Playing | Paused | Stopped
   deriving (Eq, Show, Typeable)
 
 audioDeviceStatus :: AudioDevice -> IO AudioDeviceStatus
-audioDeviceStatus (AudioDevice d) = SDLEx.fromC "SDL.Audio.audioDeviceStatus" "SDL_AudioStatus" readStatus <$> Raw.getAudioDeviceStatus d
+audioDeviceStatus (AudioDevice d) = fromC "SDL.Audio.audioDeviceStatus" "SDL_AudioStatus" readStatus <$> Raw.getAudioDeviceStatus d
   where
   readStatus n = case n of
     Raw.SDL_AUDIO_PLAYING -> Just Playing
@@ -261,7 +267,7 @@ getAudioDrivers = do
 
 audioInit :: AudioDriver -> IO ()
 audioInit (AudioDriver n) = BS.useAsCString (Text.encodeUtf8 n) $
-  SDLEx.throwIfNeg_ "SDL.Audio.audioInit" "SDL_AudioInit" . Raw.audioInit
+  throwIfNeg_ "SDL.Audio.audioInit" "SDL_AudioInit" . Raw.audioInit
 
 currentAudioDriver :: IO (Maybe Text)
 currentAudioDriver =
