@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 module Graphics.UI.SDL.Types (
   -- * Type Aliases
   -- ** Function Types
@@ -71,6 +72,7 @@ module Graphics.UI.SDL.Types (
 #include "SDL.h"
 
 import Data.Int
+import Data.Typeable
 import Data.Word
 import Foreign.C.String
 import Foreign.C.Types
@@ -143,7 +145,7 @@ type Window = Ptr ()
 
 data Atomic = Atomic
   { atomicValue :: CInt
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable Atomic where
   sizeOf _ = (#size SDL_atomic_t)
@@ -164,7 +166,7 @@ data AudioCVT = AudioCVT
   , audioCVTLenCvt :: CInt
   , audioCVTLenMult :: CInt
   , audioCVTLenRatio :: CDouble
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable AudioCVT where
   sizeOf _ = (#size SDL_AudioCVT)
@@ -200,7 +202,7 @@ data AudioSpec = AudioSpec
   , audioSpecSize :: Word32
   , audioSpecCallback :: AudioCallback
   , audioSpecUserdata :: Ptr ()
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable AudioSpec where
   sizeOf _ = (#size SDL_AudioSpec)
@@ -230,7 +232,7 @@ data Color = Color
   , colorG :: Word8
   , colorB :: Word8
   , colorA :: Word8
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable Color where
   sizeOf _ = (#size SDL_Color)
@@ -253,7 +255,7 @@ data DisplayMode = DisplayMode
   , displayModeH :: CInt
   , displayModeRefreshRate :: CInt
   , displayModeDriverData :: Ptr ()
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable DisplayMode where
   sizeOf _ = (#size SDL_DisplayMode)
@@ -447,7 +449,7 @@ data Event
     { eventType :: Word32
     , eventTimestamp :: Word32
     }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 instance Storable Event where
   sizeOf _ = (#size SDL_Event)
@@ -764,7 +766,7 @@ data Finger = Finger
   , fingerX :: CFloat
   , fingerY :: CFloat
   , fingerPressure :: CFloat
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable Finger where
   sizeOf _ = (#size SDL_Finger)
@@ -793,7 +795,7 @@ data GameControllerButtonBind
     { gameControllerButtonBindHat :: CInt
     , gameControllerButtonBindHatMask :: CInt
     }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 instance Storable GameControllerButtonBind where
   sizeOf _ = (#size SDL_GameControllerButtonBind)
@@ -833,7 +835,7 @@ data HapticDirection = HapticDirection
   , hapticDirectionX :: Int32
   , hapticDirectionY :: Int32
   , hapticDirectionZ :: Int32
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable HapticDirection where
   sizeOf _ = (#size SDL_HapticDirection)
@@ -929,7 +931,7 @@ data HapticEffect
     , hapticCustomFadeLength :: Word16
     , hapticCustomFadeLevel :: Word16
     }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Typeable)
 
 instance Storable HapticEffect where
   sizeOf _ = (#size SDL_HapticEffect)
@@ -1101,7 +1103,7 @@ instance Storable HapticEffect where
 
 data JoystickGUID = JoystickGUID
   { joystickGUID :: [Word8]
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable JoystickGUID where
   sizeOf _ = (#size SDL_JoystickGUID)
@@ -1116,7 +1118,7 @@ data Keysym = Keysym
   { keysymScancode :: Scancode
   , keysymKeycode :: Keycode
   , keysymMod :: Word16
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable Keysym where
   sizeOf _ = (#size SDL_Keysym)
@@ -1135,7 +1137,7 @@ data MessageBoxButtonData = MessageBoxButtonData
   { messageBoxButtonDataFlags :: Word32
   , messageBoxButtonButtonID :: CInt
   , messageBoxButtonText :: CString
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable MessageBoxButtonData where
   sizeOf _ = (#size SDL_MessageBoxButtonData)
@@ -1154,7 +1156,7 @@ data MessageBoxColor = MessageBoxColor
   { messageBoxColorR :: Word8
   , messageBoxColorG :: Word8
   , messageBoxColorB :: Word8
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable MessageBoxColor where
   sizeOf _ = (#size SDL_MessageBoxColor)
@@ -1175,7 +1177,7 @@ data MessageBoxColorScheme = MessageBoxColorScheme
   , messageBoxColorSchemeColorButtonBorder :: MessageBoxColor
   , messageBoxColorSchemeColorButtonBackground :: MessageBoxColor
   , messageBoxColorSchemeColorButtonSelected :: MessageBoxColor
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable MessageBoxColorScheme where
   sizeOf _ = (#size SDL_MessageBoxColorScheme)
@@ -1202,7 +1204,7 @@ data MessageBoxData = MessageBoxData
   , messageBoxDataNumButtons :: CInt
   , messageBoxDataButtons :: Ptr MessageBoxButtonData
   , messageBoxDataColorScheme :: Ptr MessageBoxColorScheme
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable MessageBoxData where
   sizeOf _ = (#size SDL_MessageBoxData)
@@ -1228,7 +1230,7 @@ instance Storable MessageBoxData where
 data Palette = Palette
   { paletteNColors :: CInt
   , paletteColors :: Ptr Color
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable Palette where
   sizeOf _ = (#size SDL_Palette)
@@ -1250,7 +1252,7 @@ data PixelFormat = PixelFormat
   , pixelFormatGMask :: Word32
   , pixelFormatBMask :: Word32
   , pixelFormatAMask :: Word32
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable PixelFormat where
   sizeOf _ = (#size SDL_PixelFormat)
@@ -1278,7 +1280,7 @@ instance Storable PixelFormat where
 data Point = Point
   { pointX :: CInt
   , pointY :: CInt
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable Point where
   sizeOf _ = (#size SDL_Point)
@@ -1296,7 +1298,7 @@ data Rect = Rect
   , rectY :: CInt
   , rectW :: CInt
   , rectH :: CInt
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable Rect where
   sizeOf _ = (#size SDL_Rect)
@@ -1320,7 +1322,7 @@ data RendererInfo = RendererInfo
   , rendererInfoTextureFormats :: [Word32]
   , rendererInfoMaxTextureWidth :: CInt
   , rendererInfoMaxTextureHeight :: CInt
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable RendererInfo where
   sizeOf _ = (#size SDL_RendererInfo)
@@ -1348,7 +1350,7 @@ data RWops = RWops
   , rwopsWrite :: FunPtr (Ptr RWops -> Ptr () -> CSize -> CSize -> IO CSize)
   , rwopsClose :: FunPtr (Ptr RWops -> IO CInt)
   , rwopsType :: Word32
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable RWops where
   sizeOf _ = (#size SDL_RWops)
@@ -1377,7 +1379,7 @@ data Surface = Surface
   , surfaceUserdata :: Ptr ()
   , surfaceClipRect :: Rect
   , surfaceRefcount :: CInt
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable Surface where
   sizeOf _ = (#size SDL_Surface)
@@ -1404,7 +1406,7 @@ data Version = Version
   { versionMajor :: Word8
   , versionMinor :: Word8
   , versionPatch :: Word8
-  } deriving (Eq, Show)
+  } deriving (Eq, Show, Typeable)
 
 instance Storable Version where
   sizeOf _ = (#size SDL_version)
