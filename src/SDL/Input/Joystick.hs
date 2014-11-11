@@ -3,13 +3,16 @@
 module SDL.Input.Joystick
   ( numJoysticks
   , availableJoysticks
-  , JoystickDevice
-  , joystickDeviceName
+  , JoystickDevice(..)
 
   , openJoystick
+  , closeJoystick
+
   , getJoystickID
   , Joystick
   , buttonPressed
+  , ballDelta
+  , axisPosition
   ) where
 
 import Control.Applicative
@@ -22,6 +25,7 @@ import Foreign.Marshal.Alloc
 import Foreign.Storable
 import Linear
 import SDL.Exception
+import SDL.Internal.Types (Joystick(..))
 
 import qualified Data.Vector as V
 import qualified Data.ByteString as BS
@@ -47,14 +51,14 @@ availableJoysticks = do
       name <- Text.decodeUtf8 <$> BS.packCString cstr
       return (JoystickDevice name i)
 
-newtype Joystick = Joystick Raw.Joystick
-  deriving (Eq, Typeable)
-
 openJoystick :: JoystickDevice -> IO Joystick
 openJoystick (JoystickDevice _ x) =
   fmap Joystick $
   throwIfNull "SDL.Input.Joystick.openJoystick" "SDL_OpenJoystick" $
   Raw.joystickOpen x
+
+closeJoystick :: Joystick -> IO ()
+closeJoystick (Joystick j) = Raw.joystickClose j
 
 getJoystickID :: Joystick -> IO (Int32)
 getJoystickID (Joystick j) =

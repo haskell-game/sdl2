@@ -2,7 +2,7 @@
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-module Lazyfoo.Lesson19 (main) where
+module Lazyfoo.Lesson20 (main) where
 
 import Prelude hiding (any, mapM_)
 import Control.Applicative
@@ -21,9 +21,6 @@ import Paths_sdl2 (getDataFileName)
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
-
-joystickDeadZone :: Int16
-joystickDeadZone = 8000
 
 data Texture = Texture SDL.Texture (V2 CInt)
 
@@ -50,9 +47,6 @@ renderTexture r (Texture t size) xy clip theta center flips =
                       center
                       (fromMaybe (pure False) flips)
 
-textureSize :: Texture -> V2 CInt
-textureSize (Texture _ sz) = sz
-
 getJoystick :: IO (SDL.Joystick)
 getJoystick = do
   joysticks <- SDL.availableJoysticks
@@ -62,10 +56,9 @@ getJoystick = do
 
   SDL.openJoystick joystick
 
-
 main :: IO ()
 main = do
-  SDL.initialize [SDL.InitVideo, SDL.InitJoystick]
+  SDL.initialize [SDL.InitVideo, SDL.InitJoystick, SDL.InitHaptic]
 
   hintSet <- SDL.setHint SDL.HintRenderScaleQuality SDL.ScaleLinear
   unless hintSet $
@@ -90,12 +83,13 @@ main = do
 
   SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
 
-  arrowTexture <- loadTexture renderer "examples/lazyfoo/arrow.bmp"
+  rumbleTexture <- loadTexture renderer "examples/lazyfoo/rumble.bmp"
 
   joystick <- getJoystick
-  joystickID <- SDL.getJoystickID joystick
+  hapticDevice <- SDL.openHaptic (SDL.OpenHapticJoystick joystick)
+  SDL.hapticRumbleInit hapticDevice
 
-  let loop (xDir', yDir') = do
+  let loop = do
         let collectEvents = do
               e <- SDL.pollEvent
               case e of
@@ -103,7 +97,7 @@ main = do
                 Just e' -> (e' :) <$> collectEvents
         events <- collectEvents
 
-        let (Any quit, Last newDir) =
+        let (Any quit, Any buttonDown) =
               foldMap (\case
                          SDL.QuitEvent -> (Any True, mempty)
                          SDL.KeyboardEvent{..} ->
@@ -112,39 +106,30 @@ main = do
                                   in if | scancode == SDL.ScancodeEscape -> (Any True, mempty)
                                         | otherwise -> mempty
                               | otherwise -> mempty
-                         SDL.JoyAxisEvent{..} ->
-                           if | joyAxisEventWhich == joystickID ->
-                                  (\x -> (mempty, Last $ Just x)) $
-                                  case joyAxisEventAxis of
-                                    0 -> if | joyAxisEventValue < -joystickDeadZone -> (-1, yDir')
-                                            | joyAxisEventValue > joystickDeadZone -> (1, yDir')
-                                            | otherwise -> (0, yDir')
-                                    1 -> if | joyAxisEventValue < -joystickDeadZone -> (xDir', -1)
-                                            | joyAxisEventValue > joystickDeadZone -> (xDir', 1)
-                                            | otherwise -> (xDir', 0)
-                                    _ -> (xDir', yDir')
+                         SDL.JoyButtonEvent{..} ->
+                           if | joyButtonEventState /= 0 -> (mempty, Any True)
                               | otherwise -> mempty
                          _ -> mempty) $
               map SDL.eventPayload events
 
+        if buttonDown
+          then SDL.hapticRumblePlay hapticDevice 0.75 500
+          else return ()
+
         SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
         SDL.renderClear renderer
 
-        let dir@(xDir, yDir) = fromMaybe (xDir', yDir') newDir
-            phi = if xDir == 0 && yDir == 0
-                  then 0
-                  else (atan2 yDir xDir) * (180.0 / pi)
-
-        renderTexture renderer arrowTexture (P (fmap (`div` 2) (V2 screenWidth screenHeight) - fmap (`div` 2) (textureSize arrowTexture))) Nothing (Just phi) Nothing Nothing
+        renderTexture renderer rumbleTexture (P $ V2 0 0) Nothing Nothing Nothing Nothing
 
         SDL.renderPresent renderer
 
-        unless quit $ loop dir
+        unless quit $ loop
 
-  loop (0, 0)
+  loop
 
+  SDL.closeHaptic hapticDevice
   SDL.closeJoystick joystick
-
+  
   SDL.destroyRenderer renderer
   SDL.destroyWindow window
   SDL.quit
