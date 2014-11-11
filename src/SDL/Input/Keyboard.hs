@@ -247,7 +247,7 @@ data Scancode
   | ScancodeVolumeUp
   | ScancodeVolumeDown
   | ScancodeKPComma
-  | ScancodeEqualsAs400
+  | ScancodeKPEqualsAS400
   | ScancodeInternational1
   | ScancodeInternational2
   | ScancodeInternational3
@@ -492,7 +492,7 @@ instance FromNumber Scancode Word32 where
     Raw.SDL_SCANCODE_VOLUMEUP -> ScancodeVolumeUp
     Raw.SDL_SCANCODE_VOLUMEDOWN -> ScancodeVolumeDown
     Raw.SDL_SCANCODE_KP_COMMA -> ScancodeKPComma
-    Raw.SDL_SCANCODE_KP_EQUALSAS400 -> ScancodeEqualsAs400
+    Raw.SDL_SCANCODE_KP_EQUALSAS400 -> ScancodeKPEqualsAS400
     Raw.SDL_SCANCODE_INTERNATIONAL1 -> ScancodeInternational1
     Raw.SDL_SCANCODE_INTERNATIONAL2 -> ScancodeInternational2
     Raw.SDL_SCANCODE_INTERNATIONAL3 -> ScancodeInternational3
@@ -736,7 +736,7 @@ instance ToNumber Scancode Word32 where
   toNumber ScancodeVolumeUp = Raw.SDL_SCANCODE_VOLUMEUP
   toNumber ScancodeVolumeDown = Raw.SDL_SCANCODE_VOLUMEDOWN
   toNumber ScancodeKPComma = Raw.SDL_SCANCODE_KP_COMMA
-  toNumber ScancodeEqualsAs400 = Raw.SDL_SCANCODE_KP_EQUALSAS400
+  toNumber ScancodeKPEqualsAS400 = Raw.SDL_SCANCODE_KP_EQUALSAS400
   toNumber ScancodeInternational1 = Raw.SDL_SCANCODE_INTERNATIONAL1
   toNumber ScancodeInternational2 = Raw.SDL_SCANCODE_INTERNATIONAL2
   toNumber ScancodeInternational3 = Raw.SDL_SCANCODE_INTERNATIONAL3
