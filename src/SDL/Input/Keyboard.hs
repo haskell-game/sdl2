@@ -302,9 +302,9 @@ data Scancode
   | ScancodeKPLess
   | ScancodeKPGreater
   | ScancodeKPAmpersand
-  | ScancodeKPDBLAmpersand
+  | ScancodeKPDblAmpersand
   | ScancodeKPVerticalBar
-  | ScancodeKPDBLVerticalBar
+  | ScancodeKPDblVerticalBar
   | ScancodeKPColon
   | ScancodeKPHash
   | ScancodeKPSpace
@@ -547,9 +547,9 @@ instance FromNumber Scancode Word32 where
     Raw.SDL_SCANCODE_KP_LESS -> ScancodeKPLess
     Raw.SDL_SCANCODE_KP_GREATER -> ScancodeKPGreater
     Raw.SDL_SCANCODE_KP_AMPERSAND -> ScancodeKPAmpersand
-    Raw.SDL_SCANCODE_KP_DBLAMPERSAND -> ScancodeKPDBLAmpersand
+    Raw.SDL_SCANCODE_KP_DBLAMPERSAND -> ScancodeKPDblAmpersand
     Raw.SDL_SCANCODE_KP_VERTICALBAR -> ScancodeKPVerticalBar
-    Raw.SDL_SCANCODE_KP_DBLVERTICALBAR -> ScancodeKPDBLVerticalBar
+    Raw.SDL_SCANCODE_KP_DBLVERTICALBAR -> ScancodeKPDblVerticalBar
     Raw.SDL_SCANCODE_KP_COLON -> ScancodeKPColon
     Raw.SDL_SCANCODE_KP_HASH -> ScancodeKPHash
     Raw.SDL_SCANCODE_KP_SPACE -> ScancodeKPSpace
@@ -791,9 +791,9 @@ instance ToNumber Scancode Word32 where
   toNumber ScancodeKPLess = Raw.SDL_SCANCODE_KP_LESS
   toNumber ScancodeKPGreater = Raw.SDL_SCANCODE_KP_GREATER
   toNumber ScancodeKPAmpersand = Raw.SDL_SCANCODE_KP_AMPERSAND
-  toNumber ScancodeKPDBLAmpersand = Raw.SDL_SCANCODE_KP_DBLAMPERSAND
+  toNumber ScancodeKPDblAmpersand = Raw.SDL_SCANCODE_KP_DBLAMPERSAND
   toNumber ScancodeKPVerticalBar = Raw.SDL_SCANCODE_KP_VERTICALBAR
-  toNumber ScancodeKPDBLVerticalBar = Raw.SDL_SCANCODE_KP_DBLVERTICALBAR
+  toNumber ScancodeKPDblVerticalBar = Raw.SDL_SCANCODE_KP_DBLVERTICALBAR
   toNumber ScancodeKPColon = Raw.SDL_SCANCODE_KP_COLON
   toNumber ScancodeKPHash = Raw.SDL_SCANCODE_KP_HASH
   toNumber ScancodeKPSpace = Raw.SDL_SCANCODE_KP_SPACE
