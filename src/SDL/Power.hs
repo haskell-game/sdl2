@@ -10,6 +10,7 @@ module SDL.Power
   ) where
 
 import Control.Applicative
+import Control.Monad.IO.Class (MonadIO)
 import Data.Typeable
 import Data.Word
 import Foreign.Ptr
@@ -21,7 +22,7 @@ import qualified SDL.Raw as Raw
 -- | Current power supply details.
 --
 -- Throws 'SDLException' if the current power state can not be determined.
-getPowerInfo :: IO PowerState
+getPowerInfo :: (Functor m, MonadIO m) => m PowerState
 getPowerInfo = do
   -- TODO: SDL_GetPowerInfo does not set an SDL error
   fromNumber <$> throwIf (== Raw.SDL_POWERSTATE_UNKNOWN)

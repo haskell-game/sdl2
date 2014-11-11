@@ -28,6 +28,7 @@ module SDL.Input.Keyboard
 ) where
 
 import Control.Applicative
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Int
 import Data.Typeable
@@ -45,7 +46,7 @@ import qualified SDL.Raw.Event as Raw
 import qualified SDL.Raw.Types as Raw
 
 -- | Get the current key modifier state for the keyboard.
-getModState :: IO KeyModifier
+getModState :: (Functor m, MonadIO m) => m KeyModifier
 getModState = fromNumber <$> Raw.getModState
 
 data KeyModifier = KeyModifier
@@ -94,27 +95,27 @@ instance ToNumber KeyModifier Word32 where
 
 -- | Set the rectangle used to type text inputs and start accepting text input
 -- events.
-startTextInput :: Raw.Rect -> IO ()
-startTextInput rect = do
+startTextInput :: MonadIO m => Raw.Rect -> m ()
+startTextInput rect = liftIO $ do
   alloca $ \ptr -> do
     poke ptr rect
     Raw.setTextInputRect ptr
   Raw.startTextInput
 
 -- | Stop receiving any text input events.
-stopTextInput :: IO ()
+stopTextInput :: MonadIO m => m ()
 stopTextInput = Raw.stopTextInput
 
 -- | Check whether the platform has screen keyboard support.
-hasScreenKeyboardSupport :: IO Bool
+hasScreenKeyboardSupport :: MonadIO m => m Bool
 hasScreenKeyboardSupport = Raw.hasScreenKeyboardSupport
 
 -- | Check whether the screen keyboard is shown for the given window.
-isScreenKeyboardShown :: Window -> IO Bool
+isScreenKeyboardShown :: MonadIO m => Window -> m Bool
 isScreenKeyboardShown (Window w) = Raw.isScreenKeyboardShown w
 
-getScancodeName :: Scancode -> IO String
-getScancodeName scancode = do
+getScancodeName :: MonadIO m => Scancode -> m String
+getScancodeName scancode = liftIO $ do
   name <- Raw.getScancodeName $ toNumber scancode
   peekCString name
 
@@ -1573,8 +1574,8 @@ data Keysym = Keysym
   , keysymModifier :: KeyModifier
   } deriving (Eq, Show, Typeable)
 
-getKeyboardState :: IO (Scancode -> Bool)
-getKeyboardState = do
+getKeyboardState :: MonadIO m => m (Scancode -> Bool)
+getKeyboardState = liftIO $ do
   alloca $ \nkeys -> do
     keyptr <- Raw.getKeyboardState nkeys
     n <- peek nkeys

@@ -67,6 +67,7 @@ module SDL.Video.Renderer
 import Prelude hiding (foldr)
 
 import Control.Applicative
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Foldable
 import Data.Text (Text)
@@ -90,26 +91,26 @@ import qualified Data.ByteString as BS
 import qualified Data.Vector.Storable as SV
 import qualified SDL.Raw as Raw
 
-blitSurface :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
-blitSurface (Surface src) srcRect (Surface dst) dstRect =
+blitSurface :: MonadIO m => Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> m ()
+blitSurface (Surface src) srcRect (Surface dst) dstRect = liftIO $
   throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
   maybeWith with srcRect $ \srcPtr ->
   maybeWith with dstRect $ \dstPtr ->
   Raw.blitSurface src (castPtr srcPtr) dst (castPtr dstPtr)
 
-createTexture :: Renderer -> PixelFormat -> TextureAccess -> V2 CInt -> IO Texture
+createTexture :: (Functor m, MonadIO m) => Renderer -> PixelFormat -> TextureAccess -> V2 CInt -> m Texture
 createTexture (Renderer r) fmt access (V2 w h) =
   fmap Texture $
   throwIfNull "SDL.Video.Renderer.createTexture" "SDL_CreateTexture" $
   Raw.createTexture r (toNumber fmt) (toNumber access) w h
 
-createTextureFromSurface :: Renderer -> Surface -> IO Texture
+createTextureFromSurface :: (Functor m, MonadIO m) => Renderer -> Surface -> m Texture
 createTextureFromSurface (Renderer r) (Surface s) =
   fmap Texture $
   throwIfNull "SDL.Video.createTextureFromSurface" "SDL_CreateTextureFromSurface" $
   Raw.createTextureFromSurface r s
 
-destroyTexture :: Texture -> IO ()
+destroyTexture :: MonadIO m => Texture -> m ()
 destroyTexture (Texture t) = Raw.destroyTexture t
 
 data TextureAccess
@@ -138,8 +139,8 @@ data TextureInfo = TextureInfo
   , textureHeight      :: CInt
   } deriving (Eq, Show, Typeable)
 
-queryTexture :: Texture -> IO TextureInfo
-queryTexture (Texture tex) =
+queryTexture :: MonadIO m => Texture -> m TextureInfo
+queryTexture (Texture tex) = liftIO $
   alloca $ \pfPtr ->
   alloca $ \acPtr ->
   alloca $ \wPtr ->
@@ -152,14 +153,14 @@ queryTexture (Texture tex) =
       peek wPtr <*>
       peek hPtr
 
-fillRect :: Surface -> Maybe (Rectangle CInt) -> Word32 -> IO ()
-fillRect (Surface s) rect col =
+fillRect :: MonadIO m => Surface -> Maybe (Rectangle CInt) -> Word32 -> m ()
+fillRect (Surface s) rect col = liftIO $
   throwIfNeg_ "SDL.Video.fillRect" "SDL_FillRect" $
   maybeWith with rect $ \rectPtr ->
   Raw.fillRect s (castPtr rectPtr) col
 
-fillRects :: Surface -> SV.Vector (Rectangle CInt) -> Word32 -> IO ()
-fillRects (Surface s) rects col = do
+fillRects :: MonadIO m => Surface -> SV.Vector (Rectangle CInt) -> Word32 -> m ()
+fillRects (Surface s) rects col = liftIO $ do
   throwIfNeg_ "SDL.Video.fillRects" "SDL_FillRects" $
     SV.unsafeWith rects $ \rp ->
       Raw.fillRects s
@@ -167,11 +168,11 @@ fillRects (Surface s) rects col = do
                     (fromIntegral (SV.length rects))
                     col
 
-freeSurface :: Surface -> IO ()
+freeSurface :: MonadIO m => Surface -> m ()
 freeSurface (Surface s) = Raw.freeSurface s
 
-loadBMP :: FilePath -> IO Surface
-loadBMP filePath =
+loadBMP :: MonadIO m => FilePath -> m Surface
+loadBMP filePath = liftIO $
   fmap Surface $
   throwIfNull "SDL.Video.loadBMP" "SDL_LoadBMP" $
   withCString filePath $ Raw.loadBMP
@@ -181,38 +182,38 @@ newtype SurfacePixelFormat = SurfacePixelFormat (Ptr Raw.PixelFormat)
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. De need to guarantee that pointers aren't reused?
-mapRGB :: SurfacePixelFormat -> V3 Word8 -> IO Word32
+mapRGB :: MonadIO m => SurfacePixelFormat -> V3 Word8 -> m Word32
 mapRGB (SurfacePixelFormat fmt) (V3 r g b) = Raw.mapRGB fmt r g b
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->{w,h} are immutable, but do we need to guarantee that pointers
 -- aren't reused by *different* surfaces?
-surfaceDimensions :: Surface -> IO (V2 CInt)
-surfaceDimensions (Surface s) = (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> peek s
+surfaceDimensions :: MonadIO m => Surface -> m (V2 CInt)
+surfaceDimensions (Surface s) = liftIO $ (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> peek s
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->format is immutable, but do we need to guarantee that pointers
 -- aren't reused by *different* surfaces?
-surfaceFormat :: Surface -> IO SurfacePixelFormat
-surfaceFormat (Surface s) = SurfacePixelFormat . Raw.surfaceFormat <$> peek s
+surfaceFormat :: MonadIO m => Surface -> m SurfacePixelFormat
+surfaceFormat (Surface s) = liftIO $ SurfacePixelFormat . Raw.surfaceFormat <$> peek s
 
-getWindowSurface :: Window -> IO Surface
+getWindowSurface :: (Functor m, MonadIO m) => Window -> m Surface
 getWindowSurface (Window w) =
   fmap Surface $
   throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
   Raw.getWindowSurface w
 
-setRenderDrawBlendMode :: Renderer -> BlendMode -> IO ()
+setRenderDrawBlendMode :: (Functor m, MonadIO m) => Renderer -> BlendMode -> m ()
 setRenderDrawBlendMode (Renderer r) bm =
   throwIfNeg_ "SDL.Video.setRenderDrawBlendMode" "SDL_RenderDrawBlendMode" $
   Raw.setRenderDrawBlendMode r (toNumber bm)
 
-setRenderDrawColor :: Renderer -> V4 Word8 -> IO ()
+setRenderDrawColor :: (Functor m, MonadIO m) => Renderer -> V4 Word8 -> m ()
 setRenderDrawColor (Renderer re) (V4 r g b a) =
   throwIfNeg_ "SDL.Video.setRenderDrawColor" "SDL_SetRenderDrawColor" $
   Raw.setRenderDrawColor re r g b a
 
-updateWindowSurface :: Window -> IO ()
+updateWindowSurface :: (Functor m, MonadIO m) => Window -> m ()
 updateWindowSurface (Window w) =
   throwIfNeg_ "SDL.Video.updateWindowSurface" "SDL_UpdateWindowSurface" $
     Raw.updateWindowSurface w
@@ -250,71 +251,75 @@ newtype Surface = Surface (Ptr Raw.Surface)
 newtype Texture = Texture Raw.Texture
   deriving (Eq, Typeable)
 
-renderDrawRect :: Renderer -> Rectangle CInt -> IO ()
-renderDrawRect (Renderer r) rect =
+renderDrawRect :: MonadIO m => Renderer -> Rectangle CInt -> m ()
+renderDrawRect (Renderer r) rect = liftIO $
   throwIfNeg_ "SDL.Video.renderDrawRect" "SDL_RenderDrawRect" $
   with rect (Raw.renderDrawRect r . castPtr)
 
-renderDrawRects :: Renderer -> SV.Vector (Rectangle CInt) -> IO ()
-renderDrawRects (Renderer r) rects =
+renderDrawRects :: MonadIO m => Renderer -> SV.Vector (Rectangle CInt) -> m ()
+renderDrawRects (Renderer r) rects = liftIO $
   throwIfNeg_ "SDL.Video.renderDrawRects" "SDL_RenderDrawRects" $
   SV.unsafeWith rects $ \rp ->
     Raw.renderDrawRects r
                         (castPtr rp)
                         (fromIntegral (SV.length rects))
 
-renderFillRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
-renderFillRect (Renderer r) rect = do
+renderFillRect :: MonadIO m => Renderer -> Maybe (Rectangle CInt) -> m ()
+renderFillRect (Renderer r) rect = liftIO $ do
   throwIfNeg_ "SDL.Video.renderFillRect" "SDL_RenderFillRect" $
     maybeWith with rect $ \rPtr ->
       Raw.renderFillRect r
                          (castPtr rPtr)
 
-renderFillRects :: Renderer -> SV.Vector (Rectangle CInt) -> IO ()
-renderFillRects (Renderer r) rects = do
+renderFillRects :: MonadIO m => Renderer -> SV.Vector (Rectangle CInt) -> m ()
+renderFillRects (Renderer r) rects = liftIO $
   throwIfNeg_ "SDL.Video.renderFillRects" "SDL_RenderFillRects" $
     SV.unsafeWith rects $ \rp ->
       Raw.renderFillRects r
                           (castPtr rp)
                           (fromIntegral (SV.length rects))
 
-renderClear :: Renderer -> IO ()
+renderClear :: (Functor m, MonadIO m) => Renderer -> m ()
 renderClear (Renderer r) =
   throwIfNeg_ "SDL.Video.renderClear" "SDL_RenderClear" $
   Raw.renderClear r
 
-renderSetScale :: Renderer -> V2 CFloat -> IO ()
+renderSetScale :: (Functor m, MonadIO m) => Renderer -> V2 CFloat -> m ()
 renderSetScale (Renderer r) (V2 x y) =
   throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
   Raw.renderSetScale r x y
 
-renderSetLogicalSize :: Renderer -> V2 CInt -> IO ()
+renderSetLogicalSize :: (Functor m, MonadIO m) => Renderer -> V2 CInt -> m ()
 renderSetLogicalSize (Renderer r) (V2 x y) =
   throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $
   Raw.renderSetLogicalSize r x y
 
-renderSetClipRect :: Renderer -> Maybe (Rectangle CInt) -> IO ()
+renderSetClipRect :: MonadIO m => Renderer -> Maybe (Rectangle CInt) -> m ()
 renderSetClipRect (Renderer r) rect =
+  liftIO $
   throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
   maybeWith with rect $ Raw.renderSetClipRect r . castPtr
 
-renderSetViewport :: Renderer -> Maybe (Rectangle CInt) -> IO ()
+renderSetViewport :: MonadIO m => Renderer -> Maybe (Rectangle CInt) -> m ()
 renderSetViewport (Renderer r) rect =
+  liftIO $
   throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
   maybeWith with rect $ Raw.renderSetViewport r . castPtr
 
-renderPresent :: Renderer -> IO ()
+renderPresent :: MonadIO m => Renderer -> m ()
 renderPresent (Renderer r) = Raw.renderPresent r
 
-renderCopy :: Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> IO ()
+renderCopy :: MonadIO m => Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> m ()
 renderCopy (Renderer r) (Texture t) srcRect dstRect =
+  liftIO $
   throwIfNeg_ "SDL.Video.renderCopy" "SDL_RenderCopy" $
   maybeWith with srcRect $ \src ->
   maybeWith with dstRect $ \dst ->
   Raw.renderCopy r t (castPtr src) (castPtr dst)
 
-renderCopyEx :: Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> CDouble -> Maybe (Point V2 CInt) -> V2 Bool -> IO ()
+renderCopyEx :: MonadIO m => Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> CDouble -> Maybe (Point V2 CInt) -> V2 Bool -> m ()
 renderCopyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
+  liftIO $
   throwIfNeg_ "SDL.Video.renderCopyEx" "SDL_RenderCopyEx" $
   maybeWith with srcRect $ \src ->
   maybeWith with dstRect $ \dst ->
@@ -324,47 +329,51 @@ renderCopyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
                       V2 x y -> (if x then Raw.SDL_FLIP_HORIZONTAL else 0) .|.
                                (if y then Raw.SDL_FLIP_VERTICAL else 0))
 
-renderDrawLine :: Renderer -> Point V2 CInt -> Point V2 CInt -> IO ()
+renderDrawLine :: (Functor m, MonadIO m) => Renderer -> Point V2 CInt -> Point V2 CInt -> m ()
 renderDrawLine (Renderer r) (P (V2 x y)) (P (V2 x' y')) =
   throwIfNeg_ "SDL.Video.renderDrawLine" "SDL_RenderDrawLine" $
   Raw.renderDrawLine r x y x' y'
 
-renderDrawLines :: Renderer -> SV.Vector (Point V2 CInt) -> IO ()
+renderDrawLines :: MonadIO m => Renderer -> SV.Vector (Point V2 CInt) -> m ()
 renderDrawLines (Renderer r) points =
+  liftIO $
   throwIfNeg_ "SDL.Video.renderDrawLines" "SDL_RenderDrawLines" $
   SV.unsafeWith points $ \cp ->
     Raw.renderDrawLines r
                         (castPtr cp)
                         (fromIntegral (SV.length points))
 
-renderDrawPoint :: Renderer -> Point V2 CInt -> IO ()
+renderDrawPoint :: (Functor m, MonadIO m) => Renderer -> Point V2 CInt -> m ()
 renderDrawPoint (Renderer r) (P (V2 x y)) =
   throwIfNeg_ "SDL.Video.renderDrawPoint" "SDL_RenderDrawPoint" $
   Raw.renderDrawPoint r x y
 
-renderDrawPoints :: Renderer -> SV.Vector (Point V2 CInt) -> IO ()
+renderDrawPoints :: MonadIO m => Renderer -> SV.Vector (Point V2 CInt) -> m ()
 renderDrawPoints (Renderer r) points =
+  liftIO $
   throwIfNeg_ "SDL.Video.renderDrawPoints" "SDL_RenderDrawPoints" $
   SV.unsafeWith points $ \cp ->
     Raw.renderDrawPoints r
                          (castPtr cp)
                          (fromIntegral (SV.length points))
 
-convertSurface :: Surface -> SurfacePixelFormat -> IO Surface
+convertSurface :: (Functor m, MonadIO m) => Surface -> SurfacePixelFormat -> m Surface
 convertSurface (Surface s) (SurfacePixelFormat fmt) =
   fmap Surface $
   throwIfNull "SDL.Video.Renderer.convertSurface" "SDL_ConvertSurface" $
   Raw.convertSurface s fmt 0
 
-blitScaled :: Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> IO ()
+blitScaled :: MonadIO m => Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> m ()
 blitScaled (Surface src) srcRect (Surface dst) dstRect =
+  liftIO $
   throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
   maybeWith with srcRect $ \srcPtr ->
   maybeWith with dstRect $ \dstPtr ->
   Raw.blitScaled src (castPtr srcPtr) dst (castPtr dstPtr)
 
-setColorKey :: Surface -> Maybe Word32 -> IO ()
+setColorKey :: MonadIO m => Surface -> Maybe Word32 -> m ()
 setColorKey (Surface s) key =
+  liftIO $
   throwIfNeg_ "SDL.Video.Renderer.setColorKey" "SDL_SetColorKey" $
   case key of
     Nothing ->
@@ -381,7 +390,7 @@ setColorKey (Surface s) key =
     Just key' -> do
       Raw.setColorKey s 1 key'
 
-setTextureColorMod :: Texture -> V3 Word8 -> IO ()
+setTextureColorMod :: (Functor m, MonadIO m) => Texture -> V3 Word8 -> m ()
 setTextureColorMod (Texture t) (V3 r g b) =
   throwIfNeg_ "SDL.Video.Renderer.setTextureColorMod" "SDL_SetTextureColorMod" $
   Raw.setTextureColorMod t r g b
@@ -544,20 +553,20 @@ data RendererInfo = RendererInfo
   , rendererInfoMaxTextureHeight  :: CInt
   } deriving (Eq, Show, Typeable)
 
-fromRawRendererInfo :: Raw.RendererInfo -> IO RendererInfo
-fromRawRendererInfo (Raw.RendererInfo name flgs ntf tfs mtw mth) = do
+fromRawRendererInfo :: MonadIO m => Raw.RendererInfo -> m RendererInfo
+fromRawRendererInfo (Raw.RendererInfo name flgs ntf tfs mtw mth) = liftIO $ do
     name' <- Text.decodeUtf8 <$> BS.packCString name
     return $ RendererInfo name' (fromNumber flgs) ntf (fmap fromNumber tfs) mtw mth
 
-getRendererInfo :: Renderer -> IO RendererInfo
-getRendererInfo (Renderer renderer) =
+getRendererInfo :: MonadIO m => Renderer -> m RendererInfo
+getRendererInfo (Renderer renderer) = liftIO $
   alloca $ \rptr -> do
     throwIfNeg_ "getRendererInfo" "SDL_GetRendererInfo" $
       Raw.getRendererInfo renderer rptr
     peek rptr >>= fromRawRendererInfo
 
-getRenderDriverInfo :: IO [RendererInfo]
-getRenderDriverInfo = do
+getRenderDriverInfo :: MonadIO m => m [RendererInfo]
+getRenderDriverInfo = liftIO $ do
   count <- Raw.getNumRenderDrivers
   traverse go [0..count-1]
   where
@@ -566,17 +575,17 @@ getRenderDriverInfo = do
                  Raw.getRenderDriverInfo idx rptr
                peek rptr >>= fromRawRendererInfo
 
-setTextureAlphaMod :: Texture -> Word8 -> IO ()
+setTextureAlphaMod :: (Functor m, MonadIO m) => Texture -> Word8 -> m ()
 setTextureAlphaMod (Texture t) alpha =
   throwIfNeg_ "SDL.Video.Renderer.setTextureAlphaMod" "SDL_SetTextureAlphaMod" $
   Raw.setTextureAlphaMod t alpha
 
-setTextureBlendMode :: Texture -> BlendMode -> IO ()
+setTextureBlendMode :: (Functor m, MonadIO m) => Texture -> BlendMode -> m ()
 setTextureBlendMode (Texture t) bm =
   throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMoe" $
   Raw.setTextureBlendMode t (toNumber bm)
 
-setRenderTarget :: Renderer -> Maybe Texture -> IO ()
+setRenderTarget :: (Functor m, MonadIO m) => Renderer -> Maybe Texture -> m ()
 setRenderTarget (Renderer r) texture =
   throwIfNeg_ "SDL.Video.Renderer.setRenderTarget" "SDL_SetRenderTarget" $
   case texture of

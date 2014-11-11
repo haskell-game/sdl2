@@ -16,6 +16,7 @@ module SDL.Hint (
     VideoWinD3DCompilerOptions(..)
 ) where
 
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Typeable
 import Foreign.C
 import qualified SDL.Raw as Raw
@@ -86,8 +87,8 @@ data Hint :: * -> * where
   HintRenderVSync :: Hint RenderVSyncOptions
   HintVideoWinD3DCompiler :: Hint VideoWinD3DCompilerOptions
 
-setHint :: Hint v -> v -> IO Bool
-setHint (HintAccelerometerAsJoystick) v =
+setHint :: MonadIO m => Hint v -> v -> m Bool
+setHint (HintAccelerometerAsJoystick) v = liftIO $
   withCString "SDL_HINT_ACCELEROMETER_AS_JOYSTICK" $ \hint ->
     withCString
       (case v of
@@ -95,7 +96,7 @@ setHint (HintAccelerometerAsJoystick) v =
          AccelerometerIsJoystick -> "1")
       (Raw.setHint hint)
 
-setHint (HintFramebufferAcceleration) v =
+setHint (HintFramebufferAcceleration) v = liftIO $
   withCString "SDL_HINT_FRAMEBUFFER_ACCELERATION" $ \hint ->
     withCString
       (case v of
@@ -109,7 +110,7 @@ setHint (HintFramebufferAcceleration) v =
          )
       (Raw.setHint hint)
 
-setHint (HintMacCTRLClick) v =
+setHint (HintMacCTRLClick) v = liftIO $
   withCString "SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK" $ \hint ->
     withCString
       (case v of
@@ -117,7 +118,7 @@ setHint (HintMacCTRLClick) v =
          EmulateRightClick -> "1")
       (Raw.setHint hint)
 
-setHint (HintMouseRelativeModeWarp) v =
+setHint (HintMouseRelativeModeWarp) v = liftIO $
   withCString "SDL_HINT_MOUSE_RELATIVE_MODE_WARP" $ \hint ->
     withCString
       (case v of
@@ -125,7 +126,7 @@ setHint (HintMouseRelativeModeWarp) v =
          MouseWarping -> "1")
       (Raw.setHint hint)
 
-setHint (HintRenderDriver) v =
+setHint (HintRenderDriver) v = liftIO $
   withCString "SDL_HINT_RENDER_DRIVER" $ \hint ->
     withCString
       (case v of
@@ -136,7 +137,7 @@ setHint (HintRenderDriver) v =
          Software -> "software")
       (Raw.setHint hint)
 
-setHint (HintRenderOpenGLShaders) v =
+setHint (HintRenderOpenGLShaders) v = liftIO $
   withCString "SDL_HINT_RENDER_OPENGL_SHADERS" $ \hint ->
     withCString
       (case v of
@@ -144,7 +145,7 @@ setHint (HintRenderOpenGLShaders) v =
          EnableShaders -> "1")
       (Raw.setHint hint)
 
-setHint (HintRenderScaleQuality) v =
+setHint (HintRenderScaleQuality) v = liftIO $
   withCString "SDL_HINT_RENDER_SCALE_QUALITY" $ \hint ->
     withCString
       (case v of
@@ -153,7 +154,7 @@ setHint (HintRenderScaleQuality) v =
          ScaleBest -> "2")
       (Raw.setHint hint)
 
-setHint (HintRenderVSync) v =
+setHint (HintRenderVSync) v = liftIO $
   withCString "SDL_HINT_RENDER_VSYNC" $ \hint ->
     withCString
       (case v of
@@ -161,7 +162,7 @@ setHint (HintRenderVSync) v =
          EnableVSync -> "1")
       (Raw.setHint hint)
 
-setHint (HintVideoWinD3DCompiler) v =
+setHint (HintVideoWinD3DCompiler) v = liftIO $
   withCString "SDL_HINT_VIDEO_WIN_D3DCOMPILER" $ \hint ->
     withCString
       (case v of
@@ -170,5 +171,5 @@ setHint (HintVideoWinD3DCompiler) v =
          D3DNone ->  "none")
       (Raw.setHint hint)
 
-clearHints :: IO ()
+clearHints :: MonadIO m => m ()
 clearHints = Raw.clearHints

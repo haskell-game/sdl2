@@ -18,6 +18,7 @@ module SDL.Event
   ) where
 
 import Control.Applicative
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Maybe (catMaybes)
 import Data.Text (Text)
 import Data.Typeable
@@ -282,21 +283,21 @@ convertRaw (Raw.DropEvent _ ts a) = Event ts (DropEvent a)
 convertRaw (Raw.ClipboardUpdateEvent _ ts) = Event ts ClipboardUpdateEvent
 convertRaw (Raw.UnknownEvent t ts) = Event ts (UnknownEvent t)
 
-pollEvent :: IO (Maybe Event)
-pollEvent = alloca $ \e -> do
+pollEvent :: MonadIO m => m (Maybe Event)
+pollEvent = liftIO $ alloca $ \e -> do
   n <- Raw.pollEvent e
   if n == 0
      then return Nothing
      else Just . convertRaw <$> peek e
 
-waitEvent :: IO Event
-waitEvent = alloca $ \e -> do
+waitEvent :: MonadIO m => m Event
+waitEvent = liftIO $ alloca $ \e -> do
   SDLEx.throwIfNeg_ "SDL.Events.waitEvent" "SDL_WaitEvent" $
     Raw.waitEvent e
   convertRaw <$> peek e
 
-waitEventTimeout :: CInt -> IO (Maybe Event)
-waitEventTimeout timeout = alloca $ \e -> do
+waitEventTimeout :: MonadIO m => CInt -> m (Maybe Event)
+waitEventTimeout timeout = liftIO $ alloca $ \e -> do
   n <- Raw.waitEventTimeout e timeout
   if n == 0
      then return Nothing
