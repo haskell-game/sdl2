@@ -1032,7 +1032,7 @@ data Keycode
   | KeycodeKPGreater
   | KeycodeKPAmpersand
   | KeycodeKPDblAmpersand
-  | KeycodeKPVecticalBar
+  | KeycodeKPVerticalBar
   | KeycodeKPDblVerticalBar
   | KeycodeKPColon
   | KeycodeKPHash
@@ -1272,7 +1272,7 @@ instance FromNumber Keycode Int32 where
     Raw.SDLK_KP_GREATER -> KeycodeKPGreater
     Raw.SDLK_KP_AMPERSAND -> KeycodeKPAmpersand
     Raw.SDLK_KP_DBLAMPERSAND -> KeycodeKPDblAmpersand
-    Raw.SDLK_KP_VERTICALBAR -> KeycodeKPVecticalBar
+    Raw.SDLK_KP_VERTICALBAR -> KeycodeKPVerticalBar
     Raw.SDLK_KP_DBLVERTICALBAR -> KeycodeKPDblVerticalBar
     Raw.SDLK_KP_COLON -> KeycodeKPColon
     Raw.SDLK_KP_HASH -> KeycodeKPHash
@@ -1511,7 +1511,7 @@ instance ToNumber Keycode Int32 where
   toNumber KeycodeKPGreater = Raw.SDLK_KP_GREATER
   toNumber KeycodeKPAmpersand = Raw.SDLK_KP_AMPERSAND
   toNumber KeycodeKPDblAmpersand = Raw.SDLK_KP_DBLAMPERSAND
-  toNumber KeycodeKPVecticalBar = Raw.SDLK_KP_VERTICALBAR
+  toNumber KeycodeKPVerticalBar = Raw.SDLK_KP_VERTICALBAR
   toNumber KeycodeKPDblVerticalBar = Raw.SDLK_KP_DBLVERTICALBAR
   toNumber KeycodeKPColon = Raw.SDLK_KP_COLON
   toNumber KeycodeKPHash = Raw.SDLK_KP_HASH
