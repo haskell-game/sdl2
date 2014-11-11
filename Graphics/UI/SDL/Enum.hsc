@@ -312,6 +312,7 @@ module Graphics.UI.SDL.Enum (
   pattern SDLK_RGUI,
   pattern SDLK_MODE,
   pattern SDLK_AUDIONEXT,
+  pattern SDLK_AUDIOPREV,
   pattern SDLK_AUDIOSTOP,
   pattern SDLK_AUDIOPLAY,
   pattern SDLK_AUDIOMUTE,
@@ -1169,6 +1170,7 @@ pattern SDLK_RALT = (#const SDLK_RALT) :: Keycode
 pattern SDLK_RGUI = (#const SDLK_RGUI) :: Keycode
 pattern SDLK_MODE = (#const SDLK_MODE) :: Keycode
 pattern SDLK_AUDIONEXT = (#const SDLK_AUDIONEXT) :: Keycode
+pattern SDLK_AUDIOPREV = (#const SDLK_AUDIOPREV) :: Keycode
 pattern SDLK_AUDIOSTOP = (#const SDLK_AUDIOSTOP) :: Keycode
 pattern SDLK_AUDIOPLAY = (#const SDLK_AUDIOPLAY) :: Keycode
 pattern SDLK_AUDIOMUTE = (#const SDLK_AUDIOMUTE) :: Keycode
