@@ -17,11 +17,11 @@ extra-source-files:
 
 source-repository head
   type:     git
-  location: git://github.com/haskell-game/sdl2.git
+  location: https://github.com/haskell-game/sdl2.git
 
 source-repository this
   type:     git
-  location: git://github.com/haskell-game/sdl2.git
+  location: https://github.com/haskell-game/sdl2.git
   tag:      v1.2.0
 
 library
