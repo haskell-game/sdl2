@@ -1,20 +1,32 @@
 module Graphics.UI.SDL.Types (
 	-- * Type Aliases
+	-- ** Function Types
 	AudioCallback,
+	EventFilter,
+	HintCallback,
+	LogOutputFunction,
+	ThreadFunction,
+	TimerCallback,
+
+	mkAudioCallback,
+	mkEventFilter,
+	mkHintCallback,
+	mkLogOutputFunction,
+	mkThreadFunction,
+	mkTimerCallback,
+
+	-- ** Common Types
 	AudioDeviceID,
 	AudioFormat,
 	Cond,
 	Cursor,
-	EventFilter,
 	FingerID,
 	GameController,
 	GestureID,
 	GLContext,
 	Haptic,
-	HintCallback,
 	Joystick,
 	JoystickID,
-	LogOutputFunction,
 	Mutex,
 	Renderer,
 	Sem,
@@ -23,9 +35,7 @@ module Graphics.UI.SDL.Types (
 	SysWMmsg,
 	Texture,
 	Thread,
-	ThreadFunction,
 	ThreadID,
-	TimerCallback,
 	TimerID,
 	TLSID,
 	TouchID,
@@ -70,20 +80,53 @@ import Foreign.Storable
 import Graphics.UI.SDL.Enum
 
 type AudioCallback = FunPtr (Ptr () -> Ptr Word8 -> CInt -> IO ())
+type EventFilter = FunPtr (Ptr () -> Ptr Event -> IO CInt)
+type HintCallback = FunPtr (Ptr () -> CString -> CString -> CString -> IO ())
+type LogOutputFunction = FunPtr (Ptr () -> CInt -> LogPriority -> CString -> IO ())
+type ThreadFunction = FunPtr (Ptr () -> IO CInt)
+type TimerCallback = FunPtr (Word32 -> Ptr () -> IO Word32)
+
+-- | The storage associated with the resulting 'FunPtr' has to be released with
+-- 'freeHaskellFunPtr' when it is no longer required.
+foreign import ccall "wrapper"
+	mkAudioCallback :: (Ptr () -> Ptr Word8 -> CInt -> IO ()) -> IO AudioCallback
+
+-- | The storage associated with the resulting 'FunPtr' has to be released with
+-- 'freeHaskellFunPtr' when it is no longer required.
+foreign import ccall "wrapper"
+	mkEventFilter :: (Ptr () -> Ptr Event -> IO CInt) -> IO EventFilter
+
+-- | The storage associated with the resulting 'FunPtr' has to be released with
+-- 'freeHaskellFunPtr' when it is no longer required.
+foreign import ccall "wrapper"
+	mkHintCallback :: (Ptr () -> CString -> CString -> CString -> IO ()) -> IO HintCallback
+
+-- | The storage associated with the resulting 'FunPtr' has to be released with
+-- 'freeHaskellFunPtr' when it is no longer required.
+foreign import ccall "wrapper"
+	mkLogOutputFunction :: (Ptr () -> CInt -> LogPriority -> CString -> IO ()) -> IO LogOutputFunction
+
+-- | The storage associated with the resulting 'FunPtr' has to be released with
+-- 'freeHaskellFunPtr' when it is no longer required.
+foreign import ccall "wrapper"
+	mkThreadFunction :: (Ptr () -> IO CInt) -> IO ThreadFunction
+
+-- | The storage associated with the resulting 'FunPtr' has to be released with
+-- 'freeHaskellFunPtr' when it is no longer required.
+foreign import ccall "wrapper"
+	mkTimerCallback :: (Word32 -> Ptr () -> IO Word32) -> IO TimerCallback
+
 type AudioDeviceID = Word32
 type AudioFormat = Word16
 type Cond = Ptr ()
 type Cursor = Ptr ()
-type EventFilter = FunPtr (Ptr () -> Ptr Event -> IO CInt)
 type FingerID = Int64
 type GameController = Ptr ()
 type GestureID = Int64
 type GLContext = Ptr ()
 type Haptic = Ptr ()
-type HintCallback = FunPtr (Ptr () -> CString -> CString -> CString -> IO ())
 type Joystick = Ptr ()
 type JoystickID = Int32
-type LogOutputFunction = FunPtr (Ptr () -> CInt -> LogPriority -> CString -> IO ())
 type Mutex = Ptr ()
 type Renderer = Ptr ()
 type Sem = Ptr ()
@@ -92,9 +135,7 @@ type SysWMinfo = Ptr ()
 type SysWMmsg = Ptr ()
 type Texture = Ptr ()
 type Thread = Ptr ()
-type ThreadFunction = FunPtr (Ptr () -> IO CInt)
 type ThreadID = CULong
-type TimerCallback = FunPtr (Word32 -> Ptr () -> IO Word32)
 type TimerID = CInt
 type TLSID = CUInt
 type TouchID = Int64
