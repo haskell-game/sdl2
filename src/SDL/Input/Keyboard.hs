@@ -360,7 +360,6 @@ data Scancode
   | ScancodeSleep
   | ScancodeApp1
   | ScancodeApp2
-  | ScancodeNum
   deriving (Eq, Ord, Show, Typeable)
 
 instance FromNumber Scancode Word32 where
@@ -606,7 +605,6 @@ instance FromNumber Scancode Word32 where
     Raw.SDL_SCANCODE_SLEEP -> ScancodeSleep
     Raw.SDL_SCANCODE_APP1 -> ScancodeApp1
     Raw.SDL_SCANCODE_APP2 -> ScancodeApp2
-    Raw.SDL_NUM_SCANCODES -> ScancodeNum
     _ -> error "fromNumber: not numbered"
 
 instance ToNumber Scancode Word32 where
@@ -851,7 +849,6 @@ instance ToNumber Scancode Word32 where
   toNumber ScancodeSleep = Raw.SDL_SCANCODE_SLEEP
   toNumber ScancodeApp1 = Raw.SDL_SCANCODE_APP1
   toNumber ScancodeApp2 = Raw.SDL_SCANCODE_APP2
-  toNumber ScancodeNum = Raw.SDL_NUM_SCANCODES
 
 data Keycode
   = KeycodeUnknown
