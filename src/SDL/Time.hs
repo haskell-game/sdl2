@@ -38,9 +38,6 @@ time = do
 delay :: Word32 -> IO ()
 delay = Raw.delay
 
-foreign import ccall "wrapper"
-  mkTimerCallback :: (Word32 -> Ptr () -> IO Word32) -> IO Raw.TimerCallback
-
 data RetriggerTimer
   = Reschedule Word32
   | Cancel
@@ -54,7 +51,7 @@ newtype TimerID = TimerID CInt
 addTimer :: Word32 -> TimerCallback -> IO TimerID
 addTimer timeout callback =
   fmap TimerID $ do
-    cb <- mkTimerCallback $ wrapCb callback
+    cb <- Raw.mkTimerCallback $ wrapCb callback
     throwIf0 "addTimer" "SDL_AddTimer" $ Raw.addTimer timeout cb nullPtr
   where
     wrapCb :: TimerCallback -> Word32 -> Ptr () -> IO Word32

@@ -160,14 +160,10 @@ foldChangeable _ g (Desire a) = g a
 unpackChangeable :: Changeable a -> a
 unpackChangeable = foldChangeable id id
 
-foreign import ccall "wrapper"
-  mkAudioCallback :: (Ptr () -> Ptr Word8 -> CInt -> IO ())
-     -> IO Raw.AudioCallback
-
 openAudioDevice :: OpenDeviceSpec -> IO (AudioDevice, AudioSpec)
 openAudioDevice OpenDeviceSpec{..} =
   maybeWith (BS.useAsCString . Text.encodeUtf8) openDeviceName $ \cDevName -> do
-    cb <- mkAudioCallback $ \_ buffer len -> do
+    cb <- Raw.mkAudioCallback $ \_ buffer len -> do
       v <- openDeviceCallback len
       let (vForeignPtr, len') = SV.unsafeToForeignPtr0 v
       withForeignPtr vForeignPtr $ \vPtr ->
