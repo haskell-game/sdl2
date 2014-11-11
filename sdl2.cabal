@@ -59,7 +59,8 @@ library
     sdl2 >= 2.0.3
 
   build-depends:
-    base >= 4.7 && < 5
+    base >= 4.7 && < 5,
+    transformers == 0.4.*
 
   default-language:
     Haskell2010
