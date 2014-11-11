@@ -26,7 +26,6 @@ data InitFlag
   | InitGameController
   | InitEvents
   | InitEverything
-  | InitNoParachute
   deriving (Eq, Show, Typeable)
 
 instance ToNumber InitFlag Word32 where
@@ -38,7 +37,6 @@ instance ToNumber InitFlag Word32 where
   toNumber InitGameController = Raw.SDL_INIT_GAMECONTROLLER
   toNumber InitEvents = Raw.SDL_INIT_EVENTS
   toNumber InitEverything = Raw.SDL_INIT_EVERYTHING
-  toNumber InitNoParachute = Raw.SDL_INIT_NOPARACHUTE
 
 -- | Initializes SDL and the given subsystems. Do not call any SDL functions
 -- prior to this one, unless otherwise documented that you may do so.
