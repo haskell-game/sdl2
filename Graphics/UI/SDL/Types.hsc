@@ -144,7 +144,7 @@ type TouchID = Int64
 type Window = Ptr ()
 
 data Atomic = Atomic
-  { atomicValue :: CInt
+  { atomicValue :: !CInt
   } deriving (Eq, Show, Typeable)
 
 instance Storable Atomic where
@@ -157,15 +157,15 @@ instance Storable Atomic where
     (#poke SDL_atomic_t, value) ptr value
 
 data AudioCVT = AudioCVT
-  { audioCVTNeeded :: CInt
-  , audioCVTSrcFormat :: AudioFormat
-  , audioCVTDstFormat :: AudioFormat
-  , audioCVTRateIncr :: CDouble
-  , audioCVTBuf :: Ptr Word8
-  , audioCVTLen :: CInt
-  , audioCVTLenCvt :: CInt
-  , audioCVTLenMult :: CInt
-  , audioCVTLenRatio :: CDouble
+  { audioCVTNeeded :: !CInt
+  , audioCVTSrcFormat :: !AudioFormat
+  , audioCVTDstFormat :: !AudioFormat
+  , audioCVTRateIncr :: !CDouble
+  , audioCVTBuf :: !(Ptr Word8)
+  , audioCVTLen :: !CInt
+  , audioCVTLenCvt :: !CInt
+  , audioCVTLenMult :: !CInt
+  , audioCVTLenRatio :: !CDouble
   } deriving (Eq, Show, Typeable)
 
 instance Storable AudioCVT where
@@ -194,14 +194,14 @@ instance Storable AudioCVT where
     (#poke SDL_AudioCVT, len_ratio) ptr len_ratio
 
 data AudioSpec = AudioSpec
-  { audioSpecFreq :: CInt
-  , audioSpecFormat :: AudioFormat
-  , audioSpecChannels :: Word8
-  , audioSpecSilence :: Word8
-  , audioSpecSamples :: Word16
-  , audioSpecSize :: Word32
-  , audioSpecCallback :: AudioCallback
-  , audioSpecUserdata :: Ptr ()
+  { audioSpecFreq :: !CInt
+  , audioSpecFormat :: !AudioFormat
+  , audioSpecChannels :: !Word8
+  , audioSpecSilence :: !Word8
+  , audioSpecSamples :: !Word16
+  , audioSpecSize :: !Word32
+  , audioSpecCallback :: !AudioCallback
+  , audioSpecUserdata :: !(Ptr ())
   } deriving (Eq, Show, Typeable)
 
 instance Storable AudioSpec where
@@ -228,10 +228,10 @@ instance Storable AudioSpec where
     (#poke SDL_AudioSpec, userdata) ptr userdata
 
 data Color = Color
-  { colorR :: Word8
-  , colorG :: Word8
-  , colorB :: Word8
-  , colorA :: Word8
+  { colorR :: !Word8
+  , colorG :: !Word8
+  , colorB :: !Word8
+  , colorA :: !Word8
   } deriving (Eq, Show, Typeable)
 
 instance Storable Color where
@@ -250,11 +250,11 @@ instance Storable Color where
     (#poke SDL_Color, a) ptr a
 
 data DisplayMode = DisplayMode
-  { displayModeFormat :: Word32
-  , displayModeW :: CInt
-  , displayModeH :: CInt
-  , displayModeRefreshRate :: CInt
-  , displayModeDriverData :: Ptr ()
+  { displayModeFormat :: !Word32
+  , displayModeW :: !CInt
+  , displayModeH :: !CInt
+  , displayModeRefreshRate :: !CInt
+  , displayModeDriverData :: !(Ptr ())
   } deriving (Eq, Show, Typeable)
 
 instance Storable DisplayMode where
@@ -276,178 +276,178 @@ instance Storable DisplayMode where
 
 data Event
   = WindowEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , windowEventWindowID :: Word32
-    , windowEventEvent :: Word8
-    , windowEventData1 :: Int32
-    , windowEventData2 :: Int32
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , windowEventWindowID :: !Word32
+    , windowEventEvent :: !Word8
+    , windowEventData1 :: !Int32
+    , windowEventData2 :: !Int32
     }
   | KeyboardEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , keyboardEventWindowID :: Word32
-    , keyboardEventState :: Word8
-    , keyboardEventRepeat :: Word8
-    , keyboardEventKeysym :: Keysym
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , keyboardEventWindowID :: !Word32
+    , keyboardEventState :: !Word8
+    , keyboardEventRepeat :: !Word8
+    , keyboardEventKeysym :: !Keysym
     }
   | TextEditingEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , textEditingEventWindowID :: Word32
-    , textEditingEventText :: [CChar]
-    , textEditingEventStart :: Int32
-    , textEditingEventLength :: Int32
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , textEditingEventWindowID :: !Word32
+    , textEditingEventText :: ![CChar]
+    , textEditingEventStart :: !Int32
+    , textEditingEventLength :: !Int32
     }
   | TextInputEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , textInputEventWindowID :: Word32
-    , textInputEventText :: [CChar]
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , textInputEventWindowID :: !Word32
+    , textInputEventText :: ![CChar]
     }
   | MouseMotionEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , mouseMotionEventWindowID :: Word32
-    , mouseMotionEventWhich :: Word32
-    , mouseMotionEventState :: Word32
-    , mouseMotionEventX :: Int32
-    , mouseMotionEventY :: Int32
-    , mouseMotionEventXRel :: Int32
-    , mouseMotionEventYRel :: Int32
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , mouseMotionEventWindowID :: !Word32
+    , mouseMotionEventWhich :: !Word32
+    , mouseMotionEventState :: !Word32
+    , mouseMotionEventX :: !Int32
+    , mouseMotionEventY :: !Int32
+    , mouseMotionEventXRel :: !Int32
+    , mouseMotionEventYRel :: !Int32
     }
   | MouseButtonEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , mouseButtonEventWindowID :: Word32
-    , mouseButtonEventWhich :: Word32
-    , mouseButtonEventButton :: Word8
-    , mouseButtonEventState :: Word8
-    , mouseButtonEventClicks :: Word8
-    , mouseButtonEventX :: Int32
-    , mouseButtonEventY :: Int32
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , mouseButtonEventWindowID :: !Word32
+    , mouseButtonEventWhich :: !Word32
+    , mouseButtonEventButton :: !Word8
+    , mouseButtonEventState :: !Word8
+    , mouseButtonEventClicks :: !Word8
+    , mouseButtonEventX :: !Int32
+    , mouseButtonEventY :: !Int32
     }
   | MouseWheelEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , mouseWheelEventWindowID :: Word32
-    , mouseWheelEventWhich :: Word32
-    , mouseWheelEventX :: Int32
-    , mouseWheelEventY :: Int32
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , mouseWheelEventWindowID :: !Word32
+    , mouseWheelEventWhich :: !Word32
+    , mouseWheelEventX :: !Int32
+    , mouseWheelEventY :: !Int32
     }
   | JoyAxisEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , joyAxisEventWhich :: JoystickID
-    , joyAxisEventAxis :: Word8
-    , joyAxisEventValue :: Int16
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , joyAxisEventWhich :: !JoystickID
+    , joyAxisEventAxis :: !Word8
+    , joyAxisEventValue :: !Int16
     }
   | JoyBallEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , joyBallEventWhich :: JoystickID
-    , joyBallEventBall :: Word8
-    , joyBallEventXRel :: Int16
-    , joyBallEventYRel :: Int16
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , joyBallEventWhich :: !JoystickID
+    , joyBallEventBall :: !Word8
+    , joyBallEventXRel :: !Int16
+    , joyBallEventYRel :: !Int16
     }
   | JoyHatEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , joyHatEventWhich :: JoystickID
-    , joyHatEventHat :: Word8
-    , joyHatEventValue :: Word8
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , joyHatEventWhich :: !JoystickID
+    , joyHatEventHat :: !Word8
+    , joyHatEventValue :: !Word8
     }
   | JoyButtonEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , joyButtonEventWhich :: JoystickID
-    , joyButtonEventButton :: Word8
-    , joyButtonEventState :: Word8
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , joyButtonEventWhich :: !JoystickID
+    , joyButtonEventButton :: !Word8
+    , joyButtonEventState :: !Word8
     }
   | JoyDeviceEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , joyDeviceEventWhich :: Int32
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , joyDeviceEventWhich :: !Int32
     }
   | ControllerAxisEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , controllerAxisEventWhich :: JoystickID
-    , controllerAxisEventAxis :: Word8
-    , controllerAxisEventValue :: Int16
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , controllerAxisEventWhich :: !JoystickID
+    , controllerAxisEventAxis :: !Word8
+    , controllerAxisEventValue :: !Int16
     }
   | ControllerButtonEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , controllerButtonEventWhich :: JoystickID
-    , controllerButtonEventButton :: Word8
-    , controllerButtonEventState :: Word8
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , controllerButtonEventWhich :: !JoystickID
+    , controllerButtonEventButton :: !Word8
+    , controllerButtonEventState :: !Word8
     }
   | ControllerDeviceEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , controllerDeviceEventWhich :: Int32
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , controllerDeviceEventWhich :: !Int32
     }
   | QuitEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
     }
   | UserEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , userEventWindowID :: Word32
-    , userEventCode :: Int32
-    , userEventData1 :: Ptr ()
-    , userEventData2 :: Ptr ()
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , userEventWindowID :: !Word32
+    , userEventCode :: !Int32
+    , userEventData1 :: !(Ptr ())
+    , userEventData2 :: !(Ptr ())
     }
   | SysWMEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , sysWMEventMsg :: SysWMmsg
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , sysWMEventMsg :: !SysWMmsg
     }
   | TouchFingerEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , touchFingerEventTouchID :: TouchID
-    , touchFingerEventFingerID :: FingerID
-    , touchFingerEventX :: CFloat
-    , touchFingerEventY :: CFloat
-    , touchFingerEventDX :: CFloat
-    , touchFingerEventDY :: CFloat
-    , touchFingerEventPressure :: CFloat
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , touchFingerEventTouchID :: !TouchID
+    , touchFingerEventFingerID :: !FingerID
+    , touchFingerEventX :: !CFloat
+    , touchFingerEventY :: !CFloat
+    , touchFingerEventDX :: !CFloat
+    , touchFingerEventDY :: !CFloat
+    , touchFingerEventPressure :: !CFloat
     }
   | MultiGestureEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , multiGestureEventTouchID :: TouchID
-    , multiGestureEventDTheta :: CFloat
-    , multiGestureEventDDist :: CFloat
-    , multiGestureEventX :: CFloat
-    , multiGestureEventY :: CFloat
-    , multiGestureEventNumFingers :: Word16
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , multiGestureEventTouchID :: !TouchID
+    , multiGestureEventDTheta :: !CFloat
+    , multiGestureEventDDist :: !CFloat
+    , multiGestureEventX :: !CFloat
+    , multiGestureEventY :: !CFloat
+    , multiGestureEventNumFingers :: !Word16
     }
   | DollarGestureEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , dollarGestureEventTouchID :: TouchID
-    , dollarGestureEventGestureID :: GestureID
-    , dollarGestureEventNumFingers :: Word32
-    , dollarGestureEventError :: CFloat
-    , dollarGestureEventX :: CFloat
-    , dollarGestureEventY :: CFloat
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , dollarGestureEventTouchID :: !TouchID
+    , dollarGestureEventGestureID :: !GestureID
+    , dollarGestureEventNumFingers :: !Word32
+    , dollarGestureEventError :: !CFloat
+    , dollarGestureEventX :: !CFloat
+    , dollarGestureEventY :: !CFloat
     }
   | DropEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
-    , dropEventFile :: CString
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , dropEventFile :: !CString
     }
   | ClipboardUpdateEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
     }
   | UnknownEvent
-    { eventType :: Word32
-    , eventTimestamp :: Word32
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
     }
   deriving (Eq, Show, Typeable)
 
@@ -762,10 +762,10 @@ instance Storable Event where
       (#poke SDL_Event, common.timestamp) ptr timestamp
 
 data Finger = Finger
-  { fingerID :: FingerID
-  , fingerX :: CFloat
-  , fingerY :: CFloat
-  , fingerPressure :: CFloat
+  { fingerID :: !FingerID
+  , fingerX :: !CFloat
+  , fingerY :: !CFloat
+  , fingerPressure :: !CFloat
   } deriving (Eq, Show, Typeable)
 
 instance Storable Finger where
@@ -786,14 +786,14 @@ instance Storable Finger where
 data GameControllerButtonBind
   = GameControllerButtonBindNone
   | GameControllerButtonBindButton
-    { gameControllerButtonBindButton :: CInt
+    { gameControllerButtonBindButton :: !CInt
     }
   | GameControllerButtonBindAxis
-    { gameControllerButtonBindAxis :: CInt
+    { gameControllerButtonBindAxis :: !CInt
     }
   | GameControllerButtonBindHat
-    { gameControllerButtonBindHat :: CInt
-    , gameControllerButtonBindHatMask :: CInt
+    { gameControllerButtonBindHat :: !CInt
+    , gameControllerButtonBindHatMask :: !CInt
     }
   deriving (Eq, Show, Typeable)
 
@@ -831,10 +831,10 @@ instance Storable GameControllerButtonBind where
       (#poke SDL_GameControllerButtonBind, value.hat.hat_mask) ptr hat_mask
 
 data HapticDirection = HapticDirection
-  { hapticDirectionType :: Word8
-  , hapticDirectionX :: Int32
-  , hapticDirectionY :: Int32
-  , hapticDirectionZ :: Int32
+  { hapticDirectionType :: !Word8
+  , hapticDirectionX :: !Int32
+  , hapticDirectionY :: !Int32
+  , hapticDirectionZ :: !Int32
   } deriving (Eq, Show, Typeable)
 
 instance Storable HapticDirection where
@@ -854,82 +854,82 @@ instance Storable HapticDirection where
 
 data HapticEffect
   = HapticConstant
-    { hapticEffectType :: Word16
-    , hapticConstantDirection :: HapticDirection
-    , hapticConstantLength :: Word32
-    , hapticConstantDelay :: Word16
-    , hapticConstantButton :: Word16
-    , hapticConstantInterval :: Word16
-    , hapticConstantLevel :: Int16
-    , hapticConstantAttackLength :: Word16
-    , hapticConstantAttackLevel :: Word16
-    , hapticConstantFadeLength :: Word16
-    , hapticConstantFadeLevel :: Word16
+    { hapticEffectType :: !Word16
+    , hapticConstantDirection :: !HapticDirection
+    , hapticConstantLength :: !Word32
+    , hapticConstantDelay :: !Word16
+    , hapticConstantButton :: !Word16
+    , hapticConstantInterval :: !Word16
+    , hapticConstantLevel :: !Int16
+    , hapticConstantAttackLength :: !Word16
+    , hapticConstantAttackLevel :: !Word16
+    , hapticConstantFadeLength :: !Word16
+    , hapticConstantFadeLevel :: !Word16
     }
   | HapticPeriodic
-    { hapticEffectType :: Word16
-    , hapticPeriodicDirection :: HapticDirection
-    , hapticPeriodicLength :: Word32
-    , hapticPeriodicDelay :: Word16
-    , hapticPeriodicButton :: Word16
-    , hapticPeriodicInterval :: Word16
-    , hapticPeriodicPeriod :: Word16
-    , hapticPeriodicMagnitude :: Int16
-    , hapticPeriodicOffset :: Int16
-    , hapticPeriodicPhase :: Word16
-    , hapticPeriodicAttackLength :: Word16
-    , hapticPeriodicAttackLevel :: Word16
-    , hapticPeriodicFadeLength :: Word16
-    , hapticPeriodicFadeLevel :: Word16
+    { hapticEffectType :: !Word16
+    , hapticPeriodicDirection :: !HapticDirection
+    , hapticPeriodicLength :: !Word32
+    , hapticPeriodicDelay :: !Word16
+    , hapticPeriodicButton :: !Word16
+    , hapticPeriodicInterval :: !Word16
+    , hapticPeriodicPeriod :: !Word16
+    , hapticPeriodicMagnitude :: !Int16
+    , hapticPeriodicOffset :: !Int16
+    , hapticPeriodicPhase :: !Word16
+    , hapticPeriodicAttackLength :: !Word16
+    , hapticPeriodicAttackLevel :: !Word16
+    , hapticPeriodicFadeLength :: !Word16
+    , hapticPeriodicFadeLevel :: !Word16
     }
   | HapticCondition
-    { hapticEffectType :: Word16
-    , hapticConditionLength :: Word32
-    , hapticConditionDelay :: Word16
-    , hapticConditionButton :: Word16
-    , hapticConditionInterval :: Word16
-    , hapticConditionRightSat :: [Word16]
-    , hapticConditionLeftSat :: [Word16]
-    , hapticConditionRightCoeff :: [Int16]
-    , hapticConditionLeftCoeff :: [Int16]
-    , hapticConditionDeadband :: [Word16]
-    , hapticConditionCenter :: [Int16]
+    { hapticEffectType :: !Word16
+    , hapticConditionLength :: !Word32
+    , hapticConditionDelay :: !Word16
+    , hapticConditionButton :: !Word16
+    , hapticConditionInterval :: !Word16
+    , hapticConditionRightSat :: ![Word16]
+    , hapticConditionLeftSat :: ![Word16]
+    , hapticConditionRightCoeff :: ![Int16]
+    , hapticConditionLeftCoeff :: ![Int16]
+    , hapticConditionDeadband :: ![Word16]
+    , hapticConditionCenter :: ![Int16]
     }
   | HapticRamp
-    { hapticEffectType :: Word16
-    , hapticRampDirection :: HapticDirection
-    , hapticRampLength :: Word32
-    , hapticRampDelay :: Word16
-    , hapticRampButton :: Word16
-    , hapticRampInterval :: Word16
-    , hapticRampStart :: Int16
-    , hapticRampEnd :: Int16
-    , hapticRampAttackLength :: Word16
-    , hapticRampAttackLevel :: Word16
-    , hapticRampFadeLength :: Word16
-    , hapticRampFadeLevel :: Word16
+    { hapticEffectType :: !Word16
+    , hapticRampDirection :: !HapticDirection
+    , hapticRampLength :: !Word32
+    , hapticRampDelay :: !Word16
+    , hapticRampButton :: !Word16
+    , hapticRampInterval :: !Word16
+    , hapticRampStart :: !Int16
+    , hapticRampEnd :: !Int16
+    , hapticRampAttackLength :: !Word16
+    , hapticRampAttackLevel :: !Word16
+    , hapticRampFadeLength :: !Word16
+    , hapticRampFadeLevel :: !Word16
     }
   | HapticLeftRight
-    { hapticEffectType :: Word16
-    , hapticLeftRightLength :: Word32
-    , hapticLeftRightLargeMagnitude :: Word16
-    , hapticLeftRightSmallMagnitude :: Word16
+    { hapticEffectType :: !Word16
+    , hapticLeftRightLength :: !Word32
+    , hapticLeftRightLargeMagnitude :: !Word16
+    , hapticLeftRightSmallMagnitude :: !Word16
     }
   | HapticCustom
-    { hapticEffectType :: Word16
-    , hapticCustomDirection :: HapticDirection
-    , hapticCustomLength :: Word32
-    , hapticCustomDelay :: Word16
-    , hapticCustomButton :: Word16
-    , hapticCustomInterval :: Word16
-    , hapticCustomChannels :: Word8
-    , hapticCustomPeriod :: Word16
-    , hapticCustomSamples :: Word16
-    , hapticCustomData :: Ptr Word16
-    , hapticCustomAttackLength :: Word16
-    , hapticCustomAttackLevel :: Word16
-    , hapticCustomFadeLength :: Word16
-    , hapticCustomFadeLevel :: Word16
+    { hapticEffectType :: !Word16
+    , hapticCustomDirection :: !HapticDirection
+    , hapticCustomLength :: !Word32
+    , hapticCustomDelay :: !Word16
+    , hapticCustomButton :: !Word16
+    , hapticCustomInterval :: !Word16
+    , hapticCustomChannels :: !Word8
+    , hapticCustomPeriod :: !Word16
+    , hapticCustomSamples :: !Word16
+    , hapticCustomData :: !(Ptr Word16)
+    , hapticCustomAttackLength :: !Word16
+    , hapticCustomAttackLevel :: !Word16
+    , hapticCustomFadeLength :: !Word16
+    , hapticCustomFadeLevel :: !Word16
     }
   deriving (Eq, Show, Typeable)
 
@@ -1102,7 +1102,7 @@ instance Storable HapticEffect where
       (#poke SDL_HapticEffect, custom.fade_level) ptr fade_level
 
 data JoystickGUID = JoystickGUID
-  { joystickGUID :: [Word8]
+  { joystickGUID :: ![Word8]
   } deriving (Eq, Show, Typeable)
 
 instance Storable JoystickGUID where
@@ -1115,9 +1115,9 @@ instance Storable JoystickGUID where
     pokeArray ((#ptr SDL_JoystickGUID, data) ptr) guid
 
 data Keysym = Keysym
-  { keysymScancode :: Scancode
-  , keysymKeycode :: Keycode
-  , keysymMod :: Word16
+  { keysymScancode :: !Scancode
+  , keysymKeycode :: !Keycode
+  , keysymMod :: !Word16
   } deriving (Eq, Show, Typeable)
 
 instance Storable Keysym where
@@ -1134,9 +1134,9 @@ instance Storable Keysym where
     (#poke SDL_Keysym, mod) ptr mod'
 
 data MessageBoxButtonData = MessageBoxButtonData
-  { messageBoxButtonDataFlags :: Word32
-  , messageBoxButtonButtonID :: CInt
-  , messageBoxButtonText :: CString
+  { messageBoxButtonDataFlags :: !Word32
+  , messageBoxButtonButtonID :: !CInt
+  , messageBoxButtonText :: !CString
   } deriving (Eq, Show, Typeable)
 
 instance Storable MessageBoxButtonData where
@@ -1153,9 +1153,9 @@ instance Storable MessageBoxButtonData where
     (#poke SDL_MessageBoxButtonData, text) ptr text
 
 data MessageBoxColor = MessageBoxColor
-  { messageBoxColorR :: Word8
-  , messageBoxColorG :: Word8
-  , messageBoxColorB :: Word8
+  { messageBoxColorR :: !Word8
+  , messageBoxColorG :: !Word8
+  , messageBoxColorB :: !Word8
   } deriving (Eq, Show, Typeable)
 
 instance Storable MessageBoxColor where
@@ -1172,11 +1172,11 @@ instance Storable MessageBoxColor where
     (#poke SDL_MessageBoxColor, b) ptr b
 
 data MessageBoxColorScheme = MessageBoxColorScheme
-  { messageBoxColorSchemeColorBackground :: MessageBoxColor
-  , messageBoxColorSchemeColorText :: MessageBoxColor
-  , messageBoxColorSchemeColorButtonBorder :: MessageBoxColor
-  , messageBoxColorSchemeColorButtonBackground :: MessageBoxColor
-  , messageBoxColorSchemeColorButtonSelected :: MessageBoxColor
+  { messageBoxColorSchemeColorBackground :: !MessageBoxColor
+  , messageBoxColorSchemeColorText :: !MessageBoxColor
+  , messageBoxColorSchemeColorButtonBorder :: !MessageBoxColor
+  , messageBoxColorSchemeColorButtonBackground :: !MessageBoxColor
+  , messageBoxColorSchemeColorButtonSelected :: !MessageBoxColor
   } deriving (Eq, Show, Typeable)
 
 instance Storable MessageBoxColorScheme where
@@ -1197,13 +1197,13 @@ instance Storable MessageBoxColorScheme where
     (#poke SDL_MessageBoxColorScheme, colors[SDL_MESSAGEBOX_COLOR_BUTTON_SELECTED]) ptr button_selected
 
 data MessageBoxData = MessageBoxData
-  { messageBoxDataFlags :: Word32
-  , messageBoxDataWindow :: Window
-  , messageBoxDataTitle :: CString
-  , messageBoxDataMessage :: CString
-  , messageBoxDataNumButtons :: CInt
-  , messageBoxDataButtons :: Ptr MessageBoxButtonData
-  , messageBoxDataColorScheme :: Ptr MessageBoxColorScheme
+  { messageBoxDataFlags :: !Word32
+  , messageBoxDataWindow :: !Window
+  , messageBoxDataTitle :: !CString
+  , messageBoxDataMessage :: !CString
+  , messageBoxDataNumButtons :: !CInt
+  , messageBoxDataButtons :: !(Ptr MessageBoxButtonData)
+  , messageBoxDataColorScheme :: !(Ptr MessageBoxColorScheme)
   } deriving (Eq, Show, Typeable)
 
 instance Storable MessageBoxData where
@@ -1228,8 +1228,8 @@ instance Storable MessageBoxData where
     (#poke SDL_MessageBoxData, colorScheme) ptr color_scheme
 
 data Palette = Palette
-  { paletteNColors :: CInt
-  , paletteColors :: Ptr Color
+  { paletteNColors :: !CInt
+  , paletteColors :: !(Ptr Color)
   } deriving (Eq, Show, Typeable)
 
 instance Storable Palette where
@@ -1244,14 +1244,14 @@ instance Storable Palette where
     (#poke SDL_Palette, colors) ptr colors
 
 data PixelFormat = PixelFormat
-  { pixelFormatFormat :: Word32
-  , pixelFormatPalette :: Ptr Palette
-  , pixelFormatBitsPerPixel :: Word8
-  , pixelFormatBytesPerPixel :: Word8
-  , pixelFormatRMask :: Word32
-  , pixelFormatGMask :: Word32
-  , pixelFormatBMask :: Word32
-  , pixelFormatAMask :: Word32
+  { pixelFormatFormat :: !Word32
+  , pixelFormatPalette :: !(Ptr Palette)
+  , pixelFormatBitsPerPixel :: !Word8
+  , pixelFormatBytesPerPixel :: !Word8
+  , pixelFormatRMask :: !Word32
+  , pixelFormatGMask :: !Word32
+  , pixelFormatBMask :: !Word32
+  , pixelFormatAMask :: !Word32
   } deriving (Eq, Show, Typeable)
 
 instance Storable PixelFormat where
@@ -1278,8 +1278,8 @@ instance Storable PixelFormat where
     (#poke SDL_PixelFormat, Amask) ptr amask
 
 data Point = Point
-  { pointX :: CInt
-  , pointY :: CInt
+  { pointX :: !CInt
+  , pointY :: !CInt
   } deriving (Eq, Show, Typeable)
 
 instance Storable Point where
@@ -1294,10 +1294,10 @@ instance Storable Point where
     (#poke SDL_Point, y) ptr y
 
 data Rect = Rect
-  { rectX :: CInt
-  , rectY :: CInt
-  , rectW :: CInt
-  , rectH :: CInt
+  { rectX :: !CInt
+  , rectY :: !CInt
+  , rectW :: !CInt
+  , rectH :: !CInt
   } deriving (Eq, Show, Typeable)
 
 instance Storable Rect where
@@ -1316,12 +1316,12 @@ instance Storable Rect where
     (#poke SDL_Rect, h) ptr h
 
 data RendererInfo = RendererInfo
-  { rendererInfoName :: CString
-  , rendererInfoFlags :: Word32
-  , rendererInfoNumTextureFormats :: Word32
-  , rendererInfoTextureFormats :: [Word32]
-  , rendererInfoMaxTextureWidth :: CInt
-  , rendererInfoMaxTextureHeight :: CInt
+  { rendererInfoName :: !CString
+  , rendererInfoFlags :: !Word32
+  , rendererInfoNumTextureFormats :: !Word32
+  , rendererInfoTextureFormats :: ![Word32]
+  , rendererInfoMaxTextureWidth :: !CInt
+  , rendererInfoMaxTextureHeight :: !CInt
   } deriving (Eq, Show, Typeable)
 
 instance Storable RendererInfo where
@@ -1344,12 +1344,12 @@ instance Storable RendererInfo where
     (#poke SDL_RendererInfo, max_texture_height) ptr max_texture_height
 
 data RWops = RWops
-  { rwopsSize :: FunPtr (Ptr RWops -> IO Int64)
-  , rwopsSeek :: FunPtr (Ptr RWops -> Int64 -> CInt -> IO Int64)
-  , rwopsRead :: FunPtr (Ptr RWops -> Ptr () -> CSize -> CSize -> IO CSize)
-  , rwopsWrite :: FunPtr (Ptr RWops -> Ptr () -> CSize -> CSize -> IO CSize)
-  , rwopsClose :: FunPtr (Ptr RWops -> IO CInt)
-  , rwopsType :: Word32
+  { rwopsSize :: !(FunPtr (Ptr RWops -> IO Int64))
+  , rwopsSeek :: !(FunPtr (Ptr RWops -> Int64 -> CInt -> IO Int64))
+  , rwopsRead :: !(FunPtr (Ptr RWops -> Ptr () -> CSize -> CSize -> IO CSize))
+  , rwopsWrite :: !(FunPtr (Ptr RWops -> Ptr () -> CSize -> CSize -> IO CSize))
+  , rwopsClose :: !(FunPtr (Ptr RWops -> IO CInt))
+  , rwopsType :: !Word32
   } deriving (Eq, Show, Typeable)
 
 instance Storable RWops where
@@ -1372,13 +1372,13 @@ instance Storable RWops where
     (#poke SDL_RWops, type) ptr typ
 
 data Surface = Surface
-  { surfaceFormat :: Ptr PixelFormat
-  , surfaceW :: CInt
-  , surfaceH :: CInt
-  , surfacePixels :: Ptr ()
-  , surfaceUserdata :: Ptr ()
-  , surfaceClipRect :: Rect
-  , surfaceRefcount :: CInt
+  { surfaceFormat :: !(Ptr PixelFormat)
+  , surfaceW :: !CInt
+  , surfaceH :: !CInt
+  , surfacePixels :: !(Ptr ())
+  , surfaceUserdata :: !(Ptr ())
+  , surfaceClipRect :: !Rect
+  , surfaceRefcount :: !CInt
   } deriving (Eq, Show, Typeable)
 
 instance Storable Surface where
@@ -1403,9 +1403,9 @@ instance Storable Surface where
     (#poke SDL_Surface, refcount) ptr refcount
 
 data Version = Version
-  { versionMajor :: Word8
-  , versionMinor :: Word8
-  , versionPatch :: Word8
+  { versionMajor :: !Word8
+  , versionMinor :: !Word8
+  , versionPatch :: !Word8
   } deriving (Eq, Show, Typeable)
 
 instance Storable Version where
