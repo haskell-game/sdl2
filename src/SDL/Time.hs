@@ -14,6 +14,7 @@ module SDL.Time
   , removeTimer
   ) where
 
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Typeable
 import Data.Word
 import Foreign
@@ -25,17 +26,17 @@ import qualified SDL.Raw.Timer as Raw
 import qualified SDL.Raw.Types as Raw
 
 -- | Number of milliseconds since library initialization.
-ticks :: IO Word32
+ticks :: MonadIO m => m Word32
 ticks = Raw.getTicks
 
 -- | The current time in seconds since some arbitrary starting point.
-time :: Fractional a => IO a
+time :: (Fractional a, MonadIO m) => m a
 time = do
   freq <- Raw.getPerformanceFrequency
   cnt <- Raw.getPerformanceCounter
   return $ fromIntegral cnt / fromIntegral freq
 
-delay :: Word32 -> IO ()
+delay :: MonadIO m => Word32 -> m ()
 delay = Raw.delay
 
 data RetriggerTimer
@@ -48,8 +49,8 @@ type TimerCallback = Word32 -> IO RetriggerTimer
 newtype TimerID = TimerID CInt
   deriving (Eq, Show, Typeable)
 
-addTimer :: Word32 -> TimerCallback -> IO TimerID
-addTimer timeout callback =
+addTimer :: MonadIO m => Word32 -> TimerCallback -> m TimerID
+addTimer timeout callback = liftIO $
   fmap TimerID $ do
     cb <- Raw.mkTimerCallback $ wrapCb callback
     throwIf0 "addTimer" "SDL_AddTimer" $ Raw.addTimer timeout cb nullPtr
@@ -61,5 +62,5 @@ addTimer timeout callback =
         Cancel       -> 0
         Reschedule n -> n
 
-removeTimer :: TimerID -> IO Bool
+removeTimer :: MonadIO m => TimerID -> m Bool
 removeTimer (TimerID t) = Raw.removeTimer t

@@ -18,6 +18,7 @@ module SDL.Haptic
   ) where
 
 import Control.Applicative
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (Text)
 import Data.Typeable
 import Foreign
@@ -36,8 +37,8 @@ data AvailableHapticDevice = AvailableHapticDevice
   , availableHapticDeviceIndex :: CInt
   } deriving (Eq, Show, Typeable)
 
-availableHapticDeviceIds :: IO (V.Vector AvailableHapticDevice)
-availableHapticDeviceIds = do
+availableHapticDeviceIds :: MonadIO m => m (V.Vector AvailableHapticDevice)
+availableHapticDeviceIds = liftIO $ do
   n <- SDLEx.throwIfNeg "SDL.Haptic.availableHapticDevices" "SDL_NumHaptics" Raw.numHaptics
   fmap V.fromList $
     for [0 .. (n - 1)] $ \i -> do
@@ -54,8 +55,8 @@ data HapticDevice = HapticDevice
   , hapticDeviceNumAxes :: CInt
   } deriving (Eq, Show, Typeable)
 
-openHaptic :: OpenHapticDevice -> IO HapticDevice
-openHaptic o = do
+openHaptic :: MonadIO m => OpenHapticDevice -> m HapticDevice
+openHaptic o = liftIO $ do
   ptr <-
     case o of
       OpenHapticMouse ->
@@ -83,21 +84,24 @@ openHaptic o = do
 
   return (HapticDevice ptr n axes)
 
-closeHaptic :: HapticDevice -> IO ()
+closeHaptic :: MonadIO m => HapticDevice -> m ()
 closeHaptic (HapticDevice h _ _) = Raw.hapticClose h
 
-hapticRumbleInit :: HapticDevice -> IO ()
+hapticRumbleInit :: MonadIO m => HapticDevice -> m ()
 hapticRumbleInit (HapticDevice h _ _) =
+  liftIO $
   SDLEx.throwIfNeg_ "SDL.Haptic.hapticRumbleInit" "SDL_HapticRumbleInit" $
   Raw.hapticRumbleInit h
 
-hapticRumblePlay :: HapticDevice -> CFloat -> Word32 -> IO ()
+hapticRumblePlay :: MonadIO m => HapticDevice -> CFloat -> Word32 -> m ()
 hapticRumblePlay (HapticDevice h _ _) strength length =
+  liftIO $
   SDLEx.throwIfNot0_ "SDL.Haptic.hapticRumblePlay" "SDL_HapticRumblePlay" $
   Raw.hapticRumblePlay h strength length
 
-hapticRumbleStop :: HapticDevice -> IO ()
+hapticRumbleStop :: MonadIO m => HapticDevice -> m ()
 hapticRumbleStop (HapticDevice h _ _) =
+  liftIO $
   SDLEx.throwIfNot0_ "SDL.Haptic.hapticRumbleStop" "SDL_HapticRumbleStop" $
   Raw.hapticRumbleStop h
 

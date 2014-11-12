@@ -16,6 +16,7 @@ module SDL.Input.Joystick
   ) where
 
 import Control.Applicative
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Int
 import Data.Text (Text)
 import Data.Traversable (for)
@@ -37,11 +38,11 @@ data JoystickDevice = JoystickDevice
   , joystickDeviceId :: CInt
   } deriving (Eq, Show, Typeable)
 
-numJoysticks :: IO (CInt)
+numJoysticks :: MonadIO m => m (CInt)
 numJoysticks = throwIfNeg "SDL.Input.Joystick.availableJoysticks" "SDL_NumJoysticks" Raw.numJoysticks
 
-availableJoysticks :: IO (V.Vector JoystickDevice)
-availableJoysticks = do
+availableJoysticks :: MonadIO m => m (V.Vector JoystickDevice)
+availableJoysticks = liftIO $ do
   n <- numJoysticks
   fmap (V.fromList) $
     for [0 .. (n - 1)] $ \i -> do
@@ -51,25 +52,25 @@ availableJoysticks = do
       name <- Text.decodeUtf8 <$> BS.packCString cstr
       return (JoystickDevice name i)
 
-openJoystick :: JoystickDevice -> IO Joystick
+openJoystick :: (Functor m, MonadIO m) => JoystickDevice -> m Joystick
 openJoystick (JoystickDevice _ x) =
   fmap Joystick $
   throwIfNull "SDL.Input.Joystick.openJoystick" "SDL_OpenJoystick" $
   Raw.joystickOpen x
 
-closeJoystick :: Joystick -> IO ()
+closeJoystick :: MonadIO m => Joystick -> m ()
 closeJoystick (Joystick j) = Raw.joystickClose j
 
-getJoystickID :: Joystick -> IO (Int32)
+getJoystickID :: MonadIO m => Joystick -> m (Int32)
 getJoystickID (Joystick j) =
   throwIfNeg "SDL.Input.Joystick.getJoystickID" "SDL_JoystickInstanceID" $
   Raw.joystickInstanceID j
 
-buttonPressed :: Joystick -> CInt -> IO Bool
+buttonPressed :: (Functor m, MonadIO m) => Joystick -> CInt -> m Bool
 buttonPressed (Joystick j) buttonIndex = (== 1) <$> Raw.joystickGetButton j buttonIndex
 
-ballDelta :: Joystick -> CInt -> IO (V2 CInt)
-ballDelta (Joystick j) ballIndex =
+ballDelta :: MonadIO m => Joystick -> CInt -> m (V2 CInt)
+ballDelta (Joystick j) ballIndex = liftIO $
   alloca $ \xptr ->
   alloca $ \yptr -> do
     throwIfNeg_ "SDL.Input.Joystick.ballDelta" "SDL_JoystickGetBall" $
@@ -77,5 +78,5 @@ ballDelta (Joystick j) ballIndex =
 
     V2 <$> peek xptr <*> peek yptr
 
-axisPosition :: Joystick -> CInt -> IO Int16
+axisPosition :: MonadIO m => Joystick -> CInt -> m Int16
 axisPosition (Joystick j) axisIndex = Raw.joystickGetAxis j axisIndex

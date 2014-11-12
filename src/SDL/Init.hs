@@ -8,6 +8,7 @@ module SDL.Init
   , version
   ) where
 
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bitmask (foldFlags)
 import Data.Foldable
 import Data.Typeable
@@ -46,7 +47,7 @@ instance ToNumber InitFlag Word32 where
 -- You may call this function again with additional subsystems to initialize.
 --
 -- Throws 'SDLEx.SDLException' if initialization fails.
-initialize :: Foldable f => f InitFlag -> IO ()
+initialize :: (Foldable f, Functor m, MonadIO m) => f InitFlag -> m ()
 initialize flags =
   throwIfNeg_ "SDL.Init.init" "SDL_Init" $
     Raw.init (foldFlags toNumber flags)
@@ -54,12 +55,12 @@ initialize flags =
 -- | Quit and shutdown SDL, freeing any resources that may have been in use.
 -- Do not call any SDL functions after you've called this function, unless
 -- otherwise documented that you may do so.
-quit :: IO ()
+quit :: MonadIO m => m ()
 quit = Raw.quit
 
 -- | The major, minor, and patch versions of the SDL library linked with.
 -- Does not require initialization.
-version :: Integral a => IO (a, a, a)
-version = do
+version :: (Integral a, MonadIO m) => m (a, a, a)
+version = liftIO $ do
 	Raw.Version major minor patch <- alloca $ \v -> Raw.getVersion v >> peek v
 	return (fromIntegral major, fromIntegral minor, fromIntegral patch)

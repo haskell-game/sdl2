@@ -6,6 +6,7 @@ module SDL.Filesystem
 ) where
 
 import Control.Applicative
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Exception
 import Data.Text (Text)
 import Foreign.Marshal.Alloc
@@ -21,8 +22,8 @@ import qualified SDL.Raw.Filesystem as Raw
 --
 -- Throws 'SDLException' on failure, or if the platform does not implement this
 -- functionality.
-getBasePath :: IO Text
-getBasePath = mask_ $ do
+getBasePath :: MonadIO m => m Text
+getBasePath = liftIO $ mask_ $ do
   cpath <- throwIfNull "SDL.Filesystem.getBasePath" "SDL_GetBasePath"
     Raw.getBasePath
   finally (Text.decodeUtf8 <$> BS.packCString cpath) (free cpath)
@@ -37,8 +38,8 @@ getBasePath = mask_ $ do
 -- to write files to.
 --
 -- Throws 'SDLException' on failure.
-getPrefPath :: Text -> Text -> IO Text
-getPrefPath organization application = mask_ $ do
+getPrefPath :: MonadIO m => Text -> Text -> m Text
+getPrefPath organization application = liftIO $ mask_ $ do
   cpath <- throwIfNull "SDL.Filesystem.getPrefPath" "SDL_GetPrefPath" $
     BS.useAsCString (Text.encodeUtf8 organization) $ \org ->
       BS.useAsCString (Text.encodeUtf8 application) $ \app ->

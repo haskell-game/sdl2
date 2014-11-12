@@ -25,6 +25,7 @@ module SDL.Input.Mouse
   ) where
 
 import Control.Applicative
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad (void)
 import Data.Typeable
 import Data.Word
@@ -48,14 +49,14 @@ import qualified SDL.Raw.Event as Raw
 -- change events.
 --
 -- Throws 'SDLException' on failure.
-setRelativeMouseMode :: Bool -> IO ()
+setRelativeMouseMode :: (Functor m, MonadIO m) => Bool -> m ()
 setRelativeMouseMode enable =
     -- relative mouse mode can fail if it's not supported
     throwIfNeg_ "SDL.Input.Mouse" "SDL_SetRelativeMouseMode" $
         Raw.setRelativeMouseMode enable
 
 -- | Check if relative mouse mode is enabled.
-getRelativeMouseMode :: IO Bool
+getRelativeMouseMode :: MonadIO m => m Bool
 getRelativeMouseMode = Raw.getRelativeMouseMode
 
 data MouseButton
@@ -90,20 +91,20 @@ data WarpMouseOrigin
   -- WarpGlobal -- Needs 2.0.4
   deriving (Eq, Typeable)
 
-warpMouse :: WarpMouseOrigin -> V2 CInt -> IO ()
+warpMouse :: MonadIO m => WarpMouseOrigin -> V2 CInt -> m ()
 warpMouse (WarpInWindow (Window w)) (V2 x y) = Raw.warpMouseInWindow w x y
 warpMouse WarpCurrentFocus (V2 x y) = Raw.warpMouseInWindow nullPtr x y
 
 -- The usage of 'void' is OK here - Raw.showCursor just returns the old state.
-setCursorVisible :: Bool -> IO ()
+setCursorVisible :: (Functor m, MonadIO m) => Bool -> m ()
 setCursorVisible True = void $ Raw.showCursor 1
 setCursorVisible False = void $ Raw.showCursor 0
 
-getCursorVisible :: IO Bool
+getCursorVisible :: (Functor m, MonadIO m) => m Bool
 getCursorVisible = (== 1) <$> Raw.showCursor (-1)
 
-getMouseState :: IO (Point V2 CInt)
-getMouseState =
+getMouseState :: MonadIO m => m (Point V2 CInt)
+getMouseState = liftIO $
   alloca $ \x ->
   alloca $ \y -> do
     _ <- Raw.getMouseState x y -- We don't deal with button states here

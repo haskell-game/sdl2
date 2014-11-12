@@ -44,6 +44,7 @@ module SDL.Audio
   ) where
 
 import Control.Applicative
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Traversable (for)
 import Data.Word
@@ -122,8 +123,8 @@ audioSpecSize = _audioSpecSize
 newtype AudioDevice = AudioDevice (Raw.AudioDeviceID)
   deriving (Eq, Typeable)
 
-getAudioDeviceNames :: AudioDeviceUsage -> IO (Maybe (V.Vector Text))
-getAudioDeviceNames usage = do
+getAudioDeviceNames :: MonadIO m => AudioDeviceUsage -> m (Maybe (V.Vector Text))
+getAudioDeviceNames usage = liftIO $ do
   n <- Raw.getNumAudioDevices usage'
   if n == -1
     then return Nothing
@@ -166,8 +167,8 @@ foldChangeable _ g (Desire a) = g a
 unpackChangeable :: Changeable a -> a
 unpackChangeable = foldChangeable id id
 
-openAudioDevice :: OpenDeviceSpec -> IO (AudioDevice, AudioSpec)
-openAudioDevice OpenDeviceSpec{..} =
+openAudioDevice :: MonadIO m => OpenDeviceSpec -> m (AudioDevice, AudioSpec)
+openAudioDevice OpenDeviceSpec{..} = liftIO $
   maybeWith (BS.useAsCString . Text.encodeUtf8) openDeviceName $ \cDevName -> do
     cb <- Raw.mkAudioCallback $ \_ buffer len -> do
       v <- openDeviceCallback len
@@ -218,28 +219,29 @@ openAudioDevice OpenDeviceSpec{..} =
     , Raw.audioSpecUserdata = nullPtr
     }
 
-closeAudioDevice :: AudioDevice -> IO ()
+closeAudioDevice :: MonadIO m => AudioDevice -> m ()
 closeAudioDevice (AudioDevice d) = Raw.closeAudioDevice d
 
 data LockState = Locked | Unlocked
   deriving (Eq, Show, Typeable)
 
-setAudioDeviceLocked :: AudioDevice -> LockState -> IO ()
+setAudioDeviceLocked :: MonadIO m => AudioDevice -> LockState -> m ()
 setAudioDeviceLocked (AudioDevice d) Locked = Raw.lockAudioDevice d
 setAudioDeviceLocked (AudioDevice d) Unlocked = Raw.unlockAudioDevice d
 
 data PlaybackState = Pause | Play
   deriving (Eq, Show, Typeable)
 
-setAudioDevicePlaybackState :: AudioDevice -> PlaybackState -> IO ()
+setAudioDevicePlaybackState :: MonadIO m => AudioDevice -> PlaybackState -> m ()
 setAudioDevicePlaybackState (AudioDevice d) Pause = Raw.pauseAudioDevice d 1
 setAudioDevicePlaybackState (AudioDevice d) Play = Raw.pauseAudioDevice d 0
 
 data AudioDeviceStatus = Playing | Paused | Stopped
   deriving (Eq, Show, Typeable)
 
-audioDeviceStatus :: AudioDevice -> IO AudioDeviceStatus
-audioDeviceStatus (AudioDevice d) = fromC "SDL.Audio.audioDeviceStatus" "SDL_AudioStatus" readStatus <$> Raw.getAudioDeviceStatus d
+audioDeviceStatus :: MonadIO m => AudioDevice -> m AudioDeviceStatus
+audioDeviceStatus (AudioDevice d) = liftIO $
+  fromC "SDL.Audio.audioDeviceStatus" "SDL_AudioStatus" readStatus <$> Raw.getAudioDeviceStatus d
   where
   readStatus n = case n of
     Raw.SDL_AUDIO_PLAYING -> Just Playing
@@ -256,8 +258,8 @@ newtype AudioDriver = AudioDriver Text
 audioDriverName :: AudioDriver -> Text
 audioDriverName (AudioDriver t) = t
 
-getAudioDrivers :: IO (V.Vector AudioDriver)
-getAudioDrivers = do
+getAudioDrivers :: MonadIO m => m (V.Vector AudioDriver)
+getAudioDrivers = liftIO $ do
   n <- Raw.getNumAudioDrivers
   fmap V.fromList $
     for [0 .. (n - 1)] $ \i -> do
@@ -265,10 +267,10 @@ getAudioDrivers = do
       cstr <- Raw.getAudioDriver i
       AudioDriver . Text.decodeUtf8 <$> BS.packCString cstr
 
-audioInit :: AudioDriver -> IO ()
-audioInit (AudioDriver n) = BS.useAsCString (Text.encodeUtf8 n) $
+audioInit :: MonadIO m => AudioDriver -> m ()
+audioInit (AudioDriver n) = liftIO $ BS.useAsCString (Text.encodeUtf8 n) $
   throwIfNeg_ "SDL.Audio.audioInit" "SDL_AudioInit" . Raw.audioInit
 
-currentAudioDriver :: IO (Maybe Text)
+currentAudioDriver :: MonadIO m => m (Maybe Text)
 currentAudioDriver =
-  maybePeek (fmap Text.decodeUtf8 . BS.packCString) =<< Raw.getCurrentAudioDriver
+  liftIO $ maybePeek (fmap Text.decodeUtf8 . BS.packCString) =<< Raw.getCurrentAudioDriver
