@@ -12,6 +12,7 @@ module SDL.Event
   , MouseMotion(..)
   , WindowID
   , pollEvent
+  , mapEvent
   , Raw.pumpEvents
   , waitEvent
   , waitEventTimeout
@@ -289,6 +290,13 @@ pollEvent = liftIO $ alloca $ \e -> do
   if n == 0
      then return Nothing
      else Just . convertRaw <$> peek e
+
+mapEvent :: MonadIO m => (Event -> m ()) -> m ()
+mapEvent h = do
+  event' <- pollEvent
+  case event' of
+    Just event -> h event >> mapEvent h
+    Nothing -> return ()
 
 waitEvent :: MonadIO m => m Event
 waitEvent = liftIO $ alloca $ \e -> do
