@@ -295,7 +295,7 @@ mapEvents :: MonadIO m => (Event -> m ()) -> m ()
 mapEvents h = do
   event' <- pollEvent
   case event' of
-    Just event -> h event >> mapEvent h
+    Just event -> h event >> mapEvents h
     Nothing -> return ()
 
 waitEvent :: MonadIO m => m Event
