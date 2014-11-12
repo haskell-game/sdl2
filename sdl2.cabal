@@ -22,7 +22,7 @@ source-repository head
 source-repository this
   type:     git
   location: https://github.com/haskell-game/sdl2.git
-  tag:      v1.2.0
+  tag:      v1.3.0
 
 library
   ghc-options: -Wall
