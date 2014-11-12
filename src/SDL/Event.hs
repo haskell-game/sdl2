@@ -12,7 +12,7 @@ module SDL.Event
   , MouseMotion(..)
   , WindowID
   , pollEvent
-  , mapEvent
+  , mapEvents
   , Raw.pumpEvents
   , waitEvent
   , waitEventTimeout
@@ -291,8 +291,8 @@ pollEvent = liftIO $ alloca $ \e -> do
      then return Nothing
      else Just . convertRaw <$> peek e
 
-mapEvent :: MonadIO m => (Event -> m ()) -> m ()
-mapEvent h = do
+mapEvents :: MonadIO m => (Event -> m ()) -> m ()
+mapEvents h = do
   event' <- pollEvent
   case event' of
     Just event -> h event >> mapEvent h
