@@ -116,216 +116,264 @@ library
     Haskell2010
 
 executable lazyfoo-lesson-01
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson01.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson01
 
 executable lazyfoo-lesson-02
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson02.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson02
 
 executable lazyfoo-lesson-03
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson03.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson03
 
 executable lazyfoo-lesson-04
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson04.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson04
 
 executable lazyfoo-lesson-05
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson05.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson05
 
 executable lazyfoo-lesson-07
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson07.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson07
 
 executable lazyfoo-lesson-08
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson08.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson08
 
 executable lazyfoo-lesson-09
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson09.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson09
 
 executable lazyfoo-lesson-10
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson10.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson10
 
 executable lazyfoo-lesson-11
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson11.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson11
 
 executable lazyfoo-lesson-12
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson12.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson12
 
 executable lazyfoo-lesson-13
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson13.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson13
 
 executable lazyfoo-lesson-14
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson14.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson14
 
 executable lazyfoo-lesson-15
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson15.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson15
 
 executable lazyfoo-lesson-16
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson16.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson16
 
 executable lazyfoo-lesson-18
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson18.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson18
 
 executable lazyfoo-lesson-19
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, vector >= 0.10.9.0 && < 0.11, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , vector >= 0.10.9.0 && < 0.11 , sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson19.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson19
 
 executable lazyfoo-lesson-20
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, vector >= 0.10.9.0 && < 0.11, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , vector >= 0.10.9.0 && < 0.11 , sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson20.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson20
 
 executable lazyfoo-lesson-43
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
+
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson43.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson43
 
 executable twinklebear-lesson-01
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
+
   hs-source-dirs: examples/twinklebear
   main-is: Lesson01.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is TwinkleBear.Lesson01
 
 executable twinklebear-lesson-02
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
+
   hs-source-dirs: examples/twinklebear
   main-is: Lesson02.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is TwinkleBear.Lesson02
 
 executable twinklebear-lesson-04
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
+
   hs-source-dirs: examples/twinklebear
   main-is: Lesson04.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is TwinkleBear.Lesson04
 
 executable twinklebear-lesson-04a
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
+
   hs-source-dirs: examples/twinklebear
   main-is: Lesson04a.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is TwinkleBear.Lesson04a
 
 executable twinklebear-lesson-05
-  if ! flag(examples)
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2, linear >= 1.10.1.2 && < 1.14, sdl2
+  else
     buildable: False
-  build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
+
   hs-source-dirs: examples/twinklebear
   main-is: Lesson05.hs
   default-language: Haskell2010
