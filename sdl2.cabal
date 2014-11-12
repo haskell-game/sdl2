@@ -39,9 +39,9 @@ source-repository head
 --   location: https://github.com/haskell-game/sdl2.git
 --  tag:      2.0.0
 
-flag NoExamples
-  description:       Disable building of the examples
-  default:           False
+flag examples
+  description:       Build examples
+  default:           True
 
 library
   ghc-options: -Wall
@@ -116,7 +116,7 @@ library
     Haskell2010
 
 executable lazyfoo-lesson-01
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
   hs-source-dirs: examples/lazyfoo
@@ -125,7 +125,7 @@ executable lazyfoo-lesson-01
   ghc-options: -Wall -main-is Lazyfoo.Lesson01
 
 executable lazyfoo-lesson-02
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
   hs-source-dirs: examples/lazyfoo
@@ -134,7 +134,7 @@ executable lazyfoo-lesson-02
   ghc-options: -Wall -main-is Lazyfoo.Lesson02
 
 executable lazyfoo-lesson-03
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
   hs-source-dirs: examples/lazyfoo
@@ -143,7 +143,7 @@ executable lazyfoo-lesson-03
   ghc-options: -Wall -main-is Lazyfoo.Lesson03
 
 executable lazyfoo-lesson-04
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
   hs-source-dirs: examples/lazyfoo
@@ -152,7 +152,7 @@ executable lazyfoo-lesson-04
   ghc-options: -Wall -main-is Lazyfoo.Lesson04
 
 executable lazyfoo-lesson-05
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
   hs-source-dirs: examples/lazyfoo
@@ -161,7 +161,7 @@ executable lazyfoo-lesson-05
   ghc-options: -Wall -main-is Lazyfoo.Lesson05
 
 executable lazyfoo-lesson-07
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
   hs-source-dirs: examples/lazyfoo
@@ -170,7 +170,7 @@ executable lazyfoo-lesson-07
   ghc-options: -Wall -main-is Lazyfoo.Lesson07
 
 executable lazyfoo-lesson-08
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
   hs-source-dirs: examples/lazyfoo
@@ -179,7 +179,7 @@ executable lazyfoo-lesson-08
   ghc-options: -Wall -main-is Lazyfoo.Lesson08
 
 executable lazyfoo-lesson-09
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
   hs-source-dirs: examples/lazyfoo
@@ -188,7 +188,7 @@ executable lazyfoo-lesson-09
   ghc-options: -Wall -main-is Lazyfoo.Lesson09
 
 executable lazyfoo-lesson-10
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.14, sdl2
   hs-source-dirs: examples/lazyfoo
@@ -197,7 +197,7 @@ executable lazyfoo-lesson-10
   ghc-options: -Wall -main-is Lazyfoo.Lesson10
 
 executable lazyfoo-lesson-11
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
   hs-source-dirs: examples/lazyfoo
@@ -206,7 +206,7 @@ executable lazyfoo-lesson-11
   ghc-options: -Wall -main-is Lazyfoo.Lesson11
 
 executable lazyfoo-lesson-12
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
   hs-source-dirs: examples/lazyfoo
@@ -215,7 +215,7 @@ executable lazyfoo-lesson-12
   ghc-options: -Wall -main-is Lazyfoo.Lesson12
 
 executable lazyfoo-lesson-13
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
   hs-source-dirs: examples/lazyfoo
@@ -224,7 +224,7 @@ executable lazyfoo-lesson-13
   ghc-options: -Wall -main-is Lazyfoo.Lesson13
 
 executable lazyfoo-lesson-14
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
   hs-source-dirs: examples/lazyfoo
@@ -233,7 +233,7 @@ executable lazyfoo-lesson-14
   ghc-options: -Wall -main-is Lazyfoo.Lesson14
 
 executable lazyfoo-lesson-15
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
   hs-source-dirs: examples/lazyfoo
@@ -242,7 +242,7 @@ executable lazyfoo-lesson-15
   ghc-options: -Wall -main-is Lazyfoo.Lesson15
 
 executable lazyfoo-lesson-16
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
   hs-source-dirs: examples/lazyfoo
@@ -251,7 +251,7 @@ executable lazyfoo-lesson-16
   ghc-options: -Wall -main-is Lazyfoo.Lesson16
 
 executable lazyfoo-lesson-18
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
   hs-source-dirs: examples/lazyfoo
@@ -260,7 +260,7 @@ executable lazyfoo-lesson-18
   ghc-options: -Wall -main-is Lazyfoo.Lesson18
 
 executable lazyfoo-lesson-19
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , vector >= 0.10.9.0 && < 0.11 , sdl2
   hs-source-dirs: examples/lazyfoo
@@ -269,7 +269,7 @@ executable lazyfoo-lesson-19
   ghc-options: -Wall -main-is Lazyfoo.Lesson19
 
 executable lazyfoo-lesson-20
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , vector >= 0.10.9.0 && < 0.11 , sdl2
   hs-source-dirs: examples/lazyfoo
@@ -278,7 +278,7 @@ executable lazyfoo-lesson-20
   ghc-options: -Wall -main-is Lazyfoo.Lesson20
 
 executable lazyfoo-lesson-43
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
   hs-source-dirs: examples/lazyfoo
@@ -287,7 +287,7 @@ executable lazyfoo-lesson-43
   ghc-options: -Wall -main-is Lazyfoo.Lesson43
 
 executable twinklebear-lesson-01
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
   hs-source-dirs: examples/twinklebear
@@ -296,7 +296,7 @@ executable twinklebear-lesson-01
   ghc-options: -Wall -main-is TwinkleBear.Lesson01
 
 executable twinklebear-lesson-02
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
   hs-source-dirs: examples/twinklebear
@@ -305,7 +305,7 @@ executable twinklebear-lesson-02
   ghc-options: -Wall -main-is TwinkleBear.Lesson02
 
 executable twinklebear-lesson-04
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
   hs-source-dirs: examples/twinklebear
@@ -314,7 +314,7 @@ executable twinklebear-lesson-04
   ghc-options: -Wall -main-is TwinkleBear.Lesson04
 
 executable twinklebear-lesson-04a
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
   hs-source-dirs: examples/twinklebear
@@ -323,7 +323,7 @@ executable twinklebear-lesson-04a
   ghc-options: -Wall -main-is TwinkleBear.Lesson04a
 
 executable twinklebear-lesson-05
-  if flag(NoExamples)
+  if ! flag(examples)
     buildable: False
   build-depends: base >= 4.7 && < 5 , lens >= 4.4.0.2 , linear >= 1.10.1.2 && < 1.14 , sdl2
   hs-source-dirs: examples/twinklebear
