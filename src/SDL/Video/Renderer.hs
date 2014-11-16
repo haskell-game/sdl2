@@ -70,7 +70,9 @@ module SDL.Video.Renderer
   , renderGetClipRect
   , renderSetClipRect
 
+  , renderGetLogicalSize
   , renderSetLogicalSize
+
   , renderSetScale
   , renderSetViewport
 
@@ -681,3 +683,11 @@ renderGetClipRect (Renderer r) = liftIO $
   alloca $ \rPtr -> do
     Raw.renderGetClipRect r rPtr
     maybePeek peek (castPtr rPtr)
+
+renderGetLogicalSize :: (MonadIO m) => Renderer -> m (Maybe (V2 CInt))
+renderGetLogicalSize (Renderer r) = liftIO $
+  alloca $ \w -> do
+  alloca $ \h -> do
+    Raw.renderGetLogicalSize r w h
+    v <- V2 <$> peek w <*> peek h
+    return $ if v == 0 then Nothing else Just v
