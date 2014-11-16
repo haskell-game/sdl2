@@ -15,6 +15,8 @@ module SDL.Video.Renderer
   , fillRect
   , fillRects
   , freeSurface
+  , glBindTexture
+  , glUnbindTexture
   , loadBMP
   , mapRGB
   , getWindowSurface
@@ -109,6 +111,16 @@ createTextureFromSurface (Renderer r) (Surface s) =
   fmap Texture $
   throwIfNull "SDL.Video.createTextureFromSurface" "SDL_CreateTextureFromSurface" $
   Raw.createTextureFromSurface r s
+
+glBindTexture :: (Functor m, MonadIO m) => Texture -> m ()
+glBindTexture (Texture t) =
+  throwIfNeg_ "SDL.Video.Renderer.glBindTexture" "SDL_GL_BindTexture" $
+  Raw.glBindTexture t nullPtr nullPtr
+
+glUnbindTexture :: (Functor m, MonadIO m) => Texture -> m ()
+glUnbindTexture (Texture t) =
+  throwIfNeg_ "SDL.Video.Renderer.glUnindTexture" "SDL_GL_UnbindTexture" $
+  Raw.glUnbindTexture t
 
 destroyTexture :: MonadIO m => Texture -> m ()
 destroyTexture (Texture t) = Raw.destroyTexture t
