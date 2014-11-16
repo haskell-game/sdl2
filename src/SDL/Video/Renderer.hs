@@ -21,9 +21,13 @@ module SDL.Video.Renderer
   , mapRGB
   , getWindowSurface
   , setColorKey
+
   , getRenderDrawBlendMode
   , setRenderDrawBlendMode
+
+  , getRenderDrawColor
   , setRenderDrawColor
+
   , setRenderTarget
   , setTextureAlphaMod
   , setTextureBlendMode
@@ -227,6 +231,16 @@ setRenderDrawBlendMode :: (Functor m, MonadIO m) => Renderer -> BlendMode -> m (
 setRenderDrawBlendMode (Renderer r) bm =
   throwIfNeg_ "SDL.Video.Renderer.setRenderDrawBlendMode" "SDL_SetRenderDrawBlendMode" $
   Raw.setRenderDrawBlendMode r (toNumber bm)
+
+getRenderDrawColor :: (MonadIO m) => Renderer -> m (V4 Word8)
+getRenderDrawColor (Renderer re) = liftIO $
+  alloca $ \r ->
+  alloca $ \g ->
+  alloca $ \b ->
+  alloca $ \a -> do
+    throwIfNeg_ "SDL.Video.Renderer.getRenderDrawColor" "SDL_GetRenderDrawColor" $
+      Raw.getRenderDrawColor re r g b a
+    V4 <$> peek r <*> peek g <*> peek b <*> peek a
 
 setRenderDrawColor :: (Functor m, MonadIO m) => Renderer -> V4 Word8 -> m ()
 setRenderDrawColor (Renderer re) (V4 r g b a) =
