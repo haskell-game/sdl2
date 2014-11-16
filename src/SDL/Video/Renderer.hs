@@ -21,6 +21,7 @@ module SDL.Video.Renderer
   , mapRGB
   , getWindowSurface
   , setColorKey
+  , getRenderDrawBlendMode
   , setRenderDrawBlendMode
   , setRenderDrawColor
   , setRenderTarget
@@ -215,9 +216,16 @@ getWindowSurface (Window w) =
   throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
   Raw.getWindowSurface w
 
+getRenderDrawBlendMode :: (Functor m, MonadIO m) => Renderer -> m BlendMode
+getRenderDrawBlendMode (Renderer r) = liftIO $
+  alloca $ \bmPtr -> do
+    throwIfNeg_ "SDL.Video.Renderer.getRenderDrawBlendMode" "SDL_GetRenderDrawBlendMode" $
+      Raw.getRenderDrawBlendMode r bmPtr
+    fromNumber <$> peek bmPtr
+
 setRenderDrawBlendMode :: (Functor m, MonadIO m) => Renderer -> BlendMode -> m ()
 setRenderDrawBlendMode (Renderer r) bm =
-  throwIfNeg_ "SDL.Video.setRenderDrawBlendMode" "SDL_RenderDrawBlendMode" $
+  throwIfNeg_ "SDL.Video.Renderer.setRenderDrawBlendMode" "SDL_SetRenderDrawBlendMode" $
   Raw.setRenderDrawBlendMode r (toNumber bm)
 
 setRenderDrawColor :: (Functor m, MonadIO m) => Renderer -> V4 Word8 -> m ()
@@ -236,6 +244,14 @@ data BlendMode
   | BlendAdditive
   | BlendMod
   deriving (Eq, Show, Typeable)
+
+instance FromNumber BlendMode Word32 where
+  fromNumber n = case n of
+    Raw.SDL_BLENDMODE_ADD -> BlendAdditive
+    Raw.SDL_BLENDMODE_BLEND -> BlendAlphaBlend
+    Raw.SDL_BLENDMODE_ADD -> BlendAdditive
+    Raw.SDL_BLENDMODE_MOD -> BlendMod
+    _ -> error $ "fromNumber<BlendMode>: unknown blend mode: " ++ show n
 
 instance ToNumber BlendMode Word32 where
   toNumber BlendNone = Raw.SDL_BLENDMODE_NONE
