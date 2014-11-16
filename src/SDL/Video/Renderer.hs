@@ -19,6 +19,7 @@ module SDL.Video.Renderer
   , glUnbindTexture
   , loadBMP
   , mapRGB
+  , renderTargetSupported
   , getWindowSurface
   , setColorKey
 
@@ -707,3 +708,6 @@ renderGetLogicalSize (Renderer r) = liftIO $
     Raw.renderGetLogicalSize r w h
     v <- V2 <$> peek w <*> peek h
     return $ if v == 0 then Nothing else Just v
+
+renderTargetSupported :: (MonadIO m) => Renderer -> m Bool
+renderTargetSupported (Renderer r) = Raw.renderTargetSupported r
