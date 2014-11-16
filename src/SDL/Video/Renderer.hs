@@ -31,7 +31,9 @@ module SDL.Video.Renderer
   , getRenderTarget
   , setRenderTarget
 
+  , getTextureAlphaMod
   , setTextureAlphaMod
+
   , setTextureBlendMode
   , setTextureColorMod
   , surfaceDimensions
@@ -618,6 +620,13 @@ getRenderDriverInfo = liftIO $ do
                throwIfNeg_ "getRenderDriverInfo" "SDL_GetRenderDriverInfo" $
                  Raw.getRenderDriverInfo idx rptr
                peek rptr >>= fromRawRendererInfo
+
+getTextureAlphaMod :: (MonadIO m) => Texture -> m Word8
+getTextureAlphaMod (Texture t) = liftIO $
+  alloca $ \x -> do
+    throwIfNeg "SDL.Video.Renderer.getTextureAlphaMod" "SDL_GetTextureAlphaMod" $
+      Raw.getTextureAlphaMod t x
+    peek x
 
 setTextureAlphaMod :: (Functor m, MonadIO m) => Texture -> Word8 -> m ()
 setTextureAlphaMod (Texture t) alpha =
