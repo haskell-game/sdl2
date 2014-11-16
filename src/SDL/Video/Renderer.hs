@@ -28,7 +28,9 @@ module SDL.Video.Renderer
   , getRenderDrawColor
   , setRenderDrawColor
 
+  , getRenderTarget
   , setRenderTarget
+
   , setTextureAlphaMod
   , setTextureBlendMode
   , setTextureColorMod
@@ -626,6 +628,14 @@ setTextureBlendMode :: (Functor m, MonadIO m) => Texture -> BlendMode -> m ()
 setTextureBlendMode (Texture t) bm =
   throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMoe" $
   Raw.setTextureBlendMode t (toNumber bm)
+
+getRenderTarget :: (MonadIO m) => Renderer -> m (Maybe Texture)
+getRenderTarget (Renderer r) = do
+  t <- Raw.getRenderTarget r
+  return $
+    if t == nullPtr
+      then Nothing
+      else Just (Texture t)
 
 setRenderTarget :: (Functor m, MonadIO m) => Renderer -> Maybe Texture -> m ()
 setRenderTarget (Renderer r) texture =
