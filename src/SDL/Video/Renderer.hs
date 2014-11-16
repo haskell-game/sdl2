@@ -37,7 +37,9 @@ module SDL.Video.Renderer
   , getTextureBlendMode
   , setTextureBlendMode
 
+  , getTextureColorMod
   , setTextureColorMod
+
   , surfaceDimensions
   , surfaceFormat
   , updateWindowSurface
@@ -438,6 +440,15 @@ setColorKey (Surface s) key =
     Just key' -> do
       Raw.setColorKey s 1 key'
 
+getTextureColorMod :: (MonadIO m) => Texture -> m (V3 Word8)
+getTextureColorMod (Texture t) = liftIO $
+  alloca $ \r ->
+  alloca $ \g ->
+  alloca $ \b -> do
+    throwIfNeg_ "SDL.Video.Renderer.getTextureColorMod" "SDL_GetTextureColorMod" $
+      Raw.getTextureColorMod t r g b
+    V3 <$> peek r <*> peek g <*> peek b
+
 setTextureColorMod :: (Functor m, MonadIO m) => Texture -> V3 Word8 -> m ()
 setTextureColorMod (Texture t) (V3 r g b) =
   throwIfNeg_ "SDL.Video.Renderer.setTextureColorMod" "SDL_SetTextureColorMod" $
@@ -626,7 +637,7 @@ getRenderDriverInfo = liftIO $ do
 getTextureAlphaMod :: (MonadIO m) => Texture -> m Word8
 getTextureAlphaMod (Texture t) = liftIO $
   alloca $ \x -> do
-    throwIfNeg "SDL.Video.Renderer.getTextureAlphaMod" "SDL_GetTextureAlphaMod" $
+    throwIfNeg_ "SDL.Video.Renderer.getTextureAlphaMod" "SDL_GetTextureAlphaMod" $
       Raw.getTextureAlphaMod t x
     peek x
 
@@ -638,7 +649,7 @@ setTextureAlphaMod (Texture t) alpha =
 getTextureBlendMode :: (MonadIO m) => Texture -> m BlendMode
 getTextureBlendMode (Texture t) = liftIO $
   alloca $ \x -> do
-    throwIfNeg "SDL.Video.Renderer.getTextureBlendMode" "SDL_GetTextureBlendMode" $
+    throwIfNeg_ "SDL.Video.Renderer.getTextureBlendMode" "SDL_GetTextureBlendMode" $
       Raw.getTextureBlendMode t x
     fromNumber <$> peek x
 
