@@ -34,7 +34,9 @@ module SDL.Video.Renderer
   , getTextureAlphaMod
   , setTextureAlphaMod
 
+  , getTextureBlendMode
   , setTextureBlendMode
+
   , setTextureColorMod
   , surfaceDimensions
   , surfaceFormat
@@ -632,6 +634,13 @@ setTextureAlphaMod :: (Functor m, MonadIO m) => Texture -> Word8 -> m ()
 setTextureAlphaMod (Texture t) alpha =
   throwIfNeg_ "SDL.Video.Renderer.setTextureAlphaMod" "SDL_SetTextureAlphaMod" $
   Raw.setTextureAlphaMod t alpha
+
+getTextureBlendMode :: (MonadIO m) => Texture -> m BlendMode
+getTextureBlendMode (Texture t) = liftIO $
+  alloca $ \x -> do
+    throwIfNeg "SDL.Video.Renderer.getTextureBlendMode" "SDL_GetTextureBlendMode" $
+      Raw.getTextureBlendMode t x
+    fromNumber <$> peek x
 
 setTextureBlendMode :: (Functor m, MonadIO m) => Texture -> BlendMode -> m ()
 setTextureBlendMode (Texture t) bm =
