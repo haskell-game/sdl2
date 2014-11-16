@@ -73,7 +73,9 @@ module SDL.Video.Renderer
   , renderGetLogicalSize
   , renderSetLogicalSize
 
+  , renderGetScale
   , renderSetScale
+
   , renderSetViewport
 
   -- * Utilities
@@ -343,6 +345,13 @@ renderSetScale :: (Functor m, MonadIO m) => Renderer -> V2 CFloat -> m ()
 renderSetScale (Renderer r) (V2 x y) =
   throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
   Raw.renderSetScale r x y
+
+renderGetScale :: (MonadIO m) => Renderer -> m (V2 CFloat)
+renderGetScale (Renderer r) = liftIO $
+  alloca $ \w ->
+  alloca $ \h -> do
+    Raw.renderGetScale r w h
+    V2 <$> peek w <*> peek h
 
 renderSetLogicalSize :: (Functor m, MonadIO m) => Renderer -> V2 CInt -> m ()
 renderSetLogicalSize (Renderer r) (V2 x y) =
