@@ -76,6 +76,7 @@ module SDL.Video.Renderer
   , renderGetScale
   , renderSetScale
 
+  , renderGetViewport
   , renderSetViewport
 
   -- * Utilities
@@ -363,6 +364,12 @@ renderSetClipRect (Renderer r) rect =
   liftIO $
   throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
   maybeWith with rect $ Raw.renderSetClipRect r . castPtr
+
+renderGetViewport :: MonadIO m => Renderer -> m (Rectangle CInt)
+renderGetViewport (Renderer r) = liftIO $
+  alloca $ \rect -> do
+    Raw.renderGetViewport r rect
+    peek (castPtr rect)
 
 renderSetViewport :: MonadIO m => Renderer -> Maybe (Rectangle CInt) -> m ()
 renderSetViewport (Renderer r) rect =
