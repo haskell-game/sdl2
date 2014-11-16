@@ -66,7 +66,10 @@ module SDL.Video.Renderer
   , renderFillRect
   , renderFillRects
   , renderPresent
+
+  , renderGetClipRect
   , renderSetClipRect
+
   , renderSetLogicalSize
   , renderSetScale
   , renderSetViewport
@@ -672,3 +675,9 @@ setRenderTarget (Renderer r) texture =
   case texture of
     Nothing -> Raw.setRenderTarget r nullPtr
     Just (Texture t) -> Raw.setRenderTarget r t
+
+renderGetClipRect :: (MonadIO m) => Renderer -> m (Maybe (Rectangle CInt))
+renderGetClipRect (Renderer r) = liftIO $
+  alloca $ \rPtr -> do
+    Raw.renderGetClipRect r rPtr
+    maybePeek peek (castPtr rPtr)
