@@ -480,7 +480,8 @@ instance Storable Event where
       (#const SDL_TEXTINPUT) -> do
         wid <- (#peek SDL_Event, text.windowID) ptr
         text <- peekArray (#const SDL_TEXTINPUTEVENT_TEXT_SIZE) $ (#ptr SDL_Event, text.text) ptr
-        return $! TextInputEvent typ timestamp wid text
+        let upToNull = takeWhile (/= 0) text
+        return $! TextInputEvent typ timestamp wid upToNull
       (#const SDL_MOUSEMOTION) -> do
         wid <- (#peek SDL_Event, motion.windowID) ptr
         which <- (#peek SDL_Event, motion.which) ptr
