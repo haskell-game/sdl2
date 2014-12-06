@@ -293,6 +293,9 @@ instance ToNumber BlendMode Word32 where
 data Rectangle a = Rectangle (Point V2 a) (V2 a)
   deriving (Eq, Show, Typeable)
 
+instance Functor Rectangle where
+  fmap f (Rectangle o s) = Rectangle (fmap f o) (fmap f s)
+
 instance Storable a => Storable (Rectangle a) where
   sizeOf ~(Rectangle o s) = sizeOf o + sizeOf s
   alignment _ = 0
