@@ -1,4 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Init
@@ -10,11 +12,13 @@ module SDL.Init
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bitmask (foldFlags)
+import Data.Data (Data)
 import Data.Foldable
 import Data.Typeable
 import Data.Word
 import Foreign.Marshal.Alloc
 import Foreign.Storable
+import GHC.Generics
 import SDL.Exception
 import SDL.Internal.Numbered
 
@@ -29,7 +33,7 @@ data InitFlag
   | InitGameController
   | InitEvents
   | InitEverything
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance ToNumber InitFlag Word32 where
   toNumber InitTimer = Raw.SDL_INIT_TIMER

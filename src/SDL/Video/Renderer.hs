@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
@@ -93,6 +94,7 @@ import Prelude hiding (foldr)
 import Control.Applicative
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
+import Data.Data (Data)
 import Data.Foldable
 import Data.Text (Text)
 import Data.Traversable
@@ -104,6 +106,7 @@ import Foreign.Marshal.Alloc
 import Foreign.Marshal.Utils
 import Foreign.Ptr
 import Foreign.Storable
+import GHC.Generics (Generic)
 import Linear
 import Linear.Affine (Point(P))
 import SDL.Exception
@@ -151,7 +154,7 @@ data TextureAccess
   = TextureAccessStatic
   | TextureAccessStreaming
   | TextureAccessTarget
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber TextureAccess CInt where
   fromNumber n' = case n' of
@@ -171,7 +174,7 @@ data TextureInfo = TextureInfo
   , textureAccess      :: TextureAccess
   , textureWidth       :: CInt
   , textureHeight      :: CInt
-  } deriving (Eq, Show, Typeable)
+  } deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 queryTexture :: MonadIO m => Texture -> m TextureInfo
 queryTexture (Texture tex) = liftIO $
@@ -274,7 +277,7 @@ data BlendMode
   | BlendAlphaBlend
   | BlendAdditive
   | BlendMod
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber BlendMode Word32 where
   fromNumber n = case n of
@@ -291,7 +294,7 @@ instance ToNumber BlendMode Word32 where
   toNumber BlendMod = Raw.SDL_BLENDMODE_MOD
 
 data Rectangle a = Rectangle (Point V2 a) (V2 a)
-  deriving (Eq, Show, Typeable)
+  deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 instance Functor Rectangle where
   fmap f (Rectangle o s) = Rectangle (fmap f o) (fmap f s)
@@ -516,7 +519,7 @@ data PixelFormat
   | YUY2
   | UYVY
   | YVYU
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber PixelFormat Word32 where
   fromNumber n' = case n' of
@@ -602,7 +605,7 @@ data RendererConfig = RendererConfig
   , rendererAccelerated   :: Bool
   , rendererPresentVSync  :: Bool
   , rendererTargetTexture :: Bool
-  } deriving (Eq, Show, Typeable)
+  } deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber RendererConfig Word32 where
   fromNumber n = RendererConfig
@@ -635,7 +638,7 @@ data RendererInfo = RendererInfo
   , rendererInfoTextureFormats    :: [PixelFormat]
   , rendererInfoMaxTextureWidth   :: CInt
   , rendererInfoMaxTextureHeight  :: CInt
-  } deriving (Eq, Show, Typeable)
+  } deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 fromRawRendererInfo :: MonadIO m => Raw.RendererInfo -> m RendererInfo
 fromRawRendererInfo (Raw.RendererInfo name flgs ntf tfs mtw mth) = liftIO $ do

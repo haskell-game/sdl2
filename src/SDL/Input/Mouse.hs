@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
@@ -25,14 +26,16 @@ module SDL.Input.Mouse
   ) where
 
 import Control.Applicative
-import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad (void)
+import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Data (Data)
 import Data.Typeable
 import Data.Word
 import Foreign.C
 import Foreign.Marshal.Alloc
 import Foreign.Ptr
 import Foreign.Storable
+import GHC.Generics (Generic)
 import Linear
 import Linear.Affine
 import SDL.Exception
@@ -66,13 +69,13 @@ data MouseButton
   | ButtonX1
   | ButtonX2
   | ButtonExtra !Int -- ^ An unknown mouse button.
-  deriving (Eq, Show, Typeable)
+  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 -- | Identifies what kind of mouse-like device this is.
 data MouseDevice
   = Mouse !Int -- ^ An actual mouse. The number identifies which mouse.
   | Touch      -- ^ Some sort of touch device.
-  deriving (Eq, Show, Typeable)
+  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber MouseDevice Word32 where
   fromNumber n' = case n' of
@@ -83,13 +86,13 @@ instance FromNumber MouseDevice Word32 where
 data MouseMotion
   = MouseButtonUp
   | MouseButtonDown
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data WarpMouseOrigin
   = WarpInWindow Window
   | WarpCurrentFocus
   -- WarpGlobal -- Needs 2.0.4
-  deriving (Eq, Typeable)
+  deriving (Data, Eq, Generic, Ord, Show, Typeable)
 
 warpMouse :: MonadIO m => WarpMouseOrigin -> V2 CInt -> m ()
 warpMouse (WarpInWindow (Window w)) (V2 x y) = Raw.warpMouseInWindow w x y

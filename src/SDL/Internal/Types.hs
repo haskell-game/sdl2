@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 module SDL.Internal.Types
   ( WindowID(..)
   , Joystick(..)
@@ -6,19 +7,21 @@ module SDL.Internal.Types
   , Renderer(..)
   ) where
 
+import Data.Data (Data)
 import Data.Typeable
 import Foreign
+import GHC.Generics (Generic)
 
 import qualified SDL.Raw as Raw
 
 newtype WindowID = WindowID Word32
-  deriving (Eq, Ord, Show, Typeable)
+  deriving (Data, Eq, Generic, Read, Ord, Show, Typeable)
 
 newtype Joystick = Joystick { joystickPtr :: Raw.Joystick }
-  deriving (Eq, Typeable)
+  deriving (Data, Eq, Generic, Ord, Show, Typeable)
 
 newtype Window = Window (Raw.Window)
-  deriving (Eq, Typeable)
+  deriving (Data, Eq, Generic, Ord, Show, Typeable)
 
 newtype Renderer = Renderer Raw.Renderer
-  deriving (Eq, Typeable)
+  deriving (Data, Eq, Generic, Ord, Show, Typeable)

@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -20,17 +21,19 @@ module SDL.Event
 
 import Control.Applicative
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Data (Data)
 import Data.Maybe (catMaybes)
 import Data.Text (Text)
 import Data.Typeable
 import Foreign
 import Foreign.C
+import GHC.Generics (Generic)
 import Linear
 import Linear.Affine (Point(P))
-import SDL.Internal.Numbered
-import SDL.Internal.Types (WindowID(WindowID))
 import SDL.Input.Keyboard
 import SDL.Input.Mouse
+import SDL.Internal.Numbered
+import SDL.Internal.Types (WindowID(WindowID))
 
 import qualified Data.ByteString.Char8 as BSC8
 import qualified Data.Text.Encoding as Text
@@ -40,13 +43,13 @@ import qualified SDL.Raw as Raw
 data Event = Event
   { eventTimestamp :: Word32
   , eventPayload :: EventPayload
-  } deriving (Eq, Show, Typeable)
+  } deriving (Eq, Ord, Generic, Show, Typeable)
 
 data KeyMotion = KeyUp | KeyDown
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Enum, Eq, Ord, Read, Data, Generic, Show, Typeable)
 
 data KeyState = KeyPressed | KeyReleased
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Enum, Eq, Ord, Read, Data, Generic, Show, Typeable)
 
 instance FromNumber KeyState Word8 where
   fromNumber n' = case n' of
@@ -210,7 +213,7 @@ data EventPayload
   | UnknownEvent
     { unknownEventType :: Word32
     }
-  deriving (Eq, Show, Typeable)
+  deriving (Eq, Ord, Show, Typeable, Generic)
 
 ccharStringToText :: [CChar] -> Text
 ccharStringToText = Text.decodeUtf8 . BSC8.pack . map castCCharToChar

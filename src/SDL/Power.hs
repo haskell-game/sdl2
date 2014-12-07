@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
@@ -11,9 +12,11 @@ module SDL.Power
 
 import Control.Applicative
 import Control.Monad.IO.Class (MonadIO)
+import Data.Data (Data)
 import Data.Typeable
 import Data.Word
 import Foreign.Ptr
+import GHC.Generics (Generic)
 import SDL.Exception
 import SDL.Internal.Numbered
 
@@ -32,13 +35,13 @@ getPowerInfo = do
 data PowerState
   = Battery BatteryState
   | Mains
-  deriving (Eq, Show, Typeable)
+  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 data BatteryState
   = Draining
   | Charged
   | Charging
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber PowerState Word32 where
   fromNumber n' = case n' of

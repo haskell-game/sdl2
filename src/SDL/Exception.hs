@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 module SDL.Exception
   ( SDLException(..)
   , fromC
@@ -17,10 +18,12 @@ import Control.Applicative
 import Control.Exception
 import Control.Monad
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Data (Data)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import Data.Typeable (Typeable)
 import Foreign (Ptr, nullPtr)
+import GHC.Generics (Generic)
 
 import qualified SDL.Raw as Raw
 import qualified Data.ByteString as BS
@@ -33,7 +36,7 @@ data SDLException
   | SDLUnexpectedArgument {sdlExceptionCaller :: !Text
                           ,sdlFunction :: !Text
                           ,sdlUnknownValue :: !String}
-  deriving (Eq, Ord, Read, Show, Typeable)
+  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance Exception SDLException
 

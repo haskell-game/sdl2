@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Time
   ( -- * Time Measurement
@@ -15,10 +16,12 @@ module SDL.Time
   ) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Data (Data)
 import Data.Typeable
 import Data.Word
 import Foreign
 import Foreign.C
+import GHC.Generics (Generic)
 
 import SDL.Exception
 
@@ -42,7 +45,7 @@ delay = Raw.delay
 data RetriggerTimer
   = Reschedule Word32
   | Cancel
-  deriving (Eq, Show, Typeable)
+  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 type TimerCallback = Word32 -> IO RetriggerTimer
 

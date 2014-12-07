@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Input.Joystick
   ( numJoysticks
@@ -24,6 +25,7 @@ import Data.Typeable
 import Foreign.C.Types
 import Foreign.Marshal.Alloc
 import Foreign.Storable
+import GHC.Generics (Generic)
 import Linear
 import SDL.Exception
 import SDL.Internal.Types
@@ -36,7 +38,7 @@ import qualified SDL.Raw as Raw
 data JoystickDevice = JoystickDevice
   { joystickDeviceName :: Text
   , joystickDeviceId :: CInt
-  } deriving (Eq, Show, Typeable)
+  } deriving (Eq, Generic, Read, Ord, Show, Typeable)
 
 numJoysticks :: MonadIO m => m (CInt)
 numJoysticks = throwIfNeg "SDL.Input.Joystick.availableJoysticks" "SDL_NumJoysticks" Raw.numJoysticks

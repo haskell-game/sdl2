@@ -1,8 +1,12 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveFoldable #-}
+{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE RecordWildCards #-}
 module SDL.Audio
   ( -- * 'AudioFormat'
     AudioFormat
@@ -46,7 +50,12 @@ module SDL.Audio
 import Control.Applicative
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
-import Data.Traversable (for)
+import Data.Data (Data)
+import Data.Foldable (Foldable)
+import Data.Text (Text)
+import Data.Traversable (Traversable, for)
+import Data.Typeable
+import Data.Vector.Storable (Vector)
 import Data.Word
 import Foreign.C.Types
 import Foreign.ForeignPtr
@@ -54,9 +63,7 @@ import Foreign.Marshal.Alloc
 import Foreign.Marshal.Utils
 import Foreign.Ptr
 import Foreign.Storable
-import Data.Text (Text)
-import Data.Typeable
-import Data.Vector.Storable (Vector)
+import GHC.Generics (Generic)
 import SDL.Exception
 
 import qualified Data.ByteString as BS
@@ -68,7 +75,7 @@ import qualified SDL.Raw.Enum as Raw
 import qualified SDL.Raw.Types as Raw
 
 newtype AudioFormat = AudioFormat { unAudioFormat :: Word16 }
-  deriving (Eq, Ord, Show, Typeable)
+  deriving (Eq, Ord, Read, Show, Typeable)
 
 {-
 
@@ -102,7 +109,7 @@ audioFormatF32 = audioFormatF32LSB
 -}
 
 data Channels = Mono | Stereo | Quad | FivePointOne
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data AudioSpec = AudioSpec
   { audioSpecFreq :: !CInt
@@ -113,6 +120,7 @@ data AudioSpec = AudioSpec
   , _audioSpecSize :: !Word32
   , audioSpecCallback :: !(CInt -> IO (Vector Word8))
   }
+  deriving (Typeable)
 
 audioSpecSilence :: AudioSpec -> Word8
 audioSpecSilence = _audioSpecSilence
@@ -137,7 +145,7 @@ getAudioDeviceNames usage = liftIO $ do
   where usage' = encodeUsage usage
 
 data AudioDeviceUsage = ForPlayback | ForCapture
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 encodeUsage :: Num a => AudioDeviceUsage -> a
 encodeUsage usage =
@@ -158,7 +166,7 @@ data OpenDeviceSpec = OpenDeviceSpec
 data Changeable a
   = Mandate !a
   | Desire !a
-  deriving (Eq, Show, Typeable)
+  deriving (Data, Foldable, Functor, Eq, Generic, Read, Show, Traversable, Typeable)
 
 foldChangeable :: (a -> b) -> (a -> b) -> Changeable a -> b
 foldChangeable f _ (Mandate a) = f a
@@ -223,21 +231,21 @@ closeAudioDevice :: MonadIO m => AudioDevice -> m ()
 closeAudioDevice (AudioDevice d) = Raw.closeAudioDevice d
 
 data LockState = Locked | Unlocked
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 setAudioDeviceLocked :: MonadIO m => AudioDevice -> LockState -> m ()
 setAudioDeviceLocked (AudioDevice d) Locked = Raw.lockAudioDevice d
 setAudioDeviceLocked (AudioDevice d) Unlocked = Raw.unlockAudioDevice d
 
 data PlaybackState = Pause | Play
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Enum, Eq, Ord, Read, Data, Generic, Show, Typeable)
 
 setAudioDevicePlaybackState :: MonadIO m => AudioDevice -> PlaybackState -> m ()
 setAudioDevicePlaybackState (AudioDevice d) Pause = Raw.pauseAudioDevice d 1
 setAudioDevicePlaybackState (AudioDevice d) Play = Raw.pauseAudioDevice d 0
 
 data AudioDeviceStatus = Playing | Paused | Stopped
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Enum, Eq, Ord, Read, Data, Generic, Show, Typeable)
 
 audioDeviceStatus :: MonadIO m => AudioDevice -> m AudioDeviceStatus
 audioDeviceStatus (AudioDevice d) = liftIO $

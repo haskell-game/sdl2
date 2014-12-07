@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE KindSignatures #-}
 module SDL.Hint (
@@ -17,14 +18,17 @@ module SDL.Hint (
 ) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Data (Data)
 import Data.Typeable
 import Foreign.C
+import GHC.Generics (Generic)
+
 import qualified SDL.Raw as Raw
 
 data AccelerometerJoystickOptions
   = AccelerometerNotJoystick
   | AccelerometerIsJoystick
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data FramebufferAccelerationOptions
   = Disable3D
@@ -34,17 +38,17 @@ data FramebufferAccelerationOptions
   | Enable3DOpenGLES
   | Enable3DOpenGLES2
   | Enable3DSoftware
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data MacCTRLClickOptions
   = NoRightClick
   | EmulateRightClick
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data MouseModeWarpOptions
   = MouseRawInput
   | MouseWarping
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data RenderDrivers
   = Direct3D
@@ -52,29 +56,29 @@ data RenderDrivers
   | OpenGLES
   | OpenGLES2
   | Software
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data RenderOpenGLShaderOptions
   = DisableShaders
   | EnableShaders
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data RenderScaleQuality
   = ScaleNearest
   | ScaleLinear
   | ScaleBest
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data RenderVSyncOptions
   = DisableVSync
   | EnableVSync
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data VideoWinD3DCompilerOptions
   = D3DVistaOrLater
   | D3DXPSupport
   | D3DNone
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data Hint :: * -> * where
   HintAccelerometerAsJoystick :: Hint AccelerometerJoystickOptions

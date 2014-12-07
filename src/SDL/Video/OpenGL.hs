@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video.OpenGL
@@ -22,12 +23,15 @@ module SDL.Video.OpenGL
 
 import Control.Applicative
 import Control.Monad.IO.Class (MonadIO)
+import Data.Data (Data)
 import Data.Typeable
 import Foreign.C.Types
+import GHC.Generics (Generic)
 import Linear
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
+
 import qualified SDL.Raw as Raw
 
 defaultOpenGL :: OpenGLConfig
@@ -43,18 +47,18 @@ data OpenGLConfig = OpenGLConfig
   , glDepthPrecision   :: CInt    -- ^ Defaults to @24@.
   , glStencilPrecision :: CInt    -- ^ Defaults to @8@.
   , glProfile          :: Profile -- ^ Defaults to 'Compatibility' 'Normal' @2 1@.
-  } deriving (Eq, Show, Typeable)
+  } deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 data Profile
   = Core Mode CInt CInt
   | Compatibility Mode CInt CInt
   | ES Mode CInt CInt
-  deriving (Eq, Show, Typeable)
+  deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 data Mode
   = Normal
   | Debug
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 newtype GLContext = GLContext Raw.GLContext
   deriving (Eq, Typeable)
@@ -96,7 +100,7 @@ data SwapInterval
   = ImmediateUpdates
   | SynchronizedUpdates
   | LateSwapTearing
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance ToNumber SwapInterval CInt where
   toNumber ImmediateUpdates = 0

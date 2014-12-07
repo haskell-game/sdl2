@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE PatternSynonyms #-}
 module SDL.Input.Keyboard
@@ -30,6 +31,7 @@ module SDL.Input.Keyboard
 import Control.Applicative
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
+import Data.Data (Data)
 import Data.Int
 import Data.Typeable
 import Data.Word
@@ -37,6 +39,7 @@ import Foreign.C.String
 import Foreign.Marshal.Alloc
 import Foreign.Marshal.Array
 import Foreign.Storable
+import GHC.Generics (Generic)
 import SDL.Internal.Numbered
 import SDL.Internal.Types
 
@@ -61,7 +64,7 @@ data KeyModifier = KeyModifier
   , keyModifierNumLock    :: Bool
   , keyModifierCapsLock   :: Bool
   , keyModifierAltGr      :: Bool
-  } deriving (Eq, Show, Typeable)
+  } deriving (Data, Eq, Ord, Read, Generic, Show, Typeable)
 
 instance FromNumber KeyModifier Word32 where
   fromNumber m' = let m = m' in KeyModifier
@@ -361,7 +364,7 @@ data Scancode
   | ScancodeSleep
   | ScancodeApp1
   | ScancodeApp2
-  deriving (Eq, Ord, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber Scancode Word32 where
   fromNumber n' = case n' of
@@ -1088,7 +1091,7 @@ data Keycode
   | KeycodeKbdIllumUp
   | KeycodeEject
   | KeycodeSleep
-  deriving (Eq, Ord, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber Keycode Int32 where
   fromNumber n' = case n' of
@@ -1572,7 +1575,7 @@ data Keysym = Keysym
   { keysymScancode :: Scancode
   , keysymKeycode  :: Keycode
   , keysymModifier :: KeyModifier
-  } deriving (Eq, Show, Typeable)
+  } deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 getKeyboardState :: MonadIO m => m (Scancode -> Bool)
 getKeyboardState = liftIO $ do

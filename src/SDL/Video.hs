@@ -1,8 +1,9 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE RecordWildCards #-}
 module SDL.Video
   ( module SDL.Video.OpenGL
   , module SDL.Video.Renderer
@@ -72,12 +73,14 @@ import Prelude hiding (all, foldl, foldr, mapM_)
 import Control.Applicative
 import Control.Exception
 import Control.Monad (forM, unless)
+import Data.Data (Data)
 import Data.Foldable
 import Data.Maybe (catMaybes, isJust)
 import Data.Text (Text)
 import Data.Typeable
 import Foreign hiding (void, throwIfNull, throwIfNeg, throwIfNeg_)
 import Foreign.C
+import GHC.Generics (Generic)
 import Linear
 import Linear.Affine (Point(P))
 import SDL.Exception
@@ -160,7 +163,7 @@ data WindowConfig = WindowConfig
   , windowPosition     :: WindowPosition     -- ^ Defaults to 'Wherever'.
   , windowResizable    :: Bool               -- ^ Defaults to 'False'. Whether the window can be resized by the user. It is still possible to programatically change the size with 'setWindowSize'.
   , windowSize         :: V2 CInt            -- ^ Defaults to @(800, 600)@.
-  } deriving (Eq, Show, Typeable)
+  } deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 data WindowMode
   = Fullscreen        -- ^ Real fullscreen with a video mode change
@@ -168,7 +171,7 @@ data WindowMode
   | Maximized
   | Minimized
   | Windowed
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance ToNumber WindowMode Word32 where
   toNumber Fullscreen = Raw.SDL_WINDOW_FULLSCREEN
@@ -181,7 +184,7 @@ data WindowPosition
   = Centered
   | Wherever -- ^ Let the window mananger decide where it's best to place the window.
   | Absolute (Point V2 CInt)
-  deriving (Eq, Show, Typeable)
+  deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 -- | Destroy the given window. The 'Window' handler may not be used
 -- afterwards.
@@ -303,19 +306,19 @@ data Display = Display {
                  -- ^ Size of the desktop area represented by the display.
              , displayModes          :: [DisplayMode]
              }
-             deriving (Eq, Show, Typeable)
+             deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 data DisplayMode = DisplayMode {
                    displayModeFormat      :: PixelFormat
                  , displayModeSize        :: V2 CInt
                  , displayModeRefreshRate :: CInt -- ^ Display's refresh rate in hertz, or @0@ if unspecified.
                  }
-                 deriving (Eq, Show, Typeable)
+                 deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 data VideoDriver = VideoDriver {
                    videoDriverName :: String
                  }
-                 deriving (Eq, Show, Typeable)
+                 deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 -- | Throws 'SDLException' on failure.
 getDisplays :: IO [Display]
@@ -375,7 +378,7 @@ data MessageKind
   = Error
   | Warning
   | Information
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance ToNumber MessageKind Word32 where
   toNumber Error = Raw.SDL_MESSAGEBOX_ERROR

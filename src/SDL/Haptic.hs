@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Haptic
   ( AvailableHapticDevice
@@ -19,11 +20,13 @@ module SDL.Haptic
 
 import Control.Applicative
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Data (Data)
 import Data.Text (Text)
+import Data.Traversable (for)
 import Data.Typeable
 import Foreign
 import Foreign.C
-import Data.Traversable (for)
+import GHC.Generics (Generic)
 import SDL.Internal.Types (Joystick(..))
 
 import qualified Data.ByteString as BS
@@ -35,7 +38,7 @@ import qualified SDL.Raw as Raw
 data AvailableHapticDevice = AvailableHapticDevice
   { availableHapticDeviceName :: Text
   , availableHapticDeviceIndex :: CInt
-  } deriving (Eq, Show, Typeable)
+  } deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 availableHapticDeviceIds :: MonadIO m => m (V.Vector AvailableHapticDevice)
 availableHapticDeviceIds = liftIO $ do
@@ -48,12 +51,13 @@ availableHapticDeviceIds = liftIO $ do
       return (AvailableHapticDevice name i)
 
 data OpenHapticDevice = OpenHapticMouse | OpenHapticJoystick Joystick | OpenHapticDevice AvailableHapticDevice
+  deriving (Eq, Generic, Ord, Show, Typeable)
 
 data HapticDevice = HapticDevice
   { hapticDevicePtr :: Raw.Haptic
   , hapticDeviceName :: Text
   , hapticDeviceNumAxes :: CInt
-  } deriving (Eq, Show, Typeable)
+  } deriving (Eq, Ord, Show, Typeable)
 
 openHaptic :: MonadIO m => OpenHapticDevice -> m HapticDevice
 openHaptic o = liftIO $ do
@@ -110,7 +114,7 @@ data EffectEnvelope = EffectEnvelope
   , envelopeAttackLevel :: Word16
   , envelopeFadeLength :: Word16
   , envelopeFadeLevel :: Word16
-  } deriving (Eq, Show, Typeable)
+  } deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 data Effect = Haptic
   { effectLength :: Word32
@@ -118,7 +122,7 @@ data Effect = Haptic
   , effectButton :: Word16
   , effectInterval :: Word16
   , effectType :: EffectType
-  } deriving (Eq, Show, Typeable)
+  } deriving (Eq, Generic, Show, Typeable)
 
 data EffectShape
   = HapticSine
@@ -126,10 +130,10 @@ data EffectShape
   | HapticTriangle
   | HapticSawtoothUp
   | HapticSawtoothDown
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data ConditionType = Spring | Damper | Inertia | Friction
-  deriving (Eq, Show, Typeable)
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data EffectType
   = HapticConstant {hapticConstantDirection :: Raw.HapticDirection
@@ -161,4 +165,4 @@ data EffectType
                  ,hapticCustomPeriod :: Word16
                  ,hapticCustomSamples :: V.Vector Word16
                  ,hapticCustomEnvelope :: EffectEnvelope}
-  deriving (Eq, Show, Typeable)
+  deriving (Eq, Generic, Show, Typeable)
