@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -294,10 +295,7 @@ instance ToNumber BlendMode Word32 where
   toNumber BlendMod = Raw.SDL_BLENDMODE_MOD
 
 data Rectangle a = Rectangle (Point V2 a) (V2 a)
-  deriving (Eq, Generic, Ord, Read, Show, Typeable)
-
-instance Functor Rectangle where
-  fmap f (Rectangle o s) = Rectangle (fmap f o) (fmap f s)
+  deriving (Eq, Functor, Generic, Ord, Read, Show, Typeable)
 
 instance Storable a => Storable (Rectangle a) where
   sizeOf ~(Rectangle o s) = sizeOf o + sizeOf s
