@@ -1,4 +1,13 @@
--- | Main module, re-exports the bulk of the API.
+{-|
+
+SDL (Simple DirectMedia Layer) is a library for cross-platform development of
+interactive applications. SDL provides routines for managing windows, rendering
+graphics, processing sound, collecting input data, and much more. The Haskell
+@sdl2@ library provides both a high- and low-level API to interface with
+SDL. This module exports the high-level API, whereas "SDL.Raw" provides the
+lower-level bindings.
+
+-}
 module SDL
   ( -- * Initialization
     module SDL.Init
