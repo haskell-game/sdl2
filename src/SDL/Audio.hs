@@ -146,8 +146,6 @@ openAudioDevice OpenDeviceSpec{..} = liftIO $
             spec = AudioSpec { audioSpecFreq = Raw.audioSpecFreq actual
                              , audioSpecFormat = AudioFormat (Raw.audioSpecFormat actual)
                              , audioSpecChannels = fromC "SDL.Audio.openAudioDevice" "audioSpecChannels" readChannels (Raw.audioSpecChannels actual)
-                             , _audioSpecSilence = Raw.audioSpecSilence actual
-                             , _audioSpecSize = Raw.audioSpecSize actual
                              , audioSpecSamples = Raw.audioSpecSamples actual
                              , audioSpecCallback = openDeviceCallback
                              }
