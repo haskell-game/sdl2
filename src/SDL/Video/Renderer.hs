@@ -61,8 +61,7 @@ module SDL.Video.Renderer
   , renderFillRects
   , renderPresent
 
-  , renderGetClipRect
-  , renderSetClipRect
+  , renderClipRect
 
   , renderGetLogicalSize
   , renderSetLogicalSize
@@ -358,11 +357,16 @@ renderSetLogicalSize (Renderer r) (V2 x y) =
   throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $
   Raw.renderSetLogicalSize r x y
 
-renderSetClipRect :: MonadIO m => Renderer -> Maybe (Rectangle CInt) -> m ()
-renderSetClipRect (Renderer r) rect =
-  liftIO $
-  throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
-  maybeWith with rect $ Raw.renderSetClipRect r . castPtr
+renderClipRect :: Renderer -> Var (Maybe (Rectangle CInt))
+renderClipRect (Renderer r) = newVar get set
+  where
+  set rect =
+    throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
+    maybeWith with rect $ Raw.renderSetClipRect r . castPtr
+
+  get = alloca $ \rPtr -> do
+    Raw.renderGetClipRect r rPtr
+    maybePeek peek (castPtr rPtr)
 
 renderGetViewport :: MonadIO m => Renderer -> m (Rectangle CInt)
 renderGetViewport (Renderer r) = liftIO $
@@ -696,12 +700,6 @@ renderTarget (Renderer r) = newVar get set
     case texture of
       Nothing -> Raw.setRenderTarget r nullPtr
       Just (Texture t) -> Raw.setRenderTarget r t
-
-renderGetClipRect :: (MonadIO m) => Renderer -> m (Maybe (Rectangle CInt))
-renderGetClipRect (Renderer r) = liftIO $
-  alloca $ \rPtr -> do
-    Raw.renderGetClipRect r rPtr
-    maybePeek peek (castPtr rPtr)
 
 renderGetLogicalSize :: (MonadIO m) => Renderer -> m (Maybe (V2 CInt))
 renderGetLogicalSize (Renderer r) = liftIO $
