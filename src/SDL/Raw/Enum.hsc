@@ -854,7 +854,10 @@ module SDL.Raw.Enum (
 
   -- ** Window Positioning
   pattern SDL_WINDOWPOS_UNDEFINED,
-  pattern SDL_WINDOWPOS_CENTERED
+  pattern SDL_WINDOWPOS_CENTERED,
+
+  -- ** Haptic Event Types
+  pattern SDL_HAPTIC_CONSTANT
 ) where
 
 #include "SDL.h"
@@ -1675,3 +1678,5 @@ pattern SDL_WINDOW_ALLOW_HIGHDPI = (#const SDL_WINDOW_ALLOW_HIGHDPI)
 
 pattern SDL_WINDOWPOS_UNDEFINED = (#const SDL_WINDOWPOS_UNDEFINED)
 pattern SDL_WINDOWPOS_CENTERED = (#const SDL_WINDOWPOS_CENTERED)
+
+pattern SDL_HAPTIC_CONSTANT = (#const SDL_HAPTIC_CONSTANT)

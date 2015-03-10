@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Haptic
   ( AvailableHapticDevice
@@ -15,7 +16,10 @@ module SDL.Haptic
   , hapticDeviceName
   , hapticDeviceNumAxes
   , Effect(..)
+  , EffectEnvelope(..)
   , EffectType(..)
+  , uploadEffect
+  , runEffect
   ) where
 
 import Control.Applicative
@@ -108,6 +112,54 @@ hapticRumbleStop (HapticDevice h _ _) =
   liftIO $
   SDLEx.throwIfNot0_ "SDL.Haptic.hapticRumbleStop" "SDL_HapticRumbleStop" $
   Raw.hapticRumbleStop h
+
+newtype EffectId = EffectId CInt
+
+uploadEffect :: (MonadIO m) => HapticDevice -> Effect -> m EffectId
+uploadEffect (HapticDevice h _ _) effect =
+  liftIO (do ptr <-
+               new (case effectType effect of
+                      HapticConstant dir lev (EffectEnvelope attackLen attackLev fadeLen fadeLev) ->
+                        Raw.HapticConstant {Raw.hapticEffectType = Raw.SDL_HAPTIC_CONSTANT
+                                           ,Raw.hapticConstantLength = effectLength effect
+                                           ,Raw.hapticConstantDelay = effectDelay effect
+                                           ,Raw.hapticConstantButton = effectButton effect
+                                           ,Raw.hapticConstantInterval = effectInterval effect
+                                           ,Raw.hapticConstantLevel = lev
+                                           ,Raw.hapticConstantAttackLength = attackLen
+                                           ,Raw.hapticConstantAttackLevel = attackLev
+                                           ,Raw.hapticConstantFadeLength = fadeLen
+                                           ,Raw.hapticConstantFadeLevel = fadeLev
+                                           ,Raw.hapticConstantDirection = dir}
+                      HapticPeriodic shape dir period mag offset phase (EffectEnvelope attackLen attackLev fadeLen fadeLev) ->
+                        Raw.HapticPeriodic {Raw.hapticEffectType =
+                                              case shape of
+                                                HapticSine -> 2
+                                           ,Raw.hapticPeriodicLength = effectLength effect
+                                           ,Raw.hapticPeriodicDelay = effectDelay effect
+                                           ,Raw.hapticPeriodicButton = effectButton effect
+                                           ,Raw.hapticPeriodicInterval = effectInterval effect
+                                           ,
+                                              --,Raw.hapticPeriodicLevel = lev
+                                              Raw.hapticPeriodicAttackLength = attackLen
+                                           ,Raw.hapticPeriodicAttackLevel = attackLev
+                                           ,Raw.hapticPeriodicFadeLength = fadeLen
+                                           ,Raw.hapticPeriodicFadeLevel = fadeLev
+                                           ,Raw.hapticPeriodicDirection = dir
+                                           ,Raw.hapticPeriodicMagnitude = mag
+                                           ,Raw.hapticPeriodicPeriod = period
+                                           ,Raw.hapticPeriodicOffset = offset
+                                           ,Raw.hapticPeriodicPhase = phase})
+             fmap EffectId
+                  (SDLEx.throwIfNeg "SDL.Haptic.uploadEffect"
+                                    "SDL_HapticNewEffect"
+                                    (Raw.hapticNewEffect h ptr)))
+
+runEffect :: (Functor m, MonadIO m) => HapticDevice -> EffectId -> Word32 -> m ()
+runEffect (HapticDevice h _ _) (EffectId e) x =
+  SDLEx.throwIfNeg_ "SDL.Haptic.runEffect"
+                    "SDL_HapticRunEffect"
+                    (Raw.hapticRunEffect h e x)
 
 data EffectEnvelope = EffectEnvelope
   { envelopeAttackLength :: Word16
