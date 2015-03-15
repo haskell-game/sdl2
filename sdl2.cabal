@@ -108,7 +108,7 @@ library
   build-depends:
     base >= 4.7 && < 5,
     bytestring >= 0.10.4.0 && < 0.11,
-    linear >= 1.10.1.2 && < 1.18,
+    linear >= 1.10.1.2 && < 1.19,
     text >= 1.1.0.0 && < 1.3,
     transformers >= 0.2 && < 0.5,
     vector >= 0.10.9.0 && < 0.11
@@ -118,7 +118,7 @@ library
 
 executable lazyfoo-lesson-01
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -129,7 +129,7 @@ executable lazyfoo-lesson-01
 
 executable lazyfoo-lesson-02
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -140,7 +140,7 @@ executable lazyfoo-lesson-02
 
 executable lazyfoo-lesson-03
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -151,7 +151,7 @@ executable lazyfoo-lesson-03
 
 executable lazyfoo-lesson-04
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -162,7 +162,7 @@ executable lazyfoo-lesson-04
 
 executable lazyfoo-lesson-05
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -173,7 +173,7 @@ executable lazyfoo-lesson-05
 
 executable lazyfoo-lesson-07
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -184,7 +184,7 @@ executable lazyfoo-lesson-07
 
 executable lazyfoo-lesson-08
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -195,7 +195,7 @@ executable lazyfoo-lesson-08
 
 executable lazyfoo-lesson-09
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -206,7 +206,7 @@ executable lazyfoo-lesson-09
 
 executable lazyfoo-lesson-10
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -217,7 +217,7 @@ executable lazyfoo-lesson-10
 
 executable lazyfoo-lesson-11
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -228,7 +228,7 @@ executable lazyfoo-lesson-11
 
 executable lazyfoo-lesson-12
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -239,7 +239,7 @@ executable lazyfoo-lesson-12
 
 executable lazyfoo-lesson-13
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -250,7 +250,7 @@ executable lazyfoo-lesson-13
 
 executable lazyfoo-lesson-14
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -261,7 +261,7 @@ executable lazyfoo-lesson-14
 
 executable lazyfoo-lesson-15
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -272,7 +272,7 @@ executable lazyfoo-lesson-15
 
 executable lazyfoo-lesson-16
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -283,7 +283,7 @@ executable lazyfoo-lesson-16
 
 executable lazyfoo-lesson-18
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -294,7 +294,7 @@ executable lazyfoo-lesson-18
 
 executable lazyfoo-lesson-19
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, vector >= 0.10.9.0 && < 0.11, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, vector >= 0.10.9.0 && < 0.11, sdl2
   else
     buildable: False
 
@@ -305,7 +305,7 @@ executable lazyfoo-lesson-19
 
 executable lazyfoo-lesson-20
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, vector >= 0.10.9.0 && < 0.11, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, vector >= 0.10.9.0 && < 0.11, sdl2
   else
     buildable: False
 
@@ -316,7 +316,7 @@ executable lazyfoo-lesson-20
 
 executable lazyfoo-lesson-43
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -327,7 +327,7 @@ executable lazyfoo-lesson-43
 
 executable twinklebear-lesson-01
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -338,7 +338,7 @@ executable twinklebear-lesson-01
 
 executable twinklebear-lesson-02
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -349,7 +349,7 @@ executable twinklebear-lesson-02
 
 executable twinklebear-lesson-04
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -360,7 +360,7 @@ executable twinklebear-lesson-04
 
 executable twinklebear-lesson-04a
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
@@ -371,7 +371,7 @@ executable twinklebear-lesson-04a
 
 executable twinklebear-lesson-05
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.18, sdl2
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.9, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
