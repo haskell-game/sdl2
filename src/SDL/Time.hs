@@ -9,6 +9,7 @@ module SDL.Time
     -- * Timer
   , delay
   , TimerCallback
+  , TimerRemoval
   , RetriggerTimer(..)
   , addTimer
   , removeTimer
