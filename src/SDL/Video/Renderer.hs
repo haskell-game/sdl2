@@ -16,6 +16,8 @@ module SDL.Video.Renderer
   , destroyTexture
   , createRGBSurface
   , createRGBSurfaceFrom
+  , lockTexture
+  , unlockTexture
   , fillRect
   , fillRects
   , freeSurface
@@ -155,6 +157,20 @@ glUnbindTexture (Texture t) =
 
 destroyTexture :: MonadIO m => Texture -> m ()
 destroyTexture (Texture t) = Raw.destroyTexture t
+
+lockTexture :: MonadIO m => Texture -> Maybe (Rectangle CInt) -> m (Ptr (), CInt)
+lockTexture (Texture t) rect = liftIO $
+  alloca $ \pixelsPtr ->
+  alloca $ \pitchPtr ->
+  maybeWith with rect $ \rectPtr -> do
+    throwIfNeg_ "lockTexture" "SDL_LockTexture" $
+      Raw.lockTexture t (castPtr rectPtr) pixelsPtr pitchPtr
+    pixels <- peek pixelsPtr
+    pitch <- peek pitchPtr
+    return (pixels, pitch)
+
+unlockTexture :: MonadIO m => Texture -> m ()
+unlockTexture (Texture t) = liftIO $ Raw.unlockTexture t
 
 data TextureAccess
   = TextureAccessStatic
