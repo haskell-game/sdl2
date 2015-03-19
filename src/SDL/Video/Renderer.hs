@@ -14,6 +14,8 @@ module SDL.Video.Renderer
   , createTextureFromSurface
   , convertSurface
   , destroyTexture
+  , createRGBSurface
+  , createRGBSurfaceFrom
   , fillRect
   , fillRects
   , freeSurface
@@ -22,6 +24,8 @@ module SDL.Video.Renderer
   , loadBMP
   , mapRGB
   , renderTargetSupported
+  , formatPalette
+  , setPaletteColors
   , getWindowSurface
   , setColorKey
 
@@ -55,6 +59,7 @@ module SDL.Video.Renderer
   , TextureInfo(..)
   , TextureAccess(..)
   , PixelFormat(..)
+  , Palette
 
   -- * Drawing Primitives
   , renderClear
@@ -191,6 +196,19 @@ queryTexture (Texture tex) = liftIO $
       peek wPtr <*>
       peek hPtr
 
+createRGBSurface :: (Functor m, MonadIO m) => V2 CInt -> CInt -> V4 Word32 -> m Surface
+createRGBSurface (V2 w h) d (V4 r g b a) =
+  fmap Surface $
+  throwIfNull "SDL.Video.createRGBSurface" "SDL_CreateRGBSurface" $
+  Raw.createRGBSurface 0 w h d r g b a
+
+createRGBSurfaceFrom :: (Functor m, MonadIO m) => SV.Vector Word8 -> V2 CInt -> CInt -> CInt -> V4 Word32 -> m Surface
+createRGBSurfaceFrom pixels (V2 w h) d p (V4 r g b a) = liftIO $
+  fmap Surface $
+  throwIfNull "SDL.Video.createRGBSurfaceFrom" "SDL_CreateRGBSurfaceFrom" $
+    SV.unsafeWith pixels $ \pixelPtr ->
+      Raw.createRGBSurfaceFrom (castPtr pixelPtr) w h d p r g b a
+
 fillRect :: MonadIO m => Surface -> Maybe (Rectangle CInt) -> Word32 -> m ()
 fillRect (Surface s) rect col = liftIO $
   throwIfNeg_ "SDL.Video.fillRect" "SDL_FillRect" $
@@ -234,6 +252,23 @@ surfaceDimensions (Surface s) = liftIO $ (V2 <$> Raw.surfaceW <*> Raw.surfaceH) 
 -- aren't reused by *different* surfaces?
 surfaceFormat :: MonadIO m => Surface -> m SurfacePixelFormat
 surfaceFormat (Surface s) = liftIO $ SurfacePixelFormat . Raw.surfaceFormat <$> peek s
+
+newtype Palette = Palette (Ptr Raw.Palette)
+  deriving (Eq, Typeable)
+
+formatPalette :: MonadIO m => SurfacePixelFormat -> m (Maybe Palette)
+formatPalette (SurfacePixelFormat f) = liftIO $ wrap . Raw.pixelFormatPalette <$> peek f
+  where wrap p
+          | p == nullPtr = Nothing
+          | otherwise = Just (Palette p)
+
+setPaletteColors :: MonadIO m => Palette -> (SV.Vector (V4 Word8)) -> CInt -> m ()
+setPaletteColors (Palette p) colors first = liftIO $
+  throwIfNeg_ "SDL.Video.setPaletteColors" "SDL_SetPaletteColors" $
+  SV.unsafeWith colors $ \cp ->
+    Raw.setPaletteColors p (castPtr cp) first n
+  where
+    n = fromIntegral $ SV.length colors
 
 getWindowSurface :: (Functor m, MonadIO m) => Window -> m Surface
 getWindowSurface (Window w) =
