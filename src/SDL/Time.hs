@@ -9,7 +9,7 @@ module SDL.Time
     -- * Timer
   , delay
   , TimerCallback
-  , TimerID(..)
+  , TimerRemoval
   , RetriggerTimer(..)
   , addTimer
   , removeTimer
@@ -20,7 +20,6 @@ import Data.Data (Data)
 import Data.Typeable
 import Data.Word
 import Foreign
-import Foreign.C
 import GHC.Generics (Generic)
 
 import SDL.Exception
@@ -49,21 +48,29 @@ data RetriggerTimer
 
 type TimerCallback = Word32 -> IO RetriggerTimer
 
-newtype TimerID = TimerID CInt
-  deriving (Eq, Show, Typeable)
+newtype TimerRemoval = TimerRemoval {
+    runTimerRemoval :: IO Bool
+  }
 
-addTimer :: MonadIO m => Word32 -> TimerCallback -> m TimerID
-addTimer timeout callback = liftIO $
-  fmap TimerID $ do
-    cb <- Raw.mkTimerCallback $ wrapCb callback
-    throwIf0 "addTimer" "SDL_AddTimer" $ Raw.addTimer timeout cb nullPtr
+addTimer :: MonadIO m => Word32 -> TimerCallback -> m TimerRemoval
+addTimer timeout callback = liftIO $ do
+    cb <- Raw.mkTimerCallback wrappedCb
+    tid <- throwIf0 "addTimer" "SDL_AddTimer" $ Raw.addTimer timeout cb nullPtr
+    return (TimerRemoval $ auxRemove cb tid)
   where
-    wrapCb :: TimerCallback -> Word32 -> Ptr () -> IO Word32
-    wrapCb cb = \w _ -> do
-      next <- cb w
+    wrappedCb :: Word32 -> Ptr () -> IO Word32
+    wrappedCb w _ = do
+      next <- callback w
       return $ case next of
         Cancel       -> 0
         Reschedule n -> n
 
-removeTimer :: MonadIO m => TimerID -> m Bool
-removeTimer (TimerID t) = Raw.removeTimer t
+    auxRemove :: Raw.TimerCallback -> Raw.TimerID -> IO Bool
+    auxRemove cb tid = do
+      isSuccess <- Raw.removeTimer tid
+      if (isSuccess)
+        then freeHaskellFunPtr cb >> return True
+        else return False
+
+removeTimer :: MonadIO m => TimerRemoval -> m Bool
+removeTimer f = liftIO $ runTimerRemoval f
