@@ -14,6 +14,8 @@ module SDL.Video.Renderer
   , createTextureFromSurface
   , convertSurface
   , destroyTexture
+  , createRGBSurface
+  , createRGBSurfaceFrom
   , fillRect
   , fillRects
   , freeSurface
@@ -190,6 +192,19 @@ queryTexture (Texture tex) = liftIO $
       fmap fromNumber (peek acPtr) <*>
       peek wPtr <*>
       peek hPtr
+
+createRGBSurface :: (Functor m, MonadIO m) => V2 CInt -> CInt -> V4 Word32 -> m Surface
+createRGBSurface (V2 w h) d (V4 r g b a) =
+  fmap Surface $
+  throwIfNull "SDL.Video.createRGBSurface" "SDL_CreateRGBSurface" $
+  Raw.createRGBSurface 0 w h d r g b a
+
+createRGBSurfaceFrom :: (Functor m, MonadIO m) => SV.Vector Word8 -> V2 CInt -> CInt -> CInt -> V4 Word32 -> m Surface
+createRGBSurfaceFrom pixels (V2 w h) d p (V4 r g b a) = liftIO $
+  fmap Surface $
+  throwIfNull "SDL.Video.createRGBSurfaceFrom" "SDL_CreateRGBSurfaceFrom" $
+    SV.unsafeWith pixels $ \pixelPtr ->
+      Raw.createRGBSurfaceFrom (castPtr pixelPtr) w h d p r g b a
 
 fillRect :: MonadIO m => Surface -> Maybe (Rectangle CInt) -> Word32 -> m ()
 fillRect (Surface s) rect col = liftIO $
