@@ -25,6 +25,7 @@ module SDL.Video
   -- * Window Attributes
   , getWindowMinimumSize
   , getWindowMaximumSize
+  , getWindowSize
   , setWindowBordered
   , setWindowBrightness
   , setWindowGammaRamp
@@ -233,6 +234,14 @@ setWindowPosition (Window w) pos = case pos of
 -- clamped.
 setWindowSize :: Window -> V2 CInt -> IO ()
 setWindowSize (Window win) (V2 w h) = Raw.setWindowSize win w h
+
+-- | Get the current size of the window.
+getWindowSize :: Window -> IO (V2 CInt)
+getWindowSize (Window w) =
+  alloca $ \wptr ->
+  alloca $ \hptr -> do
+    Raw.getWindowSize w wptr hptr
+    V2 <$> peek wptr <*> peek hptr
 
 -- | Set the title of the window.
 setWindowTitle :: Window -> Text -> IO ()
