@@ -67,6 +67,8 @@ library
     SDL.Video.OpenGL
     SDL.Video.Renderer
 
+    SDL.Internal.Types
+
     SDL.Raw
     SDL.Raw.Audio
     SDL.Raw.Basic
@@ -84,7 +86,6 @@ library
   other-modules:
     Data.Bitmask
     SDL.Internal.Numbered
-    SDL.Internal.Types
 
   hs-source-dirs:
     src/
