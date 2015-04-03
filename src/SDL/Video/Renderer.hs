@@ -55,7 +55,7 @@ module SDL.Video.Renderer
   , queryTexture
   , BlendMode(..)
   , Rectangle(..)
-  , Surface
+  , Surface(..)
   , SurfacePixelFormat
   , Texture
   , TextureInfo(..)
