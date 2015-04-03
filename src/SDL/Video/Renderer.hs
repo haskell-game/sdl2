@@ -53,10 +53,9 @@ module SDL.Video.Renderer
   , surfaceFormat
   , updateWindowSurface
   , queryTexture
-  , pointerToSurface
   , BlendMode(..)
   , Rectangle(..)
-  , Surface
+  , Surface(..)
   , SurfacePixelFormat
   , Texture
   , TextureInfo(..)
@@ -362,9 +361,6 @@ instance Storable a => Storable (Rectangle a) where
 
 newtype Surface = Surface (Ptr Raw.Surface)
   deriving (Eq, Typeable)
-
-pointerToSurface :: Ptr Raw.Surface -> Surface
-pointerToSurface = Surface
 
 newtype Texture = Texture Raw.Texture
   deriving (Eq, Typeable)
