@@ -15,6 +15,7 @@ module SDL.Input.Joystick
   , ballDelta
   , axisPosition
   , numAxes
+  , numButtons
   ) where
 
 import Control.Applicative
@@ -86,3 +87,6 @@ axisPosition (Joystick j) axisIndex = Raw.joystickGetAxis j axisIndex
 
 numAxes :: (MonadIO m) => Joystick -> m CInt
 numAxes (Joystick j) = liftIO $ throwIfNeg "SDL.Input.Joystick.numAxis" "SDL_JoystickNumAxes" (Raw.joystickNumAxes j)
+
+numButtons :: (MonadIO m) => Joystick -> m CInt
+numButtons (Joystick j) = liftIO $ throwIfNeg "SDL.Input.Joystick.numButtons" "SDL_JoystickNumButtons" (Raw.joystickNumButtons j)
