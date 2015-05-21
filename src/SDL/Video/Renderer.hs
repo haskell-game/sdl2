@@ -18,6 +18,8 @@ module SDL.Video.Renderer
   , createRGBSurfaceFrom
   , lockTexture
   , unlockTexture
+  , lockSurface
+  , unlockSurface
   , fillRect
   , fillRects
   , freeSurface
@@ -46,10 +48,14 @@ module SDL.Video.Renderer
   , getTextureBlendMode
   , setTextureBlendMode
 
+  , getSurfaceBlendMode
+  , setSurfaceBlendMode
+
   , getTextureColorMod
   , setTextureColorMod
 
   , surfaceDimensions
+  , surfacePixels
   , surfaceFormat
   , updateWindowSurface
   , queryTexture
@@ -172,6 +178,14 @@ lockTexture (Texture t) rect = liftIO $
 unlockTexture :: MonadIO m => Texture -> m ()
 unlockTexture (Texture t) = liftIO $ Raw.unlockTexture t
 
+lockSurface :: MonadIO m => Surface -> m ()
+lockSurface (Surface s) = liftIO $
+  throwIfNeg_ "lockSurface" "SDL_LockSurface" $
+    Raw.lockSurface s
+
+unlockSurface :: MonadIO m => Surface -> m ()
+unlockSurface (Surface s) = Raw.unlockSurface s
+
 data TextureAccess
   = TextureAccessStatic
   | TextureAccessStreaming
@@ -262,6 +276,9 @@ mapRGB (SurfacePixelFormat fmt) (V3 r g b) = Raw.mapRGB fmt r g b
 -- aren't reused by *different* surfaces?
 surfaceDimensions :: MonadIO m => Surface -> m (V2 CInt)
 surfaceDimensions (Surface s) = liftIO $ (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> peek s
+
+surfacePixels :: MonadIO m => Surface -> m (Ptr ())
+surfacePixels (Surface s) = liftIO $ Raw.surfacePixels <$> peek s
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->format is immutable, but do we need to guarantee that pointers
@@ -732,8 +749,20 @@ getTextureBlendMode (Texture t) = liftIO $
 
 setTextureBlendMode :: (Functor m, MonadIO m) => Texture -> BlendMode -> m ()
 setTextureBlendMode (Texture t) bm =
-  throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMoe" $
+  throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMode" $
   Raw.setTextureBlendMode t (toNumber bm)
+
+getSurfaceBlendMode :: (MonadIO m) => Surface -> m BlendMode
+getSurfaceBlendMode (Surface s) = liftIO $
+  alloca $ \x -> do
+    throwIfNeg_ "SDL.Video.Renderer.getSurfaceBlendMode" "SDL_GetSurfaceBlendMode" $
+      Raw.getSurfaceBlendMode s x
+    fromNumber <$> peek x
+
+setSurfaceBlendMode :: (Functor m, MonadIO m) => Surface -> BlendMode -> m ()
+setSurfaceBlendMode (Surface s) bm =
+  throwIfNeg_ "SDL.Video.Renderer.setSurfaceBlendMode" "SDL_SetSurfaceBlendMode" $
+  Raw.setSurfaceBlendMode s (toNumber bm)
 
 getRenderTarget :: (MonadIO m) => Renderer -> m (Maybe Texture)
 getRenderTarget (Renderer r) = do
