@@ -366,7 +366,7 @@ foreign import ccall "SDL.h SDL_FreeSurface" freeSurface' :: Ptr Surface -> IO (
 foreign import ccall "SDL.h SDL_GetClipRect" getClipRect' :: Ptr Surface -> Ptr Rect -> IO ()
 foreign import ccall "SDL.h SDL_GetColorKey" getColorKey' :: Ptr Surface -> Ptr Word32 -> IO CInt
 foreign import ccall "SDL.h SDL_GetSurfaceAlphaMod" getSurfaceAlphaMod' :: Ptr Surface -> Ptr Word8 -> IO CInt
-foreign import ccall "SDL.h SDL_GetSurfaceBlendMode" getSurfaceBlendMode' :: Ptr Surface -> BlendMode -> IO CInt
+foreign import ccall "SDL.h SDL_GetSurfaceBlendMode" getSurfaceBlendMode' :: Ptr Surface -> Ptr BlendMode -> IO CInt
 foreign import ccall "SDL.h SDL_GetSurfaceColorMod" getSurfaceColorMod' :: Ptr Surface -> Ptr Word8 -> Ptr Word8 -> Ptr Word8 -> IO CInt
 foreign import ccall "SDL.h SDL_LoadBMP_RW" loadBMP_RW' :: Ptr RWops -> CInt -> IO (Ptr Surface)
 foreign import ccall "SDL.h SDL_LockSurface" lockSurface' :: Ptr Surface -> IO CInt
@@ -1024,7 +1024,7 @@ getSurfaceAlphaMod :: MonadIO m => Ptr Surface -> Ptr Word8 -> m CInt
 getSurfaceAlphaMod v1 v2 = liftIO $ getSurfaceAlphaMod' v1 v2
 {-# INLINE getSurfaceAlphaMod #-}
 
-getSurfaceBlendMode :: MonadIO m => Ptr Surface -> BlendMode -> m CInt
+getSurfaceBlendMode :: MonadIO m => Ptr Surface -> Ptr BlendMode -> m CInt
 getSurfaceBlendMode v1 v2 = liftIO $ getSurfaceBlendMode' v1 v2
 {-# INLINE getSurfaceBlendMode #-}
 

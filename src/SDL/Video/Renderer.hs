@@ -48,6 +48,9 @@ module SDL.Video.Renderer
   , getTextureBlendMode
   , setTextureBlendMode
 
+  , getSurfaceBlendMode
+  , setSurfaceBlendMode
+
   , getTextureColorMod
   , setTextureColorMod
 
@@ -746,8 +749,20 @@ getTextureBlendMode (Texture t) = liftIO $
 
 setTextureBlendMode :: (Functor m, MonadIO m) => Texture -> BlendMode -> m ()
 setTextureBlendMode (Texture t) bm =
-  throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMoe" $
+  throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMode" $
   Raw.setTextureBlendMode t (toNumber bm)
+
+getSurfaceBlendMode :: (MonadIO m) => Surface -> m BlendMode
+getSurfaceBlendMode (Surface s) = liftIO $
+  alloca $ \x -> do
+    throwIfNeg_ "SDL.Video.Renderer.getSurfaceBlendMode" "SDL_GetSurfaceBlendMode" $
+      Raw.getSurfaceBlendMode s x
+    fromNumber <$> peek x
+
+setSurfaceBlendMode :: (Functor m, MonadIO m) => Surface -> BlendMode -> m ()
+setSurfaceBlendMode (Surface s) bm =
+  throwIfNeg_ "SDL.Video.Renderer.setSurfaceBlendMode" "SDL_SetSurfaceBlendMode" $
+  Raw.setSurfaceBlendMode s (toNumber bm)
 
 getRenderTarget :: (MonadIO m) => Renderer -> m (Maybe Texture)
 getRenderTarget (Renderer r) = do
