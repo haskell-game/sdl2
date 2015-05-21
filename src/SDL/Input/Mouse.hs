@@ -15,6 +15,7 @@ module SDL.Input.Mouse
 
     -- * Mouse State
   , getMouseState
+  , getMouseButtons
 
     -- * Warping the Mouse
   , WarpMouseOrigin
@@ -28,6 +29,7 @@ module SDL.Input.Mouse
 import Control.Applicative
 import Control.Monad (void)
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Bits
 import Data.Data (Data)
 import Data.Typeable
 import Data.Word
@@ -112,3 +114,17 @@ getMouseState = liftIO $
   alloca $ \y -> do
     _ <- Raw.getMouseState x y -- We don't deal with button states here
     P <$> (V2 <$> peek x <*> peek y)
+
+getMouseButtons :: MonadIO m => m (MouseButton -> Bool)
+getMouseButtons = liftIO $
+  convert <$> Raw.getMouseState nullPtr nullPtr
+  where
+    convert w b = w `testBit` index
+      where
+      index = case b of
+                ButtonLeft    -> 0
+                ButtonMiddle  -> 1
+                ButtonRight   -> 2
+                ButtonX1      -> 3
+                ButtonX2      -> 4
+                ButtonExtra i -> i
