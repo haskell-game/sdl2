@@ -18,6 +18,8 @@ module SDL.Video.Renderer
   , createRGBSurfaceFrom
   , lockTexture
   , unlockTexture
+  , lockSurface
+  , unlockSurface
   , fillRect
   , fillRects
   , freeSurface
@@ -171,6 +173,14 @@ lockTexture (Texture t) rect = liftIO $
 
 unlockTexture :: MonadIO m => Texture -> m ()
 unlockTexture (Texture t) = liftIO $ Raw.unlockTexture t
+
+lockSurface :: MonadIO m => Surface -> m ()
+lockSurface (Surface s) = liftIO $
+  throwIfNeg_ "lockSurface" "SDL_LockSurface" $
+    Raw.lockSurface s
+
+unlockSurface :: MonadIO m => Surface -> m ()
+unlockSurface (Surface s) = Raw.unlockSurface s
 
 data TextureAccess
   = TextureAccessStatic
