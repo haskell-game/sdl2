@@ -52,6 +52,7 @@ module SDL.Video.Renderer
   , setTextureColorMod
 
   , surfaceDimensions
+  , surfacePixels
   , surfaceFormat
   , updateWindowSurface
   , queryTexture
@@ -272,6 +273,9 @@ mapRGB (SurfacePixelFormat fmt) (V3 r g b) = Raw.mapRGB fmt r g b
 -- aren't reused by *different* surfaces?
 surfaceDimensions :: MonadIO m => Surface -> m (V2 CInt)
 surfaceDimensions (Surface s) = liftIO $ (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> peek s
+
+surfacePixels :: MonadIO m => Surface -> m (Ptr ())
+surfacePixels (Surface s) = liftIO $ Raw.surfacePixels <$> peek s
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->format is immutable, but do we need to guarantee that pointers
