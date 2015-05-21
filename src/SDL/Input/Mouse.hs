@@ -24,6 +24,11 @@ module SDL.Input.Mouse
     -- * Cursor Visibility
   , setCursorVisible
   , getCursorVisible
+
+    -- * Changing the cursor
+  , createColorCursor
+  , freeCursor
+  , setCursor
   ) where
 
 import Control.Applicative
@@ -43,9 +48,11 @@ import Linear.Affine
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types (Window(Window))
+import SDL.Video.Renderer (Surface(Surface))
 
 import qualified SDL.Raw.Enum as Raw
 import qualified SDL.Raw.Event as Raw
+import qualified SDL.Raw.Types as Raw
 
 -- | Sets the current relative mouse mode.
 --
@@ -96,6 +103,8 @@ data WarpMouseOrigin
   -- WarpGlobal -- Needs 2.0.4
   deriving (Data, Eq, Generic, Ord, Show, Typeable)
 
+data Cursor = Cursor Raw.Cursor
+
 warpMouse :: MonadIO m => WarpMouseOrigin -> V2 CInt -> m ()
 warpMouse (WarpInWindow (Window w)) (V2 x y) = Raw.warpMouseInWindow w x y
 warpMouse WarpCurrentFocus (V2 x y) = Raw.warpMouseInWindow nullPtr x y
@@ -128,3 +137,15 @@ getMouseButtons = liftIO $
                 ButtonX1      -> 3
                 ButtonX2      -> 4
                 ButtonExtra i -> i
+
+createColorCursor :: MonadIO m => Surface -> V2 CInt -> m Cursor
+createColorCursor (Surface s) (V2 x y) =
+  fmap Cursor $
+    throwIfNull "SDL.Input.Mouse.createColorCursor" "SDL_CreateColorCursor" $
+      Raw.createColorCursor s x y
+
+freeCursor :: MonadIO m => Cursor -> m ()
+freeCursor (Cursor c) = Raw.freeCursor c
+
+setCursor :: MonadIO m => Cursor -> m ()
+setCursor (Cursor c) = Raw.setCursor c
