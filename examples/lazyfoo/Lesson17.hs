@@ -2,7 +2,7 @@
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Lazyfoo.Lesson16 (main) where
+module Lazyfoo.Lesson17 (main) where
 
 import Prelude hiding (foldl1)
 import Control.Applicative

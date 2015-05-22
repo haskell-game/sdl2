@@ -271,16 +271,16 @@ executable lazyfoo-lesson-15
   default-language: Haskell2010
   ghc-options: -Wall -main-is Lazyfoo.Lesson15
 
-executable lazyfoo-lesson-16
+executable lazyfoo-lesson-17
   if flag(examples)
     build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.12, linear >= 1.10.1.2 && < 1.19, sdl2
   else
     buildable: False
 
   hs-source-dirs: examples/lazyfoo
-  main-is: Lesson16.hs
+  main-is: Lesson17.hs
   default-language: Haskell2010
-  ghc-options: -Wall -main-is Lazyfoo.Lesson16
+  ghc-options: -Wall -main-is Lazyfoo.Lesson17
 
 executable lazyfoo-lesson-18
   if flag(examples)
