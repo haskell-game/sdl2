@@ -138,7 +138,7 @@ getMouseButtons = liftIO $
                 ButtonX2      -> 4
                 ButtonExtra i -> i
 
-createColorCursor :: MonadIO m => Surface -> V2 CInt -> m Cursor
+createColorCursor :: (Functor m, MonadIO m) => Surface -> V2 CInt -> m Cursor
 createColorCursor (Surface s) (V2 x y) =
   fmap Cursor $
     throwIfNull "SDL.Input.Mouse.createColorCursor" "SDL_CreateColorCursor" $
