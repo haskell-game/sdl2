@@ -66,5 +66,5 @@ quit = Raw.quit
 -- Does not require initialization.
 version :: (Integral a, MonadIO m) => m (a, a, a)
 version = liftIO $ do
-	Raw.Version major minor patch <- alloca $ \v -> Raw.getVersion v >> peek v
-	return (fromIntegral major, fromIntegral minor, fromIntegral patch)
+  Raw.Version major minor patch <- alloca $ \v -> Raw.getVersion v >> peek v
+  return (fromIntegral major, fromIntegral minor, fromIntegral patch)

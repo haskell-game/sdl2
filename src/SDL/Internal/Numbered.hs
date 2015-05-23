@@ -5,7 +5,7 @@ module SDL.Internal.Numbered
   ) where
 
 class (Integral b) => FromNumber a b | a -> b where
-	fromNumber :: b -> a
+  fromNumber :: b -> a
 
 class (Integral b) => ToNumber a b | a -> b where
-	toNumber :: a -> b
+  toNumber :: a -> b
