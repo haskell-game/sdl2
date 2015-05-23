@@ -1,0 +1,70 @@
+1.3.1
+=====
+* Correct type signature of `getSurfaceBlendMode`
+
+1.3.0
+=====
+* Use pattern synonyms exclusively
+  * `Graphics.UI.SDL.Enum.Pattern` overrides `Graphics.UI.SDL.Enum`
+* Generalize all IO functions over MonadIO
+* Add convenience wrapper functions for constructing FunPtr callbacks
+* Add Typeable instances to all type classes
+* Add strictness annotations to all data structure fields
+* Add missing `SDLK_AUDIOPREV` enumeration
+* Correct deserialization of `SDL_TEXTINPUT` event
+  * Data beyond the null terminator was returned previously
+
+1.2.0
+=====
+* Add support for pattern synonyms as an alternative for SDL enumerations
+  * Only present when compiling with GHC 7.8 or newer
+* Add missing enumerations:
+  * `keymodShift`, `keymodCtrl`, `keymodAlt`, `keymodGUI`
+  * `keyPressend`, `keyReleased`
+  * `toucheMouseID`
+* Specialize init flags over `InitFlag`, a `Word32`
+* Generalize `keymod*` enumerations over `Num`
+  * The C API is inconsistent on their types
+* Fix foreign imports on `Graphics.UI.SDL.Thread`
+* Correct type signature of `getRenderDrawBlendMode`
+* Correct type signature of `queryTexture`
+* Remove export of `Keycode` from `Graphics.UI.SDL.Types`
+  * `Graphics.UI.SDL.Enum` already exports `Keycode`
+
+1.1.3
+=====
+* Add missing `Keycode` enumerations
+* Add missing enumerations:
+  * `audioAllowFrequencyChange`, `audioAllowFormatChange`
+  * `audioAllowChannelsChange`, `audioAllowAnyChange`
+
+1.1.2
+=====
+* Add `ClipboardUpdateEvent` to `Event` data structure
+* Add `UnknownEvent` to `Event` data structure
+
+1.1.1
+=====
+* Add `Graphics.UI.SDL.Platform` module
+* Add `Graphics.UI.SDL.Thread` module and associated types and enumerations
+* Add `getWindowWMInfo`
+* Add `setError`
+* Add additional logging functions
+
+1.1.0
+=====
+* Require SDL 2.0.3
+  * Add `gameControllerAddMappingsFromFile`
+  * Add `gameControllerAddMappingsFromRW`
+  * Add `glResetAttributes`
+  * Add `mouseButtonEventClicks` field to `WindowEvent`
+* Add missing mouse button enumerations
+
+1.0.2
+=====
+* Correct type signature of `getNumTouchFingers`
+
+1.0.1
+=====
+* Factor type of `addHintCallback` and `delHintCallback` into `HintCallback`
+* Add `Version` data structure
