@@ -3,6 +3,7 @@ module Graphics.UI.SDL (
   module Graphics.UI.SDL.Audio,
   module Graphics.UI.SDL.Basic,
   module Graphics.UI.SDL.Enum,
+  module Graphics.UI.SDL.Error,
   module Graphics.UI.SDL.Event,
   module Graphics.UI.SDL.Filesystem,
   module Graphics.UI.SDL.Haptic,
@@ -17,6 +18,7 @@ module Graphics.UI.SDL (
 import Graphics.UI.SDL.Audio
 import Graphics.UI.SDL.Basic
 import Graphics.UI.SDL.Enum
+import Graphics.UI.SDL.Error
 import Graphics.UI.SDL.Event
 import Graphics.UI.SDL.Filesystem
 import Graphics.UI.SDL.Haptic

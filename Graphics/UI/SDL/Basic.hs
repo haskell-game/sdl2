@@ -15,11 +15,6 @@ module Graphics.UI.SDL.Basic (
   setHint,
   setHintWithPriority,
 
-  -- * Error Handling
-  clearError,
-  getError,
-  setError,
-
   -- * Log Handling
   log,
   logCritical,
@@ -66,10 +61,6 @@ foreign import ccall "SDL.h SDL_DelHintCallback" delHintCallback' :: CString -> 
 foreign import ccall "SDL.h SDL_GetHint" getHint' :: CString -> IO CString
 foreign import ccall "SDL.h SDL_SetHint" setHint' :: CString -> CString -> IO Bool
 foreign import ccall "SDL.h SDL_SetHintWithPriority" setHintWithPriority' :: CString -> CString -> HintPriority -> IO Bool
-
-foreign import ccall "SDL.h SDL_ClearError" clearError' :: IO ()
-foreign import ccall "SDL.h SDL_GetError" getError' :: IO CString
-foreign import ccall "sdlhelper.c SDLHelper_SetError" setError' :: CString -> IO CInt
 
 foreign import ccall "SDL.h SDL_LogGetOutputFunction" logGetOutputFunction' :: Ptr LogOutputFunction -> Ptr (Ptr ()) -> IO ()
 foreign import ccall "SDL.h SDL_LogGetPriority" logGetPriority' :: CInt -> IO LogPriority
@@ -130,18 +121,6 @@ setHint v1 v2 = liftIO $ setHint' v1 v2
 setHintWithPriority :: MonadIO m => CString -> CString -> HintPriority -> m Bool
 setHintWithPriority v1 v2 v3 = liftIO $ setHintWithPriority' v1 v2 v3
 {-# INLINE setHintWithPriority #-}
-
-clearError :: MonadIO m => m ()
-clearError = liftIO clearError'
-{-# INLINE clearError #-}
-
-getError :: MonadIO m => m CString
-getError = liftIO getError'
-{-# INLINE getError #-}
-
-setError :: MonadIO m => CString -> m CInt
-setError v1 = liftIO $ setError' v1
-{-# INLINE setError #-}
 
 log :: CString -> IO ()
 log = logMessage SDL_LOG_CATEGORY_APPLICATION SDL_LOG_PRIORITY_INFO

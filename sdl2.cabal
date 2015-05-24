@@ -33,6 +33,7 @@ library
     Graphics.UI.SDL.Audio
     Graphics.UI.SDL.Basic
     Graphics.UI.SDL.Enum
+    Graphics.UI.SDL.Error
     Graphics.UI.SDL.Event
     Graphics.UI.SDL.Filesystem
     Graphics.UI.SDL.Haptic
