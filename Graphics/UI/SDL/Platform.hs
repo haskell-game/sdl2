@@ -6,8 +6,8 @@ module Graphics.UI.SDL.Platform (
 import Control.Monad.IO.Class
 import Foreign.C.String
 
-foreign import ccall "SDL.h SDL_GetPlatform" getPlatform' :: IO CString
+foreign import ccall "SDL.h SDL_GetPlatform" getPlatformFFI :: IO CString
 
 getPlatform :: MonadIO m => m CString
-getPlatform = liftIO getPlatform'
+getPlatform = liftIO getPlatformFFI
 {-# INLINE getPlatform #-}

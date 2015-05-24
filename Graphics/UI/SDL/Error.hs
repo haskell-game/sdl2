@@ -9,18 +9,18 @@ import Control.Monad.IO.Class
 import Foreign.C.String
 import Foreign.C.Types
 
-foreign import ccall "SDL.h SDL_ClearError" clearError' :: IO ()
-foreign import ccall "SDL.h SDL_GetError" getError' :: IO CString
-foreign import ccall "sdlhelper.c SDLHelper_SetError" setError' :: CString -> IO CInt
+foreign import ccall "SDL.h SDL_ClearError" clearErrorFFI :: IO ()
+foreign import ccall "SDL.h SDL_GetError" getErrorFFI :: IO CString
+foreign import ccall "sdlhelper.c SDLHelper_SetError" setErrorFFI :: CString -> IO CInt
 
 clearError :: MonadIO m => m ()
-clearError = liftIO clearError'
+clearError = liftIO clearErrorFFI
 {-# INLINE clearError #-}
 
 getError :: MonadIO m => m CString
-getError = liftIO getError'
+getError = liftIO getErrorFFI
 {-# INLINE getError #-}
 
 setError :: MonadIO m => CString -> m CInt
-setError v1 = liftIO $ setError' v1
+setError v1 = liftIO $ setErrorFFI v1
 {-# INLINE setError #-}

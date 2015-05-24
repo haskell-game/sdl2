@@ -8,8 +8,8 @@ import Foreign.C.Types
 import Foreign.Ptr
 import Graphics.UI.SDL.Enum
 
-foreign import ccall "SDL.h SDL_GetPowerInfo" getPowerInfo' :: Ptr CInt -> Ptr CInt -> IO PowerState
+foreign import ccall "SDL.h SDL_GetPowerInfo" getPowerInfoFFI :: Ptr CInt -> Ptr CInt -> IO PowerState
 
 getPowerInfo :: MonadIO m => Ptr CInt -> Ptr CInt -> m PowerState
-getPowerInfo v1 v2 = liftIO $ getPowerInfo' v1 v2
+getPowerInfo v1 v2 = liftIO $ getPowerInfoFFI v1 v2
 {-# INLINE getPowerInfo #-}

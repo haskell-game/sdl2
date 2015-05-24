@@ -39,153 +39,153 @@ import Foreign.C.Types
 import Foreign.Ptr
 import Graphics.UI.SDL.Types
 
-foreign import ccall "SDL.h SDL_HapticClose" hapticClose' :: Haptic -> IO ()
-foreign import ccall "SDL.h SDL_HapticDestroyEffect" hapticDestroyEffect' :: Haptic -> CInt -> IO ()
-foreign import ccall "SDL.h SDL_HapticEffectSupported" hapticEffectSupported' :: Haptic -> Ptr HapticEffect -> IO CInt
-foreign import ccall "SDL.h SDL_HapticGetEffectStatus" hapticGetEffectStatus' :: Haptic -> CInt -> IO CInt
-foreign import ccall "SDL.h SDL_HapticIndex" hapticIndex' :: Haptic -> IO CInt
-foreign import ccall "SDL.h SDL_HapticName" hapticName' :: CInt -> IO CString
-foreign import ccall "SDL.h SDL_HapticNewEffect" hapticNewEffect' :: Haptic -> Ptr HapticEffect -> IO CInt
-foreign import ccall "SDL.h SDL_HapticNumAxes" hapticNumAxes' :: Haptic -> IO CInt
-foreign import ccall "SDL.h SDL_HapticNumEffects" hapticNumEffects' :: Haptic -> IO CInt
-foreign import ccall "SDL.h SDL_HapticNumEffectsPlaying" hapticNumEffectsPlaying' :: Haptic -> IO CInt
-foreign import ccall "SDL.h SDL_HapticOpen" hapticOpen' :: CInt -> IO Haptic
-foreign import ccall "SDL.h SDL_HapticOpenFromJoystick" hapticOpenFromJoystick' :: Joystick -> IO Haptic
-foreign import ccall "SDL.h SDL_HapticOpenFromMouse" hapticOpenFromMouse' :: IO Haptic
-foreign import ccall "SDL.h SDL_HapticOpened" hapticOpened' :: CInt -> IO CInt
-foreign import ccall "SDL.h SDL_HapticPause" hapticPause' :: Haptic -> IO CInt
-foreign import ccall "SDL.h SDL_HapticQuery" hapticQuery' :: Haptic -> IO CUInt
-foreign import ccall "SDL.h SDL_HapticRumbleInit" hapticRumbleInit' :: Haptic -> IO CInt
-foreign import ccall "SDL.h SDL_HapticRumblePlay" hapticRumblePlay' :: Haptic -> CFloat -> Word32 -> IO CInt
-foreign import ccall "SDL.h SDL_HapticRumbleStop" hapticRumbleStop' :: Haptic -> IO CInt
-foreign import ccall "SDL.h SDL_HapticRumbleSupported" hapticRumbleSupported' :: Haptic -> IO CInt
-foreign import ccall "SDL.h SDL_HapticRunEffect" hapticRunEffect' :: Haptic -> CInt -> Word32 -> IO CInt
-foreign import ccall "SDL.h SDL_HapticSetAutocenter" hapticSetAutocenter' :: Haptic -> CInt -> IO CInt
-foreign import ccall "SDL.h SDL_HapticSetGain" hapticSetGain' :: Haptic -> CInt -> IO CInt
-foreign import ccall "SDL.h SDL_HapticStopAll" hapticStopAll' :: Haptic -> IO CInt
-foreign import ccall "SDL.h SDL_HapticStopEffect" hapticStopEffect' :: Haptic -> CInt -> IO CInt
-foreign import ccall "SDL.h SDL_HapticUnpause" hapticUnpause' :: Haptic -> IO CInt
-foreign import ccall "SDL.h SDL_HapticUpdateEffect" hapticUpdateEffect' :: Haptic -> CInt -> Ptr HapticEffect -> IO CInt
-foreign import ccall "SDL.h SDL_JoystickIsHaptic" joystickIsHaptic' :: Joystick -> IO CInt
-foreign import ccall "SDL.h SDL_MouseIsHaptic" mouseIsHaptic' :: IO CInt
-foreign import ccall "SDL.h SDL_NumHaptics" numHaptics' :: IO CInt
+foreign import ccall "SDL.h SDL_HapticClose" hapticCloseFFI :: Haptic -> IO ()
+foreign import ccall "SDL.h SDL_HapticDestroyEffect" hapticDestroyEffectFFI :: Haptic -> CInt -> IO ()
+foreign import ccall "SDL.h SDL_HapticEffectSupported" hapticEffectSupportedFFI :: Haptic -> Ptr HapticEffect -> IO CInt
+foreign import ccall "SDL.h SDL_HapticGetEffectStatus" hapticGetEffectStatusFFI :: Haptic -> CInt -> IO CInt
+foreign import ccall "SDL.h SDL_HapticIndex" hapticIndexFFI :: Haptic -> IO CInt
+foreign import ccall "SDL.h SDL_HapticName" hapticNameFFI :: CInt -> IO CString
+foreign import ccall "SDL.h SDL_HapticNewEffect" hapticNewEffectFFI :: Haptic -> Ptr HapticEffect -> IO CInt
+foreign import ccall "SDL.h SDL_HapticNumAxes" hapticNumAxesFFI :: Haptic -> IO CInt
+foreign import ccall "SDL.h SDL_HapticNumEffects" hapticNumEffectsFFI :: Haptic -> IO CInt
+foreign import ccall "SDL.h SDL_HapticNumEffectsPlaying" hapticNumEffectsPlayingFFI :: Haptic -> IO CInt
+foreign import ccall "SDL.h SDL_HapticOpen" hapticOpenFFI :: CInt -> IO Haptic
+foreign import ccall "SDL.h SDL_HapticOpenFromJoystick" hapticOpenFromJoystickFFI :: Joystick -> IO Haptic
+foreign import ccall "SDL.h SDL_HapticOpenFromMouse" hapticOpenFromMouseFFI :: IO Haptic
+foreign import ccall "SDL.h SDL_HapticOpened" hapticOpenedFFI :: CInt -> IO CInt
+foreign import ccall "SDL.h SDL_HapticPause" hapticPauseFFI :: Haptic -> IO CInt
+foreign import ccall "SDL.h SDL_HapticQuery" hapticQueryFFI :: Haptic -> IO CUInt
+foreign import ccall "SDL.h SDL_HapticRumbleInit" hapticRumbleInitFFI :: Haptic -> IO CInt
+foreign import ccall "SDL.h SDL_HapticRumblePlay" hapticRumblePlayFFI :: Haptic -> CFloat -> Word32 -> IO CInt
+foreign import ccall "SDL.h SDL_HapticRumbleStop" hapticRumbleStopFFI :: Haptic -> IO CInt
+foreign import ccall "SDL.h SDL_HapticRumbleSupported" hapticRumbleSupportedFFI :: Haptic -> IO CInt
+foreign import ccall "SDL.h SDL_HapticRunEffect" hapticRunEffectFFI :: Haptic -> CInt -> Word32 -> IO CInt
+foreign import ccall "SDL.h SDL_HapticSetAutocenter" hapticSetAutocenterFFI :: Haptic -> CInt -> IO CInt
+foreign import ccall "SDL.h SDL_HapticSetGain" hapticSetGainFFI :: Haptic -> CInt -> IO CInt
+foreign import ccall "SDL.h SDL_HapticStopAll" hapticStopAllFFI :: Haptic -> IO CInt
+foreign import ccall "SDL.h SDL_HapticStopEffect" hapticStopEffectFFI :: Haptic -> CInt -> IO CInt
+foreign import ccall "SDL.h SDL_HapticUnpause" hapticUnpauseFFI :: Haptic -> IO CInt
+foreign import ccall "SDL.h SDL_HapticUpdateEffect" hapticUpdateEffectFFI :: Haptic -> CInt -> Ptr HapticEffect -> IO CInt
+foreign import ccall "SDL.h SDL_JoystickIsHaptic" joystickIsHapticFFI :: Joystick -> IO CInt
+foreign import ccall "SDL.h SDL_MouseIsHaptic" mouseIsHapticFFI :: IO CInt
+foreign import ccall "SDL.h SDL_NumHaptics" numHapticsFFI :: IO CInt
 
 hapticClose :: MonadIO m => Haptic -> m ()
-hapticClose v1 = liftIO $ hapticClose' v1
+hapticClose v1 = liftIO $ hapticCloseFFI v1
 {-# INLINE hapticClose #-}
 
 hapticDestroyEffect :: MonadIO m => Haptic -> CInt -> m ()
-hapticDestroyEffect v1 v2 = liftIO $ hapticDestroyEffect' v1 v2
+hapticDestroyEffect v1 v2 = liftIO $ hapticDestroyEffectFFI v1 v2
 {-# INLINE hapticDestroyEffect #-}
 
 hapticEffectSupported :: MonadIO m => Haptic -> Ptr HapticEffect -> m CInt
-hapticEffectSupported v1 v2 = liftIO $ hapticEffectSupported' v1 v2
+hapticEffectSupported v1 v2 = liftIO $ hapticEffectSupportedFFI v1 v2
 {-# INLINE hapticEffectSupported #-}
 
 hapticGetEffectStatus :: MonadIO m => Haptic -> CInt -> m CInt
-hapticGetEffectStatus v1 v2 = liftIO $ hapticGetEffectStatus' v1 v2
+hapticGetEffectStatus v1 v2 = liftIO $ hapticGetEffectStatusFFI v1 v2
 {-# INLINE hapticGetEffectStatus #-}
 
 hapticIndex :: MonadIO m => Haptic -> m CInt
-hapticIndex v1 = liftIO $ hapticIndex' v1
+hapticIndex v1 = liftIO $ hapticIndexFFI v1
 {-# INLINE hapticIndex #-}
 
 hapticName :: MonadIO m => CInt -> m CString
-hapticName v1 = liftIO $ hapticName' v1
+hapticName v1 = liftIO $ hapticNameFFI v1
 {-# INLINE hapticName #-}
 
 hapticNewEffect :: MonadIO m => Haptic -> Ptr HapticEffect -> m CInt
-hapticNewEffect v1 v2 = liftIO $ hapticNewEffect' v1 v2
+hapticNewEffect v1 v2 = liftIO $ hapticNewEffectFFI v1 v2
 {-# INLINE hapticNewEffect #-}
 
 hapticNumAxes :: MonadIO m => Haptic -> m CInt
-hapticNumAxes v1 = liftIO $ hapticNumAxes' v1
+hapticNumAxes v1 = liftIO $ hapticNumAxesFFI v1
 {-# INLINE hapticNumAxes #-}
 
 hapticNumEffects :: MonadIO m => Haptic -> m CInt
-hapticNumEffects v1 = liftIO $ hapticNumEffects' v1
+hapticNumEffects v1 = liftIO $ hapticNumEffectsFFI v1
 {-# INLINE hapticNumEffects #-}
 
 hapticNumEffectsPlaying :: MonadIO m => Haptic -> m CInt
-hapticNumEffectsPlaying v1 = liftIO $ hapticNumEffectsPlaying' v1
+hapticNumEffectsPlaying v1 = liftIO $ hapticNumEffectsPlayingFFI v1
 {-# INLINE hapticNumEffectsPlaying #-}
 
 hapticOpen :: MonadIO m => CInt -> m Haptic
-hapticOpen v1 = liftIO $ hapticOpen' v1
+hapticOpen v1 = liftIO $ hapticOpenFFI v1
 {-# INLINE hapticOpen #-}
 
 hapticOpenFromJoystick :: MonadIO m => Joystick -> m Haptic
-hapticOpenFromJoystick v1 = liftIO $ hapticOpenFromJoystick' v1
+hapticOpenFromJoystick v1 = liftIO $ hapticOpenFromJoystickFFI v1
 {-# INLINE hapticOpenFromJoystick #-}
 
 hapticOpenFromMouse :: MonadIO m => m Haptic
-hapticOpenFromMouse = liftIO hapticOpenFromMouse'
+hapticOpenFromMouse = liftIO hapticOpenFromMouseFFI
 {-# INLINE hapticOpenFromMouse #-}
 
 hapticOpened :: MonadIO m => CInt -> m CInt
-hapticOpened v1 = liftIO $ hapticOpened' v1
+hapticOpened v1 = liftIO $ hapticOpenedFFI v1
 {-# INLINE hapticOpened #-}
 
 hapticPause :: MonadIO m => Haptic -> m CInt
-hapticPause v1 = liftIO $ hapticPause' v1
+hapticPause v1 = liftIO $ hapticPauseFFI v1
 {-# INLINE hapticPause #-}
 
 hapticQuery :: MonadIO m => Haptic -> m CUInt
-hapticQuery v1 = liftIO $ hapticQuery' v1
+hapticQuery v1 = liftIO $ hapticQueryFFI v1
 {-# INLINE hapticQuery #-}
 
 hapticRumbleInit :: MonadIO m => Haptic -> m CInt
-hapticRumbleInit v1 = liftIO $ hapticRumbleInit' v1
+hapticRumbleInit v1 = liftIO $ hapticRumbleInitFFI v1
 {-# INLINE hapticRumbleInit #-}
 
 hapticRumblePlay :: MonadIO m => Haptic -> CFloat -> Word32 -> m CInt
-hapticRumblePlay v1 v2 v3 = liftIO $ hapticRumblePlay' v1 v2 v3
+hapticRumblePlay v1 v2 v3 = liftIO $ hapticRumblePlayFFI v1 v2 v3
 {-# INLINE hapticRumblePlay #-}
 
 hapticRumbleStop :: MonadIO m => Haptic -> m CInt
-hapticRumbleStop v1 = liftIO $ hapticRumbleStop' v1
+hapticRumbleStop v1 = liftIO $ hapticRumbleStopFFI v1
 {-# INLINE hapticRumbleStop #-}
 
 hapticRumbleSupported :: MonadIO m => Haptic -> m CInt
-hapticRumbleSupported v1 = liftIO $ hapticRumbleSupported' v1
+hapticRumbleSupported v1 = liftIO $ hapticRumbleSupportedFFI v1
 {-# INLINE hapticRumbleSupported #-}
 
 hapticRunEffect :: MonadIO m => Haptic -> CInt -> Word32 -> m CInt
-hapticRunEffect v1 v2 v3 = liftIO $ hapticRunEffect' v1 v2 v3
+hapticRunEffect v1 v2 v3 = liftIO $ hapticRunEffectFFI v1 v2 v3
 {-# INLINE hapticRunEffect #-}
 
 hapticSetAutocenter :: MonadIO m => Haptic -> CInt -> m CInt
-hapticSetAutocenter v1 v2 = liftIO $ hapticSetAutocenter' v1 v2
+hapticSetAutocenter v1 v2 = liftIO $ hapticSetAutocenterFFI v1 v2
 {-# INLINE hapticSetAutocenter #-}
 
 hapticSetGain :: MonadIO m => Haptic -> CInt -> m CInt
-hapticSetGain v1 v2 = liftIO $ hapticSetGain' v1 v2
+hapticSetGain v1 v2 = liftIO $ hapticSetGainFFI v1 v2
 {-# INLINE hapticSetGain #-}
 
 hapticStopAll :: MonadIO m => Haptic -> m CInt
-hapticStopAll v1 = liftIO $ hapticStopAll' v1
+hapticStopAll v1 = liftIO $ hapticStopAllFFI v1
 {-# INLINE hapticStopAll #-}
 
 hapticStopEffect :: MonadIO m => Haptic -> CInt -> m CInt
-hapticStopEffect v1 v2 = liftIO $ hapticStopEffect' v1 v2
+hapticStopEffect v1 v2 = liftIO $ hapticStopEffectFFI v1 v2
 {-# INLINE hapticStopEffect #-}
 
 hapticUnpause :: MonadIO m => Haptic -> m CInt
-hapticUnpause v1 = liftIO $ hapticUnpause' v1
+hapticUnpause v1 = liftIO $ hapticUnpauseFFI v1
 {-# INLINE hapticUnpause #-}
 
 hapticUpdateEffect :: MonadIO m => Haptic -> CInt -> Ptr HapticEffect -> m CInt
-hapticUpdateEffect v1 v2 v3 = liftIO $ hapticUpdateEffect' v1 v2 v3
+hapticUpdateEffect v1 v2 v3 = liftIO $ hapticUpdateEffectFFI v1 v2 v3
 {-# INLINE hapticUpdateEffect #-}
 
 joystickIsHaptic :: MonadIO m => Joystick -> m CInt
-joystickIsHaptic v1 = liftIO $ joystickIsHaptic' v1
+joystickIsHaptic v1 = liftIO $ joystickIsHapticFFI v1
 {-# INLINE joystickIsHaptic #-}
 
 mouseIsHaptic :: MonadIO m => m CInt
-mouseIsHaptic = liftIO mouseIsHaptic'
+mouseIsHaptic = liftIO mouseIsHapticFFI
 {-# INLINE mouseIsHaptic #-}
 
 numHaptics :: MonadIO m => m CInt
-numHaptics = liftIO numHaptics'
+numHaptics = liftIO numHapticsFFI
 {-# INLINE numHaptics #-}
