@@ -130,10 +130,11 @@ import SDL.Internal.Types
 import qualified Data.Text.Encoding as Text
 import qualified Data.ByteString as BS
 import qualified Data.Vector.Storable as SV
+import qualified Data.Vector.Storable.Mutable as MSV
 import qualified SDL.Raw as Raw
 
 blitSurface :: MonadIO m => Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> m ()
-blitSurface (Surface src) srcRect (Surface dst) dstRect = liftIO $
+blitSurface (Surface src _) srcRect (Surface dst _) dstRect = liftIO $
   throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
   maybeWith with srcRect $ \srcPtr ->
   maybeWith with dstRect $ \dstPtr ->
@@ -146,7 +147,7 @@ createTexture (Renderer r) fmt access (V2 w h) =
   Raw.createTexture r (toNumber fmt) (toNumber access) w h
 
 createTextureFromSurface :: (Functor m, MonadIO m) => Renderer -> Surface -> m Texture
-createTextureFromSurface (Renderer r) (Surface s) =
+createTextureFromSurface (Renderer r) (Surface s _) =
   fmap Texture $
   throwIfNull "SDL.Video.createTextureFromSurface" "SDL_CreateTextureFromSurface" $
   Raw.createTextureFromSurface r s
@@ -179,12 +180,12 @@ unlockTexture :: MonadIO m => Texture -> m ()
 unlockTexture (Texture t) = liftIO $ Raw.unlockTexture t
 
 lockSurface :: MonadIO m => Surface -> m ()
-lockSurface (Surface s) = liftIO $
+lockSurface (Surface s _) = liftIO $
   throwIfNeg_ "lockSurface" "SDL_LockSurface" $
     Raw.lockSurface s
 
 unlockSurface :: MonadIO m => Surface -> m ()
-unlockSurface (Surface s) = Raw.unlockSurface s
+unlockSurface (Surface s _) = Raw.unlockSurface s
 
 data TextureAccess
   = TextureAccessStatic
@@ -228,25 +229,25 @@ queryTexture (Texture tex) = liftIO $
 
 createRGBSurface :: (Functor m, MonadIO m) => V2 CInt -> CInt -> V4 Word32 -> m Surface
 createRGBSurface (V2 w h) d (V4 r g b a) =
-  fmap Surface $
+  fmap unmanagedSurface $
   throwIfNull "SDL.Video.createRGBSurface" "SDL_CreateRGBSurface" $
   Raw.createRGBSurface 0 w h d r g b a
 
-createRGBSurfaceFrom :: (Functor m, MonadIO m) => SV.Vector Word8 -> V2 CInt -> CInt -> CInt -> V4 Word32 -> m Surface
+createRGBSurfaceFrom :: (Functor m, MonadIO m) => MSV.IOVector Word8 -> V2 CInt -> CInt -> CInt -> V4 Word32 -> m Surface
 createRGBSurfaceFrom pixels (V2 w h) d p (V4 r g b a) = liftIO $
-  fmap Surface $
+  fmap (managedSurface pixels) $
   throwIfNull "SDL.Video.createRGBSurfaceFrom" "SDL_CreateRGBSurfaceFrom" $
-    SV.unsafeWith pixels $ \pixelPtr ->
+    MSV.unsafeWith pixels $ \pixelPtr ->
       Raw.createRGBSurfaceFrom (castPtr pixelPtr) w h d p r g b a
 
 fillRect :: MonadIO m => Surface -> Maybe (Rectangle CInt) -> Word32 -> m ()
-fillRect (Surface s) rect col = liftIO $
+fillRect (Surface s _) rect col = liftIO $
   throwIfNeg_ "SDL.Video.fillRect" "SDL_FillRect" $
   maybeWith with rect $ \rectPtr ->
   Raw.fillRect s (castPtr rectPtr) col
 
 fillRects :: MonadIO m => Surface -> SV.Vector (Rectangle CInt) -> Word32 -> m ()
-fillRects (Surface s) rects col = liftIO $ do
+fillRects (Surface s _) rects col = liftIO $ do
   throwIfNeg_ "SDL.Video.fillRects" "SDL_FillRects" $
     SV.unsafeWith rects $ \rp ->
       Raw.fillRects s
@@ -255,11 +256,11 @@ fillRects (Surface s) rects col = liftIO $ do
                     col
 
 freeSurface :: MonadIO m => Surface -> m ()
-freeSurface (Surface s) = Raw.freeSurface s
+freeSurface (Surface s _) = Raw.freeSurface s
 
 loadBMP :: MonadIO m => FilePath -> m Surface
 loadBMP filePath = liftIO $
-  fmap Surface $
+  fmap unmanagedSurface $
   throwIfNull "SDL.Video.loadBMP" "SDL_LoadBMP" $
   withCString filePath $ Raw.loadBMP
 
@@ -275,16 +276,16 @@ mapRGB (SurfacePixelFormat fmt) (V3 r g b) = Raw.mapRGB fmt r g b
 -- sure. surface->{w,h} are immutable, but do we need to guarantee that pointers
 -- aren't reused by *different* surfaces?
 surfaceDimensions :: MonadIO m => Surface -> m (V2 CInt)
-surfaceDimensions (Surface s) = liftIO $ (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> peek s
+surfaceDimensions (Surface s _) = liftIO $ (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> peek s
 
 surfacePixels :: MonadIO m => Surface -> m (Ptr ())
-surfacePixels (Surface s) = liftIO $ Raw.surfacePixels <$> peek s
+surfacePixels (Surface s _) = liftIO $ Raw.surfacePixels <$> peek s
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->format is immutable, but do we need to guarantee that pointers
 -- aren't reused by *different* surfaces?
 surfaceFormat :: MonadIO m => Surface -> m SurfacePixelFormat
-surfaceFormat (Surface s) = liftIO $ SurfacePixelFormat . Raw.surfaceFormat <$> peek s
+surfaceFormat (Surface s _) = liftIO $ SurfacePixelFormat . Raw.surfaceFormat <$> peek s
 
 newtype Palette = Palette (Ptr Raw.Palette)
   deriving (Eq, Typeable)
@@ -305,7 +306,7 @@ setPaletteColors (Palette p) colors first = liftIO $
 
 getWindowSurface :: (Functor m, MonadIO m) => Window -> m Surface
 getWindowSurface (Window w) =
-  fmap Surface $
+  fmap unmanagedSurface $
   throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
   Raw.getWindowSurface w
 
@@ -376,8 +377,14 @@ instance Storable a => Storable (Rectangle a) where
     poke (castPtr ptr) o
     poke (castPtr (ptr `plusPtr` sizeOf o)) s
 
-newtype Surface = Surface (Ptr Raw.Surface)
-  deriving (Eq, Typeable)
+data Surface = Surface (Ptr Raw.Surface) (Maybe (MSV.IOVector Word8))
+  deriving (Typeable)
+
+unmanagedSurface :: Ptr Raw.Surface -> Surface
+unmanagedSurface s = Surface s Nothing
+
+managedSurface :: MSV.IOVector Word8 -> Ptr Raw.Surface -> Surface
+managedSurface p s = Surface s (Just p)
 
 newtype Texture = Texture Raw.Texture
   deriving (Eq, Typeable)
@@ -502,13 +509,13 @@ renderDrawPoints (Renderer r) points =
                          (fromIntegral (SV.length points))
 
 convertSurface :: (Functor m, MonadIO m) => Surface -> SurfacePixelFormat -> m Surface
-convertSurface (Surface s) (SurfacePixelFormat fmt) =
-  fmap Surface $
+convertSurface (Surface s _) (SurfacePixelFormat fmt) =
+  fmap unmanagedSurface $
   throwIfNull "SDL.Video.Renderer.convertSurface" "SDL_ConvertSurface" $
   Raw.convertSurface s fmt 0
 
 blitScaled :: MonadIO m => Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> m ()
-blitScaled (Surface src) srcRect (Surface dst) dstRect =
+blitScaled (Surface src _) srcRect (Surface dst _) dstRect =
   liftIO $
   throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
   maybeWith with srcRect $ \srcPtr ->
@@ -516,7 +523,7 @@ blitScaled (Surface src) srcRect (Surface dst) dstRect =
   Raw.blitScaled src (castPtr srcPtr) dst (castPtr dstPtr)
 
 setColorKey :: MonadIO m => Surface -> Maybe Word32 -> m ()
-setColorKey (Surface s) key =
+setColorKey (Surface s _) key =
   liftIO $
   throwIfNeg_ "SDL.Video.Renderer.setColorKey" "SDL_SetColorKey" $
   case key of
@@ -753,14 +760,14 @@ setTextureBlendMode (Texture t) bm =
   Raw.setTextureBlendMode t (toNumber bm)
 
 getSurfaceBlendMode :: (MonadIO m) => Surface -> m BlendMode
-getSurfaceBlendMode (Surface s) = liftIO $
+getSurfaceBlendMode (Surface s _) = liftIO $
   alloca $ \x -> do
     throwIfNeg_ "SDL.Video.Renderer.getSurfaceBlendMode" "SDL_GetSurfaceBlendMode" $
       Raw.getSurfaceBlendMode s x
     fromNumber <$> peek x
 
 setSurfaceBlendMode :: (Functor m, MonadIO m) => Surface -> BlendMode -> m ()
-setSurfaceBlendMode (Surface s) bm =
+setSurfaceBlendMode (Surface s _) bm =
   throwIfNeg_ "SDL.Video.Renderer.setSurfaceBlendMode" "SDL_SetSurfaceBlendMode" $
   Raw.setSurfaceBlendMode s (toNumber bm)
 
