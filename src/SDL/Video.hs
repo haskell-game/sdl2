@@ -42,6 +42,8 @@ module SDL.Video
   , getWindowData
   , setWindowData
   , getWindowConfig
+  , getWindowPixelFormat
+  , PixelFormat(..)
 
   -- * Renderer Management
   , createRenderer
@@ -335,6 +337,10 @@ getWindowConfig (Window w) = do
       , windowResizable    = wFlags .&. Raw.SDL_WINDOW_RESIZABLE > 0
       , windowSize         = wSize
     }
+
+-- | Get the pixel format that is used for the given window.
+getWindowPixelFormat :: Window -> IO PixelFormat
+getWindowPixelFormat (Window w) = fromNumber <$> Raw.getWindowPixelFormat w
 
 -- | Get the text from the clipboard.
 --
