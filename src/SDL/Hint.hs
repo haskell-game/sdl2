@@ -185,7 +185,7 @@ mapHint :: MonadIO m => Hint v -> (String -> Maybe v) -> m v
 mapHint h f = liftIO $
   withCString (hintToString h) $ \hint -> do
     strResult <- peekCString =<< Raw.getHint hint
-    return $ fromMaybe
+    return $! fromMaybe
         (throw (SDLUnknownHintValue (hintToString h) strResult))
         (f strResult)
 
