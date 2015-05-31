@@ -36,6 +36,7 @@ module SDL.Video
   , getWindowPosition
   , setWindowPosition
   , setWindowSize
+  , getWindowTitle
   , setWindowTitle
 
   -- * Renderer Management
@@ -266,6 +267,15 @@ setWindowTitle :: Window -> Text -> IO ()
 setWindowTitle (Window w) title =
   BS.useAsCString (Text.encodeUtf8 title) $
     Raw.setWindowTitle w
+
+-- | Get the title of the window.
+--
+-- If the window has no title, or if there is no such window, then an empty
+-- string is returned.
+getWindowTitle :: Window -> IO Text
+getWindowTitle (Window w) = do
+    cstr <- Raw.getWindowTitle w
+    Text.decodeUtf8 <$> BS.packCString cstr
 
 -- | Get the text from the clipboard.
 --
