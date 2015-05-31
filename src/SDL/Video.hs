@@ -27,6 +27,7 @@ module SDL.Video
   , getWindowMaximumSize
   , getWindowSize
   , setWindowBordered
+  , getWindowBrightness
   , setWindowBrightness
   , setWindowGammaRamp
   , setWindowGrab
@@ -205,6 +206,14 @@ setWindowBrightness :: Window -> Float -> IO ()
 setWindowBrightness (Window w) brightness = do
   throwIfNot0_ "SDL.Video.setWindowBrightness" "SDL_SetWindowBrightness" $
     Raw.setWindowBrightness w $ realToFrac brightness
+
+-- | Get the gamma value for the display that owns the given window.
+--
+-- Returned value is in range [0,1] where 0 means completely dark and 1
+-- corresponds to normal brightness.
+getWindowBrightness :: Window -> IO Float
+getWindowBrightness (Window w) =
+    realToFrac <$> Raw.getWindowBrightness w
 
 -- | Set whether the mouse shall be confined to the window.
 setWindowGrab :: Window -> Bool -> IO ()
