@@ -29,6 +29,7 @@ module SDL.Video
   , getWindowBrightness
   , setWindowBrightness
   , setWindowGammaRamp
+  , getWindowGrab
   , setWindowGrab
   , setWindowMode
   , setWindowMaximumSize
@@ -219,6 +220,10 @@ getWindowBrightness (Window w) =
 -- | Set whether the mouse shall be confined to the window.
 setWindowGrab :: Window -> Bool -> IO ()
 setWindowGrab (Window w) = Raw.setWindowGrab w
+
+-- | Get whether the mouse shall be confined to the window.
+getWindowGrab :: Window -> IO Bool
+getWindowGrab (Window w) = Raw.getWindowGrab w
 
 -- | Change between window modes.
 --
