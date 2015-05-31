@@ -41,6 +41,7 @@ module SDL.Video
   , setWindowTitle
   , getWindowData
   , setWindowData
+  , getWindowConfig
 
   -- * Renderer Management
   , createRenderer
@@ -79,9 +80,11 @@ import Prelude hiding (all, foldl, foldr, mapM_)
 import Control.Applicative
 import Control.Exception
 import Control.Monad (forM, unless)
+import Data.Bits
 import Data.Data (Data)
 import Data.Foldable
-import Data.Maybe (catMaybes, isJust)
+import Data.Maybe (catMaybes, isJust, fromMaybe)
+import Data.Monoid (First(..))
 import Data.Text (Text)
 import Data.Typeable
 import Foreign hiding (void, throwIfNull, throwIfNeg, throwIfNeg_)
@@ -186,6 +189,21 @@ instance ToNumber WindowMode Word32 where
   toNumber Minimized = Raw.SDL_WINDOW_MINIMIZED
   toNumber Windowed = 0
 
+instance FromNumber WindowMode Word32 where
+  fromNumber n = fromMaybe Windowed . getFirst $
+    foldMap First [
+        sdlWindowFullscreen
+      , sdlWindowFullscreenDesktop
+      , sdlWindowMaximized
+      , sdlWindowMinimized
+      ]
+    where
+      maybeBit val msk = if n .&. msk > 0 then Just val else Nothing
+      sdlWindowFullscreen        = maybeBit Fullscreen Raw.SDL_WINDOW_FULLSCREEN
+      sdlWindowFullscreenDesktop = maybeBit FullscreenDesktop Raw.SDL_WINDOW_FULLSCREEN_DESKTOP
+      sdlWindowMaximized         = maybeBit Maximized Raw.SDL_WINDOW_MAXIMIZED
+      sdlWindowMinimized         = maybeBit Minimized Raw.SDL_WINDOW_MINIMIZED
+
 data WindowPosition
   = Centered
   | Wherever -- ^ Let the window mananger decide where it's best to place the window.
@@ -253,7 +271,7 @@ getWindowPosition (Window w) =
     alloca $ \wPtr ->
     alloca $ \hPtr -> do
         Raw.getWindowPosition w wPtr hPtr
-        V2 <$> peek wPtr <*> peek hPtr 
+        V2 <$> peek wPtr <*> peek hPtr
 
 
 -- | Set the size of the window. Values beyond the maximum supported size are
@@ -294,6 +312,29 @@ setWindowData (Window w) = Raw.setWindowData w
 -- window and name.
 getWindowData :: Window -> CString -> IO (Ptr ())
 getWindowData (Window w) = Raw.getWindowData w
+
+-- | Retrieve the configuration of the given window.
+--
+-- Note that 'Nothing' will be returned instead of potential OpenGL parameters
+-- used during the creation of the window.
+getWindowConfig :: Window -> IO WindowConfig
+getWindowConfig (Window w) = do
+    wFlags <- Raw.getWindowFlags w
+
+    wSize <- getWindowSize (Window w)
+    wPos  <- getWindowPosition (Window w)
+
+    return WindowConfig {
+        windowBorder       = wFlags .&. Raw.SDL_WINDOW_BORDERLESS == 0
+      , windowHighDPI      = wFlags .&. Raw.SDL_WINDOW_ALLOW_HIGHDPI > 0
+      , windowInputGrabbed = wFlags .&. Raw.SDL_WINDOW_INPUT_GRABBED > 0
+      , windowMode         = fromNumber wFlags
+        -- Should we store the openGL config that was used to create the window?
+      , windowOpenGL       = Nothing
+      , windowPosition     = Absolute (P wPos)
+      , windowResizable    = wFlags .&. Raw.SDL_WINDOW_RESIZABLE > 0
+      , windowSize         = wSize
+    }
 
 -- | Get the text from the clipboard.
 --
