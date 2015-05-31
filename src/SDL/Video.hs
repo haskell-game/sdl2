@@ -110,12 +110,12 @@ import qualified SDL.Raw as Raw
 --
 -- Throws 'SDLException' on failure.
 createWindow :: MonadIO m => Text -> WindowConfig -> m Window
-createWindow title config = do
+createWindow title config = liftIO $ do
   case windowOpenGL config of
     Just glcfg -> setGLAttributes glcfg
     Nothing    -> return ()
 
-  liftIO $ BS.useAsCString (Text.encodeUtf8 title) $ \title' -> do
+  BS.useAsCString (Text.encodeUtf8 title) $ \title' -> do
     let create = Raw.createWindow title'
     let create' (V2 w h) = case windowPosition config of
           Centered -> let u = Raw.SDL_WINDOWPOS_CENTERED in create u u w h
@@ -238,7 +238,7 @@ setWindowBrightness (Window w) brightness = do
 -- corresponds to normal brightness.
 getWindowBrightness :: MonadIO m => Window -> m Float
 getWindowBrightness (Window w) =
-    realToFrac <$> Raw.getWindowBrightness w
+    return . realToFrac =<< Raw.getWindowBrightness w
 
 -- | Set whether the mouse shall be confined to the window.
 setWindowGrab :: MonadIO m => Window -> Bool -> m ()
@@ -253,7 +253,7 @@ getWindowGrab (Window w) = Raw.getWindowGrab w
 -- Throws 'SDLException' on failure.
 setWindowMode :: MonadIO m => Window -> WindowMode -> m ()
 setWindowMode (Window w) mode =
-  throwIfNot0_ "SDL.Video.setWindowMode" "SDL_SetWindowFullscreen" $
+  liftIO . throwIfNot0_ "SDL.Video.setWindowMode" "SDL_SetWindowFullscreen" $
     case mode of
       Fullscreen -> Raw.setWindowFullscreen w Raw.SDL_WINDOW_FULLSCREEN
       FullscreenDesktop -> Raw.setWindowFullscreen w Raw.SDL_WINDOW_FULLSCREEN_DESKTOP
@@ -343,7 +343,7 @@ getWindowConfig (Window w) = do
 
 -- | Get the pixel format that is used for the given window.
 getWindowPixelFormat :: MonadIO m => Window -> m PixelFormat
-getWindowPixelFormat (Window w) = fromNumber <$> Raw.getWindowPixelFormat w
+getWindowPixelFormat (Window w) = return . fromNumber =<< Raw.getWindowPixelFormat w
 
 -- | Get the text from the clipboard.
 --
@@ -514,7 +514,7 @@ getWindowMinimumSize (Window w) =
 
 createRenderer :: MonadIO m => Window -> CInt -> RendererConfig -> m Renderer
 createRenderer (Window w) driver config =
-  fmap Renderer $
+  liftIO . fmap Renderer $
     throwIfNull "SDL.Video.createRenderer" "SDL_CreateRenderer" $
     Raw.createRenderer w driver (toNumber config)
 
