@@ -82,6 +82,7 @@ import Prelude hiding (all, foldl, foldr, mapM_)
 import Control.Applicative
 import Control.Exception
 import Control.Monad (forM, unless)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Data (Data)
 import Data.Foldable
@@ -108,13 +109,13 @@ import qualified SDL.Raw as Raw
 -- | Create a window with the given title and configuration.
 --
 -- Throws 'SDLException' on failure.
-createWindow :: Text -> WindowConfig -> IO Window
+createWindow :: MonadIO m => Text -> WindowConfig -> m Window
 createWindow title config = do
   case windowOpenGL config of
     Just glcfg -> setGLAttributes glcfg
     Nothing    -> return ()
 
-  BS.useAsCString (Text.encodeUtf8 title) $ \title' -> do
+  liftIO $ BS.useAsCString (Text.encodeUtf8 title) $ \title' -> do
     let create = Raw.createWindow title'
     let create' (V2 w h) = case windowPosition config of
           Centered -> let u = Raw.SDL_WINDOWPOS_CENTERED in create u u w h
@@ -214,11 +215,11 @@ data WindowPosition
 
 -- | Destroy the given window. The 'Window' handler may not be used
 -- afterwards.
-destroyWindow :: Window -> IO ()
+destroyWindow :: MonadIO m => Window -> m ()
 destroyWindow (Window w) = Raw.destroyWindow w
 
 -- | Set whether the window should have a border or not.
-setWindowBordered :: Window -> Bool -> IO ()
+setWindowBordered :: MonadIO m => Window -> Bool -> m ()
 setWindowBordered (Window w) = Raw.setWindowBordered w
 
 -- | Set the window's brightness, where 0.0 is completely dark and 1.0 is
@@ -226,7 +227,7 @@ setWindowBordered (Window w) = Raw.setWindowBordered w
 --
 -- Throws 'SDLException' if the hardware does not support gamma
 -- correction, or if the system has run out of memory.
-setWindowBrightness :: Window -> Float -> IO ()
+setWindowBrightness :: MonadIO m => Window -> Float -> m ()
 setWindowBrightness (Window w) brightness = do
   throwIfNot0_ "SDL.Video.setWindowBrightness" "SDL_SetWindowBrightness" $
     Raw.setWindowBrightness w $ realToFrac brightness
@@ -235,22 +236,22 @@ setWindowBrightness (Window w) brightness = do
 --
 -- Returned value is in range [0,1] where 0 means completely dark and 1
 -- corresponds to normal brightness.
-getWindowBrightness :: Window -> IO Float
+getWindowBrightness :: MonadIO m => Window -> m Float
 getWindowBrightness (Window w) =
     realToFrac <$> Raw.getWindowBrightness w
 
 -- | Set whether the mouse shall be confined to the window.
-setWindowGrab :: Window -> Bool -> IO ()
+setWindowGrab :: MonadIO m => Window -> Bool -> m ()
 setWindowGrab (Window w) = Raw.setWindowGrab w
 
 -- | Get whether the mouse shall be confined to the window.
-getWindowGrab :: Window -> IO Bool
+getWindowGrab :: MonadIO m => Window -> m Bool
 getWindowGrab (Window w) = Raw.getWindowGrab w
 
 -- | Change between window modes.
 --
 -- Throws 'SDLException' on failure.
-setWindowMode :: Window -> WindowMode -> IO ()
+setWindowMode :: MonadIO m => Window -> WindowMode -> m ()
 setWindowMode (Window w) mode =
   throwIfNot0_ "SDL.Video.setWindowMode" "SDL_SetWindowFullscreen" $
     case mode of
@@ -261,15 +262,16 @@ setWindowMode (Window w) mode =
       Windowed -> Raw.restoreWindow w >> return 0
 
 -- | Set the position of the window.
-setWindowPosition :: Window -> WindowPosition -> IO ()
+setWindowPosition :: MonadIO m => Window -> WindowPosition -> m ()
 setWindowPosition (Window w) pos = case pos of
   Centered -> let u = Raw.SDL_WINDOWPOS_CENTERED in Raw.setWindowPosition w u u
   Wherever -> let u = Raw.SDL_WINDOWPOS_UNDEFINED in Raw.setWindowPosition w u u
   Absolute (P (V2 x y)) -> Raw.setWindowPosition w x y
 
 -- | Get the position of the window.
-getWindowPosition :: Window -> IO (V2 CInt)
+getWindowPosition :: MonadIO m => Window -> m (V2 CInt)
 getWindowPosition (Window w) =
+    liftIO $
     alloca $ \wPtr ->
     alloca $ \hPtr -> do
         Raw.getWindowPosition w wPtr hPtr
@@ -278,48 +280,49 @@ getWindowPosition (Window w) =
 
 -- | Set the size of the window. Values beyond the maximum supported size are
 -- clamped.
-setWindowSize :: Window -> V2 CInt -> IO ()
+setWindowSize :: MonadIO m => Window -> V2 CInt -> m ()
 setWindowSize (Window win) (V2 w h) = Raw.setWindowSize win w h
 
 -- | Get the current size of the window.
-getWindowSize :: Window -> IO (V2 CInt)
+getWindowSize :: MonadIO m => Window -> m (V2 CInt)
 getWindowSize (Window w) =
+  liftIO $
   alloca $ \wptr ->
   alloca $ \hptr -> do
     Raw.getWindowSize w wptr hptr
     V2 <$> peek wptr <*> peek hptr
 
 -- | Set the title of the window.
-setWindowTitle :: Window -> Text -> IO ()
+setWindowTitle :: MonadIO m => Window -> Text -> m ()
 setWindowTitle (Window w) title =
-  BS.useAsCString (Text.encodeUtf8 title) $
+  liftIO . BS.useAsCString (Text.encodeUtf8 title) $
     Raw.setWindowTitle w
 
 -- | Get the title of the window.
 --
 -- If the window has no title, or if there is no such window, then an empty
 -- string is returned.
-getWindowTitle :: Window -> IO Text
-getWindowTitle (Window w) = do
+getWindowTitle :: MonadIO m => Window -> m Text
+getWindowTitle (Window w) = liftIO $ do
     cstr <- Raw.getWindowTitle w
     Text.decodeUtf8 <$> BS.packCString cstr
 
 -- | Associate the given pointer to arbitrary user data with the given window
 -- and name. Returns whatever was associated with the given window and name
 -- before.
-setWindowData :: Window -> CString -> Ptr () -> IO (Ptr ())
+setWindowData :: MonadIO m => Window -> CString -> Ptr () -> m (Ptr ())
 setWindowData (Window w) = Raw.setWindowData w
 
 -- | Retrieve the pointer to arbitrary user data associated with the given
 -- window and name.
-getWindowData :: Window -> CString -> IO (Ptr ())
+getWindowData :: MonadIO m => Window -> CString -> m (Ptr ())
 getWindowData (Window w) = Raw.getWindowData w
 
 -- | Retrieve the configuration of the given window.
 --
 -- Note that 'Nothing' will be returned instead of potential OpenGL parameters
 -- used during the creation of the window.
-getWindowConfig :: Window -> IO WindowConfig
+getWindowConfig :: MonadIO m => Window -> m WindowConfig
 getWindowConfig (Window w) = do
     wFlags <- Raw.getWindowFlags w
 
@@ -339,54 +342,54 @@ getWindowConfig (Window w) = do
     }
 
 -- | Get the pixel format that is used for the given window.
-getWindowPixelFormat :: Window -> IO PixelFormat
+getWindowPixelFormat :: MonadIO m => Window -> m PixelFormat
 getWindowPixelFormat (Window w) = fromNumber <$> Raw.getWindowPixelFormat w
 
 -- | Get the text from the clipboard.
 --
 -- Throws 'SDLException' on failure.
-getClipboardText :: IO Text
-getClipboardText = mask_ $ do
+getClipboardText :: MonadIO m => m Text
+getClipboardText = liftIO . mask_ $ do
   cstr <- throwIfNull "SDL.Video.getClipboardText" "SDL_GetClipboardText"
     Raw.getClipboardText
   finally (Text.decodeUtf8 <$> BS.packCString cstr) (free cstr)
 
 -- | Checks if the clipboard exists, and has some text in it.
-hasClipboardText :: IO Bool
+hasClipboardText :: MonadIO m => m Bool
 hasClipboardText = Raw.hasClipboardText
 
 -- | Replace the contents of the clipboard with the given text.
 --
 -- Throws 'SDLException' on failure.
-setClipboardText :: Text -> IO ()
-setClipboardText str = do
+setClipboardText :: MonadIO m => Text -> m ()
+setClipboardText str = liftIO $ do
   throwIfNot0_ "SDL.Video.setClipboardText" "SDL_SetClipboardText" $
     BS.useAsCString (Text.encodeUtf8 str) Raw.setClipboardText
 
-hideWindow :: Window -> IO ()
+hideWindow :: MonadIO m => Window -> m ()
 hideWindow (Window w) = Raw.hideWindow w
 
 -- | Raise the window above other windows and set the input focus.
-raiseWindow :: Window -> IO ()
+raiseWindow :: MonadIO m => Window -> m ()
 raiseWindow (Window w) = Raw.raiseWindow w
 
 -- | Disable screen savers.
-disableScreenSaver :: IO ()
+disableScreenSaver :: MonadIO m => m ()
 disableScreenSaver = Raw.disableScreenSaver
 
 -- | Enable screen savers.
-enableScreenSaver :: IO ()
+enableScreenSaver :: MonadIO m => m ()
 enableScreenSaver = Raw.enableScreenSaver
 
 -- | Check whether screen savers are enabled.
-isScreenSaverEnabled :: IO Bool
+isScreenSaverEnabled :: MonadIO m => m Bool
 isScreenSaverEnabled = Raw.isScreenSaverEnabled
 
-showWindow :: Window -> IO ()
+showWindow :: MonadIO m => Window -> m ()
 showWindow (Window w) = Raw.showWindow w
 
-setWindowGammaRamp :: Window -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> IO ()
-setWindowGammaRamp (Window w) r g b = do
+setWindowGammaRamp :: MonadIO m => Window -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> m ()
+setWindowGammaRamp (Window w) r g b = liftIO $ do
   unless (all ((== 256) . SV.length) $ catMaybes [r,g,b]) $
     error "setWindowGammaRamp requires 256 element in each colour channel"
 
@@ -423,8 +426,8 @@ data VideoDriver = VideoDriver {
                  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 -- | Throws 'SDLException' on failure.
-getDisplays :: IO [Display]
-getDisplays = do
+getDisplays :: MonadIO m => m [Display]
+getDisplays = liftIO $ do
   numDisplays <- throwIfNeg "SDL.Video.getDisplays" "SDL_GetNumVideoDisplays"
     Raw.getNumVideoDisplays
 
@@ -465,9 +468,9 @@ getDisplays = do
 -- writing your messages to @stderr@ too.
 --
 -- Throws 'SDLException' if there are no available video targets.
-showSimpleMessageBox :: Maybe Window -> MessageKind -> Text -> Text -> IO ()
+showSimpleMessageBox :: MonadIO m => Maybe Window -> MessageKind -> Text -> Text -> m ()
 showSimpleMessageBox window kind title message =
-  throwIfNot0_ "SDL.Video.showSimpleMessageBox" "SDL_ShowSimpleMessageBox" $ do
+  liftIO . throwIfNot0_ "SDL.Video.showSimpleMessageBox" "SDL_ShowSimpleMessageBox" $ do
     BS.useAsCString (Text.encodeUtf8 title) $ \title' ->
       BS.useAsCString (Text.encodeUtf8 message) $ \message' ->
         Raw.showSimpleMessageBox (toNumber kind) title' message' $
@@ -487,31 +490,33 @@ instance ToNumber MessageKind Word32 where
   toNumber Warning = Raw.SDL_MESSAGEBOX_WARNING
   toNumber Information = Raw.SDL_MESSAGEBOX_INFORMATION
 
-setWindowMaximumSize :: Window -> V2 CInt -> IO ()
+setWindowMaximumSize :: MonadIO m => Window -> V2 CInt -> m ()
 setWindowMaximumSize (Window win) (V2 w h) = Raw.setWindowMaximumSize win w h
 
-setWindowMinimumSize :: Window -> V2 CInt -> IO ()
+setWindowMinimumSize :: MonadIO m => Window -> V2 CInt -> m ()
 setWindowMinimumSize (Window win) (V2 w h) = Raw.setWindowMinimumSize win w h
 
-getWindowMaximumSize :: Window -> IO (V2 CInt)
+getWindowMaximumSize :: MonadIO m => Window -> m (V2 CInt)
 getWindowMaximumSize (Window w) =
+  liftIO $
   alloca $ \wptr ->
   alloca $ \hptr -> do
     Raw.getWindowMaximumSize w wptr hptr
     V2 <$> peek wptr <*> peek hptr
 
-getWindowMinimumSize :: Window -> IO (V2 CInt)
+getWindowMinimumSize :: MonadIO m => Window -> m (V2 CInt)
 getWindowMinimumSize (Window w) =
+  liftIO $
   alloca $ \wptr ->
   alloca $ \hptr -> do
     Raw.getWindowMinimumSize w wptr hptr
     V2 <$> peek wptr <*> peek hptr
 
-createRenderer :: Window -> CInt -> RendererConfig -> IO Renderer
+createRenderer :: MonadIO m => Window -> CInt -> RendererConfig -> m Renderer
 createRenderer (Window w) driver config =
   fmap Renderer $
     throwIfNull "SDL.Video.createRenderer" "SDL_CreateRenderer" $
     Raw.createRenderer w driver (toNumber config)
 
-destroyRenderer :: Renderer -> IO ()
+destroyRenderer :: MonadIO m => Renderer -> m ()
 destroyRenderer (Renderer r) = Raw.destroyRenderer r
