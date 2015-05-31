@@ -92,16 +92,16 @@ data Hint :: * -> * where
   HintVideoWinD3DCompiler :: Hint VideoWinD3DCompilerOptions
 
 setHint :: MonadIO m => Hint v -> v -> m Bool
-setHint (HintAccelerometerAsJoystick) v = liftIO $
-  withCString "SDL_HINT_ACCELEROMETER_AS_JOYSTICK" $ \hint ->
+setHint h@HintAccelerometerAsJoystick v = liftIO $
+  withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          AccelerometerNotJoystick -> "0"
          AccelerometerIsJoystick -> "1")
       (Raw.setHint hint)
 
-setHint (HintFramebufferAcceleration) v = liftIO $
-  withCString "SDL_HINT_FRAMEBUFFER_ACCELERATION" $ \hint ->
+setHint h@HintFramebufferAcceleration v = liftIO $
+  withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          Disable3D -> "0"
@@ -114,24 +114,24 @@ setHint (HintFramebufferAcceleration) v = liftIO $
          )
       (Raw.setHint hint)
 
-setHint (HintMacCTRLClick) v = liftIO $
-  withCString "SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK" $ \hint ->
+setHint h@HintMacCTRLClick v = liftIO $
+  withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          NoRightClick -> "0"
          EmulateRightClick -> "1")
       (Raw.setHint hint)
 
-setHint (HintMouseRelativeModeWarp) v = liftIO $
-  withCString "SDL_HINT_MOUSE_RELATIVE_MODE_WARP" $ \hint ->
+setHint h@HintMouseRelativeModeWarp v = liftIO $
+  withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          MouseRawInput -> "0"
          MouseWarping -> "1")
       (Raw.setHint hint)
 
-setHint (HintRenderDriver) v = liftIO $
-  withCString "SDL_HINT_RENDER_DRIVER" $ \hint ->
+setHint h@HintRenderDriver v = liftIO $
+  withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          Direct3D -> "direct3d"
@@ -141,16 +141,16 @@ setHint (HintRenderDriver) v = liftIO $
          Software -> "software")
       (Raw.setHint hint)
 
-setHint (HintRenderOpenGLShaders) v = liftIO $
-  withCString "SDL_HINT_RENDER_OPENGL_SHADERS" $ \hint ->
+setHint h@HintRenderOpenGLShaders v = liftIO $
+  withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          DisableShaders -> "0"
          EnableShaders -> "1")
       (Raw.setHint hint)
 
-setHint (HintRenderScaleQuality) v = liftIO $
-  withCString "SDL_HINT_RENDER_SCALE_QUALITY" $ \hint ->
+setHint h@HintRenderScaleQuality v = liftIO $
+  withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          ScaleNearest -> "0"
@@ -158,22 +158,33 @@ setHint (HintRenderScaleQuality) v = liftIO $
          ScaleBest -> "2")
       (Raw.setHint hint)
 
-setHint (HintRenderVSync) v = liftIO $
-  withCString "SDL_HINT_RENDER_VSYNC" $ \hint ->
+setHint h@HintRenderVSync v = liftIO $
+  withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          DisableVSync -> "0"
          EnableVSync -> "1")
       (Raw.setHint hint)
 
-setHint (HintVideoWinD3DCompiler) v = liftIO $
-  withCString "SDL_HINT_VIDEO_WIN_D3DCOMPILER" $ \hint ->
+setHint h@HintVideoWinD3DCompiler v = liftIO $
+  withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          D3DVistaOrLater -> "d3dcompiler_46.dll"
          D3DXPSupport -> "d3dcompiler_43.dll"
          D3DNone ->  "none")
       (Raw.setHint hint)
+
+hintToString :: Hint v -> String
+hintToString HintAccelerometerAsJoystick = "SDL_HINT_ACCELEROMETER_AS_JOYSTICK"
+hintToString HintFramebufferAcceleration = "SDL_HINT_FRAMEBUFFER_ACCELERATION"
+hintToString HintMacCTRLClick            = "SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK"
+hintToString HintMouseRelativeModeWarp   = "SDL_HINT_MOUSE_RELATIVE_MODE_WARP"
+hintToString HintRenderDriver            = "SDL_HINT_RENDER_DRIVER"
+hintToString HintRenderOpenGLShaders     = "SDL_HINT_RENDER_OPENGL_SHADERS"
+hintToString HintRenderScaleQuality      = "SDL_HINT_RENDER_SCALE_QUALITY"
+hintToString HintRenderVSync             = "SDL_HINT_RENDER_VSYNC"
+hintToString HintVideoWinD3DCompiler     = "SDL_HINT_VIDEO_WIN_D3DCOMPILER"
 
 clearHints :: MonadIO m => m ()
 clearHints = Raw.clearHints
