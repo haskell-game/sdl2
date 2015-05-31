@@ -54,13 +54,13 @@ throwIf f caller funName m = do
     (SDLCallFailed caller funName <$> getError) >>= throwIO
   return a
 
-throwIf_ :: (Functor m, MonadIO m) => (a -> Bool) -> Text -> Text -> m a -> m ()
-throwIf_ f caller funName m = void (throwIf f caller funName m)
+throwIf_ :: MonadIO m => (a -> Bool) -> Text -> Text -> m a -> m ()
+throwIf_ f caller funName m = throwIf f caller funName m >> return ()
 
 throwIfNeg :: (MonadIO m, Num a, Ord a) => Text -> Text -> m a -> m a
 throwIfNeg = throwIf (< 0)
 
-throwIfNeg_ :: (Functor m, MonadIO m, Num a, Ord a) => Text -> Text -> m a -> m ()
+throwIfNeg_ :: (MonadIO m, Num a, Ord a) => Text -> Text -> m a -> m ()
 throwIfNeg_ = throwIf_ (< 0)
 
 throwIfNull :: (MonadIO m) => Text -> Text -> m (Ptr a) -> m (Ptr a)
@@ -72,7 +72,7 @@ throwIf0 = throwIf (== 0)
 throwIfNot0 :: (Eq a, MonadIO m, Num a) => Text -> Text -> m a -> m a
 throwIfNot0 = throwIf (/= 0)
 
-throwIfNot0_ :: (Eq a, Functor m, MonadIO m, Num a) => Text -> Text -> m a -> m ()
+throwIfNot0_ :: (Eq a, MonadIO m, Num a) => Text -> Text -> m a -> m ()
 throwIfNot0_ = throwIf_ (/= 0)
 
 fromC :: Show a => Text -> Text -> (a -> Maybe b) -> a -> b
