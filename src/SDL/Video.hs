@@ -39,6 +39,8 @@ module SDL.Video
   , setWindowSize
   , getWindowTitle
   , setWindowTitle
+  , getWindowData
+  , setWindowData
 
   -- * Renderer Management
   , createRenderer
@@ -281,6 +283,17 @@ getWindowTitle :: Window -> IO Text
 getWindowTitle (Window w) = do
     cstr <- Raw.getWindowTitle w
     Text.decodeUtf8 <$> BS.packCString cstr
+
+-- | Associate the given pointer to arbitrary user data with the given window
+-- and name. Returns whatever was associated with the given window and name
+-- before.
+setWindowData :: Window -> CString -> Ptr () -> IO (Ptr ())
+setWindowData (Window w) = Raw.setWindowData w
+
+-- | Retrieve the pointer to arbitrary user data associated with the given
+-- window and name.
+getWindowData :: Window -> CString -> IO (Ptr ())
+getWindowData (Window w) = Raw.getWindowData w
 
 -- | Get the text from the clipboard.
 --
