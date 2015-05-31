@@ -3,7 +3,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
-{-# LANGUAGE RecordWildCards #-}
 module SDL.Video
   ( module SDL.Video.OpenGL
   , module SDL.Video.Renderer
@@ -34,6 +33,7 @@ module SDL.Video
   , setWindowMode
   , setWindowMaximumSize
   , setWindowMinimumSize
+  , getWindowPosition
   , setWindowPosition
   , setWindowSize
   , setWindowTitle
@@ -238,6 +238,15 @@ setWindowPosition (Window w) pos = case pos of
   Centered -> let u = Raw.SDL_WINDOWPOS_CENTERED in Raw.setWindowPosition w u u
   Wherever -> let u = Raw.SDL_WINDOWPOS_UNDEFINED in Raw.setWindowPosition w u u
   Absolute (P (V2 x y)) -> Raw.setWindowPosition w x y
+
+-- | Get the position of the window.
+getWindowPosition :: Window -> IO (V2 CInt)
+getWindowPosition (Window w) =
+    alloca $ \wPtr ->
+    alloca $ \hPtr -> do
+        Raw.getWindowPosition w wPtr hPtr
+        V2 <$> peek wPtr <*> peek hPtr 
+
 
 -- | Set the size of the window. Values beyond the maximum supported size are
 -- clamped.
