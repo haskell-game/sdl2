@@ -36,6 +36,8 @@ data SDLException
   | SDLUnexpectedArgument {sdlExceptionCaller :: !Text
                           ,sdlFunction :: !Text
                           ,sdlUnknownValue :: !String}
+  | SDLUnknownHintValue {sdlHint :: !String
+                        ,sdlUnknownValue :: !String}
   deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance Exception SDLException

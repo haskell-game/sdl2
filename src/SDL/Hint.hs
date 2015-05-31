@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE LambdaCase #-}
 module SDL.Hint (
     AccelerometerJoystickOptions(..),
     FramebufferAccelerationOptions(..),
@@ -14,16 +15,20 @@ module SDL.Hint (
     RenderVSyncOptions(..),
     clearHints,
     setHint,
+    getHint,
     VideoWinD3DCompilerOptions(..)
 ) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Exception
 import Data.Data (Data)
+import Data.Maybe (fromMaybe)
 import Data.Typeable
 import Foreign.C
 import GHC.Generics (Generic)
 
 import qualified SDL.Raw as Raw
+import SDL.Exception
 
 data AccelerometerJoystickOptions
   = AccelerometerNotJoystick
@@ -174,6 +179,80 @@ setHint h@HintVideoWinD3DCompiler v = liftIO $
          D3DXPSupport -> "d3dcompiler_43.dll"
          D3DNone ->  "none")
       (Raw.setHint hint)
+
+-- | Retrieve and map the current value associated with the given hint.
+mapHint :: MonadIO m => Hint v -> (String -> Maybe v) -> m v
+mapHint h f = liftIO $
+  withCString (hintToString h) $ \hint -> do
+    strResult <- peekCString =<< Raw.getHint hint
+    return $ fromMaybe
+        (throw (SDLUnknownHintValue (hintToString h) strResult))
+        (f strResult)
+
+getHint :: MonadIO m => Hint v -> m v
+getHint h@HintAccelerometerAsJoystick =
+    mapHint h (\case
+        "0" -> Just AccelerometerNotJoystick
+        "1" -> Just AccelerometerIsJoystick
+        _ -> Nothing)
+
+getHint h@HintFramebufferAcceleration =
+    mapHint h (\case
+         "0" -> Just Disable3D
+         "1" -> Just Enable3DDefault
+         "direct3d" -> Just Enable3DDirect3D
+         "opengl" -> Just Enable3DOpenGL
+         "opengles" -> Just Enable3DOpenGLES
+         "opengles2" -> Just Enable3DOpenGLES2
+         "software" -> Just Enable3DSoftware
+         _ -> Nothing)
+
+getHint h@HintMacCTRLClick =
+    mapHint h (\case
+         "0" -> Just NoRightClick
+         "1" -> Just EmulateRightClick
+         _ -> Nothing)
+
+getHint h@HintMouseRelativeModeWarp =
+    mapHint h (\case
+         "0" -> Just MouseRawInput
+         "1" -> Just MouseWarping
+         _ -> Nothing)
+
+getHint h@HintRenderDriver =
+    mapHint h (\case
+         "direct3d" -> Just Direct3D
+         "opengl" -> Just OpenGL
+         "opengles" -> Just OpenGLES
+         "opengles2" -> Just OpenGLES2
+         "software" -> Just Software
+         _ -> Nothing)
+
+getHint h@HintRenderOpenGLShaders =
+    mapHint h (\case
+         "0" -> Just DisableShaders
+         "1" -> Just EnableShaders
+         _ -> Nothing)
+
+getHint h@HintRenderScaleQuality =
+    mapHint h (\case
+         "0" -> Just ScaleNearest
+         "1" -> Just ScaleLinear
+         "2" -> Just ScaleBest
+         _ -> Nothing)
+
+getHint h@HintRenderVSync =
+    mapHint h (\case
+         "0" -> Just DisableVSync
+         "1" -> Just EnableVSync
+         _ -> Nothing)
+
+getHint h@HintVideoWinD3DCompiler =
+    mapHint h (\case
+         "d3dcompiler_46.dll" -> Just D3DVistaOrLater
+         "d3dcompiler_43.dll" -> Just D3DXPSupport
+         "none" -> Just D3DNone
+         _ -> Nothing)
 
 hintToString :: Hint v -> String
 hintToString HintAccelerometerAsJoystick = "SDL_HINT_ACCELEROMETER_AS_JOYSTICK"
