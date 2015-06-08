@@ -1,25 +1,46 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
 module SDL.Hint (
-    AccelerometerJoystickOptions(..),
-    FramebufferAccelerationOptions(..),
-    Hint(..),
-    MacCTRLClickOptions(..),
-    MouseModeWarpOptions(..),
-    RenderDrivers(..),
-    RenderOpenGLShaderOptions(..),
-    RenderScaleQuality(..),
-    RenderVSyncOptions(..),
-    clearHints,
-    HintPriority(..),
-    setHintWithPriority,
-    VideoWinD3DCompilerOptions(..)
-) where
+  -- * Getting and setting hints
+  Hint(..),
+  setHintWithPriority,
+  HintPriority(..),
+  clearHints,
+
+  -- * Hint Information
+  -- ** 'HintAccelerometerAsJoystick'
+  AccelerometerJoystickOptions(..),
+
+  -- ** 'HintFramebufferAcceleration'
+  FramebufferAccelerationOptions(..),
+
+  -- ** 'HintMacCTRLClick'
+  MacCTRLClickOptions(..),
+
+  -- ** 'HintMouseRelativeModeWarp'
+  MouseModeWarpOptions(..),
+
+  -- ** 'HintRenderDriver'
+  RenderDrivers(..),
+
+  -- ** 'HintRenderOpenGLShaders'
+  RenderOpenGLShaderOptions(..),
+
+  -- ** 'HintRenderScaleQuality'
+  RenderScaleQuality(..),
+
+  -- ** 'HintRenderVSync'
+  RenderVSyncOptions(..),
+
+  -- ** 'HintVideoWinD3DCompiler'
+  VideoWinD3DCompilerOptions(..)
+  ) where
 
 import Control.Exception
 import Control.Monad (void)
@@ -30,35 +51,51 @@ import Data.StateVar
 import Data.Typeable
 import Foreign.C
 import GHC.Generics (Generic)
-
-import qualified SDL.Raw as Raw
 import SDL.Exception
+import qualified SDL.Raw as Raw
 
+-- | A hint that specifies whether the Android\/iOS built-in accelerometer should
+-- be listed as a joystick device, rather than listing actual joysticks only.
+-- By default SDL will list real joysticks along with the accelerometer as if it
+-- were a 3 axis joystick.
 data AccelerometerJoystickOptions
   = AccelerometerNotJoystick
+    -- ^ List only real joysticks and accept input from them
   | AccelerometerIsJoystick
+    -- ^ List real joysticks along with the accelerometer as if it were a 3 axis
+    -- joystick (the default)
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | A hint that specifies how 3D acceleration is used to accelerate the SDL
+-- screen surface. By default SDL tries to make a best guess whether to use
+-- acceleration or not on each platform.
 data FramebufferAccelerationOptions
-  = Disable3D
-  | Enable3DDefault
-  | Enable3DDirect3D
-  | Enable3DOpenGL
-  | Enable3DOpenGLES
-  | Enable3DOpenGLES2
-  | Enable3DSoftware
+  = Disable3D -- ^ Disable 3D acceleration
+  | Enable3DDefault -- ^ Enable 3D acceleration, using the default renderer
+  | Enable3DDirect3D -- ^ Enable 3D acceleration using Direct3D
+  | Enable3DOpenGL -- ^ Enable 3D acceleration using OpenGL
+  | Enable3DOpenGLES -- ^ Enable 3D acceleration using OpenGLES
+  | Enable3DOpenGLES2 -- ^ Enable 3D acceleration using OpenGLES2
+  | Enable3DSoftware -- ^ Enable 3D acceleration using software rendering
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | A hint that specifies whether ctrl+click should generate a right-click event
+-- on Mac. By default holding ctrl while left clicking will not generate a right
+-- click event when on Mac.
 data MacCTRLClickOptions
-  = NoRightClick
-  | EmulateRightClick
+  = NoRightClick -- ^ Disable emulating right click
+  | EmulateRightClick -- ^ Enable emulating right click
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | A hint that specifies whether relative mouse mode is implemented using mouse
+-- warping. By default SDL will use raw input for relative mouse mode
 data MouseModeWarpOptions
-  = MouseRawInput
-  | MouseWarping
+  = MouseRawInput -- ^ Relative mouse mode uses the raw input
+  | MouseWarping -- ^ Relative mouse mode uses mouse warping
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | A hint that specifies which render driver to use. By default the first one
+-- in the list that is available on the current platform is chosen.
 data RenderDrivers
   = Direct3D
   | OpenGL
@@ -67,28 +104,43 @@ data RenderDrivers
   | Software
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | A hint that specifies whether the OpenGL render driver uses shaders.
+-- By default shaders are used if OpenGL supports them.
 data RenderOpenGLShaderOptions
-  = DisableShaders
-  | EnableShaders
+  = DisableShaders -- ^ Disable shaders
+  | EnableShaders -- ^ Enable shaders, if they are available
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | A hint that specifies scaling quality. By default nearest pixel sampling is
+-- used.
 data RenderScaleQuality
-  = ScaleNearest
-  | ScaleLinear
-  | ScaleBest
+  = ScaleNearest -- ^ Nearest pixel sampling
+  | ScaleLinear -- ^ linear filtering (supported by OpenGL and Direct3D)
+  | ScaleBest -- ^ Anisotropic filtering (supported by Direct3D)
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | A hint that specifies whether sync to vertical refresh is enabled or
+-- disabled to avoid tearing. By default SDL uses the flag passed into calls
+-- to create renderers.
 data RenderVSyncOptions
   = DisableVSync
   | EnableVSync
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | A hint that specifies which shader compiler to preload when using the Chrome
+-- ANGLE binaries. By default @d3dcompiler_46.dll@ will be used.
 data VideoWinD3DCompilerOptions
-  = D3DVistaOrLater
-  | D3DXPSupport
-  | D3DNone
+  = D3DVistaOrLater -- ^ Use @d3dcompiler_46.dll@, best for Vista or later
+  | D3DXPSupport -- ^ Use @d3dcompiler_43.dll@ for XP support
+  | D3DNone -- ^ Do not load any library, useful if you compiled ANGLE from source and included the compiler in your binaries
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | The 'Hint' type exports a well-typed interface to SDL's concept of
+-- <https://wiki.libsdl.org/CategoryHints hints>. This type has instances for
+-- both 'HasGetter' and 'HasSetter', allowing you to get and set hints. Note that
+-- the 'HasSetter' interface is fairly relaxed - if a hint cannot be set, the
+-- failure will be silently discarded. For more feedback and control when setting
+-- hints, see 'setHintWithPriority'.
 data Hint :: * -> * where
   HintAccelerometerAsJoystick :: Hint AccelerometerJoystickOptions
   HintFramebufferAcceleration :: Hint FramebufferAccelerationOptions
@@ -103,12 +155,17 @@ data Hint :: * -> * where
 instance HasSetter (Hint v) v where
   hint $= v = void (_setHint Raw.setHint hint v)
 
+-- | How to deal with setting hints when an existing override or environment
+-- variable is present.
 data HintPriority
-  = DefaultPriority
-  | NormalPriority
-  | OverridePriority
+  = DefaultPriority -- ^ Low priority, used for default values
+  | NormalPriority -- ^ Medium priority
+  | OverridePriority -- ^ High priority
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | Set the value of a hint, applying priority rules for when there is a
+-- conflict. Ordinarily, a hint will not be set if there is an existing override
+-- hint or environment variable that takes precedence.
 setHintWithPriority :: MonadIO m => HintPriority -> Hint v -> v -> m Bool
 setHintWithPriority prio =
   _setHint (\name value ->
