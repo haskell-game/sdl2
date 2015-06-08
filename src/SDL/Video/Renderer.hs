@@ -33,11 +33,9 @@ module SDL.Video.Renderer
   , setPaletteColors
   , getWindowSurface
   , colorKey
-
   , renderDrawBlendMode
-
-  , getRenderDrawColor
-  , setRenderDrawColor
+  , renderDrawColor
+  , renderDrawColor
 
   , getRenderTarget
   , setRenderTarget
@@ -447,20 +445,26 @@ renderDrawBlendMode (Renderer r) = makeStateVar getRenderDrawBlendMode setRender
     throwIfNeg_ "SDL.Video.Renderer.setRenderDrawBlendMode" "SDL_SetRenderDrawBlendMode" $
     Raw.setRenderDrawBlendMode r (toNumber bm)
 
-getRenderDrawColor :: (MonadIO m) => Renderer -> m (V4 Word8)
-getRenderDrawColor (Renderer re) = liftIO $
-  alloca $ \r ->
-  alloca $ \g ->
-  alloca $ \b ->
-  alloca $ \a -> do
-    throwIfNeg_ "SDL.Video.Renderer.getRenderDrawColor" "SDL_GetRenderDrawColor" $
-      Raw.getRenderDrawColor re r g b a
-    V4 <$> peek r <*> peek g <*> peek b <*> peek a
+-- | Get or set the color used for drawing operations (rect, line and clear).
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetRenderDrawColor SDL_SetRenderDrawColor>@ and @<https://wiki.libsdl.org/SDL_GetRenderDrawColor SDL_GetRenderDrawColor>@ for C documentation.
+renderDrawColor :: Renderer -> StateVar (V4 Word8)
+renderDrawColor (Renderer re) = makeStateVar getRenderDrawColor setRenderDrawColor
+  where
+  getRenderDrawColor = liftIO $
+    alloca $ \r ->
+    alloca $ \g ->
+    alloca $ \b ->
+    alloca $ \a -> do
+      throwIfNeg_ "SDL.Video.Renderer.getRenderDrawColor" "SDL_GetRenderDrawColor" $
+        Raw.getRenderDrawColor re r g b a
+      V4 <$> peek r <*> peek g <*> peek b <*> peek a
 
-setRenderDrawColor :: (Functor m, MonadIO m) => Renderer -> V4 Word8 -> m ()
-setRenderDrawColor (Renderer re) (V4 r g b a) =
-  throwIfNeg_ "SDL.Video.setRenderDrawColor" "SDL_SetRenderDrawColor" $
-  Raw.setRenderDrawColor re r g b a
+  setRenderDrawColor (V4 r g b a) =
+    throwIfNeg_ "SDL.Video.setRenderDrawColor" "SDL_SetRenderDrawColor" $
+    Raw.setRenderDrawColor re r g b a
 
 updateWindowSurface :: (Functor m, MonadIO m) => Window -> m ()
 updateWindowSurface (Window w) =
