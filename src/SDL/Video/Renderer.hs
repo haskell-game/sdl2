@@ -600,7 +600,15 @@ renderSetViewport (Renderer r) rect =
 renderPresent :: MonadIO m => Renderer -> m ()
 renderPresent (Renderer r) = Raw.renderPresent r
 
-renderCopy :: MonadIO m => Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> m ()
+-- | Copy a portion of the texture to the current rendering target.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderCopy SDL_RenderCopy>@ for C documentation.
+renderCopy :: MonadIO m
+           => Renderer -- ^ The rendering context
+           -> Texture -- ^ The source texture
+           -> Maybe (Rectangle CInt) -- ^ The source rectangle to copy, or 'Nothing' for the whole texture
+           -> Maybe (Rectangle CInt) -- ^ The destination rectangle to copy to, or 'Nothing' for the whole rendering target. The texture will be stretched to fill the given rectangle.
+           -> m ()
 renderCopy (Renderer r) (Texture t) srcRect dstRect =
   liftIO $
   throwIfNeg_ "SDL.Video.renderCopy" "SDL_RenderCopy" $
