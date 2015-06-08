@@ -153,7 +153,11 @@ data Hint :: * -> * where
   HintVideoWinD3DCompiler :: Hint VideoWinD3DCompilerOptions
 
 instance HasSetter (Hint v) v where
-  hint $= v = void (_setHint Raw.setHint hint v)
+  hint $= v =
+    _setHint (\name value ->
+                void (Raw.setHint name value))
+             hint
+             v
 
 -- | How to deal with setting hints when an existing override or environment
 -- variable is present.
