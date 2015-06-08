@@ -626,8 +626,8 @@ renderCopyEx :: MonadIO m
              -> Maybe (Rectangle CInt) -- ^ The destination rectangle to copy to, or 'Nothing' for the whole rendering target. The texture will be stretched to fill the given rectangle.
              -> CDouble -- ^ An angle in degrees that indicates the point around which the destination rectangle will be rotated.
              -> Maybe (Point V2 CInt) -- ^ The point of rotation
-             -> V2 Bool -- ^ Whether to flip in the X or Y axis.
-             -> m ()
+             -> V2 Bool -- ^ Whether to flip in the X or Y axis. -- ^ The point of rotation
+             -> m () -- ^ Whether to flip in the X or Y axis.
 renderCopyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
   liftIO $
   throwIfNeg_ "SDL.Video.renderCopyEx" "SDL_RenderCopyEx" $
@@ -639,12 +639,25 @@ renderCopyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
                       V2 x y -> (if x then Raw.SDL_FLIP_HORIZONTAL else 0) .|.
                                (if y then Raw.SDL_FLIP_VERTICAL else 0))
 
-renderDrawLine :: (Functor m, MonadIO m) => Renderer -> Point V2 CInt -> Point V2 CInt -> m ()
+-- | Draw a line on the current rendering target.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderDrawLine SDL_RenderDrawLine>@ for C documentation.
+renderDrawLine :: (Functor m,MonadIO m)
+               => Renderer
+               -> Point V2 CInt -- ^ The start point of the line
+               -> Point V2 CInt -- ^ The end point of the line
+               -> m ()
 renderDrawLine (Renderer r) (P (V2 x y)) (P (V2 x' y')) =
   throwIfNeg_ "SDL.Video.renderDrawLine" "SDL_RenderDrawLine" $
   Raw.renderDrawLine r x y x' y'
 
-renderDrawLines :: MonadIO m => Renderer -> SV.Vector (Point V2 CInt) -> m ()
+-- | Draw a series of connected lines on the current rendering target.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderDrawLines SDL_RenderDrawLines>@ for C documentation.
+renderDrawLines :: MonadIO m
+                => Renderer
+                -> SV.Vector (Point V2 CInt) -- ^ A 'SV.Vector' of points along the line. SDL will draw lines between these points.
+                -> m ()
 renderDrawLines (Renderer r) points =
   liftIO $
   throwIfNeg_ "SDL.Video.renderDrawLines" "SDL_RenderDrawLines" $
