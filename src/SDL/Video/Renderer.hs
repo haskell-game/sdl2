@@ -518,11 +518,20 @@ managedSurface p s = Surface s (Just p)
 newtype Texture = Texture Raw.Texture
   deriving (Eq, Typeable)
 
-renderDrawRect :: MonadIO m => Renderer -> Rectangle CInt -> m ()
+-- | Draw a rectangle outline on the current rendering target.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderDrawRect SDL_RenderDrawRect>@ for C documentation.
+renderDrawRect :: MonadIO m
+               => Renderer
+               -> Maybe (Rectangle CInt) -- ^ The rectangle outline to draw. 'Nothing' for the entire rendering context.
+               -> m ()
 renderDrawRect (Renderer r) rect = liftIO $
   throwIfNeg_ "SDL.Video.renderDrawRect" "SDL_RenderDrawRect" $
-  with rect (Raw.renderDrawRect r . castPtr)
+  maybeWith with rect (Raw.renderDrawRect r . castPtr)
 
+-- | Draw some number of rectangles on the current rendering target.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderDrawRects SDL_RenderDrawRects>@ for C documentation.
 renderDrawRects :: MonadIO m => Renderer -> SV.Vector (Rectangle CInt) -> m ()
 renderDrawRects (Renderer r) rects = liftIO $
   throwIfNeg_ "SDL.Video.renderDrawRects" "SDL_RenderDrawRects" $
@@ -531,13 +540,22 @@ renderDrawRects (Renderer r) rects = liftIO $
                         (castPtr rp)
                         (fromIntegral (SV.length rects))
 
-renderFillRect :: MonadIO m => Renderer -> Maybe (Rectangle CInt) -> m ()
+-- | Fill a rectangle on the current rendering target with the drawing color.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderFillRect SDL_RenderFillRect>@ for C documentation.
+renderFillRect :: MonadIO m
+               => Renderer
+               -> Maybe (Rectangle CInt) -- ^ The rectangle to fill. 'Nothing' for the entire rendering context.
+               -> m ()
 renderFillRect (Renderer r) rect = liftIO $ do
   throwIfNeg_ "SDL.Video.renderFillRect" "SDL_RenderFillRect" $
     maybeWith with rect $ \rPtr ->
       Raw.renderFillRect r
                          (castPtr rPtr)
 
+-- | Fill some number of rectangles on the current rendering target with the drawing color.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderFillRects SDL_RenderFillRects>@ for C documentation.
 renderFillRects :: MonadIO m => Renderer -> SV.Vector (Rectangle CInt) -> m ()
 renderFillRects (Renderer r) rects = liftIO $
   throwIfNeg_ "SDL.Video.renderFillRects" "SDL_RenderFillRects" $
@@ -597,6 +615,15 @@ renderSetViewport (Renderer r) rect =
   throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
   maybeWith with rect $ Raw.renderSetViewport r . castPtr
 
+-- | Update the screen with any rendering performed since the previous call.
+--
+-- SDL\'s rendering functions operate on a backbuffer; that is, calling a rendering function such as 'renderDrawLine' does not directly put a line on the screen, but rather updates the backbuffer. As such, you compose your entire scene and present the composed backbuffer to the screen as a complete picture.
+--
+-- Therefore, when using SDL's rendering API, one does all drawing intended for the frame, and then calls this function once per frame to present the final drawing to the user.
+--
+-- The backbuffer should be considered invalidated after each present; do not assume that previous contents will exist between frames. You are strongly encouraged to call 'renderClear' to initialize the backbuffer before starting each new frame's drawing, even if you plan to overwrite every pixel.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderPresent SDL_RenderPresent>@ for C documentation.
 renderPresent :: MonadIO m => Renderer -> m ()
 renderPresent (Renderer r) = Raw.renderPresent r
 
@@ -666,11 +693,17 @@ renderDrawLines (Renderer r) points =
                         (castPtr cp)
                         (fromIntegral (SV.length points))
 
+-- | Draw a point on the current rendering target.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderDrawPoint SDL_RenderDrawPoint>@ for C documentation.
 renderDrawPoint :: (Functor m, MonadIO m) => Renderer -> Point V2 CInt -> m ()
 renderDrawPoint (Renderer r) (P (V2 x y)) =
   throwIfNeg_ "SDL.Video.renderDrawPoint" "SDL_RenderDrawPoint" $
   Raw.renderDrawPoint r x y
 
+-- | Draw multiple points on the current rendering target.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderDrawPoints SDL_RenderDrawPoints>@ for C documentation.
 renderDrawPoints :: MonadIO m => Renderer -> SV.Vector (Point V2 CInt) -> m ()
 renderDrawPoints (Renderer r) points =
   liftIO $
