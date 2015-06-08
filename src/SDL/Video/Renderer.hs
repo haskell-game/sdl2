@@ -616,7 +616,18 @@ renderCopy (Renderer r) (Texture t) srcRect dstRect =
   maybeWith with dstRect $ \dst ->
   Raw.renderCopy r t (castPtr src) (castPtr dst)
 
-renderCopyEx :: MonadIO m => Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CInt) -> CDouble -> Maybe (Point V2 CInt) -> V2 Bool -> m ()
+-- | Copy a portion of the texture to the current rendering target, optionally rotating it by angle around the given center and also flipping it top-bottom and/or left-right.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderCopy SDL_RenderCopyEx>@ for C documentation.
+renderCopyEx :: MonadIO m
+             => Renderer -- ^ The rendering context
+             -> Texture -- ^ The source texture
+             -> Maybe (Rectangle CInt) -- ^ The source rectangle to copy, or 'Nothing' for the whole texture
+             -> Maybe (Rectangle CInt) -- ^ The destination rectangle to copy to, or 'Nothing' for the whole rendering target. The texture will be stretched to fill the given rectangle.
+             -> CDouble -- ^ An angle in degrees that indicates the point around which the destination rectangle will be rotated.
+             -> Maybe (Point V2 CInt) -- ^ The point of rotation
+             -> V2 Bool -- ^ Whether to flip in the X or Y axis.
+             -> m ()
 renderCopyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
   liftIO $
   throwIfNeg_ "SDL.Video.renderCopyEx" "SDL_RenderCopyEx" $
