@@ -38,12 +38,8 @@ module SDL.Video.Renderer
   , renderTarget
   , textureAlphaMod
   , textureBlendMode
-
-  , getSurfaceBlendMode
-  , setSurfaceBlendMode
-
-  , getTextureColorMod
-  , setTextureColorMod
+  , surfaceBlendMode
+  , textureColorMod
 
   , surfaceDimensions
   , surfacePixels
@@ -691,19 +687,25 @@ colorKey (Surface s _) = makeStateVar getColorKey setColorKey
       Just key' -> do
         Raw.setColorKey s 1 key'
 
-getTextureColorMod :: (MonadIO m) => Texture -> m (V3 Word8)
-getTextureColorMod (Texture t) = liftIO $
-  alloca $ \r ->
-  alloca $ \g ->
-  alloca $ \b -> do
-    throwIfNeg_ "SDL.Video.Renderer.getTextureColorMod" "SDL_GetTextureColorMod" $
-      Raw.getTextureColorMod t r g b
-    V3 <$> peek r <*> peek g <*> peek b
+-- | Get or set the additional color value multiplied into render copy operations.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetTextureColorMod SDL_SetTextureColorMod>@ and @<https://wiki.libsdl.org/SDL_GetTextureColorMod SDL_GetTextureColorMod>@ for C documentation.
+textureColorMod :: Texture -> StateVar (V3 Word8)
+textureColorMod (Texture t) = makeStateVar getTextureColorMod setTextureColorMod
+  where
+  getTextureColorMod = liftIO $
+    alloca $ \r ->
+    alloca $ \g ->
+    alloca $ \b -> do
+      throwIfNeg_ "SDL.Video.Renderer.getTextureColorMod" "SDL_GetTextureColorMod" $
+        Raw.getTextureColorMod t r g b
+      V3 <$> peek r <*> peek g <*> peek b
 
-setTextureColorMod :: (Functor m, MonadIO m) => Texture -> V3 Word8 -> m ()
-setTextureColorMod (Texture t) (V3 r g b) =
-  throwIfNeg_ "SDL.Video.Renderer.setTextureColorMod" "SDL_SetTextureColorMod" $
-  Raw.setTextureColorMod t r g b
+  setTextureColorMod (V3 r g b) =
+    throwIfNeg_ "SDL.Video.Renderer.setTextureColorMod" "SDL_SetTextureColorMod" $
+    Raw.setTextureColorMod t r g b
 
 data PixelFormat
   = Unknown
@@ -921,17 +923,23 @@ textureBlendMode (Texture t) = makeStateVar getTextureBlendMode setTextureBlendM
     throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMode" $
     Raw.setTextureBlendMode t (toNumber bm)
 
-getSurfaceBlendMode :: (MonadIO m) => Surface -> m BlendMode
-getSurfaceBlendMode (Surface s _) = liftIO $
-  alloca $ \x -> do
-    throwIfNeg_ "SDL.Video.Renderer.getSurfaceBlendMode" "SDL_GetSurfaceBlendMode" $
-      Raw.getSurfaceBlendMode s x
-    fromNumber <$> peek x
+-- | Get or set the blend mode used for blit operations.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetSurfaceBlendMode SDL_SetSurfaceBlendMode>@ and @<https://wiki.libsdl.org/SDL_GetSurfaceBlendMode SDL_GetSurfaceBlendMode>@ for C documentation.
+surfaceBlendMode :: Surface -> StateVar BlendMode
+surfaceBlendMode (Surface s _) = makeStateVar getSurfaceBlendMode setSurfaceBlendMode
+  where
+  getSurfaceBlendMode = liftIO $
+    alloca $ \x -> do
+      throwIfNeg_ "SDL.Video.Renderer.getSurfaceBlendMode" "SDL_GetSurfaceBlendMode" $
+        Raw.getSurfaceBlendMode s x
+      fromNumber <$> peek x
 
-setSurfaceBlendMode :: (Functor m, MonadIO m) => Surface -> BlendMode -> m ()
-setSurfaceBlendMode (Surface s _) bm =
-  throwIfNeg_ "SDL.Video.Renderer.setSurfaceBlendMode" "SDL_SetSurfaceBlendMode" $
-  Raw.setSurfaceBlendMode s (toNumber bm)
+  setSurfaceBlendMode bm =
+    throwIfNeg_ "SDL.Video.Renderer.setSurfaceBlendMode" "SDL_SetSurfaceBlendMode" $
+    Raw.setSurfaceBlendMode s (toNumber bm)
 
 -- | Get or set the current render target. 'Nothing' corresponds to the default render target.
 --
