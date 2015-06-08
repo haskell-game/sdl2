@@ -248,11 +248,18 @@ instance ToNumber TextureAccess CInt where
 
 data TextureInfo = TextureInfo
   { texturePixelFormat :: PixelFormat
+    -- ^ Raw format of the texture; the actual format may differ, but pixel transfers will use this format
   , textureAccess      :: TextureAccess
+    -- ^ The access available to the texture
   , textureWidth       :: CInt
+    -- ^ The width of the texture
   , textureHeight      :: CInt
+    -- ^ The height of the texture
   } deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | Query the attributes of a texture.
+--
+-- See @<https://wiki.libsdl.org/SDL_QueryTexture SDL_QueryTexture>@ for C documentation.
 queryTexture :: MonadIO m => Texture -> m TextureInfo
 queryTexture (Texture tex) = liftIO $
   alloca $ \pfPtr ->
