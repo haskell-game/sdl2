@@ -468,11 +468,31 @@ updateWindowSurface (Window w) =
   throwIfNeg_ "SDL.Video.updateWindowSurface" "SDL_UpdateWindowSurface" $
     Raw.updateWindowSurface w
 
+-- | Blend modes used in 'renderCopy' and drawing operations.
 data BlendMode
   = BlendNone
+    -- ^ No blending
   | BlendAlphaBlend
+    -- ^ Alpha blending.
+    --
+    -- @
+    -- dstRGB = (srcRGB * srcA) + (dstRGB * (1-srcA))
+    -- dstA = srcA + (dstA * (1-srcA))
+    -- @
   | BlendAdditive
+    -- ^ Additive blending
+    --
+    -- @
+    -- dstRGB = (srcRGB * srcA) + dstRGB
+    -- dstA = dstA
+    -- @
   | BlendMod
+    -- ^ Color modulate
+    --
+    -- @
+    -- dstRGB = srcRGB * dstRGB
+    -- dstA = dstA
+    --
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber BlendMode Word32 where
