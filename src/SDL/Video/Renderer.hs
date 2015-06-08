@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
@@ -33,8 +34,7 @@ module SDL.Video.Renderer
   , getWindowSurface
   , colorKey
 
-  , getRenderDrawBlendMode
-  , setRenderDrawBlendMode
+  , renderDrawBlendMode
 
   , getRenderDrawColor
   , setRenderDrawColor
@@ -429,17 +429,23 @@ getWindowSurface (Window w) =
   throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
   Raw.getWindowSurface w
 
-getRenderDrawBlendMode :: (Functor m, MonadIO m) => Renderer -> m BlendMode
-getRenderDrawBlendMode (Renderer r) = liftIO $
-  alloca $ \bmPtr -> do
-    throwIfNeg_ "SDL.Video.Renderer.getRenderDrawBlendMode" "SDL_GetRenderDrawBlendMode" $
-      Raw.getRenderDrawBlendMode r bmPtr
-    fromNumber <$> peek bmPtr
+-- | Get or set the blend mode used for drawing operations (fill and line).
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetRenderDrawBlendMode SDL_SetRenderDrawBlendMode>@ and @<https://wiki.libsdl.org/SDL_GetRenderDrawBlendMode SDL_GetRenderDrawBlendMode>@ for C documentation.
+renderDrawBlendMode :: Renderer -> StateVar BlendMode
+renderDrawBlendMode (Renderer r) = makeStateVar getRenderDrawBlendMode setRenderDrawBlendMode
+  where
+  getRenderDrawBlendMode = liftIO $
+    alloca $ \bmPtr -> do
+      throwIfNeg_ "SDL.Video.Renderer.getRenderDrawBlendMode" "SDL_GetRenderDrawBlendMode" $
+        Raw.getRenderDrawBlendMode r bmPtr
+      fromNumber <$> peek bmPtr
 
-setRenderDrawBlendMode :: (Functor m, MonadIO m) => Renderer -> BlendMode -> m ()
-setRenderDrawBlendMode (Renderer r) bm =
-  throwIfNeg_ "SDL.Video.Renderer.setRenderDrawBlendMode" "SDL_SetRenderDrawBlendMode" $
-  Raw.setRenderDrawBlendMode r (toNumber bm)
+  setRenderDrawBlendMode bm =
+    throwIfNeg_ "SDL.Video.Renderer.setRenderDrawBlendMode" "SDL_SetRenderDrawBlendMode" $
+    Raw.setRenderDrawBlendMode r (toNumber bm)
 
 getRenderDrawColor :: (MonadIO m) => Renderer -> m (V4 Word8)
 getRenderDrawColor (Renderer re) = liftIO $
