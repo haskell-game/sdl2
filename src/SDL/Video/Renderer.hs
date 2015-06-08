@@ -69,12 +69,8 @@ module SDL.Video.Renderer
   , renderFillRect
   , renderFillRects
   , renderPresent
-
-  , renderGetClipRect
-  , renderSetClipRect
-
-  , renderGetLogicalSize
-  , renderSetLogicalSize
+  , renderClipRect
+  , renderLogicalSize
 
   , renderScale
 
@@ -592,16 +588,22 @@ renderScale (Renderer r) = makeStateVar renderGetScale renderSetScale
       Raw.renderGetScale r w h
       V2 <$> peek w <*> peek h
 
-renderSetLogicalSize :: (Functor m, MonadIO m) => Renderer -> V2 CInt -> m ()
-renderSetLogicalSize (Renderer r) (V2 x y) =
-  throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $
-  Raw.renderSetLogicalSize r x y
-
-renderSetClipRect :: MonadIO m => Renderer -> Maybe (Rectangle CInt) -> m ()
-renderSetClipRect (Renderer r) rect =
-  liftIO $
-  throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
-  maybeWith with rect $ Raw.renderSetClipRect r . castPtr
+-- | Get or set the clip rectangle for rendering on the specified target.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderSetClipRect SDL_RenderSetClipRect>@ and @<https://wiki.libsdl.org/SDL_RenderGetClipRect SDL_RenderGetClipRect>@ for C documentation.
+renderClipRect :: Renderer -> StateVar (Maybe (Rectangle CInt))
+renderClipRect (Renderer r) = makeStateVar renderGetClipRect renderSetClipRect
+  where
+  renderGetClipRect = liftIO $
+    alloca $ \rPtr -> do
+      Raw.renderGetClipRect r rPtr
+      maybePeek peek (castPtr rPtr)
+  renderSetClipRect rect =
+    liftIO $
+    throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
+    maybeWith with rect $ Raw.renderSetClipRect r . castPtr
 
 renderGetViewport :: MonadIO m => Renderer -> m (Rectangle CInt)
 renderGetViewport (Renderer r) = liftIO $
@@ -1049,19 +1051,26 @@ renderTarget (Renderer r) = makeStateVar getRenderTarget setRenderTarget
       Nothing -> Raw.setRenderTarget r nullPtr
       Just (Texture t) -> Raw.setRenderTarget r t
 
-renderGetClipRect :: (MonadIO m) => Renderer -> m (Maybe (Rectangle CInt))
-renderGetClipRect (Renderer r) = liftIO $
-  alloca $ \rPtr -> do
-    Raw.renderGetClipRect r rPtr
-    maybePeek peek (castPtr rPtr)
+-- | Get or set the device independent resolution for rendering.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderSetLogicalSize SDL_RenderSetLogicalSize>@ and @<https://wiki.libsdl.org/SDL_RenderGetLogicalSize SDL_RenderGetLogicalSize>@ for C documentation.
+renderLogicalSize :: Renderer -> StateVar (Maybe (V2 CInt))
+renderLogicalSize (Renderer r) = makeStateVar renderGetLogicalSize renderSetLogicalSize
+  where
+  renderGetLogicalSize = liftIO $
+    alloca $ \w -> do
+    alloca $ \h -> do
+      Raw.renderGetLogicalSize r w h
+      v <- V2 <$> peek w <*> peek h
+      return $ if v == 0 then Nothing else Just v
 
-renderGetLogicalSize :: (MonadIO m) => Renderer -> m (Maybe (V2 CInt))
-renderGetLogicalSize (Renderer r) = liftIO $
-  alloca $ \w -> do
-  alloca $ \h -> do
-    Raw.renderGetLogicalSize r w h
-    v <- V2 <$> peek w <*> peek h
-    return $ if v == 0 then Nothing else Just v
+  renderSetLogicalSize v =
+    throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $ do
+      let (x,y) = case v of Just (V2 x y) -> (x, y)
+                            Nothing -> (0,0)
+      Raw.renderSetLogicalSize r x y
 
 -- | Determine whether a window supports the use of render targets.
 --
