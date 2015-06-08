@@ -35,11 +35,8 @@ module SDL.Video.Renderer
   , colorKey
   , renderDrawBlendMode
   , renderDrawColor
-  , renderDrawColor
   , renderTarget
-
-  , getTextureAlphaMod
-  , setTextureAlphaMod
+  , textureAlphaMod
 
   , getTextureBlendMode
   , setTextureBlendMode
@@ -890,17 +887,23 @@ getRenderDriverInfo = liftIO $ do
                  Raw.getRenderDriverInfo idx rptr
                peek rptr >>= fromRawRendererInfo
 
-getTextureAlphaMod :: (MonadIO m) => Texture -> m Word8
-getTextureAlphaMod (Texture t) = liftIO $
-  alloca $ \x -> do
-    throwIfNeg_ "SDL.Video.Renderer.getTextureAlphaMod" "SDL_GetTextureAlphaMod" $
-      Raw.getTextureAlphaMod t x
-    peek x
+-- | Get or set the additional alpha value multiplied into render copy operations.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetTextureAlphaMod SDL_SetTextureAlphaMod>@ and @<https://wiki.libsdl.org/SDL_GetTextureAlphaMod SDL_GetTextureAlphaMod>@ for C documentation.
+textureAlphaMod :: Texture -> StateVar Word8
+textureAlphaMod (Texture t) = makeStateVar getTextureAlphaMod setTextureAlphaMod
+  where
+  getTextureAlphaMod = liftIO $
+    alloca $ \x -> do
+      throwIfNeg_ "SDL.Video.Renderer.getTextureAlphaMod" "SDL_GetTextureAlphaMod" $
+        Raw.getTextureAlphaMod t x
+      peek x
 
-setTextureAlphaMod :: (Functor m, MonadIO m) => Texture -> Word8 -> m ()
-setTextureAlphaMod (Texture t) alpha =
-  throwIfNeg_ "SDL.Video.Renderer.setTextureAlphaMod" "SDL_SetTextureAlphaMod" $
-  Raw.setTextureAlphaMod t alpha
+  setTextureAlphaMod alpha =
+    throwIfNeg_ "SDL.Video.Renderer.setTextureAlphaMod" "SDL_SetTextureAlphaMod" $
+    Raw.setTextureAlphaMod t alpha
 
 getTextureBlendMode :: (MonadIO m) => Texture -> m BlendMode
 getTextureBlendMode (Texture t) = liftIO $
