@@ -148,24 +148,48 @@ blitSurface (Surface src _) srcRect (Surface dst _) dstLoc = liftIO $
   maybeWith with (fmap (flip Rectangle 0) dstLoc) $ \dstPtr ->
   Raw.blitSurface src (castPtr srcPtr) dst (castPtr dstPtr)
 
-createTexture :: (Functor m, MonadIO m) => Renderer -> PixelFormat -> TextureAccess -> V2 CInt -> m Texture
+-- | Create a texture for a rendering context.
+--
+-- See @<https://wiki.libsdl.org/SDL_CreateTexture SDL_CreateTexture>@ for C documentation.
+createTexture :: (Functor m,MonadIO m)
+              => Renderer -- ^ The rendering context.
+              -> PixelFormat
+              -> TextureAccess
+              -> V2 CInt -- ^ The size of the texture.
+              -> m Texture
 createTexture (Renderer r) fmt access (V2 w h) =
   fmap Texture $
   throwIfNull "SDL.Video.Renderer.createTexture" "SDL_CreateTexture" $
   Raw.createTexture r (toNumber fmt) (toNumber access) w h
 
-createTextureFromSurface :: (Functor m, MonadIO m) => Renderer -> Surface -> m Texture
+-- | Create a texture from an existing surface.
+--
+-- See @<https://wiki.libsdl.org/SDL_CreateTextureFromSurface SDL_CreateTextureFromSurface>@ for C documentation.
+createTextureFromSurface :: (Functor m,MonadIO m)
+                         => Renderer -- ^ The rendering context
+                         -> Surface -- ^ The surface containing pixel data used to fill the texture
+                         -> m Texture
 createTextureFromSurface (Renderer r) (Surface s _) =
   fmap Texture $
   throwIfNull "SDL.Video.createTextureFromSurface" "SDL_CreateTextureFromSurface" $
   Raw.createTextureFromSurface r s
 
-glBindTexture :: (Functor m, MonadIO m) => Texture -> m ()
+-- | Bind an OpenGL\/ES\/ES2 texture to the current context for use with when rendering OpenGL primitives directly.
+--
+-- See @<https://wiki.libsdl.org/SDL_GL_BindTexture SDL_GL_BindTexture>@ for C documentation.
+glBindTexture :: (Functor m,MonadIO m)
+              => Texture -- ^ The texture to bind to the current OpenGL\/ES\/ES2 context
+              -> m ()
 glBindTexture (Texture t) =
   throwIfNeg_ "SDL.Video.Renderer.glBindTexture" "SDL_GL_BindTexture" $
   Raw.glBindTexture t nullPtr nullPtr
 
-glUnbindTexture :: (Functor m, MonadIO m) => Texture -> m ()
+-- | Unbind an OpenGL\/ES\/ES2 texture from the current context.
+--
+-- See @<https://wiki.libsdl.org/SDL_GL_UnbindTexture SDL_GL_UnbindTexture>@ for C documentation.
+glUnbindTexture :: (Functor m,MonadIO m)
+                => Texture -- ^ The texture to unbind from the current OpenGL\/ES\/ES2 context
+                -> m ()
 glUnbindTexture (Texture t) =
   throwIfNeg_ "SDL.Video.Renderer.glUnindTexture" "SDL_GL_UnbindTexture" $
   Raw.glUnbindTexture t
