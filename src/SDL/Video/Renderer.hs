@@ -133,11 +133,19 @@ import qualified Data.Vector.Storable as SV
 import qualified Data.Vector.Storable.Mutable as MSV
 import qualified SDL.Raw as Raw
 
-blitSurface :: MonadIO m => Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> m ()
-blitSurface (Surface src _) srcRect (Surface dst _) dstRect = liftIO $
+-- | Perform a fast surface copy to a destination surface.
+--
+-- See @<https://wiki.libsdl.org/SDL_BlitSurface SDL_BlitSurface>@ for C documentation.
+blitSurface :: MonadIO m
+            => Surface -- ^ The 'Surface' to be copied from
+            -> Maybe (Rectangle CInt) -- ^ The rectangle to be copied, or 'Nothing' to copy the entire surface
+            -> Surface -- ^ The 'Surface' that is the blit target
+            -> Maybe (Point V2 CInt) -- ^ The position to blit to
+            -> m ()
+blitSurface (Surface src _) srcRect (Surface dst _) dstLoc = liftIO $
   throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
   maybeWith with srcRect $ \srcPtr ->
-  maybeWith with dstRect $ \dstPtr ->
+  maybeWith with (fmap (flip Rectangle 0) dstLoc) $ \dstPtr ->
   Raw.blitSurface src (castPtr srcPtr) dst (castPtr dstPtr)
 
 createTexture :: (Functor m, MonadIO m) => Renderer -> PixelFormat -> TextureAccess -> V2 CInt -> m Texture
@@ -514,7 +522,15 @@ convertSurface (Surface s _) (SurfacePixelFormat fmt) =
   throwIfNull "SDL.Video.Renderer.convertSurface" "SDL_ConvertSurface" $
   Raw.convertSurface s fmt 0
 
-blitScaled :: MonadIO m => Surface -> Maybe (Rectangle CInt) -> Surface -> Maybe (Rectangle CInt) -> m ()
+-- | Perform a scaled surface copy to a destination surface.
+--
+-- See @<https://wiki.libsdl.org/SDL_BlitScaled SDL_BlitScaled>@ for C documentation.
+blitScaled :: MonadIO m
+           => Surface -- ^ The 'Surface' to be copied from
+           -> Maybe (Rectangle CInt) -- ^ The rectangle to be copied, or 'Nothing' to copy the entire surface
+           -> Surface -- ^ The 'Surface' that is the blit target
+           -> Maybe (Rectangle CInt) -- ^ The rectangle that is copied into, or 'Nothing' to copy into the entire surface
+           -> m ()
 blitScaled (Surface src _) srcRect (Surface dst _) dstRect =
   liftIO $
   throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
