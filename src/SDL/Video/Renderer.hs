@@ -76,8 +76,7 @@ module SDL.Video.Renderer
   , renderGetLogicalSize
   , renderSetLogicalSize
 
-  , renderGetScale
-  , renderSetScale
+  , renderScale
 
   , renderGetViewport
   , renderSetViewport
@@ -555,17 +554,25 @@ renderClear (Renderer r) =
   throwIfNeg_ "SDL.Video.renderClear" "SDL_RenderClear" $
   Raw.renderClear r
 
-renderSetScale :: (Functor m, MonadIO m) => Renderer -> V2 CFloat -> m ()
-renderSetScale (Renderer r) (V2 x y) =
-  throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
-  Raw.renderSetScale r x y
+-- | Get or set the drawing scale for rendering on the current target.
+--
+-- The drawing coordinates are scaled by the x\/y scaling factors before they are used by the renderer. This allows resolution independent drawing with a single coordinate system.
+--
+-- If this results in scaling or subpixel drawing by the rendering backend, it will be handled using the appropriate quality hints. For best results use integer scaling factors.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderSetScale SDL_RenderSetScale>@ and @<https://wiki.libsdl.org/SDL_RenderGetScale SDL_RenderGetScale>@ for C documentation.
+renderScale :: Renderer -> StateVar (V2 CFloat)
+renderScale (Renderer r) = makeStateVar renderGetScale renderSetScale
+  where
+  renderSetScale (V2 x y) =
+    throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
+    Raw.renderSetScale r x y
 
-renderGetScale :: (MonadIO m) => Renderer -> m (V2 CFloat)
-renderGetScale (Renderer r) = liftIO $
-  alloca $ \w ->
-  alloca $ \h -> do
-    Raw.renderGetScale r w h
-    V2 <$> peek w <*> peek h
+  renderGetScale = liftIO $
+    alloca $ \w ->
+    alloca $ \h -> do
+      Raw.renderGetScale r w h
+      V2 <$> peek w <*> peek h
 
 renderSetLogicalSize :: (Functor m, MonadIO m) => Renderer -> V2 CInt -> m ()
 renderSetLogicalSize (Renderer r) (V2 x y) =
