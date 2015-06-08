@@ -31,7 +31,7 @@ module SDL.Video.Renderer
   , formatPalette
   , setPaletteColors
   , getWindowSurface
-  , setColorKey
+  , colorKey
 
   , getRenderDrawBlendMode
   , setRenderDrawBlendMode
@@ -105,6 +105,7 @@ module SDL.Video.Renderer
 
 import Prelude hiding (foldr)
 
+import Data.StateVar
 import Control.Applicative
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
@@ -656,24 +657,36 @@ blitScaled (Surface src _) srcRect (Surface dst _) dstRect =
   maybeWith with dstRect $ \dstPtr ->
   Raw.blitScaled src (castPtr srcPtr) dst (castPtr dstPtr)
 
-setColorKey :: MonadIO m => Surface -> Maybe Word32 -> m ()
-setColorKey (Surface s _) key =
-  liftIO $
-  throwIfNeg_ "SDL.Video.Renderer.setColorKey" "SDL_SetColorKey" $
-  case key of
-    Nothing ->
-      alloca $ \keyPtr -> do
-        -- TODO Error checking?
-        ret <- Raw.getColorKey s keyPtr
-        if ret == -1
-          -- if ret == -1 then there is no key enabled, so we have nothing to
-          -- do.
-          then return 0
-          else do key' <- peek keyPtr
-                  Raw.setColorKey s 0 key'
+-- | Get or set the color key (transparent pixel color) for a surface.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetColorKey SDL_SetColorKey>@ and @<https://wiki.libsdl.org/SDL_GetColorKey SDL_GetColorKey>@ for C documentation.
+colorKey :: Surface -> StateVar (Maybe Word32)
+colorKey (Surface s _) = makeStateVar getColorKey setColorKey
+  where
+  getColorKey =
+    liftIO $
+    alloca $ \keyPtr -> do
+      ret <- Raw.getColorKey s keyPtr
+      if ret == -1 then return Nothing else fmap Just (peek keyPtr)
+  setColorKey key =
+    liftIO $
+    throwIfNeg_ "SDL.Video.Renderer.setColorKey" "SDL_SetColorKey" $
+    case key of
+      Nothing ->
+        alloca $ \keyPtr -> do
+          -- TODO Error checking?
+          ret <- Raw.getColorKey s keyPtr
+          if ret == -1
+            -- if ret == -1 then there is no key enabled, so we have nothing to
+            -- do.
+            then return 0
+            else do key' <- peek keyPtr
+                    Raw.setColorKey s 0 key'
 
-    Just key' -> do
-      Raw.setColorKey s 1 key'
+      Just key' -> do
+        Raw.setColorKey s 1 key'
 
 getTextureColorMod :: (MonadIO m) => Texture -> m (V3 Word8)
 getTextureColorMod (Texture t) = liftIO $
