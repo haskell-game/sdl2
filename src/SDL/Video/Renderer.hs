@@ -36,9 +36,7 @@ module SDL.Video.Renderer
   , renderDrawBlendMode
   , renderDrawColor
   , renderDrawColor
-
-  , getRenderTarget
-  , setRenderTarget
+  , renderTarget
 
   , getTextureAlphaMod
   , setTextureAlphaMod
@@ -928,20 +926,26 @@ setSurfaceBlendMode (Surface s _) bm =
   throwIfNeg_ "SDL.Video.Renderer.setSurfaceBlendMode" "SDL_SetSurfaceBlendMode" $
   Raw.setSurfaceBlendMode s (toNumber bm)
 
-getRenderTarget :: (MonadIO m) => Renderer -> m (Maybe Texture)
-getRenderTarget (Renderer r) = do
-  t <- Raw.getRenderTarget r
-  return $
-    if t == nullPtr
-      then Nothing
-      else Just (Texture t)
+-- | Get or set the current render target. 'Nothing' corresponds to the default render target.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetRenderTarget SDL_SetRenderTarget>@ and @<https://wiki.libsdl.org/SDL_GetRenderTarget SDL_GetRenderTarget>@ for C documentation.
+renderTarget :: Renderer -> StateVar (Maybe Texture)
+renderTarget (Renderer r) = makeStateVar getRenderTarget setRenderTarget
+  where
+  getRenderTarget = do
+    t <- Raw.getRenderTarget r
+    return $
+      if t == nullPtr
+        then Nothing
+        else Just (Texture t)
 
-setRenderTarget :: (Functor m, MonadIO m) => Renderer -> Maybe Texture -> m ()
-setRenderTarget (Renderer r) texture =
-  throwIfNeg_ "SDL.Video.Renderer.setRenderTarget" "SDL_SetRenderTarget" $
-  case texture of
-    Nothing -> Raw.setRenderTarget r nullPtr
-    Just (Texture t) -> Raw.setRenderTarget r t
+  setRenderTarget texture =
+    throwIfNeg_ "SDL.Video.Renderer.setRenderTarget" "SDL_SetRenderTarget" $
+    case texture of
+      Nothing -> Raw.setRenderTarget r nullPtr
+      Just (Texture t) -> Raw.setRenderTarget r t
 
 renderGetClipRect :: (MonadIO m) => Renderer -> m (Maybe (Rectangle CInt))
 renderGetClipRect (Renderer r) = liftIO $
