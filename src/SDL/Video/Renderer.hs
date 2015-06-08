@@ -917,11 +917,16 @@ instance ToNumber PixelFormat Word32 where
     UYVY -> Raw.SDL_PIXELFORMAT_UYVY
     YVYU -> Raw.SDL_PIXELFORMAT_YVYU
 
+-- | The configuration data used when creating windows.
 data RendererConfig = RendererConfig
   { rendererSoftware      :: Bool
+    -- ^ The renderer is a software fallback
   , rendererAccelerated   :: Bool
+    -- ^ The renderer uses hardware acceleration
   , rendererPresentVSync  :: Bool
+    -- ^ Present is synchronized with the refresh rate
   , rendererTargetTexture :: Bool
+    -- ^ The renderer supports rendering to texture
   } deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber RendererConfig Word32 where
@@ -940,6 +945,16 @@ instance ToNumber RendererConfig Word32 where
     , if rendererTargetTexture config then Raw.SDL_RENDERER_TARGETTEXTURE else 0
     ]
 
+-- | Default options for 'RendererConfig'.
+--
+-- @
+-- 'defaultRenderer' = 'RendererConfig'
+--   { 'rendererSoftware'      = False
+--   , 'rendererAccelerated'   = True
+--   , 'rendererPresentVSync'  = False
+--   , 'rendererTargetTexture' = False
+--   }
+-- @
 defaultRenderer :: RendererConfig
 defaultRenderer = RendererConfig
   { rendererSoftware      = False
@@ -948,13 +963,20 @@ defaultRenderer = RendererConfig
   , rendererTargetTexture = False
   }
 
+-- | Information about an instantiated 'Renderer'.
 data RendererInfo = RendererInfo
   { rendererInfoName              :: Text
+    -- ^ The name of the renderer
   , rendererInfoFlags             :: RendererConfig
+    -- ^ Supported renderer features
   , rendererInfoNumTextureFormats :: Word32
+    -- ^ The number of available texture formats
   , rendererInfoTextureFormats    :: [PixelFormat]
+    -- ^ The available texture formats
   , rendererInfoMaxTextureWidth   :: CInt
+    -- ^ The maximum texture width
   , rendererInfoMaxTextureHeight  :: CInt
+    -- ^ The maximum texture height
   } deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 fromRawRendererInfo :: MonadIO m => Raw.RendererInfo -> m RendererInfo
@@ -962,6 +984,9 @@ fromRawRendererInfo (Raw.RendererInfo name flgs ntf tfs mtw mth) = liftIO $ do
     name' <- Text.decodeUtf8 <$> BS.packCString name
     return $ RendererInfo name' (fromNumber flgs) ntf (fmap fromNumber tfs) mtw mth
 
+-- | Get information about a rendering context.
+--
+-- See @<https://wiki.libsdl.org/SDL_GetRendererInfo SDL_GetRendererInfo>@ for C documentation.
 getRendererInfo :: MonadIO m => Renderer -> m RendererInfo
 getRendererInfo (Renderer renderer) = liftIO $
   alloca $ \rptr -> do
@@ -969,6 +994,9 @@ getRendererInfo (Renderer renderer) = liftIO $
       Raw.getRendererInfo renderer rptr
     peek rptr >>= fromRawRendererInfo
 
+-- | Enumerate all known render drivers on the system, and determine their supported features.
+--
+-- See @<https://wiki.libsdl.org/SDL_GetRenderDriverInfo SDL_GetRenderDriverInfo>@ for C documentation.
 getRenderDriverInfo :: MonadIO m => m [RendererInfo]
 getRenderDriverInfo = liftIO $ do
   count <- Raw.getNumRenderDrivers
