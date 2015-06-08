@@ -547,6 +547,9 @@ renderFillRects (Renderer r) rects = liftIO $
                           (castPtr rp)
                           (fromIntegral (SV.length rects))
 
+-- | Clear the current rendering target with the drawing color.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderClear SDL_RenderClear>@ for C documentation.
 renderClear :: (Functor m, MonadIO m) => Renderer -> m ()
 renderClear (Renderer r) =
   throwIfNeg_ "SDL.Video.renderClear" "SDL_RenderClear" $
