@@ -349,6 +349,9 @@ fillRects (Surface s _) rects col = liftIO $ do
 freeSurface :: MonadIO m => Surface -> m ()
 freeSurface (Surface s _) = Raw.freeSurface s
 
+-- | Load a surface from a BMP file.
+--
+-- See @<https://wiki.libsdl.org/SDL_LoadBMP SDL_LoadBMP>@ for C documentation.
 loadBMP :: MonadIO m => FilePath -> m Surface
 loadBMP filePath = liftIO $
   fmap unmanagedSurface $
