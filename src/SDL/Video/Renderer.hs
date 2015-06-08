@@ -462,6 +462,11 @@ renderDrawColor (Renderer re) = makeStateVar getRenderDrawColor setRenderDrawCol
     throwIfNeg_ "SDL.Video.setRenderDrawColor" "SDL_SetRenderDrawColor" $
     Raw.setRenderDrawColor re r g b a
 
+-- | Copy the window surface to the screen.
+--
+-- This is the function you use to reflect any changes to the surface on the screen.
+--
+-- See @<https://wiki.libsdl.org/SDL_UpdateWindowSurface SDL_UpdateWindowSurface>@ for C documentation.
 updateWindowSurface :: (Functor m, MonadIO m) => Window -> m ()
 updateWindowSurface (Window w) =
   throwIfNeg_ "SDL.Video.updateWindowSurface" "SDL_UpdateWindowSurface" $
