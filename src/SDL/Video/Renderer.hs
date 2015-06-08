@@ -219,10 +219,14 @@ lockSurface (Surface s _) = liftIO $
 unlockSurface :: MonadIO m => Surface -> m ()
 unlockSurface (Surface s _) = Raw.unlockSurface s
 
+-- | Information to the GPU about how you will use a texture.
 data TextureAccess
   = TextureAccessStatic
+    -- ^ Changes rarely, cannot be locked
   | TextureAccessStreaming
+    -- ^ changes frequently, can be locked
   | TextureAccessTarget
+    -- ^ Can be used as a render target
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber TextureAccess CInt where
