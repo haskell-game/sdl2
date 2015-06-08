@@ -1,4 +1,4 @@
-{ mkDerivation, base, bytestring, lens, linear, SDL2, stdenv, text
+{ mkDerivation, base, bytestring, lens, linear, SDL2, StateVar, stdenv, text
 , transformers, vector
 }:
 mkDerivation {
@@ -8,7 +8,7 @@ mkDerivation {
   isLibrary = true;
   isExecutable = true;
   buildDepends = [
-    base bytestring lens linear text transformers vector
+    base bytestring lens linear StateVar text transformers vector
   ];
   extraLibraries = [ SDL2 ];
   pkgconfigDepends = [ SDL2 ];

@@ -25,8 +25,12 @@ module SDL
 
   -- * Auxiliary Modules
   , module SDL.Exception
+
+  -- * Working with State Variables
+  , module Data.StateVar
   ) where
 
+import Data.StateVar
 import SDL.Audio
 import SDL.Event
 import SDL.Exception

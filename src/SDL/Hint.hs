@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GADTs #-}
@@ -14,15 +16,17 @@ module SDL.Hint (
     RenderScaleQuality(..),
     RenderVSyncOptions(..),
     clearHints,
-    setHint,
-    getHint,
+    HintPriority(..),
+    setHintWithPriority,
     VideoWinD3DCompilerOptions(..)
 ) where
 
-import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Exception
+import Control.Monad (void)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Data (Data)
 import Data.Maybe (fromMaybe)
+import Data.StateVar
 import Data.Typeable
 import Foreign.C
 import GHC.Generics (Generic)
@@ -96,16 +100,36 @@ data Hint :: * -> * where
   HintRenderVSync :: Hint RenderVSyncOptions
   HintVideoWinD3DCompiler :: Hint VideoWinD3DCompilerOptions
 
-setHint :: MonadIO m => Hint v -> v -> m Bool
-setHint h@HintAccelerometerAsJoystick v = liftIO $
+instance HasSetter (Hint v) v where
+  hint $= v = void (_setHint Raw.setHint hint v)
+
+data HintPriority
+  = DefaultPriority
+  | NormalPriority
+  | OverridePriority
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
+
+setHintWithPriority :: MonadIO m => HintPriority -> Hint v -> v -> m Bool
+setHintWithPriority prio =
+  _setHint (\name value ->
+              Raw.setHintWithPriority
+                name
+                value
+                (case prio of
+                   DefaultPriority -> Raw.SDL_HINT_DEFAULT
+                   NormalPriority -> Raw.SDL_HINT_NORMAL
+                   OverridePriority -> Raw.SDL_HINT_OVERRIDE))
+
+_setHint :: MonadIO m => (CString -> CString -> IO a) -> Hint v -> v -> m a
+_setHint f h@HintAccelerometerAsJoystick v = liftIO $
   withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          AccelerometerNotJoystick -> "0"
          AccelerometerIsJoystick -> "1")
-      (Raw.setHint hint)
+      (f hint)
 
-setHint h@HintFramebufferAcceleration v = liftIO $
+_setHint f h@HintFramebufferAcceleration v = liftIO $
   withCString (hintToString h) $ \hint ->
     withCString
       (case v of
@@ -117,25 +141,25 @@ setHint h@HintFramebufferAcceleration v = liftIO $
          Enable3DOpenGLES2 -> "opengles2"
          Enable3DSoftware -> "software"
          )
-      (Raw.setHint hint)
+      (f hint)
 
-setHint h@HintMacCTRLClick v = liftIO $
+_setHint f h@HintMacCTRLClick v = liftIO $
   withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          NoRightClick -> "0"
          EmulateRightClick -> "1")
-      (Raw.setHint hint)
+      (f hint)
 
-setHint h@HintMouseRelativeModeWarp v = liftIO $
+_setHint f h@HintMouseRelativeModeWarp v = liftIO $
   withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          MouseRawInput -> "0"
          MouseWarping -> "1")
-      (Raw.setHint hint)
+      (f hint)
 
-setHint h@HintRenderDriver v = liftIO $
+_setHint f h@HintRenderDriver v = liftIO $
   withCString (hintToString h) $ \hint ->
     withCString
       (case v of
@@ -144,41 +168,41 @@ setHint h@HintRenderDriver v = liftIO $
          OpenGLES -> "opengles"
          OpenGLES2 -> "opengles2"
          Software -> "software")
-      (Raw.setHint hint)
+      (f hint)
 
-setHint h@HintRenderOpenGLShaders v = liftIO $
+_setHint f h@HintRenderOpenGLShaders v = liftIO $
   withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          DisableShaders -> "0"
          EnableShaders -> "1")
-      (Raw.setHint hint)
+      (f hint)
 
-setHint h@HintRenderScaleQuality v = liftIO $
+_setHint f h@HintRenderScaleQuality v = liftIO $
   withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          ScaleNearest -> "0"
          ScaleLinear -> "1"
          ScaleBest -> "2")
-      (Raw.setHint hint)
+      (f hint)
 
-setHint h@HintRenderVSync v = liftIO $
+_setHint f h@HintRenderVSync v = liftIO $
   withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          DisableVSync -> "0"
          EnableVSync -> "1")
-      (Raw.setHint hint)
+      (f hint)
 
-setHint h@HintVideoWinD3DCompiler v = liftIO $
+_setHint f h@HintVideoWinD3DCompiler v = liftIO $
   withCString (hintToString h) $ \hint ->
     withCString
       (case v of
          D3DVistaOrLater -> "d3dcompiler_46.dll"
          D3DXPSupport -> "d3dcompiler_43.dll"
          D3DNone ->  "none")
-      (Raw.setHint hint)
+      (f hint)
 
 -- | Retrieve and map the current value associated with the given hint.
 mapHint :: MonadIO m => Hint v -> (String -> Maybe v) -> m v
@@ -189,14 +213,14 @@ mapHint h f = liftIO $
         (throw (SDLUnknownHintValue (hintToString h) strResult))
         (f strResult)
 
-getHint :: MonadIO m => Hint v -> m v
-getHint h@HintAccelerometerAsJoystick =
+instance HasGetter (Hint v) v where
+  get h@HintAccelerometerAsJoystick =
     mapHint h (\case
         "0" -> Just AccelerometerNotJoystick
         "1" -> Just AccelerometerIsJoystick
         _ -> Nothing)
 
-getHint h@HintFramebufferAcceleration =
+  get h@HintFramebufferAcceleration =
     mapHint h (\case
          "0" -> Just Disable3D
          "1" -> Just Enable3DDefault
@@ -207,19 +231,19 @@ getHint h@HintFramebufferAcceleration =
          "software" -> Just Enable3DSoftware
          _ -> Nothing)
 
-getHint h@HintMacCTRLClick =
+  get h@HintMacCTRLClick =
     mapHint h (\case
          "0" -> Just NoRightClick
          "1" -> Just EmulateRightClick
          _ -> Nothing)
 
-getHint h@HintMouseRelativeModeWarp =
+  get h@HintMouseRelativeModeWarp =
     mapHint h (\case
          "0" -> Just MouseRawInput
          "1" -> Just MouseWarping
          _ -> Nothing)
 
-getHint h@HintRenderDriver =
+  get h@HintRenderDriver =
     mapHint h (\case
          "direct3d" -> Just Direct3D
          "opengl" -> Just OpenGL
@@ -228,26 +252,26 @@ getHint h@HintRenderDriver =
          "software" -> Just Software
          _ -> Nothing)
 
-getHint h@HintRenderOpenGLShaders =
+  get h@HintRenderOpenGLShaders =
     mapHint h (\case
          "0" -> Just DisableShaders
          "1" -> Just EnableShaders
          _ -> Nothing)
 
-getHint h@HintRenderScaleQuality =
+  get h@HintRenderScaleQuality =
     mapHint h (\case
          "0" -> Just ScaleNearest
          "1" -> Just ScaleLinear
          "2" -> Just ScaleBest
          _ -> Nothing)
 
-getHint h@HintRenderVSync =
+  get h@HintRenderVSync =
     mapHint h (\case
          "0" -> Just DisableVSync
          "1" -> Just EnableVSync
          _ -> Nothing)
 
-getHint h@HintVideoWinD3DCompiler =
+  get h@HintVideoWinD3DCompiler =
     mapHint h (\case
          "d3dcompiler_46.dll" -> Just D3DVistaOrLater
          "d3dcompiler_43.dll" -> Just D3DXPSupport

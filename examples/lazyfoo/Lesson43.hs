@@ -12,6 +12,7 @@ import Data.Maybe
 import Foreign.C.Types
 import Linear
 import Linear.Affine
+import SDL (($=))
 import qualified SDL
 
 screenWidth, screenHeight :: CInt
@@ -42,9 +43,10 @@ main :: IO ()
 main = do
   SDL.initialize [SDL.InitVideo]
 
-  hintSet <- SDL.setHint SDL.HintRenderScaleQuality SDL.ScaleLinear
-  unless hintSet $
-    putStrLn "Warning: Linear texture filtering not enabled!"
+  SDL.HintRenderScaleQuality $= SDL.ScaleLinear
+  do renderQuality <- SDL.get SDL.HintRenderScaleQuality
+     when (renderQuality /= SDL.ScaleLinear) $
+       putStrLn "Warning: Linear texture filtering not enabled!"
 
   window <-
     SDL.createWindow
