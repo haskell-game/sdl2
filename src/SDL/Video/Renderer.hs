@@ -71,11 +71,8 @@ module SDL.Video.Renderer
   , renderPresent
   , renderClipRect
   , renderLogicalSize
-
   , renderScale
-
-  , renderGetViewport
-  , renderSetViewport
+  , renderViewport
 
   -- * Utilities
   , RendererConfig(..)
@@ -605,17 +602,23 @@ renderClipRect (Renderer r) = makeStateVar renderGetClipRect renderSetClipRect
     throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
     maybeWith with rect $ Raw.renderSetClipRect r . castPtr
 
-renderGetViewport :: MonadIO m => Renderer -> m (Rectangle CInt)
-renderGetViewport (Renderer r) = liftIO $
-  alloca $ \rect -> do
-    Raw.renderGetViewport r rect
-    peek (castPtr rect)
+-- | Get or set the drawing area for rendering on the current target.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderSetViewport SDL_RenderSetViewport>@ and @<https://wiki.libsdl.org/SDL_RenderGetViewport SDL_RenderGetViewport>@ for C documentation.
+renderViewport :: Renderer -> StateVar (Maybe (Rectangle CInt))
+renderViewport (Renderer r) = makeStateVar renderGetViewport renderSetViewport
+  where
+  renderGetViewport = liftIO $
+    alloca $ \rect -> do
+      Raw.renderGetViewport r rect
+      maybePeek peek (castPtr rect)
 
-renderSetViewport :: MonadIO m => Renderer -> Maybe (Rectangle CInt) -> m ()
-renderSetViewport (Renderer r) rect =
-  liftIO $
-  throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
-  maybeWith with rect $ Raw.renderSetViewport r . castPtr
+  renderSetViewport rect =
+    liftIO $
+    throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
+    maybeWith with rect $ Raw.renderSetViewport r . castPtr
 
 -- | Update the screen with any rendering performed since the previous call.
 --
