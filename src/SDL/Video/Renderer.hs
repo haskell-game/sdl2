@@ -374,15 +374,19 @@ mapRGB (SurfacePixelFormat fmt) (V3 r g b) = Raw.mapRGB fmt r g b
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->{w,h} are immutable, but do we need to guarantee that pointers
 -- aren't reused by *different* surfaces.
+-- | Retrive the width and height of a 'Surface'.
 surfaceDimensions :: MonadIO m => Surface -> m (V2 CInt)
 surfaceDimensions (Surface s _) = liftIO $ (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> peek s
 
+-- | Obtain the pointer to the underlying pixels in a surface. You should bracket
+-- this call with 'lockSurface' and 'unlockSurface', respectively.
 surfacePixels :: MonadIO m => Surface -> m (Ptr ())
 surfacePixels (Surface s _) = liftIO $ Raw.surfacePixels <$> peek s
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->format is immutable, but do we need to guarantee that pointers
 -- aren't reused by *different* surfaces?
+-- | Inspect the pixel format under a surface.
 surfaceFormat :: MonadIO m => Surface -> m SurfacePixelFormat
 surfaceFormat (Surface s _) = liftIO $ SurfacePixelFormat . Raw.surfaceFormat <$> peek s
 
