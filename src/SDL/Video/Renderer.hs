@@ -363,12 +363,26 @@ newtype SurfacePixelFormat = SurfacePixelFormat (Ptr Raw.PixelFormat)
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. De need to guarantee that pointers aren't reused?
-mapRGB :: MonadIO m => SurfacePixelFormat -> V3 Word8 -> m Word32
+-- | Map an RGB triple to an opaque pixel value for a given pixel format.
+--
+-- This function maps the RGB color value to the specified pixel format and returns the pixel value best approximating the given RGB color value for the given pixel format.
+--
+-- If the format has a palette (8-bit) the index of the closest matching color in the palette will be returned.
+--
+-- If the specified pixel format has an alpha component it will be returned as all 1 bits (fully opaque).
+--
+-- If the pixel format bpp (color depth) is less than 32-bpp then the unused upper bits of the return value can safely be ignored (e.g., with a 16-bpp format the return value can be assigned to a 'Word16', and similarly a 'Word8' for an 8-bpp format).
+--
+-- See @<https://wiki.libsdl.org/SDL_MapRGB SDL_MapRGB>@ for C documentation.
+mapRGB :: MonadIO m
+       => SurfacePixelFormat -- ^ The format of the pixel
+       -> V3 Word8 -- ^ The color to map
+       -> m Word32
 mapRGB (SurfacePixelFormat fmt) (V3 r g b) = Raw.mapRGB fmt r g b
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->{w,h} are immutable, but do we need to guarantee that pointers
--- aren't reused by *different* surfaces?
+-- aren't reused by *different* surfaces.
 surfaceDimensions :: MonadIO m => Surface -> m (V2 CInt)
 surfaceDimensions (Surface s _) = liftIO $ (V2 <$> Raw.surfaceW <*> Raw.surfaceH) <$> peek s
 
@@ -390,7 +404,14 @@ formatPalette (SurfacePixelFormat f) = liftIO $ wrap . Raw.pixelFormatPalette <$
           | p == nullPtr = Nothing
           | otherwise = Just (Palette p)
 
-setPaletteColors :: MonadIO m => Palette -> (SV.Vector (V4 Word8)) -> CInt -> m ()
+-- | Set a range of colors in a palette.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetPaletteColors SDL_SetPaletteColors>@ for C documentation.
+setPaletteColors :: MonadIO m
+                 => Palette -- ^ The 'Palette' to modify
+                 -> (SV.Vector (V4 Word8)) -- ^ A 'SV.Vector' of colours to copy into the palette
+                 -> CInt -- ^ The index of the first palette entry to modify
+                 -> m ()
 setPaletteColors (Palette p) colors first = liftIO $
   throwIfNeg_ "SDL.Video.setPaletteColors" "SDL_SetPaletteColors" $
   SV.unsafeWith colors $ \cp ->
@@ -398,6 +419,9 @@ setPaletteColors (Palette p) colors first = liftIO $
   where
     n = fromIntegral $ SV.length colors
 
+-- | Get the SDL surface associated with the window.
+--
+-- See @<https://wiki.libsdl.org/SDL_GetWindowSurface SDL_GetWindowSurface>@ for C documentation.
 getWindowSurface :: (Functor m, MonadIO m) => Window -> m Surface
 getWindowSurface (Window w) =
   fmap unmanagedSurface $
@@ -910,5 +934,8 @@ renderGetLogicalSize (Renderer r) = liftIO $
     v <- V2 <$> peek w <*> peek h
     return $ if v == 0 then Nothing else Just v
 
+-- | Determine whether a window supports the use of render targets.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderTargetSupported SDL_RenderTargetSupported>@ for C documentation.
 renderTargetSupported :: (MonadIO m) => Renderer -> m Bool
 renderTargetSupported (Renderer r) = Raw.renderTargetSupported r
