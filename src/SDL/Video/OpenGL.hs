@@ -45,7 +45,7 @@ import qualified SDL.Raw as Raw
 --   , 'glStencilPrecision' = 8
 --   , 'glProfile' = 'Compatibility' 'Normal' 2 1
 --   }
---_@
+-- @
 defaultOpenGL :: OpenGLConfig
 defaultOpenGL = OpenGLConfig
   { glColorPrecision = V4 8 8 8 0
@@ -91,7 +91,11 @@ glCreateContext (Window w) =
   GLContext <$> throwIfNull "SDL.Video.glCreateContext" "SDL_GL_CreateContext"
     (Raw.glCreateContext w)
 
--- | Throws 'SDLException' on failure.
+-- | Set up an OpenGL context for rendering into an OpenGL window.
+--
+-- Throws 'SDLException' on failure.
+--
+-- See @<https://wiki.libsdl.org/SDL_GL_MakeCurrent SDL_GL_MakeCurrent>@ for C documentation.
 glMakeCurrent :: (Functor m, MonadIO m) => Window -> GLContext -> m ()
 glMakeCurrent (Window w) (GLContext ctx) =
   throwIfNeg_ "SDL.Video.OpenGL.glMakeCurrent" "SDL_GL_MakeCurrent" $
