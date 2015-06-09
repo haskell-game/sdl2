@@ -27,7 +27,7 @@ loadTexture r filePath = do
   size <- SDL.surfaceDimensions surface
   format <- SDL.surfaceFormat surface
   key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.setColorKey surface (Just key)
+  SDL.colorKey surface $= Just key
   t <- SDL.createTextureFromSurface r surface
   SDL.freeSurface surface
   return (Texture t size)
@@ -49,7 +49,7 @@ main = do
   window <-
     SDL.createWindow
       "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
+      SDL.defaultWindow {SDL.windowInitialSize = V2 screenWidth screenHeight}
   SDL.showWindow window
 
   renderer <-
@@ -63,7 +63,7 @@ main = do
          , SDL.rendererPresentVSync = True
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   spriteSheetTexture <- loadTexture renderer "examples/lazyfoo/animation.bmp"
   let spriteSize = V2 64 205
@@ -86,7 +86,7 @@ main = do
                          _ -> mempty) $
               map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.renderClear renderer
 
         renderTexture renderer spriteSheetTexture (P (fmap (`div` 2) (V2 screenWidth screenHeight) - fmap (`div` 2) spriteSize)) (Just frame)

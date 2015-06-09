@@ -28,7 +28,7 @@ loadTexture r filePath = do
   size <- SDL.surfaceDimensions surface
   format <- SDL.surfaceFormat surface
   key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.setColorKey surface (Just key)
+  SDL.colorKey surface $= Just key
   t <- SDL.createTextureFromSurface r surface
   SDL.freeSurface surface
   return (Texture t size)
@@ -39,7 +39,7 @@ renderTexture r (Texture t size) xy clip =
   in SDL.renderCopy r t clip (Just (SDL.Rectangle xy dstSize))
 
 setTextureColor :: Texture -> V3 Word8 -> IO ()
-setTextureColor (Texture t _) rgb = SDL.setTextureColorMod t rgb
+setTextureColor (Texture t _) rgb = SDL.textureColorMod t $= rgb
 
 main :: IO ()
 main = do
@@ -53,7 +53,7 @@ main = do
   window <-
     SDL.createWindow
       "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
+      SDL.defaultWindow {SDL.windowInitialSize = V2 screenWidth screenHeight}
   SDL.showWindow window
 
   renderer <-
@@ -67,7 +67,7 @@ main = do
          , SDL.rendererPresentVSync = False
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   modulatedTexture <- loadTexture renderer "examples/lazyfoo/colors.bmp"
 
@@ -97,7 +97,7 @@ main = do
                          _ -> mempty) $
               map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.renderClear renderer
 
         let color' = color + colorAdjustment

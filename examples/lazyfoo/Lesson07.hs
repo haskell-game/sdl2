@@ -25,7 +25,7 @@ main = do
   window <-
     SDL.createWindow
       "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
+      SDL.defaultWindow {SDL.windowInitialSize = V2 screenWidth screenHeight}
   SDL.showWindow window
 
   renderer <-
@@ -39,7 +39,7 @@ main = do
          , SDL.rendererPresentVSync = False
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   xOutSurface <- getDataFileName "examples/lazyfoo/texture.bmp" >>= SDL.loadBMP
   texture <- SDL.createTextureFromSurface renderer xOutSurface

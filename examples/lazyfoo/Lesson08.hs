@@ -25,7 +25,7 @@ main = do
   window <-
     SDL.createWindow
       "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
+      SDL.defaultWindow {SDL.windowInitialSize = V2 screenWidth screenHeight}
   SDL.showWindow window
 
   renderer <-
@@ -39,7 +39,7 @@ main = do
          , SDL.rendererPresentVSync = False
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   let loop = do
         let collectEvents = do
@@ -51,21 +51,21 @@ main = do
 
         let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.renderClear renderer
 
-        SDL.setRenderDrawColor renderer (V4 maxBound 0 0 maxBound)
+        SDL.renderDrawColor renderer $= V4 maxBound 0 0 maxBound
         SDL.renderFillRect renderer (Just $ SDL.Rectangle (P $ V2 (screenWidth `div` 4) (screenHeight `div` 4))
                                                           (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
 
-        SDL.setRenderDrawColor renderer (V4 0 0 maxBound maxBound)
-        SDL.renderDrawRect renderer (SDL.Rectangle (P $ V2 (screenWidth `div` 6) (screenHeight `div` 6))
-                                                   (V2 (screenWidth * 2 `div` 3) (screenHeight * 2 `div` 3)))
+        SDL.renderDrawColor renderer $= V4 0 0 maxBound maxBound
+        SDL.renderDrawRect renderer (Just (SDL.Rectangle (P $ V2 (screenWidth `div` 6) (screenHeight `div` 6))
+                                                         (V2 (screenWidth * 2 `div` 3) (screenHeight * 2 `div` 3))))
 
-        SDL.setRenderDrawColor renderer (V4 0 maxBound 0 maxBound)
+        SDL.renderDrawColor renderer $= V4 0 maxBound 0 maxBound
         SDL.renderDrawLine renderer (P (V2 0 (screenHeight `div` 2))) (P (V2 screenWidth (screenHeight `div` 2)))
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         for_ [0, 4 .. screenHeight] $ \i ->
           SDL.renderDrawPoint renderer (P (V2 (screenWidth `div` 2) i))
 

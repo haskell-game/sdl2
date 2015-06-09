@@ -30,7 +30,7 @@ loadTexture r filePath = do
   size <- SDL.surfaceDimensions surface
   format <- SDL.surfaceFormat surface
   key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.setColorKey surface (Just key)
+  SDL.colorKey surface $= Just key
   t <- SDL.createTextureFromSurface r surface
   SDL.freeSurface surface
   return (Texture t size)
@@ -68,7 +68,7 @@ main = do
   window <-
     SDL.createWindow
       "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
+      SDL.defaultWindow {SDL.windowInitialSize = V2 screenWidth screenHeight}
   SDL.showWindow window
 
   renderer <-
@@ -82,7 +82,7 @@ main = do
          , SDL.rendererPresentVSync = True
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   rumbleTexture <- loadTexture renderer "examples/lazyfoo/rumble.bmp"
 
@@ -117,7 +117,7 @@ main = do
           then SDL.hapticRumblePlay hapticDevice 0.75 500
           else return ()
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.renderClear renderer
 
         renderTexture renderer rumbleTexture (P $ V2 0 0) Nothing Nothing Nothing Nothing

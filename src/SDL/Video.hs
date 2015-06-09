@@ -27,15 +27,13 @@ module SDL.Video
   , windowSize
   , windowBordered
   , windowBrightness
-  , setWindowGammaRamp
+  , windowGammaRamp
   , windowGrab
   , setWindowMode
-  , getWindowPosition
+  , getWindowAbsolutePosition
   , setWindowPosition
-  , getWindowTitle
-  , setWindowTitle
-  , getWindowData
-  , setWindowData
+  , windowTitle
+  , windowData
   , getWindowConfig
   , getWindowPixelFormat
   , PixelFormat(..)
@@ -77,12 +75,12 @@ import Prelude hiding (all, foldl, foldr, mapM_)
 import Data.StateVar
 import Control.Applicative
 import Control.Exception
-import Control.Monad (forM, unless)
+import Control.Monad (forM, unless, void)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Data (Data)
 import Data.Foldable
-import Data.Maybe (catMaybes, isJust, fromMaybe)
+import Data.Maybe (isJust, fromMaybe)
 import Data.Monoid (First(..))
 import Data.Text (Text)
 import Data.Typeable
@@ -282,8 +280,8 @@ setWindowPosition (Window w) pos = case pos of
   Absolute (P (V2 x y)) -> Raw.setWindowPosition w x y
 
 -- | Get the position of the window.
-getWindowPosition :: MonadIO m => Window -> m (V2 CInt)
-getWindowPosition (Window w) =
+getWindowAbsolutePosition :: MonadIO m => Window -> m (V2 CInt)
+getWindowAbsolutePosition (Window w) =
     liftIO $
     alloca $ \wPtr ->
     alloca $ \hPtr -> do
@@ -308,31 +306,33 @@ windowSize (Window win) = makeStateVar getWindowSize setWindowSize
       Raw.getWindowSize win wptr hptr
       V2 <$> peek wptr <*> peek hptr
 
--- | Set the title of the window.
-setWindowTitle :: MonadIO m => Window -> Text -> m ()
-setWindowTitle (Window w) title =
-  liftIO . BS.useAsCString (Text.encodeUtf8 title) $
-    Raw.setWindowTitle w
-
--- | Get the title of the window.
+-- | Get or set the title of the window. If the window has no title, then an empty string is returned.
 --
--- If the window has no title, or if there is no such window, then an empty
--- string is returned.
-getWindowTitle :: MonadIO m => Window -> m Text
-getWindowTitle (Window w) = liftIO $ do
-    cstr <- Raw.getWindowTitle w
-    Text.decodeUtf8 <$> BS.packCString cstr
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetWindowTitle SDL_SetWindowTitle>@ and @<https://wiki.libsdl.org/SDL_GetWindowTitle SDL_GetWindowTitle>@ for C documentation.
+windowTitle :: Window -> StateVar Text
+windowTitle (Window w) = makeStateVar getWindowTitle setWindowTitle
+  where
+  setWindowTitle title =
+    liftIO . BS.useAsCString (Text.encodeUtf8 title) $
+      Raw.setWindowTitle w
 
--- | Associate the given pointer to arbitrary user data with the given window
--- and name. Returns whatever was associated with the given window and name
--- before.
-setWindowData :: MonadIO m => Window -> CString -> Ptr () -> m (Ptr ())
-setWindowData (Window w) = Raw.setWindowData w
+  getWindowTitle = liftIO $ do
+      cstr <- Raw.getWindowTitle w
+      Text.decodeUtf8 <$> BS.packCString cstr
 
--- | Retrieve the pointer to arbitrary user data associated with the given
+-- | Get or set the pointer to arbitrary user data associated with the given
 -- window and name.
-getWindowData :: MonadIO m => Window -> CString -> m (Ptr ())
-getWindowData (Window w) = Raw.getWindowData w
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetWindowTitle SDL_SetWindowTitle>@ and @<https://wiki.libsdl.org/SDL_GetWindowTitle SDL_GetWindowTitle>@ for C documentation.
+windowData :: Window -> CString -> StateVar (Ptr ())
+windowData (Window w) key = makeStateVar getWindowData setWindowData
+  where
+  setWindowData = void . Raw.setWindowData w key
+  getWindowData = Raw.getWindowData w key
 
 -- | Retrieve the configuration of the given window.
 --
@@ -343,7 +343,7 @@ getWindowConfig (Window w) = do
     wFlags <- Raw.getWindowFlags w
 
     wSize <- get (windowSize (Window w))
-    wPos  <- getWindowPosition (Window w)
+    wPos  <- getWindowAbsolutePosition (Window w)
 
     return WindowConfig {
         windowBorder       = wFlags .&. Raw.SDL_WINDOW_BORDERLESS == 0
@@ -418,19 +418,36 @@ isScreenSaverEnabled = Raw.isScreenSaverEnabled
 showWindow :: MonadIO m => Window -> m ()
 showWindow (Window w) = Raw.showWindow w
 
-setWindowGammaRamp :: MonadIO m => Window -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> Maybe (SV.Vector Word16) -> m ()
-setWindowGammaRamp (Window w) r g b = liftIO $ do
-  unless (all ((== 256) . SV.length) $ catMaybes [r,g,b]) $
-    error "setWindowGammaRamp requires 256 element in each colour channel"
+-- | Gets or sets the gamma ramp for the display that owns a given window.
+--
+-- Note that the data for the gamma ramp - the 'V3' ('SV.Vector' 'Word16') - must contain 256 element arrays. This triple is a set of translation vectors for each of the 16-bit red, green and blue channels.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- Despite the name and signature, this method retrieves the gamma ramp of the entire display, not an individual window. A window is considered to be owned by the display that contains the window's center pixel.
+windowGammaRamp :: Window -> StateVar (V3 (SV.Vector Word16))
+windowGammaRamp (Window w) = makeStateVar getWindowGammaRamp setWindowGammaRamp
+  where
+  getWindowGammaRamp =
+    allocaArray 256 $ \rPtr ->
+    allocaArray 256 $ \gPtr ->
+    allocaArray 256 $ \bPtr -> do
+      throwIfNeg_ "SDL.Video.getWindowGammaRamp" "SDL_GetWindowGammaRamp"
+        (Raw.getWindowGammaRamp w rPtr gPtr bPtr)
+      liftA3 V3 (fmap SV.fromList (peekArray 256 rPtr))
+                (fmap SV.fromList (peekArray 256 gPtr))
+                (fmap SV.fromList (peekArray 256 bPtr))
 
-  let withChan x f = case x of Just x' -> SV.unsafeWith x' f
-                               Nothing -> f nullPtr
 
-  withChan r $ \rPtr ->
-    withChan b $ \bPtr ->
-      withChan g $ \gPtr ->
-        throwIfNeg_ "SDL.Video.setWindowGammaRamp" "SDL_SetWindowGammaRamp" $
-          Raw.setWindowGammaRamp w rPtr gPtr bPtr
+  setWindowGammaRamp (V3 r g b) = liftIO $ do
+    unless (all ((== 256) . SV.length) [r,g,b]) $
+      error "setWindowGammaRamp requires 256 element in each colour channel"
+
+    SV.unsafeWith r $ \rPtr ->
+      SV.unsafeWith b $ \bPtr ->
+        SV.unsafeWith g $ \gPtr ->
+          throwIfNeg_ "SDL.Video.setWindowGammaRamp" "SDL_SetWindowGammaRamp" $
+            Raw.setWindowGammaRamp w rPtr gPtr bPtr
 
 data Display = Display {
                displayName           :: String

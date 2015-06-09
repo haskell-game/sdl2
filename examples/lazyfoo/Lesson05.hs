@@ -21,7 +21,7 @@ loadSurface screenSurface path = do
 main :: IO ()
 main = do
   SDL.initialize [SDL.InitVideo]
-  window <- SDL.createWindow "SDL Tutorial" SDL.defaultWindow { SDL.windowSize = V2 screenWidth screenHeight }
+  window <- SDL.createWindow "SDL Tutorial" SDL.defaultWindow { SDL.windowInitialSize = V2 screenWidth screenHeight }
   SDL.showWindow window
   screenSurface <- SDL.getWindowSurface window
 
