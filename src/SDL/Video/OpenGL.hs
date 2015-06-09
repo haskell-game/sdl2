@@ -86,6 +86,8 @@ newtype GLContext = GLContext Raw.GLContext
 --
 -- Throws 'SDLException' if the window wasn't configured with OpenGL
 -- support, or if context creation fails.
+--
+-- See @<https://wiki.libsdl.org/SDL_GL_CreateContext SDL_GL_CreateContext>@ for C documentation.
 glCreateContext :: (Functor m, MonadIO m) => Window -> m GLContext
 glCreateContext (Window w) =
   GLContext <$> throwIfNull "SDL.Video.glCreateContext" "SDL_GL_CreateContext"
@@ -109,12 +111,16 @@ glMakeCurrent (Window w) (GLContext ctx) =
 --
 -- The @glFinish@ command will block until the command queue has been fully
 -- processed. You should call that function before deleting a context.
+--
+-- See @<https://wiki.libsdl.org/SDL_GL_DeleteContext SDL_GL_DeleteContext>@ for C documentation.
 glDeleteContext :: MonadIO m => GLContext -> m ()
 glDeleteContext (GLContext ctx) = Raw.glDeleteContext ctx
 
 -- | Replace the contents of the front buffer with the back buffer's. The
 -- contents of the back buffer are undefined, clear them with @glClear@ or
 -- equivalent before drawing to them again.
+--
+-- See @<https://wiki.libsdl.org/SDL_GL_SwapWindow SDL_GL_SwapWindow>@ for C documentation.
 glSwapWindow :: MonadIO m => Window -> m ()
 glSwapWindow (Window w) = Raw.glSwapWindow w
 
