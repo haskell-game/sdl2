@@ -379,25 +379,39 @@ setClipboardText str = liftIO $ do
   throwIfNot0_ "SDL.Video.setClipboardText" "SDL_SetClipboardText" $
     BS.useAsCString (Text.encodeUtf8 str) Raw.setClipboardText
 
+-- | Hide a window.
+--
+-- See @<https://wiki.libsdl.org/SDL_HideWindow SDL_HideWindow>@ for C documentation.
 hideWindow :: MonadIO m => Window -> m ()
 hideWindow (Window w) = Raw.hideWindow w
 
 -- | Raise the window above other windows and set the input focus.
+--
+-- See @<https://wiki.libsdl.org/SDL_RaiseWindow SDL_RaiseWindow>@ for C documentation.
 raiseWindow :: MonadIO m => Window -> m ()
 raiseWindow (Window w) = Raw.raiseWindow w
 
--- | Disable screen savers.
+-- | Prevent the screen from being blanked by a screen saver. If you disable the screensaver, it is automatically re-enabled when SDL quits.
+--
+-- See @<https://wiki.libsdl.org/SDL_DisableScreenSaver SDL_DisableScreenSaver>@ for C documentation.
 disableScreenSaver :: MonadIO m => m ()
 disableScreenSaver = Raw.disableScreenSaver
 
--- | Enable screen savers.
+-- | Allow the screen to be blanked by a screen saver.
+--
+-- See @<https://wiki.libsdl.org/SDL_EnableScreenSaver SDL_EnableScreenSaver>@ for C documentation.
 enableScreenSaver :: MonadIO m => m ()
 enableScreenSaver = Raw.enableScreenSaver
 
--- | Check whether screen savers are enabled.
+-- | Check whether screen savers are enabled .
+--
+-- See @<https://wiki.libsdl.org/SDL_IsScreenSaverEnabled SDL_IsScreenSaverEnabled>@ for C documentation.
 isScreenSaverEnabled :: MonadIO m => m Bool
 isScreenSaverEnabled = Raw.isScreenSaverEnabled
 
+-- | Show a window.
+--
+-- See @<https://wiki.libsdl.org/SDL_ShowWindow SDL_ShowWindow>@ for C documentation.
 showWindow :: MonadIO m => Window -> m ()
 showWindow (Window w) = Raw.showWindow w
 
