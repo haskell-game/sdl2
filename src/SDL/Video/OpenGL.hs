@@ -62,6 +62,7 @@ data OpenGLConfig = OpenGLConfig
   , glProfile          :: Profile -- ^ Defaults to 'Compatibility' 'Normal' @2 1@.
   } deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | The profile a driver should use when creating an OpenGL context.
 data Profile
   = Core Mode CInt CInt
     -- ^ Use the OpenGL core profile, with a given major and minor version
@@ -71,6 +72,7 @@ data Profile
     -- ^ Use an OpenGL profile for embedded systems
   deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | The mode a driver should use when creating an OpenGL context.
 data Mode
   = Normal
     -- ^ A normal profile with no special debugging support
@@ -78,6 +80,7 @@ data Mode
     -- ^ Use a debug context, allowing the usage of extensions such as @GL_ARB_debug_output@
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
+-- | A created OpenGL context.
 newtype GLContext = GLContext Raw.GLContext
   deriving (Eq, Typeable)
 
