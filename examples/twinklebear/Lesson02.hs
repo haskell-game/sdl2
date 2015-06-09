@@ -51,7 +51,7 @@ main = do
   SDL.initialize [ SDL.InitEverything ]
 
   let winConfig = SDL.defaultWindow { SDL.windowInitialSize = V2 screenWidth screenHeight }
-      rdrConfig = SDL.defaultRenderer { SDL.rendererAccelerated = True }
+      rdrConfig = SDL.defaultRenderer { SDL.rendererType = SDL.AcceleratedRenderer }
 
   window <- SDL.createWindow "Lesson 2" winConfig
   renderer <- SDL.createRenderer window (-1) rdrConfig
