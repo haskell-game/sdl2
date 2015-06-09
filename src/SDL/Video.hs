@@ -26,8 +26,7 @@ module SDL.Video
   , windowMaximumSize
   , windowSize
   , windowBordered
-  , getWindowBrightness
-  , setWindowBrightness
+  , windowBrightness
   , setWindowGammaRamp
   , getWindowGrab
   , setWindowGrab
@@ -238,23 +237,21 @@ windowBordered (Window w) = makeStateVar getWindowBordered setWindowBordered
   getWindowBordered = fmap ((== 0) . (.&. Raw.SDL_WINDOW_BORDERLESS)) (Raw.getWindowFlags w)
   setWindowBordered = Raw.setWindowBordered w
 
--- | Set the window's brightness, where 0.0 is completely dark and 1.0 is
--- normal brightness.
+-- | Get or set the window's brightness, where 0.0 is completely dark and 1.0 is normal brightness.
 --
 -- Throws 'SDLException' if the hardware does not support gamma
 -- correction, or if the system has run out of memory.
-setWindowBrightness :: MonadIO m => Window -> Float -> m ()
-setWindowBrightness (Window w) brightness = do
-  throwIfNot0_ "SDL.Video.setWindowBrightness" "SDL_SetWindowBrightness" $
-    Raw.setWindowBrightness w $ realToFrac brightness
-
--- | Get the gamma value for the display that owns the given window.
 --
--- Returned value is in range [0,1] where 0 means completely dark and 1
--- corresponds to normal brightness.
-getWindowBrightness :: MonadIO m => Window -> m Float
-getWindowBrightness (Window w) =
-    return . realToFrac =<< Raw.getWindowBrightness w
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+windowBrightness :: Window -> StateVar Float
+windowBrightness (Window w) = makeStateVar getWindowBrightness setWindowBrightness
+  where
+  setWindowBrightness brightness = do
+    throwIfNot0_ "SDL.Video.setWindowBrightness" "SDL_SetWindowBrightness" $
+      Raw.setWindowBrightness w $ realToFrac brightness
+
+  getWindowBrightness =
+      return . realToFrac =<< Raw.getWindowBrightness w
 
 -- | Set whether the mouse shall be confined to the window.
 setWindowGrab :: MonadIO m => Window -> Bool -> m ()
