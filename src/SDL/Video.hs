@@ -25,7 +25,7 @@ module SDL.Video
   , windowMinimumSize
   , windowMaximumSize
   , windowSize
-  , setWindowBordered
+  , windowBordered
   , getWindowBrightness
   , setWindowBrightness
   , setWindowGammaRamp
@@ -229,9 +229,14 @@ data WindowPosition
 destroyWindow :: MonadIO m => Window -> m ()
 destroyWindow (Window w) = Raw.destroyWindow w
 
--- | Set whether the window should have a border or not.
-setWindowBordered :: MonadIO m => Window -> Bool -> m ()
-setWindowBordered (Window w) = Raw.setWindowBordered w
+-- | Get or set if the window should have a border.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+windowBordered :: Window -> StateVar Bool
+windowBordered (Window w) = makeStateVar getWindowBordered setWindowBordered
+  where
+  getWindowBordered = fmap ((== 0) . (.&. Raw.SDL_WINDOW_BORDERLESS)) (Raw.getWindowFlags w)
+  setWindowBordered = Raw.setWindowBordered w
 
 -- | Set the window's brightness, where 0.0 is completely dark and 1.0 is
 -- normal brightness.
