@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 module SDL.Video.OpenGL
@@ -15,7 +16,7 @@ module SDL.Video.OpenGL
 
   , glSwapWindow
   , SwapInterval(..)
-  , glSetSwapInterval
+  , swapInterval
 
   -- ** Function Loading
   , Raw.glGetProcAddress
@@ -24,6 +25,7 @@ module SDL.Video.OpenGL
 import Control.Applicative
 import Control.Monad.IO.Class (MonadIO)
 import Data.Data (Data)
+import Data.StateVar
 import Data.Typeable
 import Foreign.C.Types
 import GHC.Generics (Generic)
@@ -112,9 +114,12 @@ glDeleteContext (GLContext ctx) = Raw.glDeleteContext ctx
 glSwapWindow :: MonadIO m => Window -> m ()
 glSwapWindow (Window w) = Raw.glSwapWindow w
 
+-- | The swap interval for the current OpenGL context.
 data SwapInterval
   = ImmediateUpdates
+    -- ^ No vertical retrace synchronization
   | SynchronizedUpdates
+    -- ^ The buffer swap is synchronized with the vertical retrace
   | LateSwapTearing
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
@@ -123,7 +128,26 @@ instance ToNumber SwapInterval CInt where
   toNumber SynchronizedUpdates = 1
   toNumber LateSwapTearing = -1
 
-glSetSwapInterval :: (Functor m, MonadIO m) => SwapInterval -> m ()
-glSetSwapInterval swapInterval =
-  throwIfNeg_ "SDL.Video.glSetSwapInterval" "SDL_GL_SetSwapInterval" $
-    Raw.glSetSwapInterval (toNumber swapInterval)
+instance FromNumber SwapInterval CInt where
+  fromNumber n' =
+    case n' of
+      0 -> ImmediateUpdates
+      1 -> SynchronizedUpdates
+      -1 -> LateSwapTearing
+      _ ->
+        error ("Unknown SwapInterval: " ++ show n')
+
+-- | Get or set the swap interval for the current OpenGL context.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_GL_SetSwapInterval SDL_GL_SetSwapInterval>@ and @<https://wiki.libsdl.org/SDL_GL_GetSwapInterval SDL_GL_GetSwapInterval>@ for C documentation.
+swapInterval :: StateVar SwapInterval
+swapInterval = makeStateVar glGetSwapInterval glSetSwapInterval
+  where
+  glGetSwapInterval = fmap fromNumber $ Raw.glGetSwapInterval
+
+
+  glSetSwapInterval swapInterval =
+    throwIfNeg_ "SDL.Video.glSetSwapInterval" "SDL_GL_SetSwapInterval" $
+      Raw.glSetSwapInterval (toNumber swapInterval)
