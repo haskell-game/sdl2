@@ -154,6 +154,19 @@ createWindow title config = liftIO $ do
 
 -- | Default configuration for windows. Use the record update syntax to
 -- override any of the defaults.
+--
+-- @
+-- 'defaultWindow' = 'WindowConfig'
+--   { 'windowBorder'       = True
+--   , 'windowHighDPI'      = False
+--   , 'windowInputGrabbed' = False
+--   , 'windowMode'         = 'Windowed'
+--   , 'windowOpenGL'       = Nothing
+--   , 'windowPosition'     = 'Wherever'
+--   , 'windowResizable'    = False
+--   , 'windowSize'         = V2 800 600
+--   }
+-- @
 defaultWindow :: WindowConfig
 defaultWindow = WindowConfig
   { windowBorder       = True
