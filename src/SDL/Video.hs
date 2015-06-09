@@ -33,8 +33,7 @@ module SDL.Video
   , getWindowAbsolutePosition
   , setWindowPosition
   , windowTitle
-  , getWindowData
-  , setWindowData
+  , windowData
   , getWindowConfig
   , getWindowPixelFormat
   , PixelFormat(..)
@@ -76,7 +75,7 @@ import Prelude hiding (all, foldl, foldr, mapM_)
 import Data.StateVar
 import Control.Applicative
 import Control.Exception
-import Control.Monad (forM, unless)
+import Control.Monad (forM, unless, void)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Data (Data)
@@ -323,16 +322,17 @@ windowTitle (Window w) = makeStateVar getWindowTitle setWindowTitle
       cstr <- Raw.getWindowTitle w
       Text.decodeUtf8 <$> BS.packCString cstr
 
--- | Associate the given pointer to arbitrary user data with the given window
--- and name. Returns whatever was associated with the given window and name
--- before.
-setWindowData :: MonadIO m => Window -> CString -> Ptr () -> m (Ptr ())
-setWindowData (Window w) = Raw.setWindowData w
-
--- | Retrieve the pointer to arbitrary user data associated with the given
+-- | Get or set the pointer to arbitrary user data associated with the given
 -- window and name.
-getWindowData :: MonadIO m => Window -> CString -> m (Ptr ())
-getWindowData (Window w) = Raw.getWindowData w
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetWindowTitle SDL_SetWindowTitle>@ and @<https://wiki.libsdl.org/SDL_GetWindowTitle SDL_GetWindowTitle>@ for C documentation.
+windowData :: Window -> CString -> StateVar (Ptr ())
+windowData (Window w) key = makeStateVar getWindowData setWindowData
+  where
+  setWindowData = void . Raw.setWindowData w key
+  getWindowData = Raw.getWindowData w key
 
 -- | Retrieve the configuration of the given window.
 --
