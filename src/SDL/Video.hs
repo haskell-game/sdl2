@@ -28,8 +28,7 @@ module SDL.Video
   , windowBordered
   , windowBrightness
   , setWindowGammaRamp
-  , getWindowGrab
-  , setWindowGrab
+  , windowGrab
   , setWindowMode
   , getWindowPosition
   , setWindowPosition
@@ -253,13 +252,14 @@ windowBrightness (Window w) = makeStateVar getWindowBrightness setWindowBrightne
   getWindowBrightness =
       return . realToFrac =<< Raw.getWindowBrightness w
 
--- | Set whether the mouse shall be confined to the window.
-setWindowGrab :: MonadIO m => Window -> Bool -> m ()
-setWindowGrab (Window w) = Raw.setWindowGrab w
-
--- | Get whether the mouse shall be confined to the window.
-getWindowGrab :: MonadIO m => Window -> m Bool
-getWindowGrab (Window w) = Raw.getWindowGrab w
+-- | Get or set whether the mouse shall be confined to the window.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+windowGrab :: Window -> StateVar Bool
+windowGrab (Window w) = makeStateVar getWindowGrab setWindowGrab
+  where
+  setWindowGrab = Raw.setWindowGrab w
+  getWindowGrab = Raw.getWindowGrab w
 
 -- | Change between window modes.
 --
