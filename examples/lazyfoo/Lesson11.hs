@@ -23,7 +23,7 @@ loadTexture r filePath = do
   size <- SDL.surfaceDimensions surface
   format <- SDL.surfaceFormat surface
   key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.setColorKey surface (Just key)
+  SDL.colorKey surface $= Just key
   t <- SDL.createTextureFromSurface r surface
   SDL.freeSurface surface
   return (Texture t size)
@@ -45,7 +45,7 @@ main = do
   window <-
     SDL.createWindow
       "SDL Tutorial"
-      SDL.defaultWindow {SDL.windowSize = V2 screenWidth screenHeight}
+      SDL.defaultWindow {SDL.windowInitialSize = V2 screenWidth screenHeight}
   SDL.showWindow window
 
   renderer <-
@@ -59,7 +59,7 @@ main = do
          , SDL.rendererPresentVSync = False
          })
 
-  SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   spriteSheetTexture <- loadTexture renderer "examples/lazyfoo/dots.bmp"
   let spriteSize = V2 100 100
@@ -78,7 +78,7 @@ main = do
 
         let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
-        SDL.setRenderDrawColor renderer (V4 maxBound maxBound maxBound maxBound)
+        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.renderClear renderer
 
         renderTexture renderer spriteSheetTexture (P (V2 0 0)) (Just clip1)
