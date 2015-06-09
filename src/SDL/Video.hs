@@ -30,10 +30,9 @@ module SDL.Video
   , windowGammaRamp
   , windowGrab
   , setWindowMode
-  , getWindowPosition
+  , getWindowAbsolutePosition
   , setWindowPosition
-  , getWindowTitle
-  , setWindowTitle
+  , windowTitle
   , getWindowData
   , setWindowData
   , getWindowConfig
@@ -282,8 +281,8 @@ setWindowPosition (Window w) pos = case pos of
   Absolute (P (V2 x y)) -> Raw.setWindowPosition w x y
 
 -- | Get the position of the window.
-getWindowPosition :: MonadIO m => Window -> m (V2 CInt)
-getWindowPosition (Window w) =
+getWindowAbsolutePosition :: MonadIO m => Window -> m (V2 CInt)
+getWindowAbsolutePosition (Window w) =
     liftIO $
     alloca $ \wPtr ->
     alloca $ \hPtr -> do
@@ -308,20 +307,21 @@ windowSize (Window win) = makeStateVar getWindowSize setWindowSize
       Raw.getWindowSize win wptr hptr
       V2 <$> peek wptr <*> peek hptr
 
--- | Set the title of the window.
-setWindowTitle :: MonadIO m => Window -> Text -> m ()
-setWindowTitle (Window w) title =
-  liftIO . BS.useAsCString (Text.encodeUtf8 title) $
-    Raw.setWindowTitle w
-
--- | Get the title of the window.
+-- | Get or set the title of the window. If the window has no title, then an empty string is returned.
 --
--- If the window has no title, or if there is no such window, then an empty
--- string is returned.
-getWindowTitle :: MonadIO m => Window -> m Text
-getWindowTitle (Window w) = liftIO $ do
-    cstr <- Raw.getWindowTitle w
-    Text.decodeUtf8 <$> BS.packCString cstr
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetWindowTitle SDL_SetWindowTitle>@ and @<https://wiki.libsdl.org/SDL_GetWindowTitle SDL_GetWindowTitle>@ for C documentation.
+windowTitle :: Window -> StateVar Text
+windowTitle (Window w) = makeStateVar getWindowTitle setWindowTitle
+  where
+  setWindowTitle title =
+    liftIO . BS.useAsCString (Text.encodeUtf8 title) $
+      Raw.setWindowTitle w
+
+  getWindowTitle = liftIO $ do
+      cstr <- Raw.getWindowTitle w
+      Text.decodeUtf8 <$> BS.packCString cstr
 
 -- | Associate the given pointer to arbitrary user data with the given window
 -- and name. Returns whatever was associated with the given window and name
@@ -343,7 +343,7 @@ getWindowConfig (Window w) = do
     wFlags <- Raw.getWindowFlags w
 
     wSize <- get (windowSize (Window w))
-    wPos  <- getWindowPosition (Window w)
+    wPos  <- getWindowAbsolutePosition (Window w)
 
     return WindowConfig {
         windowBorder       = wFlags .&. Raw.SDL_WINDOW_BORDERLESS == 0
