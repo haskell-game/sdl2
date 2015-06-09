@@ -22,7 +22,7 @@ module SDL.Video
   , showWindow
 
   -- * Window Attributes
-  , getWindowMinimumSize
+  , windowMinimumSize
   , getWindowMaximumSize
   , getWindowSize
   , setWindowBordered
@@ -33,7 +33,6 @@ module SDL.Video
   , setWindowGrab
   , setWindowMode
   , setWindowMaximumSize
-  , setWindowMinimumSize
   , getWindowPosition
   , setWindowPosition
   , setWindowSize
@@ -79,6 +78,7 @@ module SDL.Video
 
 import Prelude hiding (all, foldl, foldr, mapM_)
 
+import Data.StateVar
 import Control.Applicative
 import Control.Exception
 import Control.Monad (forM, unless)
@@ -520,9 +520,6 @@ instance ToNumber MessageKind Word32 where
 setWindowMaximumSize :: MonadIO m => Window -> V2 CInt -> m ()
 setWindowMaximumSize (Window win) (V2 w h) = Raw.setWindowMaximumSize win w h
 
-setWindowMinimumSize :: MonadIO m => Window -> V2 CInt -> m ()
-setWindowMinimumSize (Window win) (V2 w h) = Raw.setWindowMinimumSize win w h
-
 getWindowMaximumSize :: MonadIO m => Window -> m (V2 CInt)
 getWindowMaximumSize (Window w) =
   liftIO $
@@ -531,13 +528,22 @@ getWindowMaximumSize (Window w) =
     Raw.getWindowMaximumSize w wptr hptr
     V2 <$> peek wptr <*> peek hptr
 
-getWindowMinimumSize :: MonadIO m => Window -> m (V2 CInt)
-getWindowMinimumSize (Window w) =
-  liftIO $
-  alloca $ \wptr ->
-  alloca $ \hptr -> do
-    Raw.getWindowMinimumSize w wptr hptr
-    V2 <$> peek wptr <*> peek hptr
+-- | Get or set the minimum size of a window's client area.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetWindowMinimumSize SDL_SetWindowMinimumSize>@ and @<https://wiki.libsdl.org/SDL_GetWindowMinimumSize SDL_GetWindowMinimumSize>@ for C documentation.
+windowMinimumSize :: Window -> StateVar (V2 CInt)
+windowMinimumSize (Window win) = makeStateVar getWindowMinimumSize setWindowMinimumSize
+  where
+  setWindowMinimumSize (V2 w h) = Raw.setWindowMinimumSize win w h
+
+  getWindowMinimumSize =
+    liftIO $
+    alloca $ \wptr ->
+    alloca $ \hptr -> do
+      Raw.getWindowMinimumSize win wptr hptr
+      V2 <$> peek wptr <*> peek hptr
 
 createRenderer :: MonadIO m => Window -> CInt -> RendererConfig -> m Renderer
 createRenderer (Window w) driver config =
