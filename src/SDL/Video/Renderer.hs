@@ -946,7 +946,7 @@ instance ToNumber PixelFormat Word32 where
     UYVY -> Raw.SDL_PIXELFORMAT_UYVY
     YVYU -> Raw.SDL_PIXELFORMAT_YVYU
 
--- | The renderer's acceleration mode
+-- | Renderer acceleration mode
 data RendererAcceleration
   = NotAccelerated
     -- ^ The renderer does not use hardware acceleration
