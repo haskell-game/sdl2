@@ -970,8 +970,8 @@ instance FromNumber RendererConfig Word32 where
   fromNumber n = RendererConfig
     { rendererSoftware      = n .&. Raw.SDL_RENDERER_SOFTWARE /= 0
     , rendererAcceleration  = renderAcceleration'
-                              (Raw.SDL_RENDERER_ACCELERATED /= 0)
-                              (Raw.SDL_RENDERER_PRESENTVSYNC /= 0)
+                              (n .&. Raw.SDL_RENDERER_ACCELERATED /= 0)
+                              (n .&. Raw.SDL_RENDERER_PRESENTVSYNC /= 0)
     , rendererTargetTexture = n .&. Raw.SDL_RENDERER_TARGETTEXTURE /= 0
     }
     where
