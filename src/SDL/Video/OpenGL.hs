@@ -34,6 +34,16 @@ import SDL.Internal.Types
 
 import qualified SDL.Raw as Raw
 
+-- | A set of default options for 'OpenGLConfig'
+--
+-- @
+-- 'defaultOpenGL' = 'OpenGLConfig'
+--   { 'glColorPrecision' = V4 8 8 8 0
+--   , 'glDepthPrecision' = 24
+--   , 'glStencilPrecision' = 8
+--   , 'glProfile' = 'Compatibility' 'Normal' 2 1
+--   }
+--_@
 defaultOpenGL :: OpenGLConfig
 defaultOpenGL = OpenGLConfig
   { glColorPrecision = V4 8 8 8 0
@@ -42,6 +52,7 @@ defaultOpenGL = OpenGLConfig
   , glProfile = Compatibility Normal 2 1
   }
 
+-- | Configuration used when creating an OpenGL rendering context.
 data OpenGLConfig = OpenGLConfig
   { glColorPrecision   :: V4 CInt -- ^ Defaults to 'V4' @8 8 8 0@.
   , glDepthPrecision   :: CInt    -- ^ Defaults to @24@.
@@ -51,13 +62,18 @@ data OpenGLConfig = OpenGLConfig
 
 data Profile
   = Core Mode CInt CInt
+    -- ^ Use the OpenGL core profile, with a given major and minor version
   | Compatibility Mode CInt CInt
+    -- ^ Use the compatibilty profile with a given major and minor version. The compatibility profile allows you to use deprecated functions such as immediate mode
   | ES Mode CInt CInt
+    -- ^ Use an OpenGL profile for embedded systems
   deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 data Mode
   = Normal
+    -- ^ A normal profile with no special debugging support
   | Debug
+    -- ^ Use a debug context, allowing the usage of extensions such as @GL_ARB_debug_output@
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 newtype GLContext = GLContext Raw.GLContext
