@@ -23,7 +23,7 @@ module SDL.Video
 
   -- * Window Attributes
   , windowMinimumSize
-  , getWindowMaximumSize
+  , windowMaximumSize
   , getWindowSize
   , setWindowBordered
   , getWindowBrightness
@@ -32,7 +32,6 @@ module SDL.Video
   , getWindowGrab
   , setWindowGrab
   , setWindowMode
-  , setWindowMaximumSize
   , getWindowPosition
   , setWindowPosition
   , setWindowSize
@@ -517,16 +516,22 @@ instance ToNumber MessageKind Word32 where
   toNumber Warning = Raw.SDL_MESSAGEBOX_WARNING
   toNumber Information = Raw.SDL_MESSAGEBOX_INFORMATION
 
-setWindowMaximumSize :: MonadIO m => Window -> V2 CInt -> m ()
-setWindowMaximumSize (Window win) (V2 w h) = Raw.setWindowMaximumSize win w h
+-- | Get or set the maximum size of a window's client area.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetWindowMaximumSize SDL_SetWindowMaximumSize>@ and @<https://wiki.libsdl.org/SDL_GetWindowMaximumSize SDL_GetWindowMaximumSize>@ for C documentation.
+windowMaximumSize :: Window -> StateVar (V2 CInt)
+windowMaximumSize (Window win) = makeStateVar getWindowMaximumSize setWindowMaximumSize
+  where
+  setWindowMaximumSize (V2 w h) = Raw.setWindowMaximumSize win w h
 
-getWindowMaximumSize :: MonadIO m => Window -> m (V2 CInt)
-getWindowMaximumSize (Window w) =
-  liftIO $
-  alloca $ \wptr ->
-  alloca $ \hptr -> do
-    Raw.getWindowMaximumSize w wptr hptr
-    V2 <$> peek wptr <*> peek hptr
+  getWindowMaximumSize =
+    liftIO $
+    alloca $ \wptr ->
+    alloca $ \hptr -> do
+      Raw.getWindowMaximumSize win wptr hptr
+      V2 <$> peek wptr <*> peek hptr
 
 -- | Get or set the minimum size of a window's client area.
 --
