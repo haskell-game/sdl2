@@ -75,6 +75,7 @@ module SDL.Video.Renderer
   , renderViewport
 
   -- * Utilities
+  , RendererAcceleration(..)
   , RendererConfig(..)
   , defaultRenderer
   , RendererInfo(..)
@@ -945,14 +946,22 @@ instance ToNumber PixelFormat Word32 where
     UYVY -> Raw.SDL_PIXELFORMAT_UYVY
     YVYU -> Raw.SDL_PIXELFORMAT_YVYU
 
+-- | The renderer's acceleration mode
+data RendererAcceleration
+  = NotAccelerated
+    -- ^ The renderer does not use hardware acceleration
+  | Accelerated
+    -- ^ The renderer uses hardware acceleration and refresh rate is ignored
+  | AcceleratedVSync
+    -- ^ The renderer uses hardware acceleration and present is synchronized with the refresh rate
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
+
 -- | The configuration data used when creating windows.
 data RendererConfig = RendererConfig
   { rendererSoftware      :: Bool
     -- ^ The renderer is a software fallback
-  , rendererAccelerated   :: Bool
-    -- ^ The renderer uses hardware acceleration
-  , rendererPresentVSync  :: Bool
-    -- ^ Present is synchronized with the refresh rate
+  , rendererAcceleration  :: RendererAcceleration
+    -- ^ The renderer's acceleration mode
   , rendererTargetTexture :: Bool
     -- ^ The renderer supports rendering to texture
   } deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
@@ -960,16 +969,21 @@ data RendererConfig = RendererConfig
 instance FromNumber RendererConfig Word32 where
   fromNumber n = RendererConfig
     { rendererSoftware      = n .&. Raw.SDL_RENDERER_SOFTWARE /= 0
-    , rendererAccelerated   = n .&. Raw.SDL_RENDERER_ACCELERATED /= 0
-    , rendererPresentVSync  = n .&. Raw.SDL_RENDERER_PRESENTVSYNC /= 0
+    , rendererAcceleration  = renderAcceleration'
+                              (Raw.SDL_RENDERER_ACCELERATED /= 0)
+                              (Raw.SDL_RENDERER_PRESENTVSYNC /= 0)
     , rendererTargetTexture = n .&. Raw.SDL_RENDERER_TARGETTEXTURE /= 0
     }
+    where
+      renderAcceleration' a v | a && v    = AcceleratedVSync
+                              | a         = Accelerated
+                              | otherwise = NotAccelerated
 
 instance ToNumber RendererConfig Word32 where
   toNumber config = foldr (.|.) 0
     [ if rendererSoftware config then Raw.SDL_RENDERER_SOFTWARE else 0
-    , if rendererAccelerated config then Raw.SDL_RENDERER_ACCELERATED else 0
-    , if rendererPresentVSync config then Raw.SDL_RENDERER_PRESENTVSYNC else 0
+    , if rendererAcceleration config /= NotAccelerated then Raw.SDL_RENDERER_ACCELERATED else 0
+    , if rendererAcceleration config == AcceleratedVSync then Raw.SDL_RENDERER_PRESENTVSYNC else 0
     , if rendererTargetTexture config then Raw.SDL_RENDERER_TARGETTEXTURE else 0
     ]
 
@@ -986,8 +1000,7 @@ instance ToNumber RendererConfig Word32 where
 defaultRenderer :: RendererConfig
 defaultRenderer = RendererConfig
   { rendererSoftware      = False
-  , rendererAccelerated   = True
-  , rendererPresentVSync  = False
+  , rendererAcceleration  = Accelerated
   , rendererTargetTexture = False
   }
 
