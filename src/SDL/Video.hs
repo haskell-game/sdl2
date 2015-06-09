@@ -24,7 +24,7 @@ module SDL.Video
   -- * Window Attributes
   , windowMinimumSize
   , windowMaximumSize
-  , getWindowSize
+  , windowSize
   , setWindowBordered
   , getWindowBrightness
   , setWindowBrightness
@@ -34,7 +34,6 @@ module SDL.Video
   , setWindowMode
   , getWindowPosition
   , setWindowPosition
-  , setWindowSize
   , getWindowTitle
   , setWindowTitle
   , getWindowData
@@ -120,7 +119,7 @@ createWindow title config = liftIO $ do
           Centered -> let u = Raw.SDL_WINDOWPOS_CENTERED in create u u w h
           Wherever -> let u = Raw.SDL_WINDOWPOS_UNDEFINED in create u u w h
           Absolute (P (V2 x y)) -> create x y w h
-    create' (windowSize config) flags >>= return . Window
+    create' (windowInitialSize config) flags >>= return . Window
   where
     flags = foldr (.|.) 0
       [ if windowBorder config then 0 else Raw.SDL_WINDOW_BORDERLESS
@@ -175,7 +174,7 @@ defaultWindow = WindowConfig
   , windowOpenGL       = Nothing
   , windowPosition     = Wherever
   , windowResizable    = False
-  , windowSize         = V2 800 600
+  , windowInitialSize  = V2 800 600
   }
 
 data WindowConfig = WindowConfig
@@ -186,7 +185,7 @@ data WindowConfig = WindowConfig
   , windowOpenGL       :: Maybe OpenGLConfig -- ^ Defaults to 'Nothing'. Can not be changed after window creation.
   , windowPosition     :: WindowPosition     -- ^ Defaults to 'Wherever'.
   , windowResizable    :: Bool               -- ^ Defaults to 'False'. Whether the window can be resized by the user. It is still possible to programatically change the size with 'setWindowSize'.
-  , windowSize         :: V2 CInt            -- ^ Defaults to @(800, 600)@.
+  , windowInitialSize  :: V2 CInt            -- ^ Defaults to @(800, 600)@.
   } deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 data WindowMode
@@ -290,19 +289,22 @@ getWindowPosition (Window w) =
         V2 <$> peek wPtr <*> peek hPtr
 
 
--- | Set the size of the window. Values beyond the maximum supported size are
--- clamped.
-setWindowSize :: MonadIO m => Window -> V2 CInt -> m ()
-setWindowSize (Window win) (V2 w h) = Raw.setWindowSize win w h
+-- | Get or set the size of a window's client area. Values beyond the maximum supported size are clamped.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetWindowSize SDL_SetWindowSize>@ and @<https://wiki.libsdl.org/SDL_GetWindowSize SDL_GetWindowSize>@ for C documentation.
+windowSize :: Window -> StateVar (V2 CInt)
+windowSize (Window win) = makeStateVar getWindowSize setWindowSize
+  where
+  setWindowSize (V2 w h) = Raw.setWindowSize win w h
 
--- | Get the current size of the window.
-getWindowSize :: MonadIO m => Window -> m (V2 CInt)
-getWindowSize (Window w) =
-  liftIO $
-  alloca $ \wptr ->
-  alloca $ \hptr -> do
-    Raw.getWindowSize w wptr hptr
-    V2 <$> peek wptr <*> peek hptr
+  getWindowSize =
+    liftIO $
+    alloca $ \wptr ->
+    alloca $ \hptr -> do
+      Raw.getWindowSize win wptr hptr
+      V2 <$> peek wptr <*> peek hptr
 
 -- | Set the title of the window.
 setWindowTitle :: MonadIO m => Window -> Text -> m ()
@@ -338,7 +340,7 @@ getWindowConfig :: MonadIO m => Window -> m WindowConfig
 getWindowConfig (Window w) = do
     wFlags <- Raw.getWindowFlags w
 
-    wSize <- getWindowSize (Window w)
+    wSize <- get (windowSize (Window w))
     wPos  <- getWindowPosition (Window w)
 
     return WindowConfig {
@@ -350,7 +352,7 @@ getWindowConfig (Window w) = do
       , windowOpenGL       = Nothing
       , windowPosition     = Absolute (P wPos)
       , windowResizable    = wFlags .&. Raw.SDL_WINDOW_RESIZABLE > 0
-      , windowSize         = wSize
+      , windowInitialSize  = wSize
     }
 
 -- | Get the pixel format that is used for the given window.
