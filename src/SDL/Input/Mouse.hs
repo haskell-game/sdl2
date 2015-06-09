@@ -103,13 +103,16 @@ data MouseMotion
 
 data WarpMouseOrigin
   = WarpInWindow Window
+    -- ^ Move the mouse pointer within a given 'Window'.
   | WarpCurrentFocus
+    -- ^ Move the mouse pointer within whichever 'Window' currently has focus.
   -- WarpGlobal -- Needs 2.0.4
   deriving (Data, Eq, Generic, Ord, Show, Typeable)
 
-warpMouse :: MonadIO m => WarpMouseOrigin -> V2 CInt -> m ()
-warpMouse (WarpInWindow (Window w)) (V2 x y) = Raw.warpMouseInWindow w x y
-warpMouse WarpCurrentFocus (V2 x y) = Raw.warpMouseInWindow nullPtr x y
+-- | Move the current location of a mouse pointer. The 'WarpMouseOrigin' specifies the origin for the given warp coordinates.
+warpMouse :: MonadIO m => WarpMouseOrigin -> Point V2 CInt -> m ()
+warpMouse (WarpInWindow (Window w)) (P (V2 x y)) = Raw.warpMouseInWindow w x y
+warpMouse WarpCurrentFocus (P (V2 x y)) = Raw.warpMouseInWindow nullPtr x y
 
 -- The usage of 'void' is OK here - Raw.showCursor just returns the old state.
 setCursorVisible :: (Functor m, MonadIO m) => Bool -> m ()
