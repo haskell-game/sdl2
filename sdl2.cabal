@@ -51,7 +51,6 @@ library
     SDL
     SDL.Audio
     SDL.Event
-    SDL.Exception
     SDL.Filesystem
     SDL.Haptic
     SDL.Hint
@@ -87,6 +86,7 @@ library
   other-modules:
     Data.Bitmask
     SDL.Internal.Numbered
+    SDL.Exception
 
   hs-source-dirs:
     src/

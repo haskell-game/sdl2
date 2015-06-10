@@ -23,8 +23,8 @@ module SDL
   , module SDL.Time
   , module SDL.Video
 
-  -- * Auxiliary Modules
-  , module SDL.Exception
+  -- * Error Handling
+  , SDLException(..)
 
   -- * Working with State Variables
   , module Data.StateVar
@@ -33,7 +33,7 @@ module SDL
 import Data.StateVar
 import SDL.Audio
 import SDL.Event
-import SDL.Exception
+import SDL.Exception (SDLException(..))
 import SDL.Filesystem
 import SDL.Haptic
 import SDL.Hint
