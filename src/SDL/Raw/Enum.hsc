@@ -16,6 +16,11 @@ module SDL.Raw.Enum (
   pattern SDL_BLENDMODE_ADD,
   pattern SDL_BLENDMODE_MOD,
 
+  -- ** Endian Detetection
+  pattern SDL_BYTEORDER,
+  pattern SDL_LIL_ENDIAN,
+  pattern SDL_BIG_ENDIAN,
+
   -- ** Event Action
   EventAction,
   pattern SDL_ADDEVENT,
@@ -865,8 +870,11 @@ module SDL.Raw.Enum (
 import Data.Int
 import Data.Word
 
+import Foreign.C.Types
+
 type AudioStatus = (#type SDL_AudioStatus)
 type BlendMode = (#type SDL_BlendMode)
+type Endian = CInt
 type EventAction = (#type SDL_eventaction)
 type GameControllerAxis = (#type SDL_GameControllerAxis)
 type GameControllerButton = (#type SDL_GameControllerButton)
@@ -890,6 +898,10 @@ pattern SDL_BLENDMODE_NONE = (#const SDL_BLENDMODE_NONE) :: BlendMode
 pattern SDL_BLENDMODE_BLEND = (#const SDL_BLENDMODE_BLEND) :: BlendMode
 pattern SDL_BLENDMODE_ADD = (#const SDL_BLENDMODE_ADD) :: BlendMode
 pattern SDL_BLENDMODE_MOD = (#const SDL_BLENDMODE_MOD) :: BlendMode
+
+pattern SDL_BYTEORDER = (#const SDL_BYTEORDER) :: Endian
+pattern SDL_LIL_ENDIAN = (#const SDL_LIL_ENDIAN) :: Endian
+pattern SDL_BIG_ENDIAN = (#const SDL_BIG_ENDIAN) :: Endian
 
 pattern SDL_ADDEVENT = (#const SDL_ADDEVENT) :: EventAction
 pattern SDL_PEEKEVENT = (#const SDL_PEEKEVENT) :: EventAction

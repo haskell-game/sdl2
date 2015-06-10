@@ -214,12 +214,12 @@ data NumberFormat = SignedInteger | UnsignedInteger | Float
 
 type SampleBitSize = Word8
 
-data Endianess = LittleEndian | BigEndian -- | Native
+data Endianess = LittleEndian | BigEndian | Native
   deriving (Eq, Ord, Read, Show, Typeable)
 
 encodeAudioFormat :: AudioFormat -> Word16
 encodeAudioFormat (AudioFormat number bits endian) =
-  numberFormat .|. sampleSize .|. endianess
+  numberFormat .|. sampleSize .|. endianess endian
   where
     numberFormat =
       case number of
@@ -229,13 +229,14 @@ encodeAudioFormat (AudioFormat number bits endian) =
 
     sampleSize = fromIntegral bits
 
-    endianess =
-      case endian of
+    endianess e =
+      case e of
         BigEndian    -> shiftL 1 12 -- 0b0001000000000000
         LittleEndian -> 0           -- 0b0000000000000000
-        -- Use SDL_endian.h to detect endianess
-        -- https://wiki.libsdl.org/CategoryEndian
-        -- Native       -> error "not implemented"
+        Native       ->
+          case Raw.SDL_BYTEORDER of
+            Raw.SDL_LIL_ENDIAN -> endianess LittleEndian
+            _                  -> endianess BigEndian
 
 decodeAudioFormat :: Word16 -> AudioFormat
 decodeAudioFormat audioFormat = AudioFormat numberFormat sampleSize endianess
