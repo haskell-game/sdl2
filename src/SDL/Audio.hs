@@ -1,4 +1,3 @@
-{-# LANGUAGE BinaryLiterals #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveFoldable #-}
 {-# LANGUAGE DeriveFunctor #-}
@@ -215,7 +214,7 @@ data NumberFormat = SignedInteger | UnsignedInteger | Float
 
 type SampleBitSize = Word8
 
-data Endianess = LittleEndian | BigEndian | Native
+data Endianess = LittleEndian | BigEndian -- | Native
   deriving (Eq, Ord, Read, Show, Typeable)
 
 encodeAudioFormat :: AudioFormat -> Word16
@@ -224,41 +223,41 @@ encodeAudioFormat (AudioFormat number bits endian) =
   where
     numberFormat =
       case number of
-        UnsignedInteger -> 0b0000000000000000
-        SignedInteger   -> 0b1000000000000000
-        Float           -> 0b0000000100000000
+        UnsignedInteger -> 0           -- 0b0000000000000000
+        SignedInteger   -> shiftL 1 15 -- 0b1000000000000000
+        Float           -> shiftL 1 8  -- 0b0000000100000000
 
     sampleSize = fromIntegral bits
 
     endianess =
       case endian of
-        BigEndian    -> 0b0001000000000000
-        LittleEndian -> 0b0000000000000000
+        BigEndian    -> shiftL 1 12 -- 0b0001000000000000
+        LittleEndian -> 0           -- 0b0000000000000000
         -- Use SDL_endian.h to detect endianess
         -- https://wiki.libsdl.org/CategoryEndian
-        Native       -> error "not implemented"
+        -- Native       -> error "not implemented"
 
 decodeAudioFormat :: Word16 -> AudioFormat
 decodeAudioFormat audioFormat = AudioFormat numberFormat sampleSize endianess
   where
     numberFormat =
       case audioFormat .&. mask of
-        0b0000000000000000 -> UnsignedInteger
-        0b1000000000000000 -> SignedInteger
-        _                  -> Float
+        0     {- 0b0000000000000000 -} -> UnsignedInteger
+        32768 {- 0b1000000000000000 -} -> SignedInteger
+        _                              -> Float
       where
-        mask = 0b1000000100000000
+        mask = shiftL 1 15 .|. shiftL 1 8 -- 0b1000000100000000
 
     sampleSize = fromIntegral $ audioFormat .&. mask
       where
-        mask = 0b0000000011111111
+        mask = 255 -- 0b0000000011111111
 
     endianess =
       case audioFormat .&. mask of
-        0b0000000000000000 -> LittleEndian
-        _                  -> BigEndian
+        0 {- 0b0000000000000000 -} -> LittleEndian
+        _                          -> BigEndian
       where
-        mask = 0b0001000000000000
+        mask = shiftL 1 12 -- 0b0001000000000000
 
 
 {-
