@@ -1,3 +1,4 @@
+{-# LANGUAGE BinaryLiterals #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveFoldable #-}
 {-# LANGUAGE DeriveFunctor #-}
@@ -41,7 +42,10 @@ module SDL.Audio
   , audioDeviceStatus
 
     -- ** 'AudioFormat'
-  , AudioFormat
+  , AudioFormat(..)
+  , NumberFormat(..)
+  , SampleBitSize
+  , Endianess(..)
 
     -- ** Enumerating 'AudioDevice's
   , getAudioDeviceNames
@@ -144,7 +148,7 @@ openAudioDevice OpenDeviceSpec{..} = liftIO $
         actual <- peek actualSpecPtr
         let audioDevice = AudioDevice devId
             spec = AudioSpec { audioSpecFreq = Raw.audioSpecFreq actual
-                             , audioSpecFormat = AudioFormat (Raw.audioSpecFormat actual)
+                             , audioSpecFormat = decodeAudioFormat (Raw.audioSpecFormat actual)
                              , audioSpecChannels = fromC "SDL.Audio.openAudioDevice" "audioSpecChannels" readChannels (Raw.audioSpecChannels actual)
                              , audioSpecSilence = Raw.audioSpecSilence actual
                              , audioSpecSize = Raw.audioSpecSize actual
@@ -172,7 +176,7 @@ openAudioDevice OpenDeviceSpec{..} = liftIO $
 
   desiredSpec cb = Raw.AudioSpec
     { Raw.audioSpecFreq = unpackChangeable openDeviceFreq
-    , Raw.audioSpecFormat = unAudioFormat (unpackChangeable openDeviceFormat)
+    , Raw.audioSpecFormat = encodeAudioFormat (unpackChangeable openDeviceFormat)
     , Raw.audioSpecChannels = channelsToWord8 (unpackChangeable openDeviceChannels)
     , Raw.audioSpecSilence = 0
     , Raw.audioSpecSize = 0
@@ -180,9 +184,6 @@ openAudioDevice OpenDeviceSpec{..} = liftIO $
     , Raw.audioSpecCallback = cb
     , Raw.audioSpecUserdata = nullPtr
     }
-
-newtype AudioFormat = AudioFormat { unAudioFormat :: Word16 }
-  deriving (Eq, Ord, Read, Show, Typeable)
 
 closeAudioDevice :: MonadIO m => AudioDevice -> m ()
 closeAudioDevice (AudioDevice d) = Raw.closeAudioDevice d
@@ -205,6 +206,60 @@ getAudioDeviceNames usage = liftIO $ do
            Text.decodeUtf8 <$> BS.packCString cstr
 
   where usage' = encodeUsage usage
+
+data AudioFormat = AudioFormat NumberFormat SampleBitSize Endianess
+  deriving (Eq, Ord, Read, Show, Typeable)
+
+data NumberFormat = SignedInteger | UnsignedInteger | Float
+  deriving (Eq, Ord, Read, Show, Typeable)
+
+type SampleBitSize = Word8
+
+data Endianess = LittleEndian | BigEndian | Native
+  deriving (Eq, Ord, Read, Show, Typeable)
+
+encodeAudioFormat :: AudioFormat -> Word16
+encodeAudioFormat (AudioFormat number bits endian) =
+  numberFormat .|. sampleSize .|. endianess
+  where
+    numberFormat =
+      case number of
+        UnsignedInteger -> 0b0000000000000000
+        SignedInteger   -> 0b1000000000000000
+        Float           -> 0b0000000100000000
+
+    sampleSize = fromIntegral bits
+
+    endianess =
+      case endian of
+        BigEndian    -> 0b0001000000000000
+        LittleEndian -> 0b0000000000000000
+        -- Use SDL_endian.h to detect endianess
+        -- https://wiki.libsdl.org/CategoryEndian
+        Native       -> error "not implemented"
+
+decodeAudioFormat :: Word16 -> AudioFormat
+decodeAudioFormat audioFormat = AudioFormat numberFormat sampleSize endianess
+  where
+    numberFormat =
+      case audioFormat .&. mask of
+        0b0000000000000000 -> UnsignedInteger
+        0b1000000000000000 -> SignedInteger
+        _                  -> Float
+      where
+        mask = 0b1000000100000000
+
+    sampleSize = fromIntegral $ audioFormat .&. mask
+      where
+        mask = 0b0000000011111111
+
+    endianess =
+      case audioFormat .&. mask of
+        0b0000000000000000 -> LittleEndian
+        _                  -> BigEndian
+      where
+        mask = 0b0001000000000000
+
 
 {-
 
