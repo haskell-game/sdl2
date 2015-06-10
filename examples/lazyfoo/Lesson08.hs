@@ -33,10 +33,8 @@ main = do
       window
       (-1)
       (SDL.RendererConfig
-         { SDL.rendererAccelerated = True
-         , SDL.rendererSoftware = False
+         { SDL.rendererType = SDL.AcceleratedRenderer
          , SDL.rendererTargetTexture = False
-         , SDL.rendererPresentVSync = False
          })
 
   SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
