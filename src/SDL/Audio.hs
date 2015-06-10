@@ -20,12 +20,12 @@ module SDL.Audio
     AudioDevice
 
     -- ** Opening and Closing 'AudioDevice's
+  , openAudioDevice
+  , closeAudioDevice
   , OpenDeviceSpec(..)
   , AudioDeviceUsage(..)
   , Channels(..)
   , Changeable(..)
-  , openAudioDevice
-  , closeAudioDevice
 
     -- ** Working with Opened Devices
     -- *** Locking 'AudioDevice's
@@ -66,7 +66,6 @@ module SDL.Audio
 
     -- * Explicit Initialization
   , audioInit
-  , Raw.audioQuit
   ) where
 
 import Control.Applicative
@@ -132,6 +131,8 @@ data OpenDeviceSpec = OpenDeviceSpec
 
 -- | Attempt to open the closest matching 'AudioDevice', as specified by the
 -- given 'OpenDeviceSpec'.
+--
+-- See @<https://wiki.libsdl.org/SDL_OpenAudioDevice SDL_OpenAudioDevice>@ for C documentation.
 openAudioDevice :: MonadIO m => OpenDeviceSpec -> m (AudioDevice, AudioSpec)
 openAudioDevice OpenDeviceSpec{..} = liftIO $
   maybeWith (BS.useAsCString . Text.encodeUtf8) openDeviceName $ \cDevName -> do
@@ -184,9 +185,13 @@ openAudioDevice OpenDeviceSpec{..} = liftIO $
     , Raw.audioSpecUserdata = nullPtr
     }
 
+-- |
+--
+-- See @<https://wiki.libsdl.org/SDL_CloseAudioDevice SDL_CloseAudioDevice>@ for C documentation.
 closeAudioDevice :: MonadIO m => AudioDevice -> m ()
 closeAudioDevice (AudioDevice d) = Raw.closeAudioDevice d
 
+-- | An open audio device. These can be created via 'openAudioDevice' and should be closed with 'closeAudioDevice'
 newtype AudioDevice = AudioDevice (Raw.AudioDeviceID)
   deriving (Eq, Typeable)
 
@@ -206,16 +211,22 @@ getAudioDeviceNames usage = liftIO $ do
 
   where usage' = encodeUsage usage
 
+-- | Information about what format an audio bytestream is.
 data AudioFormat = AudioFormat NumberFormat SampleBitSize Endianess
   deriving (Eq, Ord, Read, Show, Typeable)
 
+-- | How each individual samples are encode
 data NumberFormat = SignedInteger | UnsignedInteger | Float
   deriving (Eq, Ord, Read, Show, Typeable)
 
 type SampleBitSize = Word8
 
-data Endianess = LittleEndian | BigEndian | Native
-  deriving (Eq, Ord, Read, Show, Typeable)
+-- | The endianness of samples in an audio stream.
+data Endianess
+  = LittleEndian
+  | BigEndian
+  | Native -- ^ This can vary between platforms, but means that the audio stream is in the same endianness as the platform.
+  deriving (Eq,Ord,Read,Show,Typeable)
 
 encodeAudioFormat :: AudioFormat -> Word16
 encodeAudioFormat (AudioFormat number bits endian) =
@@ -260,20 +271,32 @@ decodeAudioFormat audioFormat = AudioFormat numberFormat sampleSize endianess
       where
         mask = shiftL 1 12 -- 0b0001000000000000
 
-data Channels = Mono | Stereo | Quad | FivePointOne
-  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
+-- | How many channels audio should be played on
+data Channels
+  = Mono -- ^ A single speaker configuration
+  | Stereo -- ^ A traditional left/right stereo system
+  | Quad
+  | FivePointOne -- ^ 5.1 surround sound
+  deriving (Bounded,Data,Enum,Eq,Generic,Ord,Read,Show,Typeable)
 
 -- | 'AudioSpec' is the concrete specification of how an 'AudioDevice' was
 -- sucessfully opened. Unlike 'OpenDeviceSpec', which specifies what you
 -- /want/, 'AudioSpec' specifies what you /have/.
 data AudioSpec = AudioSpec
   { audioSpecFreq :: !CInt
+    -- ^ DSP frequency (samples per second)
   , audioSpecFormat :: !AudioFormat
+    -- ^ Audio data format
   , audioSpecChannels :: !Channels
+    -- ^ Number of separate sound channels
   , audioSpecSilence :: !Word8
+    -- ^ Calculated udio buffer silence value
   , audioSpecSamples :: !Word16
+    -- ^ Audio buffer size in samples (power of 2)
   , audioSpecSize :: !Word32
+    -- ^ Calculated audio buffer size in bytes
   , audioSpecCallback :: !(CInt -> IO (Vector Word8))
+    -- ^ The function to call when the audio device needs more data
   }
   deriving (Typeable)
 
@@ -289,9 +312,12 @@ encodeUsage usage =
     ForPlayback -> 0
     ForCapture -> 1
 
+-- | Used to indicate to SDL whether it is allowed to open other audio devices (if a property is marked as a 'Desire') or if it should fail if the device is unavailable ('Mandate').
 data Changeable a
   = Mandate !a
+    -- ^ 'Mandate' this exact property value, and fail if a matching audio device cannot be found.
   | Desire !a
+    -- ^ 'Desire' this property value, but allow other audio devices to be opened.
   deriving (Data, Foldable, Functor, Eq, Generic, Read, Show, Traversable, Typeable)
 
 foldChangeable :: (a -> b) -> (a -> b) -> Changeable a -> b
@@ -347,9 +373,11 @@ audioDeviceStatus (AudioDevice d) = liftIO $
 -- clearQueuedAudio :: AudioDevice -> IO ()
 -- clearQueuedAudio (AudioDevice d) = Raw.clearQueuedAudio d
 
+-- | An abstract description of an audio driver on the host machine.
 newtype AudioDriver = AudioDriver Text
   deriving (Eq, Show, Typeable)
 
+-- | Get the human readable name of an 'AudioDriver'
 audioDriverName :: AudioDriver -> Text
 audioDriverName (AudioDriver t) = t
 
