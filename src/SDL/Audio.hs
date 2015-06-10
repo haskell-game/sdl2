@@ -41,7 +41,10 @@ module SDL.Audio
   , audioDeviceStatus
 
     -- ** 'AudioFormat'
-  , AudioFormat
+  , AudioFormat(..)
+  , NumberFormat(..)
+  , SampleBitSize
+  , Endianess(..)
 
     -- ** Enumerating 'AudioDevice's
   , getAudioDeviceNames
@@ -144,7 +147,7 @@ openAudioDevice OpenDeviceSpec{..} = liftIO $
         actual <- peek actualSpecPtr
         let audioDevice = AudioDevice devId
             spec = AudioSpec { audioSpecFreq = Raw.audioSpecFreq actual
-                             , audioSpecFormat = AudioFormat (Raw.audioSpecFormat actual)
+                             , audioSpecFormat = decodeAudioFormat (Raw.audioSpecFormat actual)
                              , audioSpecChannels = fromC "SDL.Audio.openAudioDevice" "audioSpecChannels" readChannels (Raw.audioSpecChannels actual)
                              , audioSpecSilence = Raw.audioSpecSilence actual
                              , audioSpecSize = Raw.audioSpecSize actual
@@ -172,7 +175,7 @@ openAudioDevice OpenDeviceSpec{..} = liftIO $
 
   desiredSpec cb = Raw.AudioSpec
     { Raw.audioSpecFreq = unpackChangeable openDeviceFreq
-    , Raw.audioSpecFormat = unAudioFormat (unpackChangeable openDeviceFormat)
+    , Raw.audioSpecFormat = encodeAudioFormat (unpackChangeable openDeviceFormat)
     , Raw.audioSpecChannels = channelsToWord8 (unpackChangeable openDeviceChannels)
     , Raw.audioSpecSilence = 0
     , Raw.audioSpecSize = 0
@@ -180,9 +183,6 @@ openAudioDevice OpenDeviceSpec{..} = liftIO $
     , Raw.audioSpecCallback = cb
     , Raw.audioSpecUserdata = nullPtr
     }
-
-newtype AudioFormat = AudioFormat { unAudioFormat :: Word16 }
-  deriving (Eq, Ord, Read, Show, Typeable)
 
 closeAudioDevice :: MonadIO m => AudioDevice -> m ()
 closeAudioDevice (AudioDevice d) = Raw.closeAudioDevice d
@@ -206,36 +206,59 @@ getAudioDeviceNames usage = liftIO $ do
 
   where usage' = encodeUsage usage
 
-{-
+data AudioFormat = AudioFormat NumberFormat SampleBitSize Endianess
+  deriving (Eq, Ord, Read, Show, Typeable)
 
-audioFormatBitSize :: Lens' AudioFormat Word8
-audioFormatFloat :: Lens' AudioFormat Bool
-audioFormatBigEndian :: Lens' AudioFormat Bool
-audioFormatSigned :: Lens' AudioFormat Bool
+data NumberFormat = SignedInteger | UnsignedInteger | Float
+  deriving (Eq, Ord, Read, Show, Typeable)
 
-audioFormatU8 = AudioFormat 0 & audioFormatBitSize .~ 8
-audioFormatS8 = audioFormatU8 & audioFormatSigned .~ True
+type SampleBitSize = Word8
 
-audioFormatS16LSB = audioFormatS8 & audioFormatBitSize .~ 16
-audioFormatS16MSB = audioFormatS16LSB & audioFormatBigEndian .~ True
-audioFormatS16Sys = _
-audioFormatS16 = audioFormatS16LSB
-audioFormatU16LSB = audioFormatS16LSB & audioFormatSigned .~ False
-audioFormatU16MSB = audioFormatS16MSB & audioFormatSigned .~ False
-audioFormatU16Sys = _
-audioFormatU16 = audioFormatU16LSB
+data Endianess = LittleEndian | BigEndian | Native
+  deriving (Eq, Ord, Read, Show, Typeable)
 
-audioFormatS32LSB = audioFormatS16LSB & audioFormatBitSize .~ 32
-audioFormatS32MSB = audioFormatS16MSB & audioFormatBitSize .~ 32
-audioFormatS32Sys = _
-audioFormatS32 = audioFormatS32LSB
+encodeAudioFormat :: AudioFormat -> Word16
+encodeAudioFormat (AudioFormat number bits endian) =
+  numberFormat .|. sampleSize .|. endianess endian
+  where
+    numberFormat =
+      case number of
+        UnsignedInteger -> 0           -- 0b0000000000000000
+        SignedInteger   -> shiftL 1 15 -- 0b1000000000000000
+        Float           -> shiftL 1 8  -- 0b0000000100000000
 
-audioFormatF32LSB = audioFormatS32LSB & audioFormatFloat .~ True
-audioFormatF32MSB = audioFormatS32MSB & audioFormatFloat .~ True
-audioFormatF32Sys = _
-audioFormatF32 = audioFormatF32LSB
+    sampleSize = fromIntegral bits
 
--}
+    endianess e =
+      case e of
+        BigEndian    -> shiftL 1 12 -- 0b0001000000000000
+        LittleEndian -> 0           -- 0b0000000000000000
+        Native       ->
+          case Raw.SDL_BYTEORDER of
+            Raw.SDL_LIL_ENDIAN -> endianess LittleEndian
+            _                  -> endianess BigEndian
+
+decodeAudioFormat :: Word16 -> AudioFormat
+decodeAudioFormat audioFormat = AudioFormat numberFormat sampleSize endianess
+  where
+    numberFormat =
+      case audioFormat .&. mask of
+        0     {- 0b0000000000000000 -} -> UnsignedInteger
+        32768 {- 0b1000000000000000 -} -> SignedInteger
+        _                              -> Float
+      where
+        mask = shiftL 1 15 .|. shiftL 1 8 -- 0b1000000100000000
+
+    sampleSize = fromIntegral $ audioFormat .&. mask
+      where
+        mask = 255 -- 0b0000000011111111
+
+    endianess =
+      case audioFormat .&. mask of
+        0 {- 0b0000000000000000 -} -> LittleEndian
+        _                          -> BigEndian
+      where
+        mask = shiftL 1 12 -- 0b0001000000000000
 
 data Channels = Mono | Stereo | Quad | FivePointOne
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)

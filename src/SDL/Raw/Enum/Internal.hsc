@@ -23,8 +23,11 @@ module SDL.Raw.Enum.Internal (
 import Data.Int
 import Data.Word
 
+import Foreign.C.Types
+
 type AudioStatus = (#type SDL_AudioStatus)
 type BlendMode = (#type SDL_BlendMode)
+type Endian = CInt
 type EventAction = (#type SDL_eventaction)
 type GameControllerAxis = (#type SDL_GameControllerAxis)
 type GameControllerButton = (#type SDL_GameControllerButton)

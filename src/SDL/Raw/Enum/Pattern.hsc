@@ -18,6 +18,11 @@ module SDL.Raw.Enum.Pattern (
 	pattern BlendModeAdd,
 	pattern BlendModeMod,
 
+	-- ** Endianess Detection
+	pattern ByteOrder,
+	pattern LittleEndian,
+	pattern BigEndian,
+
 	-- ** Event Action
 	EventAction,
 	pattern EventActionAddEvent,
@@ -868,6 +873,10 @@ pattern BlendModeNone = (#const SDL_BLENDMODE_NONE) :: BlendMode
 pattern BlendModeBlend = (#const SDL_BLENDMODE_BLEND) :: BlendMode
 pattern BlendModeAdd = (#const SDL_BLENDMODE_ADD) :: BlendMode
 pattern BlendModeMod = (#const SDL_BLENDMODE_MOD) :: BlendMode
+
+pattern ByteOrder = (#const SDL_BYTEORDER) :: Endian
+pattern LittleEndian = (#const SDL_LIL_ENDIAN) :: Endian
+pattern BigEndian = (#const SDL_BIG_ENDIAN) :: Endian
 
 pattern EventActionAddEvent = (#const SDL_ADDEVENT) :: EventAction
 pattern EventActionPeekEvent = (#const SDL_PEEKEVENT) :: EventAction
