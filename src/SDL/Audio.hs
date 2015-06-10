@@ -259,38 +259,6 @@ decodeAudioFormat audioFormat = AudioFormat numberFormat sampleSize endianess
       where
         mask = shiftL 1 12 -- 0b0001000000000000
 
-
-{-
-
-audioFormatBitSize :: Lens' AudioFormat Word8
-audioFormatFloat :: Lens' AudioFormat Bool
-audioFormatBigEndian :: Lens' AudioFormat Bool
-audioFormatSigned :: Lens' AudioFormat Bool
-
-audioFormatU8 = AudioFormat 0 & audioFormatBitSize .~ 8
-audioFormatS8 = audioFormatU8 & audioFormatSigned .~ True
-
-audioFormatS16LSB = audioFormatS8 & audioFormatBitSize .~ 16
-audioFormatS16MSB = audioFormatS16LSB & audioFormatBigEndian .~ True
-audioFormatS16Sys = _
-audioFormatS16 = audioFormatS16LSB
-audioFormatU16LSB = audioFormatS16LSB & audioFormatSigned .~ False
-audioFormatU16MSB = audioFormatS16MSB & audioFormatSigned .~ False
-audioFormatU16Sys = _
-audioFormatU16 = audioFormatU16LSB
-
-audioFormatS32LSB = audioFormatS16LSB & audioFormatBitSize .~ 32
-audioFormatS32MSB = audioFormatS16MSB & audioFormatBitSize .~ 32
-audioFormatS32Sys = _
-audioFormatS32 = audioFormatS32LSB
-
-audioFormatF32LSB = audioFormatS32LSB & audioFormatFloat .~ True
-audioFormatF32MSB = audioFormatS32MSB & audioFormatFloat .~ True
-audioFormatF32Sys = _
-audioFormatF32 = audioFormatF32LSB
-
--}
-
 data Channels = Mono | Stereo | Quad | FivePointOne
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
