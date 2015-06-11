@@ -117,7 +117,7 @@ data OpenDeviceSpec = OpenDeviceSpec
     -- ^ The amount of audio channels.
   , openDeviceSamples :: !Word16
     -- ^ Output audio buffer size in samples. This should be a power of 2.
-  , openDeviceCallback :: !(CInt -> IO (Vector Word8))
+  , openDeviceCallback :: !(Ptr Word8 -> CInt -> IO ())
     -- ^ A callback to invoke whenever new sample data is required. The callback
     -- will be passed a single 'CInt' - the number of bytes of data to produce -
     -- and should return a 'Vector' of those audio samples.
@@ -136,11 +136,7 @@ data OpenDeviceSpec = OpenDeviceSpec
 openAudioDevice :: MonadIO m => OpenDeviceSpec -> m (AudioDevice, AudioSpec)
 openAudioDevice OpenDeviceSpec{..} = liftIO $
   maybeWith (BS.useAsCString . Text.encodeUtf8) openDeviceName $ \cDevName -> do
-    cb <- Raw.mkAudioCallback $ \_ buffer len -> do
-      v <- openDeviceCallback len
-      let (vForeignPtr, len') = SV.unsafeToForeignPtr0 v
-      withForeignPtr vForeignPtr $ \vPtr ->
-        copyBytes buffer vPtr (min (fromIntegral len) (fromIntegral len'))
+    cb <- Raw.mkAudioCallback $ \_ buffer len -> openDeviceCallback buffer len
     with (desiredSpec cb) $ \desiredSpecPtr ->
       alloca $ \actualSpecPtr -> do
         devId <- throwIf0 "SDL.Audio.openAudioDevice" "SDL_OpenAudioDevice" $
@@ -295,7 +291,7 @@ data AudioSpec = AudioSpec
     -- ^ Audio buffer size in samples (power of 2)
   , audioSpecSize :: !Word32
     -- ^ Calculated audio buffer size in bytes
-  , audioSpecCallback :: !(CInt -> IO (Vector Word8))
+  , audioSpecCallback :: !(Ptr Word8 -> CInt -> IO ())
     -- ^ The function to call when the audio device needs more data
   }
   deriving (Typeable)
