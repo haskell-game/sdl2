@@ -84,9 +84,9 @@ main = do
       window
       (-1)
       (SDL.RendererConfig
-         { SDL.rendererType = SDL.AcceleratedVSyncRenderer
-         , SDL.rendererTargetTexture = False
-         })
+        { SDL.rendererType = SDL.AcceleratedVSyncRenderer
+        , SDL.rendererTargetTexture = False
+        })
 
   SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
@@ -106,21 +106,21 @@ main = do
         let (Any quit, Last newDir) =
               foldMap (\case
                          SDL.QuitEvent -> (Any True, mempty)
-                         SDL.KeyboardEvent{..} ->
-                           if | keyboardEventKeyMotion == SDL.KeyDown ->
-                                  let scancode = SDL.keysymScancode keyboardEventKeysym
+                         SDL.KeyboardEvent e ->
+                           if | SDL.keyboardEventKeyMotion e == SDL.KeyDown ->
+                                  let scancode = SDL.keysymScancode (SDL.keyboardEventKeysym e)
                                   in if | scancode == SDL.ScancodeEscape -> (Any True, mempty)
                                         | otherwise -> mempty
                               | otherwise -> mempty
-                         SDL.JoyAxisEvent{..} ->
-                           if | joyAxisEventWhich == joystickID ->
+                         SDL.JoyAxisEvent e ->
+                           if | SDL.joyAxisEventWhich e == joystickID ->
                                   (\x -> (mempty, Last $ Just x)) $
-                                  case joyAxisEventAxis of
-                                    0 -> if | joyAxisEventValue < -joystickDeadZone -> (-1, yDir')
-                                            | joyAxisEventValue > joystickDeadZone -> (1, yDir')
+                                  case SDL.joyAxisEventAxis e of
+                                    0 -> if | SDL.joyAxisEventValue e < -joystickDeadZone -> (-1, yDir')
+                                            | SDL.joyAxisEventValue e > joystickDeadZone -> (1, yDir')
                                             | otherwise -> (0, yDir')
-                                    1 -> if | joyAxisEventValue < -joystickDeadZone -> (xDir', -1)
-                                            | joyAxisEventValue > joystickDeadZone -> (xDir', 1)
+                                    1 -> if | SDL.joyAxisEventValue e < -joystickDeadZone -> (xDir', -1)
+                                            | SDL.joyAxisEventValue e > joystickDeadZone -> (xDir', 1)
                                             | otherwise -> (xDir', 0)
                                     _ -> (xDir', yDir')
                               | otherwise -> mempty

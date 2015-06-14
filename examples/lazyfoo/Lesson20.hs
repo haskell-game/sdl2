@@ -76,9 +76,9 @@ main = do
       window
       (-1)
       (SDL.RendererConfig
-         { SDL.rendererType = SDL.AcceleratedVSyncRenderer
-         , SDL.rendererTargetTexture = False
-         })
+        { SDL.rendererType = SDL.AcceleratedVSyncRenderer
+        , SDL.rendererTargetTexture = False
+        })
 
   SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
@@ -99,14 +99,14 @@ main = do
         let (Any quit, Any buttonDown) =
               foldMap (\case
                          SDL.QuitEvent -> (Any True, mempty)
-                         SDL.KeyboardEvent{..} ->
-                           if | keyboardEventKeyMotion == SDL.KeyDown ->
-                                  let scancode = SDL.keysymScancode keyboardEventKeysym
+                         SDL.KeyboardEvent e ->
+                           if | SDL.keyboardEventKeyMotion e == SDL.KeyDown ->
+                                  let scancode = SDL.keysymScancode (SDL.keyboardEventKeysym e)
                                   in if | scancode == SDL.ScancodeEscape -> (Any True, mempty)
                                         | otherwise -> mempty
                               | otherwise -> mempty
-                         SDL.JoyButtonEvent{..} ->
-                           if | joyButtonEventState /= 0 -> (mempty, Any True)
+                         SDL.JoyButtonEvent e ->
+                           if | SDL.joyButtonEventState e /= 0 -> (mempty, Any True)
                               | otherwise -> mempty
                          _ -> mempty) $
               map SDL.eventPayload events

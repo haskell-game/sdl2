@@ -1,6 +1,5 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiWayIf #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Lazyfoo.Lesson15 (main) where
 
@@ -68,9 +67,9 @@ main = do
       window
       (-1)
       (SDL.RendererConfig
-         { SDL.rendererType = SDL.AcceleratedVSyncRenderer
-         , SDL.rendererTargetTexture = False
-         })
+        { SDL.rendererType = SDL.AcceleratedVSyncRenderer
+        , SDL.rendererTargetTexture = False
+        })
 
   SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
@@ -87,10 +86,10 @@ main = do
         let (Any quit, Sum phi, Last newFlips) =
               foldMap (\case
                          SDL.QuitEvent -> (Any True, mempty, mempty)
-                         SDL.KeyboardEvent{..} ->
+                         SDL.KeyboardEvent e ->
                            (\(x,y) -> (mempty, x,y)) $
-                           if | keyboardEventKeyMotion == SDL.KeyDown ->
-                                  let scancode = SDL.keysymScancode keyboardEventKeysym
+                           if | SDL.keyboardEventKeyMotion e == SDL.KeyDown ->
+                                  let scancode = SDL.keysymScancode (SDL.keyboardEventKeysym e)
                                   in if | scancode == SDL.ScancodeQ -> (mempty, Last (Just (V2 True False)))
                                         | scancode == SDL.ScancodeW -> (mempty, Last (Just (V2 False False)))
                                         | scancode == SDL.ScancodeE -> (mempty, Last (Just (V2 False True)))
