@@ -16,9 +16,7 @@ main = do
   let winConfig = SDL.defaultWindow { SDL.windowPosition = SDL.Absolute (P (V2 100 100))
                                     , SDL.windowInitialSize = V2 640 480 }
 
-      rdrConfig = SDL.RendererConfig { SDL.rendererSoftware      = False
-                                     , SDL.rendererAccelerated   = True
-                                     , SDL.rendererPresentVSync  = True
+      rdrConfig = SDL.RendererConfig { SDL.rendererType = SDL.AcceleratedVSyncRenderer
                                      , SDL.rendererTargetTexture = True }
 
   window <- SDL.createWindow "Hello World!" winConfig
