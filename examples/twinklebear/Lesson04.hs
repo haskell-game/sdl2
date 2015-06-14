@@ -54,8 +54,8 @@ main = do
 
         quit <- fmap (\ev -> case SDL.eventPayload ev of
             SDL.QuitEvent -> True
-            (SDL.KeyboardEvent _ SDL.KeyDown _ _ _) -> True
-            (SDL.MouseButtonEvent _ SDL.MouseButtonDown _ _ _ _ _) -> True
+            SDL.KeyboardEvent e -> SDL.keyboardEventKeyMotion e ==  SDL.KeyDown
+            SDL.MouseButtonEvent e -> SDL.mouseButtonEventMotion e == SDL.MouseButtonDown
             _ -> False) SDL.waitEvent
 
         unless quit loop

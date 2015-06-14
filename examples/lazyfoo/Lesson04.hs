@@ -1,7 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE PatternSynonyms #-}
 module Lazyfoo.Lesson04 (main) where
 
@@ -49,9 +48,9 @@ main = do
 
           currentSurface =
             fromMaybe oldSurface $ getLast $
-            foldMap (\case SDL.KeyboardEvent{..}
-                             | keyboardEventKeyMotion == SDL.KeyDown ->
-                                 case SDL.keysymKeycode keyboardEventKeysym of
+            foldMap (\case SDL.KeyboardEvent e
+                             | SDL.keyboardEventKeyMotion e == SDL.KeyDown ->
+                                 case SDL.keysymKeycode (SDL.keyboardEventKeysym e) of
                                    SDL.KeycodeUp    -> Last (Just surfaceUp)
                                    SDL.KeycodeDown  -> Last (Just surfaceDown)
                                    SDL.KeycodeRight -> Last (Just surfaceRight)

@@ -60,9 +60,9 @@ handleEvent mousePos e (Button buttonPos _) =
                foldl1 (&&) ((<=) <$> mousePos <*> buttonPos .+^ buttonSize)
       sprite
         | inside = case e of
-                     SDL.MouseButtonEvent{..}
-                       | mouseButtonEventMotion == SDL.MouseButtonDown -> MouseDown
-                       | mouseButtonEventMotion == SDL.MouseButtonUp -> MouseUp
+                     SDL.MouseButtonEvent e
+                       | SDL.mouseButtonEventMotion e == SDL.MouseButtonDown -> MouseDown
+                       | SDL.mouseButtonEventMotion e == SDL.MouseButtonUp -> MouseUp
                        | otherwise -> MouseOver
                      _ -> MouseOver
         | otherwise = MouseOut

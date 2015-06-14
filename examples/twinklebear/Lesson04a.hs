@@ -64,9 +64,9 @@ main = do
         let (Any quit, Sum posDelta) =
               foldMap (\case
                 SDL.QuitEvent -> (Any True, mempty)
-                SDL.KeyboardEvent{..} ->
-                  if | keyboardEventKeyMotion == SDL.KeyDown ->
-                         let scancode = SDL.keysymScancode keyboardEventKeysym
+                SDL.KeyboardEvent e ->
+                  if | SDL.keyboardEventKeyMotion e == SDL.KeyDown ->
+                         let scancode = SDL.keysymScancode (SDL.keyboardEventKeysym e)
                          in if | scancode == SDL.ScancodeUp    -> (Any False, Sum (V2    0  (-10)))
                                | scancode == SDL.ScancodeDown  -> (Any False, Sum (V2    0    10 ))
                                | scancode == SDL.ScancodeLeft  -> (Any False, Sum (V2 (-10)    0 ))

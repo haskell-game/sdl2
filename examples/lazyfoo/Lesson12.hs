@@ -1,6 +1,5 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiWayIf #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Lazyfoo.Lesson12 (main) where
 
@@ -82,10 +81,10 @@ main = do
         let (Any quit, Sum colorAdjustment) =
               foldMap (\case
                          SDL.QuitEvent -> (Any True, mempty)
-                         SDL.KeyboardEvent{..} ->
+                         SDL.KeyboardEvent e ->
                            (\x -> (mempty, x)) $
-                           if | keyboardEventKeyMotion == SDL.KeyDown ->
-                                  let scancode = SDL.keysymScancode keyboardEventKeysym
+                           if | SDL.keyboardEventKeyMotion e == SDL.KeyDown ->
+                                  let scancode = SDL.keysymScancode (SDL.keyboardEventKeysym e)
                                   in if | scancode == SDL.ScancodeQ -> Sum (V3 32 0 0)
                                         | scancode == SDL.ScancodeW -> Sum (V3 0 32 0)
                                         | scancode == SDL.ScancodeE -> Sum (V3 0 0 32)
