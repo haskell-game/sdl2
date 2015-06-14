@@ -295,7 +295,7 @@ pollEvent = liftIO $ alloca $ \e -> do
      then return Nothing
      else Just . convertRaw <$> peek e
 
-pollEvents :: MonadIO m => m [Event]
+pollEvents :: (Functor m, MonadIO m) => m [Event]
 pollEvents =
   do e <- pollEvent
      case e of
