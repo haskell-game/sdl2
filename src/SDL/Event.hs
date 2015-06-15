@@ -13,7 +13,7 @@ module SDL.Event
     pollEvent
   , pollEvents
   , mapEvents
-  , Raw.pumpEvents
+  , pumpEvents
   , waitEvent
   , waitEventTimeout
     -- * Event data
@@ -712,3 +712,15 @@ waitEventTimeout timeout = liftIO $ alloca $ \e -> do
   if n == 0
      then return Nothing
      else fmap Just (peek e >>= convertRaw)
+
+-- | Pump the event loop, gathering events from the input devices.
+--
+-- This function updates the event queue and internal input device state.
+--
+-- This should only be run in the thread that initialized the video subsystem, and for extra safety, you should consider only doing those things on the main thread in any case.
+--
+-- 'pumpEvents' gathers all the pending input information from devices and places it in the event queue. Without calls to 'pumpEvents' no events would ever be placed on the queue. Often the need for calls to 'pumpEvents' is hidden from the user since 'pollEvent' and 'waitEvent' implicitly call 'pumpEvents'. However, if you are not polling or waiting for events (e.g. you are filtering them), then you must call 'pumpEvents' to force an event queue update.
+--
+-- See @<https://wiki.libsdl.org/SDL_PumpEvents SDL_PumpEvents>@ for C documentation.
+pumpEvents :: MonadIO m => m ()
+pumpEvents = Raw.pumpEvents
