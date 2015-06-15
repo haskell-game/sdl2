@@ -304,7 +304,6 @@ data MouseButtonEventData =
                         -- ^ The 'MouseDevice' whose button was pressed or released.
                        ,mouseButtonEventButton :: MouseButton
                         -- ^ The button that was pressed or released.
-                       ,mouseButtonEventState :: Word8
                        ,mouseButtonEventClicks :: Word8
                         -- ^ The amount of clicks. 1 for a single-click, 2 for a double-click, etc.
                        ,mouseButtonEventPos :: Point V2 Int32
@@ -604,7 +603,6 @@ convertRaw (Raw.MouseButtonEvent t ts a b c d e f g) =
                                             motion
                                             (fromNumber b)
                                             button
-                                            d
                                             e
                                             (P (V2 f g)))))
 convertRaw (Raw.MouseWheelEvent _ ts a b c d) =
