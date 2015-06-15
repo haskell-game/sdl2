@@ -539,7 +539,7 @@ convertRaw (Raw.WindowEvent t ts a b c d) =
                         WindowClosedEvent (WindowClosedEventData w')
                       _ ->
                         UnknownEvent (UnknownEventData t)))
-convertRaw (Raw.KeyboardEvent Raw.SDL_KEYDOWN ts a b c d) =
+convertRaw (Raw.KeyboardEvent Raw.SDL_KEYDOWN ts a _ c d) =
   do w' <- fmap Window (Raw.getWindowFromID a)
      return (Event ts
                    (KeyboardEvent
@@ -547,7 +547,7 @@ convertRaw (Raw.KeyboardEvent Raw.SDL_KEYDOWN ts a b c d) =
                                          Pressed
                                          (c /= 0)
                                          (fromRawKeysym d))))
-convertRaw (Raw.KeyboardEvent Raw.SDL_KEYUP ts a b c d) =
+convertRaw (Raw.KeyboardEvent Raw.SDL_KEYUP ts a _ c d) =
   do w' <- fmap Window (Raw.getWindowFromID a)
      return (Event ts
                    (KeyboardEvent
@@ -588,7 +588,7 @@ convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) =
           if mask .&. x /= 0
              then Just
              else const Nothing
-convertRaw (Raw.MouseButtonEvent t ts a b c d e f g) =
+convertRaw (Raw.MouseButtonEvent t ts a b c _ e f g) =
   do w' <- fmap Window (Raw.getWindowFromID a)
      let motion
            | t == Raw.SDL_MOUSEBUTTONUP = Released

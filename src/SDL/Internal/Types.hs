@@ -8,7 +8,6 @@ module SDL.Internal.Types
 
 import Data.Data (Data)
 import Data.Typeable
-import Foreign
 import GHC.Generics (Generic)
 
 import qualified SDL.Raw as Raw

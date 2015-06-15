@@ -164,7 +164,6 @@ swapInterval = makeStateVar glGetSwapInterval glSetSwapInterval
   where
   glGetSwapInterval = fmap fromNumber $ Raw.glGetSwapInterval
 
-
-  glSetSwapInterval swapInterval =
+  glSetSwapInterval i =
     throwIfNeg_ "SDL.Video.glSetSwapInterval" "SDL_GL_SetSwapInterval" $
-      Raw.glSetSwapInterval (toNumber swapInterval)
+      Raw.glSetSwapInterval (toNumber i)
