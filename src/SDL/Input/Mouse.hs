@@ -11,7 +11,6 @@ module SDL.Input.Mouse
     -- * Mouse and Touch Input
   , MouseButton(..)
   , MouseDevice(..)
-  , MouseMotion(..)
 
     -- * Mouse State
   , getMouseLocation
@@ -94,12 +93,6 @@ instance FromNumber MouseDevice Word32 where
   fromNumber n' = case n' of
     Raw.SDL_TOUCH_MOUSEID -> Touch
     n -> Mouse $ fromIntegral n
-
--- | Are buttons being pressed or released?
-data MouseMotion
-  = MouseButtonUp
-  | MouseButtonDown
-  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 data WarpMouseOrigin
   = WarpInWindow Window

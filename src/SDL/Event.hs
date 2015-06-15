@@ -67,10 +67,8 @@ module SDL.Event
     -- ** Unknown events
   , UnknownEventData(..)
     -- * Auxiliary event data
-  , KeyMotion(..)
-  , KeyState(..)
+  , InputMotion(..)
   , MouseButton(..)
-  , MouseMotion(..)
   ) where
 
 import Control.Applicative
@@ -250,9 +248,8 @@ data WindowClosedEventData =
 data KeyboardEventData =
   KeyboardEventData {keyboardEventWindow :: Window
                      -- ^ The associated 'Window'.
-                    ,keyboardEventKeyMotion :: KeyMotion
+                    ,keyboardEventKeyMotion :: InputMotion
                      -- ^ Whether the key was pressed or released.
-                    ,keyboardEventState :: KeyState
                     ,keyboardEventRepeat :: Bool
                      -- ^ 'True' if this is a repeating key press from the user holding the key down.
                     ,keyboardEventKeysym :: Keysym
@@ -301,7 +298,7 @@ data MouseMotionEventData =
 data MouseButtonEventData =
   MouseButtonEventData {mouseButtonEventWindow :: Window
                         -- ^ The associated 'Window'.
-                       ,mouseButtonEventMotion :: MouseMotion
+                       ,mouseButtonEventMotion :: InputMotion
                         -- ^ Whether the button was pressed or released.
                        ,mouseButtonEventWhich :: MouseDevice
                         -- ^ The 'MouseDevice' whose button was pressed or released.
@@ -488,16 +485,8 @@ data UnknownEventData =
                    }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
-data KeyMotion = KeyUp | KeyDown
+data InputMotion = Released | Pressed
   deriving (Bounded, Enum, Eq, Ord, Read, Data, Generic, Show, Typeable)
-
-data KeyState = KeyPressed | KeyReleased
-  deriving (Bounded, Enum, Eq, Ord, Read, Data, Generic, Show, Typeable)
-
-instance FromNumber KeyState Word8 where
-  fromNumber n' = case n' of
-    Raw.SDL_PRESSED -> KeyPressed
-    Raw.SDL_RELEASED -> KeyReleased
 
 ccharStringToText :: [CChar] -> Text
 ccharStringToText = Text.decodeUtf8 . BSC8.pack . map castCCharToChar
@@ -553,8 +542,7 @@ convertRaw (Raw.KeyboardEvent Raw.SDL_KEYDOWN ts a b c d) =
      return (Event ts
                    (KeyboardEvent
                       (KeyboardEventData w'
-                                         KeyDown
-                                         (fromNumber b)
+                                         Pressed
                                          (c /= 0)
                                          (fromRawKeysym d))))
 convertRaw (Raw.KeyboardEvent Raw.SDL_KEYUP ts a b c d) =
@@ -562,8 +550,7 @@ convertRaw (Raw.KeyboardEvent Raw.SDL_KEYUP ts a b c d) =
      return (Event ts
                    (KeyboardEvent
                       (KeyboardEventData w'
-                                         KeyUp
-                                         (fromNumber b)
+                                         Released
                                          (c /= 0)
                                          (fromRawKeysym d))))
 convertRaw (Raw.TextEditingEvent _ ts a b c d) =
@@ -602,8 +589,8 @@ convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) =
 convertRaw (Raw.MouseButtonEvent t ts a b c d e f g) =
   do w' <- fmap Window (Raw.getWindowFromID a)
      let motion
-           | t == Raw.SDL_MOUSEBUTTONUP = MouseButtonUp
-           | t == Raw.SDL_MOUSEBUTTONDOWN = MouseButtonDown
+           | t == Raw.SDL_MOUSEBUTTONUP = Released
+           | t == Raw.SDL_MOUSEBUTTONDOWN = Pressed
          button
            | c == Raw.SDL_BUTTON_LEFT = ButtonLeft
            | c == Raw.SDL_BUTTON_MIDDLE = ButtonMiddle
