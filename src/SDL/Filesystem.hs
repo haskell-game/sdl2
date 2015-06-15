@@ -1,20 +1,24 @@
+{-# LANGUAGE CPP#-}
 {-# LANGUAGE OverloadedStrings #-}
+
 module SDL.Filesystem
   ( -- * Filesystem Paths
     getBasePath
   , getPrefPath
 ) where
 
-import Control.Applicative
-import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Exception
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (Text)
 import Foreign.Marshal.Alloc
 import SDL.Exception
-
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
 import qualified SDL.Raw.Filesystem as Raw
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+#endif
 
 -- | An absolute path to the application data directory.
 --

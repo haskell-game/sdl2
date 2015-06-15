@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -71,7 +72,6 @@ module SDL.Event
   , MouseButton(..)
   ) where
 
-import Control.Applicative
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Data (Data)
 import Data.Maybe (catMaybes)
@@ -86,11 +86,14 @@ import SDL.Input.Keyboard
 import SDL.Input.Mouse
 import SDL.Internal.Numbered
 import SDL.Internal.Types (Window(Window))
-
 import qualified Data.ByteString.Char8 as BSC8
 import qualified Data.Text.Encoding as Text
 import qualified SDL.Exception as SDLEx
 import qualified SDL.Raw as Raw
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+#endif
 
 -- | A single SDL event. This event occured at 'eventTimestamp' and carries data under 'eventPayload'.
 data Event = Event

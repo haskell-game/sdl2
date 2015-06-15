@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveFoldable #-}
 {-# LANGUAGE DeriveFunctor #-}
@@ -68,11 +69,9 @@ module SDL.Audio
   , audioInit
   ) where
 
-import Control.Applicative
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Data (Data)
-import Data.Foldable (Foldable)
 import Data.Text (Text)
 import Data.Traversable (Traversable, for)
 import Data.Typeable
@@ -86,7 +85,6 @@ import Foreign.Ptr
 import Foreign.Storable
 import GHC.Generics (Generic)
 import SDL.Exception
-
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
 import qualified Data.Vector as V
@@ -94,6 +92,11 @@ import qualified Data.Vector.Storable as SV
 import qualified SDL.Raw.Audio as Raw
 import qualified SDL.Raw.Enum as Raw
 import qualified SDL.Raw.Types as Raw
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+import Data.Foldable (Foldable)
+#endif
 
 {-
 

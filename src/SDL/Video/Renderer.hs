@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveGeneric #-}
@@ -5,6 +6,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
+
 module SDL.Video.Renderer
   ( Renderer
 
@@ -82,16 +84,12 @@ module SDL.Video.Renderer
   , getRenderDriverInfo
   ) where
 
-import Prelude hiding (foldr)
-
-import Data.StateVar
-import Control.Applicative
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Data (Data)
 import Data.Foldable
+import Data.StateVar
 import Data.Text (Text)
-import Data.Traversable
 import Data.Typeable
 import Data.Word
 import Foreign.C.String
@@ -103,15 +101,20 @@ import Foreign.Storable
 import GHC.Generics (Generic)
 import Linear
 import Linear.Affine (Point(P))
+import Prelude hiding (foldr)
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
-
-import qualified Data.Text.Encoding as Text
 import qualified Data.ByteString as BS
+import qualified Data.Text.Encoding as Text
 import qualified Data.Vector.Storable as SV
 import qualified Data.Vector.Storable.Mutable as MSV
 import qualified SDL.Raw as Raw
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+import Data.Traversable
+#endif
 
 -- | Perform a fast surface copy to a destination surface.
 --
@@ -1127,7 +1130,7 @@ renderLogicalSize (Renderer r) = makeStateVar renderGetLogicalSize renderSetLogi
 
   renderSetLogicalSize v =
     throwIfNeg_ "SDL.Video.renderSetLogicalSize" "SDL_RenderSetLogicalSize" $ do
-      let (x,y) = case v of Just (V2 x y) -> (x, y)
+      let (x,y) = case v of Just (V2 vx vy) -> (vx, vy)
                             Nothing -> (0,0)
       Raw.renderSetLogicalSize r x y
 

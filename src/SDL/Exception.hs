@@ -1,5 +1,7 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
+
 module SDL.Exception
   ( SDLException(..)
   , fromC
@@ -14,7 +16,6 @@ module SDL.Exception
   , throwIfNull
   ) where
 
-import Control.Applicative
 import Control.Exception
 import Control.Monad
 import Control.Monad.IO.Class (MonadIO, liftIO)
@@ -24,10 +25,13 @@ import Data.Text (Text)
 import Data.Typeable (Typeable)
 import Foreign (Ptr, nullPtr)
 import GHC.Generics (Generic)
-
-import qualified SDL.Raw as Raw
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
+import qualified SDL.Raw as Raw
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+#endif
 
 -- | Error details about a failure to call an SDL routine. Almost all functions in this library have the
 -- ability to produce exceptions of this type. Inspection should help you learn more about what has

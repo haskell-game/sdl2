@@ -1,8 +1,10 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+
 module SDL.Video.OpenGL
   ( -- * OpenGL
     defaultOpenGL
@@ -22,7 +24,6 @@ module SDL.Video.OpenGL
   , Raw.glGetProcAddress
   ) where
 
-import Control.Applicative
 import Control.Monad.IO.Class (MonadIO)
 import Data.Data (Data)
 import Data.StateVar
@@ -33,8 +34,11 @@ import Linear
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
-
 import qualified SDL.Raw as Raw
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+#endif
 
 -- | A set of default options for 'OpenGLConfig'
 --

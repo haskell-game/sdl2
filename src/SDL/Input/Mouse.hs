@@ -1,8 +1,10 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
+
 module SDL.Input.Mouse
   ( -- * Relative Mouse Mode
     setRelativeMouseMode
@@ -31,31 +33,33 @@ module SDL.Input.Mouse
   , createColorCursor
   ) where
 
+import Control.Monad (void)
+import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Bits
 import Data.Bool
+import Data.Data (Data)
 import Data.StateVar
-import           Control.Applicative
-import           Control.Monad (void)
-import           Control.Monad.IO.Class (MonadIO, liftIO)
-import           Data.Bits
-import           Data.Data (Data)
-import           Data.Typeable
+import Data.Typeable
+import Data.Word
+import Foreign.C
+import Foreign.Marshal.Alloc
+import Foreign.Ptr
+import Foreign.Storable
+import GHC.Generics (Generic)
+import Linear
+import Linear.Affine
+import SDL.Exception
+import SDL.Internal.Numbered
+import SDL.Internal.Types (Window(Window))
+import SDL.Video.Renderer (Surface(Surface))
 import qualified Data.Vector.Storable as V
-import           Data.Word
-import           Foreign.C
-import           Foreign.Marshal.Alloc
-import           Foreign.Ptr
-import           Foreign.Storable
-import           GHC.Generics (Generic)
-import           Linear
-import           Linear.Affine
-import           SDL.Exception
-import           SDL.Internal.Numbered
-import           SDL.Internal.Types (Window(Window))
-import           SDL.Video.Renderer (Surface(Surface))
-
 import qualified SDL.Raw.Enum as Raw
 import qualified SDL.Raw.Event as Raw
 import qualified SDL.Raw.Types as Raw
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+#endif
 
 -- | Sets the current relative mouse mode.
 --

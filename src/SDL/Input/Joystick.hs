@@ -1,6 +1,8 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
+
 module SDL.Input.Joystick
   ( numJoysticks
   , availableJoysticks
@@ -19,7 +21,6 @@ module SDL.Input.Joystick
   , numBalls
   ) where
 
-import Control.Applicative
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Int
 import Data.Text (Text)
@@ -32,11 +33,14 @@ import GHC.Generics (Generic)
 import Linear
 import SDL.Exception
 import SDL.Internal.Types
-
-import qualified Data.Vector as V
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
+import qualified Data.Vector as V
 import qualified SDL.Raw as Raw
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+#endif
 
 -- | A description of joystick that can be opened using 'openJoystick'. To retrieve a list of
 -- connected joysticks, use 'availableJoysticks'.

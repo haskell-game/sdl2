@@ -1,8 +1,10 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+
 module SDL.Init
   ( initialize
   , InitFlag(..)
@@ -13,7 +15,6 @@ module SDL.Init
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bitmask (foldFlags)
 import Data.Data (Data)
-import Data.Foldable
 import Data.Typeable
 import Data.Word
 import Foreign.Marshal.Alloc
@@ -21,8 +22,11 @@ import Foreign.Storable
 import GHC.Generics
 import SDL.Exception
 import SDL.Internal.Numbered
-
 import qualified SDL.Raw as Raw
+
+#if !MIN_VERSION_base(4,8,0)
+import Data.Foldable
+#endif
 
 data InitFlag
   = InitTimer

@@ -1,6 +1,8 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+
 module SDL.Input.Keyboard
   ( -- * Keyboard Modifiers
     getModState
@@ -30,7 +32,6 @@ module SDL.Input.Keyboard
   , module SDL.Input.Keyboard.Codes
 ) where
 
-import Control.Applicative
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Data (Data)
@@ -44,11 +45,14 @@ import GHC.Generics (Generic)
 import SDL.Input.Keyboard.Codes
 import SDL.Internal.Numbered
 import SDL.Internal.Types
-
 import qualified Data.Vector as V
 import qualified SDL.Raw.Enum as Raw
 import qualified SDL.Raw.Event as Raw
 import qualified SDL.Raw.Types as Raw
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+#endif
 
 -- | Get the current key modifier state for the keyboard. The key modifier state is a mask special keys that are held down.
 --

@@ -1,7 +1,9 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE OverloadedStrings #-}
+
 module SDL.Haptic
   ( AvailableHapticDevice
   , availableHapticDeviceName
@@ -22,7 +24,6 @@ module SDL.Haptic
   , runEffect
   ) where
 
-import Control.Applicative
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Data (Data)
 import Data.Text (Text)
@@ -32,12 +33,15 @@ import Foreign
 import Foreign.C
 import GHC.Generics (Generic)
 import SDL.Internal.Types (Joystick(..))
-
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
 import qualified Data.Vector as V
 import qualified SDL.Exception as SDLEx
 import qualified SDL.Raw as Raw
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+#endif
 
 data AvailableHapticDevice = AvailableHapticDevice
   { availableHapticDeviceName :: Text
