@@ -685,6 +685,7 @@ convertRaw (Raw.ClipboardUpdateEvent _ ts) =
 convertRaw (Raw.UnknownEvent t ts) =
   return (Event ts (UnknownEvent (UnknownEventData t)))
 
+-- | Poll for currently pending events. You can only call this function in the thread that set the video mode.
 pollEvent :: MonadIO m => m (Maybe Event)
 pollEvent = liftIO $ alloca $ \e -> do
   n <- Raw.pollEvent e
@@ -692,6 +693,7 @@ pollEvent = liftIO $ alloca $ \e -> do
      then return Nothing
      else fmap Just (peek e >>= convertRaw)
 
+-- | Clear the event queue by polling for all pending events.
 pollEvents :: (Functor m, MonadIO m) => m [Event]
 pollEvents =
   do e <- pollEvent
@@ -699,6 +701,9 @@ pollEvents =
        Nothing -> return []
        Just e' -> (e' :) <$> pollEvents
 
+-- | Run a monadic computation, accumulating over all known 'Event's.
+--
+-- This can be useful when used with a state monad, allowing you to fold all events together.
 mapEvents :: MonadIO m => (Event -> m ()) -> m ()
 mapEvents h = do
   event' <- pollEvent
@@ -706,13 +711,17 @@ mapEvents h = do
     Just event -> h event >> mapEvents h
     Nothing -> return ()
 
+-- | Wait indefinitely for the next available event.
 waitEvent :: MonadIO m => m Event
 waitEvent = liftIO $ alloca $ \e -> do
   SDLEx.throwIfNeg_ "SDL.Events.waitEvent" "SDL_WaitEvent" $
     Raw.waitEvent e
   peek e >>= convertRaw
 
-waitEventTimeout :: MonadIO m => CInt -> m (Maybe Event)
+-- | Wait until the specified timeout for the next available amount.
+waitEventTimeout :: MonadIO m
+                 => CInt -- ^ The maximum amount of time to wait, in milliseconds.
+                 -> m (Maybe Event)
 waitEventTimeout timeout = liftIO $ alloca $ \e -> do
   n <- Raw.waitEventTimeout e timeout
   if n == 0
