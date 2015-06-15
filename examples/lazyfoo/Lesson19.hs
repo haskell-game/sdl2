@@ -109,7 +109,7 @@ main = do
               foldMap (\case
                          SDL.QuitEvent -> (Any True, mempty)
                          SDL.KeyboardEvent e ->
-                           if | SDL.keyboardEventKeyMotion e == SDL.KeyDown ->
+                           if | SDL.keyboardEventKeyMotion e == SDL.Pressed ->
                                   let scancode = SDL.keysymScancode (SDL.keyboardEventKeysym e)
                                   in if | scancode == SDL.ScancodeEscape -> (Any True, mempty)
                                         | otherwise -> mempty

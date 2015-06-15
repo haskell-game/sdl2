@@ -49,7 +49,7 @@ main = do
           currentSurface =
             fromMaybe oldSurface $ getLast $
             foldMap (\case SDL.KeyboardEvent e
-                             | SDL.keyboardEventKeyMotion e == SDL.KeyDown ->
+                             | SDL.keyboardEventKeyMotion e == SDL.Pressed ->
                                  case SDL.keysymKeycode (SDL.keyboardEventKeysym e) of
                                    SDL.KeycodeUp    -> Last (Just surfaceUp)
                                    SDL.KeycodeDown  -> Last (Just surfaceDown)

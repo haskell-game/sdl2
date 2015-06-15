@@ -89,7 +89,7 @@ main = do
                          SDL.QuitEvent -> (Any True, mempty)
                          SDL.KeyboardEvent e ->
                            (\x -> (mempty, x)) $
-                           if | SDL.keyboardEventKeyMotion e == SDL.KeyDown ->
+                           if | SDL.keyboardEventKeyMotion e == SDL.Pressed ->
                                   let scancode = SDL.keysymScancode (SDL.keyboardEventKeysym e)
                                   in if | scancode == SDL.ScancodeW -> Sum 32
                                         | scancode == SDL.ScancodeS -> Sum (-32)

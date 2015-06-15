@@ -90,7 +90,7 @@ main = do
                          SDL.QuitEvent -> (Any True, mempty, mempty)
                          SDL.KeyboardEvent e ->
                            (\(x,y) -> (mempty, x,y)) $
-                           if | SDL.keyboardEventKeyMotion e == SDL.KeyDown ->
+                           if | SDL.keyboardEventKeyMotion e == SDL.Pressed ->
                                   let scancode = SDL.keysymScancode (SDL.keyboardEventKeysym e)
                                   in if | scancode == SDL.ScancodeQ -> (mempty, Last (Just (V2 True False)))
                                         | scancode == SDL.ScancodeW -> (mempty, Last (Just (V2 False False)))

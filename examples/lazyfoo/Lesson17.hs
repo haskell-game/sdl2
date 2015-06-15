@@ -61,8 +61,8 @@ handleEvent mousePos e (Button buttonPos _) =
       sprite
         | inside = case e of
                      SDL.MouseButtonEvent e
-                       | SDL.mouseButtonEventMotion e == SDL.MouseButtonDown -> MouseDown
-                       | SDL.mouseButtonEventMotion e == SDL.MouseButtonUp -> MouseUp
+                       | SDL.mouseButtonEventMotion e == SDL.Pressed -> MouseDown
+                       | SDL.mouseButtonEventMotion e == SDL.Released -> MouseUp
                        | otherwise -> MouseOver
                      _ -> MouseOver
         | otherwise = MouseOut

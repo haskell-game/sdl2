@@ -73,7 +73,7 @@ main = do
               foldMap (\case
                 SDL.QuitEvent -> (Any True, mempty)
                 SDL.KeyboardEvent e ->
-                  if | SDL.keyboardEventKeyMotion e == SDL.KeyDown ->
+                  if | SDL.keyboardEventKeyMotion e == SDL.Pressed ->
                          let scancode = SDL.keysymScancode (SDL.keyboardEventKeysym e)
                          in if | scancode == SDL.Scancode1 -> (Any False, Last (Just spriteOne))
                                | scancode == SDL.Scancode2 -> (Any False, Last (Just spriteTwo))
