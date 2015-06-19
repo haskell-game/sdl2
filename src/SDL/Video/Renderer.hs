@@ -7,58 +7,22 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
 
+-- | "SDL.Video.Renderer" provides a high-level interface to SDL's accelerated 2D rendering library.
+
 module SDL.Video.Renderer
   ( Renderer
+
+    -- * 'Renderer' Configuration
+    -- | These configuration options can be used with 'SDL.Video.createRenderer' to create 'Renderer's.
+  , RendererConfig(..)
+  , defaultRenderer
+  , RendererType(..)
 
   -- * Drawing Primitives
   , blitScaled
   , blitSurface
-  , createTexture
-  , createTextureFromSurface
-  , convertSurface
-  , destroyTexture
-  , createRGBSurface
-  , createRGBSurfaceFrom
-  , lockTexture
-  , unlockTexture
-  , lockSurface
-  , unlockSurface
   , fillRect
   , fillRects
-  , freeSurface
-  , glBindTexture
-  , glUnbindTexture
-  , loadBMP
-  , mapRGB
-  , renderTargetSupported
-  , formatPalette
-  , setPaletteColors
-  , getWindowSurface
-  , colorKey
-  , renderDrawBlendMode
-  , renderDrawColor
-  , renderTarget
-  , textureAlphaMod
-  , textureBlendMode
-  , surfaceBlendMode
-  , textureColorMod
-
-  , surfaceDimensions
-  , surfacePixels
-  , surfaceFormat
-  , updateWindowSurface
-  , queryTexture
-  , BlendMode(..)
-  , Rectangle(..)
-  , Surface(..)
-  , SurfacePixelFormat
-  , Texture
-  , TextureInfo(..)
-  , TextureAccess(..)
-  , PixelFormat(..)
-  , Palette
-
-  -- * Drawing Primitives
   , renderClear
   , renderCopy
   , renderCopyEx
@@ -71,17 +35,80 @@ module SDL.Video.Renderer
   , renderFillRect
   , renderFillRects
   , renderPresent
+
+  -- * 'Renderer' State
+  -- | SDL exposes a stateful interface to 'Renderer's - the above primitives drawing routines will change their
+  -- output depending on the value of these state variables.
+  , renderDrawBlendMode
+  , renderDrawColor
+  , renderTarget
+  , renderTargetSupported
   , renderClipRect
   , renderLogicalSize
   , renderScale
   , renderViewport
 
-  -- * Utilities
-  , RendererType(..)
-  , RendererConfig(..)
-  , defaultRenderer
-  , RendererInfo(..)
+  -- * 'Surface's
+  , Surface(..)
+  , updateWindowSurface
+
+  -- ** Creating and Destroying 'Surface's
+  , convertSurface
+  , createRGBSurface
+  , createRGBSurfaceFrom
+  , freeSurface
+  , getWindowSurface
+  , loadBMP
+
+  -- ** 'Surface' state
+  , colorKey
+  , surfaceBlendMode
+  , surfaceDimensions
+  , surfaceFormat
+  , surfacePixels
+
+  -- ** Accessing 'Surface' Data
+  , lockSurface
+  , unlockSurface
+
+  -- * 'Palette's and pixel formats
+  , Palette
+  , PixelFormat(..)
+  , SurfacePixelFormat
+  , formatPalette
+  , mapRGB
+  , setPaletteColors
+
+  -- * Textures
+  , Texture
+
+  -- ** Creating, Using and Destroying 'Texture's
+  , createTexture
+  , TextureAccess(..)
+  , createTextureFromSurface
+  , destroyTexture
+  , glBindTexture
+  , glUnbindTexture
+
+  -- ** 'Texture' State
+  , textureAlphaMod
+  , textureBlendMode
+  , BlendMode(..)
+  , textureColorMod
+
+  -- ** Accessing 'Texture' Data
+  , lockTexture
+  , unlockTexture
+  , queryTexture
+  , TextureInfo(..)
+
+  , Rectangle(..)
+
+  -- * Available 'Renderer's
+  -- | These functions allow you to query the current system for available 'Renderer's that can be created
+  -- with 'SDL.Video.createRenderer'.
   , getRendererInfo
+  , RendererInfo(..)
   , getRenderDriverInfo
   ) where
 
@@ -1067,7 +1094,7 @@ textureAlphaMod (Texture t) = makeStateVar getTextureAlphaMod setTextureAlphaMod
 
   setTextureAlphaMod alpha =
     throwIfNeg_ "SDL.Video.Renderer.setTextureAlphaMod" "SDL_SetTextureAlphaMod" $
-    Raw.setTextureAlphaMod t alpha
+      Raw.setTextureAlphaMod t alpha
 
 -- | Get or set the blend mode used for texture copy operations.
 --
