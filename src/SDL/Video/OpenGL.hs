@@ -6,7 +6,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module SDL.Video.OpenGL
-  ( -- * OpenGL
+  ( -- * Creating and Configuring OpenGL Contexts
     defaultOpenGL
   , OpenGLConfig(..)
   , GLContext
@@ -16,11 +16,13 @@ module SDL.Video.OpenGL
   , glMakeCurrent
   , glDeleteContext
 
+  -- * Swapping
+  -- | The process of \"swapping\" means to move the back-buffer into the window contents itself.
   , glSwapWindow
   , SwapInterval(..)
   , swapInterval
 
-  -- ** Function Loading
+  -- * Function Loading
   , Raw.glGetProcAddress
   ) where
 
