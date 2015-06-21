@@ -63,7 +63,7 @@ main = do
       window
       (-1)
       (SDL.RendererConfig
-        { SDL.rendererType = SDL.SoftwareRenderer
+        { SDL.rendererType = SDL.UnacceleratedRenderer
         , SDL.rendererTargetTexture = False
         })
 
