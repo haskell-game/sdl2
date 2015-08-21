@@ -19,7 +19,6 @@ module SDL
   , module SDL.Audio
   , module SDL.Event
   , module SDL.Filesystem
-  , module SDL.Haptic
   , module SDL.Hint
   , module SDL.Input
   , module SDL.Power
@@ -38,7 +37,6 @@ import SDL.Audio
 import SDL.Event
 import SDL.Exception (SDLException(..))
 import SDL.Filesystem
-import SDL.Haptic
 import SDL.Hint
 import SDL.Init
 import SDL.Input

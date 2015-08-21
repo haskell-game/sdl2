@@ -52,7 +52,6 @@ library
     SDL.Audio
     SDL.Event
     SDL.Filesystem
-    SDL.Haptic
     SDL.Hint
     SDL.Init
     SDL.Input
@@ -311,6 +310,9 @@ executable lazyfoo-lesson-20
     build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.13, linear >= 1.10.1.2 && < 1.20, vector >= 0.10.9.0 && < 0.11, sdl2
   else
     buildable: False
+
+  -- Not buildable until someone with a haptic device can help out!
+  buildable: False
 
   hs-source-dirs: examples/lazyfoo
   main-is: Lesson20.hs
