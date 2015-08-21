@@ -555,6 +555,7 @@ convertRaw (Raw.KeyboardEvent Raw.SDL_KEYUP ts a _ c d) =
                                          Released
                                          (c /= 0)
                                          (fromRawKeysym d))))
+convertRaw (Raw.KeyboardEvent _ _ _ _ _ _) = error "convertRaw: Unknown keyboard motion"
 convertRaw (Raw.TextEditingEvent _ ts a b c d) =
   do w' <- fmap Window (Raw.getWindowFromID a)
      return (Event ts
@@ -593,6 +594,7 @@ convertRaw (Raw.MouseButtonEvent t ts a b c _ e f g) =
      let motion
            | t == Raw.SDL_MOUSEBUTTONUP = Released
            | t == Raw.SDL_MOUSEBUTTONDOWN = Pressed
+           | otherwise = error "convertRaw: Unexpected mouse button motion"
          button
            | c == Raw.SDL_BUTTON_LEFT = ButtonLeft
            | c == Raw.SDL_BUTTON_MIDDLE = ButtonMiddle
