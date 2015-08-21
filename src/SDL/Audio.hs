@@ -73,7 +73,7 @@ import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Data (Data)
 import Data.Text (Text)
-import Data.Traversable (Traversable, for)
+import Data.Traversable (for)
 import Data.Typeable
 import Data.Vector.Storable (Vector)
 import Data.Word
@@ -96,6 +96,7 @@ import qualified SDL.Raw.Types as Raw
 #if !MIN_VERSION_base(4,8,0)
 import Control.Applicative
 import Data.Foldable (Foldable)
+import Data.Traversable (Traversable)
 #endif
 
 {-
