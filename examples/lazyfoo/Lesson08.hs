@@ -1,7 +1,7 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Lazyfoo.Lesson08 (main) where
 
-import Control.Applicative
 import Control.Monad
 import Data.Foldable (for_)
 import Foreign.C.Types
@@ -9,6 +9,10 @@ import Linear
 import Linear.Affine
 import SDL (($=))
 import qualified SDL
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+#endif
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)

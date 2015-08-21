@@ -1,12 +1,11 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Lazyfoo.Lesson14 (main) where
 
-import Control.Applicative
 import Control.Monad
-import Data.Foldable
 import Data.Monoid
 import Foreign.C.Types
 import Linear
@@ -15,6 +14,11 @@ import SDL (($=))
 import qualified SDL
 
 import Paths_sdl2 (getDataFileName)
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+import Data.Foldable
+#endif
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
@@ -70,7 +74,8 @@ main = do
       clip3 = SDL.Rectangle (P (V2 128 0)) spriteSize
       clip4 = SDL.Rectangle (P (V2 196 0)) spriteSize
 
-  let loop (frame:frames) = do
+  let loop [] = return ()
+      loop (frame:frames) = do
         let collectEvents = do
               e <- SDL.pollEvent
               case e of

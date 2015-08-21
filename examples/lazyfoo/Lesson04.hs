@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -5,7 +6,6 @@
 module Lazyfoo.Lesson04 (main) where
 
 import Prelude hiding (any, mapM_)
-import Control.Applicative
 import Control.Monad hiding (mapM_)
 import Data.Foldable
 import Data.Maybe
@@ -15,6 +15,10 @@ import Linear
 import qualified SDL
 
 import Paths_sdl2 (getDataFileName)
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+#endif
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)

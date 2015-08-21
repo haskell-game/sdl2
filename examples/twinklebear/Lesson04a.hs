@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE RecordWildCards #-}
@@ -6,9 +7,7 @@ module TwinkleBear.Lesson04a (main) where
 
 
 import Prelude hiding (init)
-import Control.Applicative
 import Control.Monad
-import Data.Foldable
 import Data.Monoid
 import Foreign.C.Types
 import Linear
@@ -16,6 +15,11 @@ import Linear.Affine ( Point(P) )
 import qualified SDL
 
 import Paths_sdl2 (getDataFileName)
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+import Data.Foldable
+#endif
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)

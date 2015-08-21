@@ -1,9 +1,9 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 module TwinkleBear.Lesson04 (main) where
 
 
 import Prelude hiding (init)
-import Control.Applicative
 import Control.Monad
 import Foreign.C.Types
 import Linear
@@ -11,6 +11,10 @@ import Linear.Affine ( Point(P) )
 import qualified SDL
 
 import Paths_sdl2 (getDataFileName)
+
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+#endif
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
