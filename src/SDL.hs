@@ -25,11 +25,14 @@ module SDL
   , module SDL.Time
   , module SDL.Video
 
+  -- * Working with State Variables
+  -- $stateVars
+  , get, ($=), ($~)
+  -- ** Strict modification
+  , ($=!), ($~!)
+
   -- * Error Handling
   , SDLException(..)
-
-  -- * Working with State Variables
-  , module Data.StateVar
   ) where
 
 import Data.StateVar
@@ -139,5 +142,11 @@ appLoop renderer = do
   'renderPresent' renderer
   unless qPressed (appLoop renderer)
 @
+
+-}
+
+{- $stateVars
+
+The SDL API is moderately stateful. For the places where there is state that can be both read and changed, we use an abstraction provided by "Data.StateVar". This module exposes the 'StateVar' type, which models a mutable variable. You can query the contents of a 'StateVar' with 'get', and you can replace the contents of 'StateVar' with the infix assignment operator '$='.
 
 -}
