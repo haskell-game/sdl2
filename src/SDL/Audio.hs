@@ -1,13 +1,19 @@
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveFoldable #-}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 {-|
 
@@ -43,9 +49,6 @@ module SDL.Audio
 
     -- ** 'AudioFormat'
   , AudioFormat(..)
-  , NumberFormat(..)
-  , SampleBitSize
-  , Endianess(..)
 
     -- ** Enumerating 'AudioDevice's
   , getAudioDeviceNames
@@ -72,10 +75,11 @@ module SDL.Audio
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Data (Data)
+import Data.IORef (newIORef, writeIORef, readIORef)
+import Data.Int (Int8, Int16, Int32)
 import Data.Text (Text)
 import Data.Traversable (for)
 import Data.Typeable
-import Data.Vector.Storable (Vector)
 import Data.Word
 import Foreign.C.Types
 import Foreign.ForeignPtr
@@ -83,12 +87,13 @@ import Foreign.Marshal.Alloc
 import Foreign.Marshal.Utils
 import Foreign.Ptr
 import Foreign.Storable
+import GHC.Exts (Constraint)
 import GHC.Generics (Generic)
 import SDL.Exception
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
 import qualified Data.Vector as V
-import qualified Data.Vector.Storable as SV
+import qualified Data.Vector.Storable.Mutable as MV
 import qualified SDL.Raw.Audio as Raw
 import qualified SDL.Raw.Enum as Raw
 import qualified SDL.Raw.Types as Raw
@@ -112,19 +117,18 @@ pass an 'OpenDeviceSpec' to 'openAudioDevice'.
 -- Note that many of these properties are 'Changeable', meaning that you can
 -- choose whether or not SDL should interpret your specification as an
 -- unbreakable request ('Mandate'), or as an approximation 'Desire'.
-data OpenDeviceSpec = OpenDeviceSpec
+data OpenDeviceSpec = forall sampleType. OpenDeviceSpec
   { openDeviceFreq :: !(Changeable CInt)
     -- ^ The output audio frequency in herts.
-  , openDeviceFormat :: !(Changeable AudioFormat)
+  , openDeviceFormat :: !(Changeable (AudioFormat sampleType))
     -- ^ The format of audio that will be sampled from the output buffer.
   , openDeviceChannels :: !(Changeable Channels)
     -- ^ The amount of audio channels.
   , openDeviceSamples :: !Word16
     -- ^ Output audio buffer size in samples. This should be a power of 2.
-  , openDeviceCallback :: !(CInt -> IO (Vector Word8))
+  , openDeviceCallback :: forall actualSampleType. AudioFormat actualSampleType -> MV.IOVector actualSampleType -> IO ()
     -- ^ A callback to invoke whenever new sample data is required. The callback
-    -- will be passed a single 'CInt' - the number of bytes of data to produce -
-    -- and should return a 'Vector' of those audio samples.
+    -- will be passed a single 'MV.MVector' that must be filled with audio data.
   , openDeviceUsage :: !AudioDeviceUsage
     -- ^ How you intend to use the opened 'AudioDevice' - either for outputting
     -- or capturing audio.
@@ -140,25 +144,34 @@ data OpenDeviceSpec = OpenDeviceSpec
 openAudioDevice :: MonadIO m => OpenDeviceSpec -> m (AudioDevice, AudioSpec)
 openAudioDevice OpenDeviceSpec{..} = liftIO $
   maybeWith (BS.useAsCString . Text.encodeUtf8) openDeviceName $ \cDevName -> do
+    anAudioFormatRef <- newIORef undefined
     cb <- Raw.mkAudioCallback $ \_ buffer len -> do
-      v <- openDeviceCallback len
-      let (vForeignPtr, len') = SV.unsafeToForeignPtr0 v
-      withForeignPtr vForeignPtr $ \vPtr ->
-        copyBytes buffer vPtr (min (fromIntegral len) (fromIntegral len'))
+      fp <- newForeignPtr_ buffer
+      anAudioFormat <- readIORef anAudioFormatRef
+      case anAudioFormat of
+        AnAudioFormat audioFormat ->
+          case audioFormatStorable audioFormat of
+            Dict -> openDeviceCallback audioFormat
+                                       (MV.unsafeCast (MV.unsafeFromForeignPtr0 fp (fromIntegral len)))
     with (desiredSpec cb) $ \desiredSpecPtr ->
       alloca $ \actualSpecPtr -> do
         devId <- throwIf0 "SDL.Audio.openAudioDevice" "SDL_OpenAudioDevice" $
           Raw.openAudioDevice cDevName (encodeUsage openDeviceUsage) desiredSpecPtr actualSpecPtr changes
         actual <- peek actualSpecPtr
         let audioDevice = AudioDevice devId
-            spec = AudioSpec { audioSpecFreq = Raw.audioSpecFreq actual
-                             , audioSpecFormat = decodeAudioFormat (Raw.audioSpecFormat actual)
-                             , audioSpecChannels = fromC "SDL.Audio.openAudioDevice" "audioSpecChannels" readChannels (Raw.audioSpecChannels actual)
-                             , audioSpecSilence = Raw.audioSpecSilence actual
-                             , audioSpecSize = Raw.audioSpecSize actual
-                             , audioSpecSamples = Raw.audioSpecSamples actual
-                             , audioSpecCallback = openDeviceCallback
-                             }
+            anAudioFormat = decodeAudioFormat (Raw.audioSpecFormat actual)
+            spec =
+              case anAudioFormat of
+                AnAudioFormat audioFormat ->
+                  AudioSpec { audioSpecFreq = Raw.audioSpecFreq actual
+                            , audioSpecFormat = audioFormat
+                            , audioSpecChannels = fromC "SDL.Audio.openAudioDevice" "audioSpecChannels" readChannels (Raw.audioSpecChannels actual)
+                            , audioSpecSilence = Raw.audioSpecSilence actual
+                            , audioSpecSize = Raw.audioSpecSize actual
+                            , audioSpecSamples = Raw.audioSpecSamples actual
+                            , audioSpecCallback = openDeviceCallback
+                            }
+        writeIORef anAudioFormatRef anAudioFormat
         return (audioDevice, spec)
 
   where
@@ -189,6 +202,29 @@ openAudioDevice OpenDeviceSpec{..} = liftIO $
     , Raw.audioSpecUserdata = nullPtr
     }
 
+  -- Witness the 'Storable' instance for the sample type of any audio format. Needed in order to use 'MV.unsafeCast'
+  audioFormatStorable :: AudioFormat sampleType -> Dict (Storable sampleType)
+  audioFormatStorable Signed8BitAudio = Dict
+  audioFormatStorable Unsigned8BitAudio = Dict
+  audioFormatStorable Signed16BitLEAudio = Dict
+  audioFormatStorable Signed16BitBEAudio = Dict
+  audioFormatStorable Signed16BitNativeAudio = Dict
+  audioFormatStorable Unsigned16BitLEAudio = Dict
+  audioFormatStorable Unsigned16BitBEAudio = Dict
+  audioFormatStorable Unsigned16BitNativeAudio = Dict
+  audioFormatStorable Signed32BitLEAudio = Dict
+  audioFormatStorable Signed32BitBEAudio = Dict
+  audioFormatStorable Signed32BitNativeAudio = Dict
+  audioFormatStorable FloatingLEAudio = Dict
+  audioFormatStorable FloatingBEAudio = Dict
+  audioFormatStorable FloatingNativeAudio = Dict
+
+  sizeOfAudioFormat :: forall a. Storable a => AudioFormat a -> Int
+  sizeOfAudioFormat _ = sizeOf (undefined :: a)
+
+data Dict :: Constraint -> * where
+  Dict :: c => Dict c
+
 -- |
 --
 -- See @<https://wiki.libsdl.org/SDL_CloseAudioDevice SDL_CloseAudioDevice>@ for C documentation.
@@ -215,65 +251,69 @@ getAudioDeviceNames usage = liftIO $ do
 
   where usage' = encodeUsage usage
 
--- | Information about what format an audio bytestream is.
-data AudioFormat = AudioFormat NumberFormat SampleBitSize Endianess
-  deriving (Eq, Ord, Read, Show, Typeable)
+-- | Information about what format an audio bytestream is. The type variable
+-- @t@ indicates the type used for audio buffer samples. It is determined
+-- by the choice of the provided 'SampleBitSize'. For example:
+--
+-- @AudioFormat UnsignedInteger Sample8Bit Native :: AudioFormat Word8@
+--
+-- Indicating that an 8-bit audio format in the platforms native endianness
+-- uses a buffer of 'Word8' values.
+data AudioFormat sampleType where
+  Signed8BitAudio :: AudioFormat Int8
+  Unsigned8BitAudio :: AudioFormat Word8
+  Signed16BitLEAudio :: AudioFormat Int16
+  Signed16BitBEAudio :: AudioFormat Int16
+  Signed16BitNativeAudio :: AudioFormat Int16
+  Unsigned16BitLEAudio :: AudioFormat Word16
+  Unsigned16BitBEAudio :: AudioFormat Word16
+  Unsigned16BitNativeAudio :: AudioFormat Word16
+  Signed32BitLEAudio :: AudioFormat Int32
+  Signed32BitBEAudio :: AudioFormat Int32
+  Signed32BitNativeAudio :: AudioFormat Int32
+  FloatingLEAudio :: AudioFormat Float
+  FloatingBEAudio :: AudioFormat Float
+  FloatingNativeAudio :: AudioFormat Float
 
--- | How each individual samples are encode
-data NumberFormat = SignedInteger | UnsignedInteger | Float
-  deriving (Eq, Ord, Read, Show, Typeable)
+deriving instance Eq (AudioFormat sampleType)
+deriving instance Ord (AudioFormat sampleType)
+deriving instance Show (AudioFormat sampleType)
 
-type SampleBitSize = Word8
+data AnAudioFormat where
+  AnAudioFormat :: AudioFormat sampleType -> AnAudioFormat
 
--- | The endianness of samples in an audio stream.
-data Endianess
-  = LittleEndian
-  | BigEndian
-  | Native -- ^ This can vary between platforms, but means that the audio stream is in the same endianness as the platform.
-  deriving (Eq,Ord,Read,Show,Typeable)
+encodeAudioFormat :: AudioFormat sampleType -> Word16
+encodeAudioFormat Signed8BitAudio = Raw.SDL_AUDIO_S8
+encodeAudioFormat Unsigned8BitAudio = Raw.SDL_AUDIO_U8
+encodeAudioFormat Signed16BitLEAudio = Raw.SDL_AUDIO_S16LSB
+encodeAudioFormat Signed16BitBEAudio = Raw.SDL_AUDIO_S16MSB
+encodeAudioFormat Signed16BitNativeAudio = Raw.SDL_AUDIO_S16SYS
+encodeAudioFormat Unsigned16BitLEAudio = Raw.SDL_AUDIO_U16LSB
+encodeAudioFormat Unsigned16BitBEAudio = Raw.SDL_AUDIO_U16MSB
+encodeAudioFormat Unsigned16BitNativeAudio = Raw.SDL_AUDIO_U16SYS
+encodeAudioFormat Signed32BitLEAudio = Raw.SDL_AUDIO_S32LSB
+encodeAudioFormat Signed32BitBEAudio = Raw.SDL_AUDIO_S32MSB
+encodeAudioFormat Signed32BitNativeAudio = Raw.SDL_AUDIO_S32SYS
+encodeAudioFormat FloatingLEAudio = Raw.SDL_AUDIO_F32LSB
+encodeAudioFormat FloatingBEAudio = Raw.SDL_AUDIO_F32MSB
+encodeAudioFormat FloatingNativeAudio = Raw.SDL_AUDIO_F32SYS
 
-encodeAudioFormat :: AudioFormat -> Word16
-encodeAudioFormat (AudioFormat number bits endian) =
-  numberFormat .|. sampleSize .|. endianess endian
-  where
-    numberFormat =
-      case number of
-        UnsignedInteger -> 0           -- 0b0000000000000000
-        SignedInteger   -> shiftL 1 15 -- 0b1000000000000000
-        Float           -> shiftL 1 8  -- 0b0000000100000000
-
-    sampleSize = fromIntegral bits
-
-    endianess e =
-      case e of
-        BigEndian    -> shiftL 1 12 -- 0b0001000000000000
-        LittleEndian -> 0           -- 0b0000000000000000
-        Native       ->
-          case Raw.SDL_BYTEORDER of
-            Raw.SDL_LIL_ENDIAN -> endianess LittleEndian
-            _                  -> endianess BigEndian
-
-decodeAudioFormat :: Word16 -> AudioFormat
-decodeAudioFormat audioFormat = AudioFormat numberFormat sampleSize endianess
-  where
-    numberFormat =
-      case audioFormat .&. mask of
-        0     {- 0b0000000000000000 -} -> UnsignedInteger
-        32768 {- 0b1000000000000000 -} -> SignedInteger
-        _                              -> Float
-      where
-        mask = shiftL 1 15 .|. shiftL 1 8 -- 0b1000000100000000
-
-    sampleSize = fromIntegral $ audioFormat .&. mask
-      where
-        mask = 255 -- 0b0000000011111111
-
-    endianess =
-      case audioFormat .&. mask of
-        0 {- 0b0000000000000000 -} -> LittleEndian
-        _                          -> BigEndian
-      where
-        mask = shiftL 1 12 -- 0b0001000000000000
+decodeAudioFormat :: Word16 -> AnAudioFormat
+decodeAudioFormat Raw.SDL_AUDIO_S8 = AnAudioFormat Signed8BitAudio
+decodeAudioFormat Raw.SDL_AUDIO_U8 = AnAudioFormat Unsigned8BitAudio
+decodeAudioFormat Raw.SDL_AUDIO_S16LSB = AnAudioFormat Signed16BitLEAudio
+decodeAudioFormat Raw.SDL_AUDIO_S16MSB = AnAudioFormat Signed16BitBEAudio
+decodeAudioFormat Raw.SDL_AUDIO_S16SYS = AnAudioFormat Signed16BitNativeAudio
+decodeAudioFormat Raw.SDL_AUDIO_U16LSB = AnAudioFormat Unsigned16BitLEAudio
+decodeAudioFormat Raw.SDL_AUDIO_U16MSB = AnAudioFormat Unsigned16BitBEAudio
+decodeAudioFormat Raw.SDL_AUDIO_U16SYS = AnAudioFormat Unsigned16BitNativeAudio
+decodeAudioFormat Raw.SDL_AUDIO_S32LSB = AnAudioFormat Signed32BitLEAudio
+decodeAudioFormat Raw.SDL_AUDIO_S32MSB = AnAudioFormat Signed32BitBEAudio
+decodeAudioFormat Raw.SDL_AUDIO_S32SYS = AnAudioFormat Signed32BitNativeAudio
+decodeAudioFormat Raw.SDL_AUDIO_F32LSB = AnAudioFormat FloatingLEAudio
+decodeAudioFormat Raw.SDL_AUDIO_F32MSB = AnAudioFormat FloatingBEAudio
+decodeAudioFormat Raw.SDL_AUDIO_F32SYS = AnAudioFormat FloatingNativeAudio
+decodeAudioFormat x = error ("decodeAudioFormat failed: Unknown format " ++ show x)
 
 -- | How many channels audio should be played on
 data Channels
@@ -286,10 +326,10 @@ data Channels
 -- | 'AudioSpec' is the concrete specification of how an 'AudioDevice' was
 -- sucessfully opened. Unlike 'OpenDeviceSpec', which specifies what you
 -- /want/, 'AudioSpec' specifies what you /have/.
-data AudioSpec = AudioSpec
+data AudioSpec = forall sampleType. AudioSpec
   { audioSpecFreq :: !CInt
     -- ^ DSP frequency (samples per second)
-  , audioSpecFormat :: !AudioFormat
+  , audioSpecFormat :: !(AudioFormat sampleType)
     -- ^ Audio data format
   , audioSpecChannels :: !Channels
     -- ^ Number of separate sound channels
@@ -299,7 +339,7 @@ data AudioSpec = AudioSpec
     -- ^ Audio buffer size in samples (power of 2)
   , audioSpecSize :: !Word32
     -- ^ Calculated audio buffer size in bytes
-  , audioSpecCallback :: !(CInt -> IO (Vector Word8))
+  , audioSpecCallback :: AudioFormat sampleType -> MV.IOVector sampleType -> IO ()
     -- ^ The function to call when the audio device needs more data
   }
   deriving (Typeable)

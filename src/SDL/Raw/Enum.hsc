@@ -3,6 +3,23 @@
 module SDL.Raw.Enum (
   -- * Enumerations
 
+  -- ** Audio Format
+  AudioFormat,
+  pattern SDL_AUDIO_S8,
+  pattern SDL_AUDIO_U8,
+  pattern SDL_AUDIO_S16LSB,
+  pattern SDL_AUDIO_S16MSB,
+  pattern SDL_AUDIO_S16SYS,
+  pattern SDL_AUDIO_U16LSB,
+  pattern SDL_AUDIO_U16MSB,
+  pattern SDL_AUDIO_U16SYS,
+  pattern SDL_AUDIO_S32LSB,
+  pattern SDL_AUDIO_S32MSB,
+  pattern SDL_AUDIO_S32SYS,
+  pattern SDL_AUDIO_F32LSB,
+  pattern SDL_AUDIO_F32MSB,
+  pattern SDL_AUDIO_F32SYS,
+
   -- ** Audio Status
   AudioStatus,
   pattern SDL_AUDIO_STOPPED,
@@ -872,6 +889,7 @@ import Data.Word
 
 import Foreign.C.Types
 
+type AudioFormat = (#type SDL_AudioFormat)
 type AudioStatus = (#type SDL_AudioStatus)
 type BlendMode = (#type SDL_BlendMode)
 type Endian = CInt
@@ -889,6 +907,21 @@ type RendererFlip = (#type SDL_RendererFlip)
 type Scancode = (#type SDL_Scancode)
 type SystemCursor = (#type SDL_SystemCursor)
 type ThreadPriority = (#type SDL_ThreadPriority)
+
+pattern SDL_AUDIO_S8 = (#const AUDIO_S8) :: AudioFormat
+pattern SDL_AUDIO_U8 = (#const AUDIO_U8) :: AudioFormat
+pattern SDL_AUDIO_S16LSB = (#const AUDIO_S16LSB) :: AudioFormat
+pattern SDL_AUDIO_S16MSB = (#const AUDIO_S16MSB) :: AudioFormat
+pattern SDL_AUDIO_S16SYS = (#const AUDIO_S16SYS) :: AudioFormat
+pattern SDL_AUDIO_U16LSB = (#const AUDIO_U16LSB) :: AudioFormat
+pattern SDL_AUDIO_U16MSB = (#const AUDIO_U16MSB) :: AudioFormat
+pattern SDL_AUDIO_U16SYS = (#const AUDIO_U16SYS) :: AudioFormat
+pattern SDL_AUDIO_S32LSB = (#const AUDIO_S32LSB) :: AudioFormat
+pattern SDL_AUDIO_S32MSB = (#const AUDIO_S32MSB) :: AudioFormat
+pattern SDL_AUDIO_S32SYS = (#const AUDIO_S32SYS) :: AudioFormat
+pattern SDL_AUDIO_F32LSB = (#const AUDIO_F32LSB) :: AudioFormat
+pattern SDL_AUDIO_F32MSB = (#const AUDIO_F32MSB) :: AudioFormat
+pattern SDL_AUDIO_F32SYS = (#const AUDIO_F32SYS) :: AudioFormat
 
 pattern SDL_AUDIO_STOPPED = (#const SDL_AUDIO_STOPPED) :: AudioStatus
 pattern SDL_AUDIO_PLAYING = (#const SDL_AUDIO_PLAYING) :: AudioStatus

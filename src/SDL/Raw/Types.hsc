@@ -119,7 +119,6 @@ foreign import ccall "wrapper"
   mkTimerCallback :: (Word32 -> Ptr () -> IO Word32) -> IO TimerCallback
 
 type AudioDeviceID = Word32
-type AudioFormat = Word16
 type Cond = Ptr ()
 type Cursor = Ptr ()
 type FingerID = Int64
