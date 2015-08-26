@@ -39,7 +39,7 @@ main = do
       let quit = any (\case SDL.QuitEvent -> True
                             _ -> False) $ map SDL.eventPayload events
 
-      SDL.blitSurface xOut Nothing screenSurface Nothing
+      SDL.surfaceBlit xOut Nothing screenSurface Nothing
       SDL.updateWindowSurface window
 
       unless quit loop

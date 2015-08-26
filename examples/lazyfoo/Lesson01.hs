@@ -19,7 +19,7 @@ main = do
   screenSurface <- SDL.getWindowSurface window
   screenSurfaceFormat <- SDL.surfaceFormat screenSurface
   white <- SDL.mapRGB screenSurfaceFormat (V3 maxBound maxBound maxBound)
-  SDL.fillRect screenSurface Nothing white
+  SDL.surfaceFillRect screenSurface Nothing white
   SDL.updateWindowSurface window
 
   threadDelay 2000000

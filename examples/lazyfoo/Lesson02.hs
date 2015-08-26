@@ -20,7 +20,7 @@ main = do
 
   helloWorld <- getDataFileName "examples/lazyfoo/hello_world.bmp" >>= SDL.loadBMP
 
-  SDL.blitSurface helloWorld Nothing screenSurface Nothing
+  SDL.surfaceBlit helloWorld Nothing screenSurface Nothing
   SDL.updateWindowSurface window
 
   threadDelay 2000000

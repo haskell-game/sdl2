@@ -63,7 +63,7 @@ main = do
                            _ -> mempty)
                     events
 
-      SDL.blitSurface currentSurface Nothing screenSurface Nothing
+      SDL.surfaceBlit currentSurface Nothing screenSurface Nothing
       SDL.updateWindowSurface window
 
       unless quit (loop currentSurface)

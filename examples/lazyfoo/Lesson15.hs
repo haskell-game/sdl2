@@ -27,7 +27,7 @@ loadTexture r filePath = do
   size <- SDL.surfaceDimensions surface
   format <- SDL.surfaceFormat surface
   key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.colorKey surface $= Just key
+  SDL.surfaceColorKey surface $= Just key
   t <- SDL.createTextureFromSurface r surface
   SDL.freeSurface surface
   return (Texture t size)
@@ -35,14 +35,14 @@ loadTexture r filePath = do
 renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> Maybe CDouble -> Maybe (Point V2 CInt) -> Maybe (V2 Bool) -> IO ()
 renderTexture r (Texture t size) xy clip theta center flips =
   let dstSize =
-        maybe size (\(SDL.Rectangle _ size') ->  size') clip
-  in SDL.renderCopyEx r
-                      t
-                      clip
-                      (Just (SDL.Rectangle xy dstSize))
-                      (fromMaybe 0 theta)
-                      center
-                      (fromMaybe (pure False) flips)
+        maybe size (\(SDL.Rectangle _ size') -> size') clip
+  in SDL.copyEx r
+                t
+                clip
+                (Just (SDL.Rectangle xy dstSize))
+                (fromMaybe 0 theta)
+                center
+                (fromMaybe (pure False) flips)
 
 textureSize :: Texture -> V2 CInt
 textureSize (Texture _ sz) = sz
@@ -71,7 +71,7 @@ main = do
         , SDL.rendererTargetTexture = False
         })
 
-  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
+  SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   arrowTexture <- loadTexture renderer "examples/lazyfoo/arrow.bmp"
 
@@ -100,14 +100,14 @@ main = do
                          _ -> mempty) $
               map SDL.eventPayload events
 
-        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
-        SDL.renderClear renderer
+        SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
+        SDL.clear renderer
 
         let theta' = theta + phi
             flips' = fromMaybe flips newFlips
         renderTexture renderer arrowTexture (P (fmap (`div` 2) (V2 screenWidth screenHeight) - fmap (`div` 2) (textureSize arrowTexture))) Nothing (Just theta') Nothing (Just flips')
 
-        SDL.renderPresent renderer
+        SDL.present renderer
 
         unless quit (loop theta' flips')
 
