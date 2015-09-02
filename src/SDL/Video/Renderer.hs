@@ -1024,7 +1024,7 @@ instance ToNumber RendererConfig Word32 where
 --
 -- @
 -- 'defaultRenderer' = 'RendererConfig'
---   { 'rendererType'          = Accelerated
+--   { 'rendererType'          = 'AcceleratedRenderer'
 --   , 'rendererTargetTexture' = False
 --   }
 -- @
