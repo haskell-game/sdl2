@@ -22,7 +22,7 @@ main = do
   window <- SDL.createWindow "Hello World!" winConfig
   renderer <- SDL.createRenderer window (-1) rdrConfig
 
-  bmp <- getDataFileName "examples/twinkleBear/hello.bmp" >>= SDL.loadBMP
+  bmp <- getDataFileName "examples/twinklebear/hello.bmp" >>= SDL.loadBMP
   tex <- SDL.createTextureFromSurface renderer bmp
   SDL.freeSurface bmp
 
