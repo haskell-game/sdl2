@@ -219,9 +219,6 @@ openAudioDevice OpenDeviceSpec{..} = liftIO $
   audioFormatStorable FloatingBEAudio = Dict
   audioFormatStorable FloatingNativeAudio = Dict
 
-  sizeOfAudioFormat :: forall a. Storable a => AudioFormat a -> Int
-  sizeOfAudioFormat _ = sizeOf (undefined :: a)
-
 data Dict :: Constraint -> * where
   Dict :: c => Dict c
 
