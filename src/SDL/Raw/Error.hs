@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-module Graphics.UI.SDL.Error (
+module SDL.Raw.Error (
   -- * Error Handling
   SDLError(..),
   throwError,
