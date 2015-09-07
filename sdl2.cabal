@@ -42,7 +42,7 @@ source-repository head
 
 flag examples
   description:       Build examples
-  default:           True
+  default:           False
 
 library
   ghc-options: -Wall
