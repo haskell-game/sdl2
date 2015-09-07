@@ -42,7 +42,7 @@ main = do
       events <- collectEvents
       let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
-      SDL.blitScaled stretchedSurface Nothing screenSurface Nothing
+      SDL.surfaceBlitScaled stretchedSurface Nothing screenSurface Nothing
       SDL.updateWindowSurface window
 
       unless quit loop

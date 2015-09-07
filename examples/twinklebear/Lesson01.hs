@@ -26,9 +26,9 @@ main = do
   tex <- SDL.createTextureFromSurface renderer bmp
   SDL.freeSurface bmp
 
-  SDL.renderClear renderer
-  SDL.renderCopy renderer tex Nothing Nothing
-  SDL.renderPresent renderer
+  SDL.clear renderer
+  SDL.copy renderer tex Nothing Nothing
+  SDL.present renderer
 
   SDL.delay 2000
 

@@ -30,18 +30,18 @@ createBlank r sz access = Texture <$> SDL.createTexture r SDL.RGBA8888 access sz
 renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> Maybe CDouble -> Maybe (Point V2 CInt) -> Maybe (V2 Bool) -> IO ()
 renderTexture r (Texture t size) xy clip theta center flips =
   let dstSize =
-        maybe size (\(SDL.Rectangle _ size') ->  size') clip
-  in SDL.renderCopyEx r
-                      t
-                      clip
-                      (Just (SDL.Rectangle xy dstSize))
-                      (fromMaybe 0 theta)
-                      center
-                      (fromMaybe (pure False) flips)
+        maybe size (\(SDL.Rectangle _ size') -> size') clip
+  in SDL.copyEx r
+                t
+                clip
+                (Just (SDL.Rectangle xy dstSize))
+                (fromMaybe 0 theta)
+                center
+                (fromMaybe (pure False) flips)
 
 setAsRenderTarget :: SDL.Renderer -> Maybe Texture -> IO ()
-setAsRenderTarget r Nothing = SDL.renderTarget r $= Nothing
-setAsRenderTarget r (Just (Texture t _)) = SDL.renderTarget r $= Just t
+setAsRenderTarget r Nothing = SDL.rendererRenderTarget r $= Nothing
+setAsRenderTarget r (Just (Texture t _)) = SDL.rendererRenderTarget r $= Just t
 
 main :: IO ()
 main = do
@@ -67,7 +67,7 @@ main = do
          , SDL.rendererTargetTexture = False
          })
 
-  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
+  SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   targetTexture <- createBlank renderer (V2 screenWidth screenHeight) SDL.TextureAccessTarget
 
@@ -86,29 +86,29 @@ main = do
 
       setAsRenderTarget renderer (Just targetTexture)
 
-      SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
-      SDL.renderClear renderer
+      SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
+      SDL.clear renderer
 
-      SDL.renderDrawColor renderer $= V4 maxBound 0 0 maxBound
-      SDL.renderFillRect renderer (Just $ SDL.Rectangle (P $ V2 (screenWidth `div` 4) (screenHeight `div` 4))
+      SDL.rendererDrawColor renderer $= V4 maxBound 0 0 maxBound
+      SDL.fillRect renderer (Just $ SDL.Rectangle (P $ V2 (screenWidth `div` 4) (screenHeight `div` 4))
                                                         (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
 
-      SDL.renderDrawColor renderer $= V4 0 0 maxBound maxBound
-      SDL.renderDrawRect renderer (Just (SDL.Rectangle (P $ V2 (screenWidth `div` 6) (screenHeight `div` 6))
+      SDL.rendererDrawColor renderer $= V4 0 0 maxBound maxBound
+      SDL.drawRect renderer (Just (SDL.Rectangle (P $ V2 (screenWidth `div` 6) (screenHeight `div` 6))
                                                        (V2 (screenWidth * 2 `div` 3) (screenHeight * 2 `div` 3))))
 
-      SDL.renderDrawColor renderer $= V4 0 maxBound 0 maxBound
-      SDL.renderDrawLine renderer (P (V2 0 (screenHeight `div` 2))) (P (V2 screenWidth (screenHeight `div` 2)))
+      SDL.rendererDrawColor renderer $= V4 0 maxBound 0 maxBound
+      SDL.drawLine renderer (P (V2 0 (screenHeight `div` 2))) (P (V2 screenWidth (screenHeight `div` 2)))
 
-      SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
+      SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
       for_ [0, 4 .. screenHeight] $ \i ->
-        SDL.renderDrawPoint renderer (P (V2 (screenWidth `div` 2) i))
+        SDL.drawPoint renderer (P (V2 (screenWidth `div` 2) i))
 
       setAsRenderTarget renderer Nothing
 
       renderTexture renderer targetTexture 0 Nothing (Just (fromIntegral theta)) (Just screenCenter) Nothing
 
-      SDL.renderPresent renderer
+      SDL.present renderer
 
       unless quit (loop (theta + 2 `mod` 360))
 

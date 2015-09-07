@@ -31,7 +31,7 @@ loadTexture r filePath = do
   size <- SDL.surfaceDimensions surface
   format <- SDL.surfaceFormat surface
   key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.colorKey surface $= Just key
+  SDL.surfaceColorKey surface $= Just key
   t <- SDL.createTextureFromSurface r surface
   SDL.freeSurface surface
   return (Texture t size)
@@ -39,7 +39,7 @@ loadTexture r filePath = do
 renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> IO ()
 renderTexture r (Texture t size) xy clip =
   let dstSize = maybe size (\(SDL.Rectangle _ size') ->  size') clip
-  in SDL.renderCopy r t clip (Just (SDL.Rectangle xy dstSize))
+  in SDL.copy r t clip (Just (SDL.Rectangle xy dstSize))
 
 setTextureColor :: Texture -> V3 Word8 -> IO ()
 setTextureColor (Texture t _) rgb = SDL.textureColorMod t $= rgb
@@ -68,7 +68,7 @@ main = do
         , SDL.rendererTargetTexture = False
         })
 
-  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
+  SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   modulatedTexture <- loadTexture renderer "examples/lazyfoo/colors.bmp"
 
@@ -98,14 +98,14 @@ main = do
                          _ -> mempty) $
               map SDL.eventPayload events
 
-        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
-        SDL.renderClear renderer
+        SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
+        SDL.clear renderer
 
         let color' = color + colorAdjustment
         setTextureColor modulatedTexture color'
         renderTexture renderer modulatedTexture 0 Nothing
 
-        SDL.renderPresent renderer
+        SDL.present renderer
 
         unless quit (loop color')
 

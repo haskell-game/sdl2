@@ -37,7 +37,7 @@ renderTexture renderer tex pos = do
         Centered -> let cntr a b = (a - b) `div` 2
                     in P $ V2 (cntr screenWidth w) (cntr screenHeight h)
       extent = (V2 w h)
-  SDL.renderCopy renderer tex Nothing (Just $ SDL.Rectangle pos' extent)
+  SDL.copy renderer tex Nothing (Just $ SDL.Rectangle pos' extent)
 
 
 renderTiledBackground :: SDL.Renderer -> SDL.Texture -> IO ()
@@ -64,7 +64,7 @@ main = do
 
   renderTiledBackground renderer background
   renderTexture renderer image Centered
-  SDL.renderPresent renderer
+  SDL.present renderer
 
   SDL.delay 2000
 

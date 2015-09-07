@@ -42,7 +42,7 @@ main = do
          , SDL.rendererTargetTexture = False
          })
 
-  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
+  SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   textureSurface <- getDataFileName "examples/lazyfoo/viewport.bmp" >>= SDL.loadBMP
   texture <- SDL.createTextureFromSurface renderer textureSurface
@@ -58,19 +58,19 @@ main = do
 
         let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
-        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
-        SDL.renderClear renderer
+        SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
+        SDL.clear renderer
 
-        SDL.renderViewport renderer $= Just (SDL.Rectangle (P (V2 0 0)) (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
-        SDL.renderCopy renderer texture Nothing Nothing
+        SDL.rendererViewport renderer $= Just (SDL.Rectangle (P (V2 0 0)) (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
+        SDL.copy renderer texture Nothing Nothing
 
-        SDL.renderViewport renderer $= Just (SDL.Rectangle (P (V2 (screenWidth `div` 2) 0)) (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
-        SDL.renderCopy renderer texture Nothing Nothing
+        SDL.rendererViewport renderer $= Just (SDL.Rectangle (P (V2 (screenWidth `div` 2) 0)) (V2 (screenWidth `div` 2) (screenHeight `div` 2)))
+        SDL.copy renderer texture Nothing Nothing
 
-        SDL.renderViewport renderer $= Just (SDL.Rectangle (P (V2 0 (screenHeight `div` 2))) (V2 screenWidth (screenHeight `div` 2)))
-        SDL.renderCopy renderer texture Nothing Nothing
+        SDL.rendererViewport renderer $= Just (SDL.Rectangle (P (V2 0 (screenHeight `div` 2))) (V2 screenWidth (screenHeight `div` 2)))
+        SDL.copy renderer texture Nothing Nothing
 
-        SDL.renderPresent renderer
+        SDL.present renderer
 
         unless quit loop
 

@@ -104,9 +104,9 @@ In our @appLoop@ we process events and then update the screen accordingly. Here 
 to clear the screen to blue:
 
 @
-  'renderDrawColor' renderer '$=' V4 0 0 1 1
-  'renderClear' renderer
-  'renderPresent' renderer
+  'rendererDrawColor' renderer '$=' V4 0 0 1 1
+  'clear' renderer
+  'present' renderer
 @
 
 If q was not pressed, we loop again. Otherwise, we exit the loop:
@@ -137,9 +137,9 @@ appLoop renderer = do
             'keysymKeycode' ('keyboardEventKeysym' keyboardEvent) == 'KeycodeQ'
           _ -> False
       qPressed = not (null (filter eventIsQPress events))
-  'renderDrawColor' renderer '$=' V4 0 0 1 1
-  'renderClear' renderer
-  'renderPresent' renderer
+  'rendererDrawColor' renderer '$=' V4 0 0 1 1
+  'clear' renderer
+  'present' renderer
   unless qPressed (appLoop renderer)
 @
 

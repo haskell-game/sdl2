@@ -29,7 +29,7 @@ loadTexture r filePath = do
   size <- SDL.surfaceDimensions surface
   format <- SDL.surfaceFormat surface
   key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.colorKey surface $= Just key
+  SDL.surfaceColorKey surface $= Just key
   t <- SDL.createTextureFromSurface r surface
   SDL.freeSurface surface
   return (Texture t size)
@@ -37,14 +37,14 @@ loadTexture r filePath = do
 renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> Maybe (SDL.Rectangle CInt) -> Maybe CDouble -> Maybe (Point V2 CInt) -> Maybe (V2 Bool) -> IO ()
 renderTexture r (Texture t size) xy clip theta center flips =
   let dstSize =
-        maybe size (\(SDL.Rectangle _ size') ->  size') clip
-  in SDL.renderCopyEx r
-                      t
-                      clip
-                      (Just (SDL.Rectangle xy dstSize))
-                      (fromMaybe 0 theta)
-                      center
-                      (fromMaybe (pure False) flips)
+        maybe size (\(SDL.Rectangle _ size') -> size') clip
+  in SDL.copyEx r
+                t
+                clip
+                (Just (SDL.Rectangle xy dstSize))
+                (fromMaybe 0 theta)
+                center
+                (fromMaybe (pure False) flips)
 
 data ButtonSprite = MouseOut | MouseOver | MouseDown | MouseUp
 
@@ -55,11 +55,11 @@ buttonWidth, buttonHeight :: CInt
 buttonSize@(V2 buttonWidth buttonHeight) = V2 300 200
 
 handleEvent :: Point V2 CInt -> SDL.EventPayload -> Button -> Button
-handleEvent mousePos e (Button buttonPos _) =
+handleEvent mousePos ev (Button buttonPos _) =
   let inside = foldl1 (&&) ((>=) <$> mousePos <*> buttonPos) &&
                foldl1 (&&) ((<=) <$> mousePos <*> buttonPos .+^ buttonSize)
       sprite
-        | inside = case e of
+        | inside = case ev of
                      SDL.MouseButtonEvent e
                        | SDL.mouseButtonEventMotion e == SDL.Pressed -> MouseDown
                        | SDL.mouseButtonEventMotion e == SDL.Released -> MouseUp
@@ -105,7 +105,7 @@ main = do
         , SDL.rendererTargetTexture = False
         })
 
-  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
+  SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   buttonSpriteSheet <- loadTexture renderer "examples/lazyfoo/button.bmp"
 
@@ -125,13 +125,13 @@ main = do
                          e -> (mempty, Endo (handleEvent mousePos e))) $
               map SDL.eventPayload events
 
-        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
-        SDL.renderClear renderer
+        SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
+        SDL.clear renderer
 
         let buttons' = map (\b -> updateButton b) buttons
         for_ buttons' (renderButton renderer buttonSpriteSheet)
 
-        SDL.renderPresent renderer
+        SDL.present renderer
 
         unless quit (loop buttons')
 

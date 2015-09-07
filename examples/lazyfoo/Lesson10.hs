@@ -26,14 +26,14 @@ loadTexture r filePath = do
   size <- SDL.surfaceDimensions surface
   format <- SDL.surfaceFormat surface
   key <- SDL.mapRGB format (V3 0 maxBound maxBound)
-  SDL.colorKey surface $= Just key
+  SDL.surfaceColorKey surface $= Just key
   t <- SDL.createTextureFromSurface r surface
   SDL.freeSurface surface
   return (Texture t size)
 
 renderTexture :: SDL.Renderer -> Texture -> Point V2 CInt -> IO ()
 renderTexture r (Texture t size) xy =
-  SDL.renderCopy r t Nothing (Just $ SDL.Rectangle xy size)
+  SDL.copy r t Nothing (Just $ SDL.Rectangle xy size)
 
 main :: IO ()
 main = do
@@ -59,7 +59,7 @@ main = do
          , SDL.rendererTargetTexture = False
          })
 
-  SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
+  SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   fooTexture <- loadTexture renderer "examples/lazyfoo/foo.bmp"
   backgroundTexture <- loadTexture renderer "examples/lazyfoo/background.bmp"
@@ -74,13 +74,13 @@ main = do
 
         let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
-        SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
-        SDL.renderClear renderer
+        SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
+        SDL.clear renderer
 
         renderTexture renderer backgroundTexture 0
         renderTexture renderer fooTexture (P (V2 240 190))
 
-        SDL.renderPresent renderer
+        SDL.present renderer
 
         unless quit loop
 

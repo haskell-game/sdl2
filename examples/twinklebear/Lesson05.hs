@@ -47,7 +47,7 @@ renderTexture renderer tex clipRect pos = do
         Centered -> let cntr a b = (a - b) `div` 2
                     in P $ V2 (cntr screenWidth w) (cntr screenHeight h)
       extent = (V2 w h)
-  SDL.renderCopy renderer tex clipRect (Just $ SDL.Rectangle pos' extent)
+  SDL.copy renderer tex clipRect (Just $ SDL.Rectangle pos' extent)
 
 
 main :: IO ()
@@ -90,9 +90,9 @@ main = do
 
             spriteRect' = newSpriteRect <|> spriteRect
 
-        SDL.renderClear renderer
+        SDL.clear renderer
         renderTexture renderer spriteSheet spriteRect' Centered
-        SDL.renderPresent renderer
+        SDL.present renderer
 
         unless quit $ loop spriteRect'
 
