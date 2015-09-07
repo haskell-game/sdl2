@@ -1,3 +1,13 @@
+2.0.0
+=====
+* Introduce a set of comprehensive high-level bindings to SDL. These bindings
+  should allow users to work with SDL while writing idiomatic Haskell code. They
+  take care of pointer manipulation, and wrap up values in much more "natural"
+  data types. The high-level bindings live in the `SDL` namespace, and have been
+  extensively documented.
+* Raw bindings have been moved from `Graphics.UI.SDL` to `SDL.Raw`.
+
+
 1.3.1
 =====
 * Correct type signature of `getSurfaceBlendMode`
