@@ -1,0 +1,50 @@
+# Make a temporary clone
+
+rm -rf /tmp/sdl2-gh-pages/
+
+git clone . /tmp/sdl2-gh-pages
+
+cd /tmp/sdl2-gh-pages/
+
+# Make sure to pull the latest
+
+git remote add haskell-game git@github.com:haskell-game/sdl2.git
+
+git fetch haskell-game
+
+git reset --hard haskell-game/gh-pages
+
+# Clear everything away
+
+git rm -rf /tmp/sdl2-gh-pages/*
+
+# Switch back and build the haddocks
+
+cd -
+
+cabal configure --builddir=/tmp/sdl2-gh-pages/
+
+cabal haddock --hoogle --hyperlink-source --html-location='https://hackage.haskell.org/package/$pkg-$version/docs' --builddir=/tmp/sdl2-gh-pages/
+
+commit_hash=$(git rev-parse HEAD | echo -n)
+
+# Move the HTML docs to the root
+
+cd /tmp/sdl2-gh-pages/
+
+rm *
+rm -rf build
+mv doc/html/sdl2/* .
+rm doc/ -r
+
+# Add everything
+
+git add .
+
+git commit -m "Built from $commit_hash"
+
+# Push to update the pages
+
+git push haskell-game HEAD:gh-pages
+
+rm -rf /tmp/sdl2-gh-pages/

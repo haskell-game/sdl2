@@ -1,1 +1,8 @@
 dist/
+*.hi
+*.o
+*.dyn_hi
+*.dyn_o
+*~
+.hsenv/
+TAGS
