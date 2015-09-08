@@ -32,7 +32,7 @@ module SDL.Raw.Basic (
   logWarn,
 
   -- * Assertions
-  -- | Use HaskellFFIs own assertion primitives rather than SDLFFIs.
+  -- | Use Haskell's own assertion primitives rather than SDL's.
 
   -- * Querying SDL Version
   getRevision,
