@@ -119,7 +119,7 @@ To recap, here is our full application
 
 @
 
-{\# LANGUAGE OverloadedStrings \#}
+\{\-\# LANGUAGE OverloadedStrings \#\-\}
 module "Main" where
 
 import "SDL"
