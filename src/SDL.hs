@@ -94,7 +94,7 @@ Here @events@ is a list of 'Event' values. For our application we will check if 
   let eventIsQPress event =
         case 'eventPayload' event of
           'KeyboardEvent' keyboardEvent ->
-            'keyboardEventKeyMotion' keyboardEvent == 'KeyDown' &&
+            'keyboardEventKeyMotion' keyboardEvent == 'Pressed' &&
             'keysymKeycode' ('keyboardEventKeysym' keyboardEvent) == 'KeycodeQ'
           _ -> False
       qPressed = not (null (filter eventIsQPress events))
@@ -118,7 +118,13 @@ If q was not pressed, we loop again. Otherwise, we exit the loop:
 To recap, here is our full application
 
 @
+
+{\# LANGUAGE OverloadedStrings \#}
+module "Main" where
+
 import "SDL"
+import "Linear" (V4(..))
+import "Control.Monad" (unless)
 
 main :: IO ()
 main = do
@@ -133,7 +139,7 @@ appLoop renderer = do
   let eventIsQPress event =
         case 'eventPayload' event of
           'KeyboardEvent' keyboardEvent ->
-            'keyboardEventKeyMotion' keyboardEvent == 'KeyDown' &&
+            'keyboardEventKeyMotion' keyboardEvent == 'Pressed' &&
             'keysymKeycode' ('keyboardEventKeysym' keyboardEvent) == 'KeycodeQ'
           _ -> False
       qPressed = not (null (filter eventIsQPress events))
