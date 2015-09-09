@@ -94,7 +94,7 @@ Here @events@ is a list of 'Event' values. For our application we will check if 
   let eventIsQPress event =
         case 'eventPayload' event of
           'KeyboardEvent' keyboardEvent ->
-            'keyboardEventKeyMotion' keyboardEvent == 'KeyDown' &&
+            'keyboardEventKeyMotion' keyboardEvent == 'Pressed' &&
             'keysymKeycode' ('keyboardEventKeysym' keyboardEvent) == 'KeycodeQ'
           _ -> False
       qPressed = not (null (filter eventIsQPress events))
@@ -119,6 +119,8 @@ To recap, here is our full application
 
 @
 import "SDL"
+import "Control.Monad"
+import "Linear.V4"
 
 main :: IO ()
 main = do
@@ -133,7 +135,7 @@ appLoop renderer = do
   let eventIsQPress event =
         case 'eventPayload' event of
           'KeyboardEvent' keyboardEvent ->
-            'keyboardEventKeyMotion' keyboardEvent == 'KeyDown' &&
+            'keyboardEventKeyMotion' keyboardEvent == 'Pressed' &&
             'keysymKeycode' ('keyboardEventKeysym' keyboardEvent) == 'KeycodeQ'
           _ -> False
       qPressed = not (null (filter eventIsQPress events))
