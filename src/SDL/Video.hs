@@ -158,7 +158,7 @@ createWindow title config = liftIO $ do
 --   , 'windowOpenGL'       = Nothing
 --   , 'windowPosition'     = 'Wherever'
 --   , 'windowResizable'    = False
---   , 'windowSize'         = V2 800 600
+--   , 'windowInitialSize'  = V2 800 600
 --   }
 -- @
 defaultWindow :: WindowConfig
