@@ -60,6 +60,10 @@ initialize flags =
   throwIfNeg_ "SDL.Init.init" "SDL_Init" $
     Raw.init (foldFlags toNumber flags)
 
+-- | Equivalent to @'initialize' ['InitEverything']@.
+initialize' :: (Functor m, MonadIO m) => m ()
+initialize' = initialize [InitEverything]
+
 -- | Quit and shutdown SDL, freeing any resources that may have been in use.
 -- Do not call any SDL functions after you've called this function, unless
 -- otherwise documented that you may do so.
