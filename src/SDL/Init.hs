@@ -7,7 +7,7 @@
 
 module SDL.Init
   ( initialize
-  , initialize'
+  , initializeAll
   , InitFlag(..)
   , quit
   , version
@@ -62,8 +62,8 @@ initialize flags =
     Raw.init (foldFlags toNumber flags)
 
 -- | Equivalent to @'initialize' ['InitEverything']@.
-initialize' :: (Functor m, MonadIO m) => m ()
-initialize' = initialize [InitEverything]
+initializeAll :: (Functor m, MonadIO m) => m ()
+initializeAll = initialize [InitEverything]
 
 -- | Quit and shutdown SDL, freeing any resources that may have been in use.
 -- Do not call any SDL functions after you've called this function, unless
