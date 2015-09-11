@@ -7,6 +7,7 @@
 
 module SDL.Init
   ( initialize
+  , initialize'
   , InitFlag(..)
   , quit
   , version
