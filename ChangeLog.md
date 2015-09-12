@@ -1,3 +1,9 @@
+2.0.1
+=====
+
+* Introduce `initializeAll` and deprecate `InitEverything`. To fix this deprecation
+  warning, change `initialize [InitEverything]` to `initializeAll`.
+
 2.0.0
 =====
 * Introduce a set of comprehensive high-level bindings to SDL. These bindings
