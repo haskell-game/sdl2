@@ -29,6 +29,7 @@ import qualified SDL.Raw as Raw
 import Data.Foldable
 #endif
 
+{-# DEPRECATED InitEverything "Instead of initialize [InitEverything], use initializeAll" #-}
 data InitFlag
   = InitTimer
   | InitAudio
@@ -61,9 +62,9 @@ initialize flags =
   throwIfNeg_ "SDL.Init.init" "SDL_Init" $
     Raw.init (foldFlags toNumber flags)
 
--- | Equivalent to @'initialize' ['InitEverything']@.
+-- | Equivalent to @'initialize' ['minBound' .. 'maxBound']@.
 initializeAll :: (Functor m, MonadIO m) => m ()
-initializeAll = initialize [InitEverything]
+initializeAll = initialize [minBound .. maxBound]
 
 -- | Quit and shutdown SDL, freeing any resources that may have been in use.
 -- Do not call any SDL functions after you've called this function, unless
