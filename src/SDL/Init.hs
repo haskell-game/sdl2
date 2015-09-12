@@ -7,6 +7,7 @@
 
 module SDL.Init
   ( initialize
+  , initializeAll
   , InitFlag(..)
   , quit
   , version
@@ -28,6 +29,7 @@ import qualified SDL.Raw as Raw
 import Data.Foldable
 #endif
 
+{-# DEPRECATED InitEverything "Instead of initialize [InitEverything], use initializeAll" #-}
 data InitFlag
   = InitTimer
   | InitAudio
@@ -59,6 +61,10 @@ initialize :: (Foldable f, Functor m, MonadIO m) => f InitFlag -> m ()
 initialize flags =
   throwIfNeg_ "SDL.Init.init" "SDL_Init" $
     Raw.init (foldFlags toNumber flags)
+
+-- | Equivalent to @'initialize' ['minBound' .. 'maxBound']@.
+initializeAll :: (Functor m, MonadIO m) => m ()
+initializeAll = initialize [minBound .. maxBound]
 
 -- | Quit and shutdown SDL, freeing any resources that may have been in use.
 -- Do not call any SDL functions after you've called this function, unless
