@@ -1,8 +1,13 @@
-2.0.1
+2.1.0
 =====
 
 * Introduce `initializeAll` and deprecate `InitEverything`. To fix this deprecation
   warning, change `initialize [InitEverything]` to `initializeAll`.
+* `surfaceColorKey`, `surfaceFillRect` and `surfaceFillRects` now all operate on
+  on RGBA `V4 Word8` values. They all implicitly map and unmap (using `SDL_MapRGBA`
+  and `SDL_GetRGBA` respectively).
+* `SDL.mapRGB` is now deprecated, as this conversion is always done for you.
+  If you still need this routine, use `SDL.Raw.mapRGB`.
 
 2.0.0
 =====
