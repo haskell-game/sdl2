@@ -1,11 +1,10 @@
---port of tutorial 1 to SDL https://github.com/bergey/haskell-OpenGL-examples
+--port of https://github.com/bergey/haskell-OpenGL-examples
 
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Main (main) where
+module OpenGLExample where
 
 import Control.Monad
-import Data.IORef
 import Data.Foldable (for_)
 import Foreign.C.Types
 import Linear
@@ -102,7 +101,6 @@ draw :: GL.Program -> GL.AttribLocation -> IO ()
 draw program attrib = do
     GL.clearColor $= GL.Color4 1 1 1 1
     GL.clear [GL.ColorBuffer]
-    -- In C++ example GLUT handles this?
     GL.viewport $= (GL.Position 0 0, GL.Size (fromIntegral screenWidth) (fromIntegral screenHeight))
 
     GL.currentProgram $= Just program
@@ -128,7 +126,7 @@ fsSource = BS.intercalate "\n"
             ""
            , "#version 120"
            , "void main(void) {"
-           , "gl_FragColor = vec4((gl_FragCoord.x/640), (gl_FragCoord.y/480), 0, 1);"--gl_FragCoord.x/640
+           , "gl_FragColor = vec4((gl_FragCoord.x/640), (gl_FragCoord.y/480), 0, 1);"
            , "}"
            ]
 
@@ -137,3 +135,4 @@ vertices = V.fromList [  0.0,  0.8
                       , -0.8, -0.8
                       ,  0.8, -0.8
                       ]
+
