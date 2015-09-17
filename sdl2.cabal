@@ -396,3 +396,15 @@ executable audio-example
   main-is: AudioExample.hs
   default-language: Haskell2010
   ghc-options: -Wall -main-is AudioExample -threaded
+
+
+executable opengl-example
+  if flag(examples)
+    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.13, linear >= 1.10.1.2 && < 1.20, sdl2, bytestring, OpenGL, vector
+  else
+    buildable: False
+
+  hs-source-dirs: examples
+  main-is: OpenGLExample.hs
+  default-language: Haskell2010
+  ghc-options: -Wall -main-is OpenGLExample
