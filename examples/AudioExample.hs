@@ -15,7 +15,7 @@ sinSamples =
          let t = fromIntegral n / 48000 :: Double
              freq = 440 * 4
          in round (fromIntegral (maxBound `div` 2 :: Int16) * sin (t * freq)))
-      [0 ..]
+      [0 :: Integer ..]
 
 audioCB :: IORef [Int16] -> AudioFormat sampleType -> IOVector sampleType -> IO ()
 audioCB samples format buffer =
@@ -32,7 +32,7 @@ audioCB samples format buffer =
 
 main :: IO ()
 main =
-  do initialize [InitEverything]
+  do initializeAll
      samples <- newIORef sinSamples
      (device,_) <-
        openAudioDevice

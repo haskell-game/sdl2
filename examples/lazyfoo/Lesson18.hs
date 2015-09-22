@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -5,7 +6,6 @@
 module Lazyfoo.Lesson18 (main) where
 
 import Prelude hiding (any, mapM_)
-import Control.Applicative
 import Control.Monad hiding (mapM_)
 import Data.Foldable
 import Data.Maybe
@@ -17,6 +17,10 @@ import qualified SDL
 
 import Paths_sdl2 (getDataFileName)
 
+#if !MIN_VERSION_base(4,8,0)
+import Control.Applicative
+#endif
+
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
 
@@ -26,8 +30,7 @@ loadTexture :: SDL.Renderer -> FilePath -> IO Texture
 loadTexture r filePath = do
   surface <- getDataFileName filePath >>= SDL.loadBMP
   size <- SDL.surfaceDimensions surface
-  format <- SDL.surfaceFormat surface
-  key <- SDL.mapRGB format (V3 0 maxBound maxBound)
+  let key = V4 0 maxBound maxBound maxBound
   SDL.surfaceColorKey surface $= Just key
   t <- SDL.createTextureFromSurface r surface
   SDL.freeSurface surface

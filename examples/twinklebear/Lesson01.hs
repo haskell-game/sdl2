@@ -11,7 +11,7 @@ import Paths_sdl2 (getDataFileName)
 
 main :: IO ()
 main = do
-  SDL.initialize [ SDL.InitEverything ]
+  SDL.initializeAll
 
   let winConfig = SDL.defaultWindow { SDL.windowPosition = SDL.Absolute (P (V2 100 100))
                                     , SDL.windowInitialSize = V2 640 480 }

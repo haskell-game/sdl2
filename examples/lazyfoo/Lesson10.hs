@@ -24,8 +24,7 @@ loadTexture :: SDL.Renderer -> FilePath -> IO Texture
 loadTexture r filePath = do
   surface <- getDataFileName filePath >>= SDL.loadBMP
   size <- SDL.surfaceDimensions surface
-  format <- SDL.surfaceFormat surface
-  key <- SDL.mapRGB format (V3 0 maxBound maxBound)
+  let key = V4 0 maxBound maxBound maxBound
   SDL.surfaceColorKey surface $= Just key
   t <- SDL.createTextureFromSurface r surface
   SDL.freeSurface surface

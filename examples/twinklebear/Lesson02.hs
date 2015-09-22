@@ -51,7 +51,7 @@ renderTiledBackground renderer tex = do
 
 main :: IO ()
 main = do
-  SDL.initialize [ SDL.InitEverything ]
+  SDL.initializeAll
 
   let winConfig = SDL.defaultWindow { SDL.windowInitialSize = V2 screenWidth screenHeight }
       rdrConfig = SDL.defaultRenderer { SDL.rendererType = SDL.AcceleratedRenderer }

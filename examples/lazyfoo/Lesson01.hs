@@ -17,8 +17,7 @@ main = do
   SDL.showWindow window
 
   screenSurface <- SDL.getWindowSurface window
-  screenSurfaceFormat <- SDL.surfaceFormat screenSurface
-  white <- SDL.mapRGB screenSurfaceFormat (V3 maxBound maxBound maxBound)
+  let white = V4 maxBound maxBound maxBound maxBound
   SDL.surfaceFillRect screenSurface Nothing white
   SDL.updateWindowSurface window
 

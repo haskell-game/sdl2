@@ -5,10 +5,8 @@
 module OpenGLExample where
 
 import Control.Monad
-import Data.Foldable (for_)
 import Foreign.C.Types
 import Linear
-import Linear.Affine
 import qualified Data.ByteString as BS
 import qualified Data.Vector.Storable as V
 import           System.Exit (exitFailure)
@@ -16,8 +14,11 @@ import           System.IO
 
 import SDL (($=))
 import qualified SDL
-import Graphics.Rendering.OpenGL as GL
-import Graphics.Rendering.OpenGL (($=))
+import qualified Graphics.Rendering.OpenGL as GL
+
+#if !MIN_VERSION_base(4,8,0)
+import Data.Foldable (for_)
+#endif
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
@@ -49,7 +50,7 @@ main = do
         events <- collectEvents
         let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
-        clear [ColorBuffer]
+        GL.clear [GL.ColorBuffer]
         draw prog attrib
         SDL.glSwapWindow window
 
