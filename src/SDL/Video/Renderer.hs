@@ -538,7 +538,7 @@ instance FromNumber BlendMode Word32 where
   fromNumber n = case n of
     Raw.SDL_BLENDMODE_ADD -> BlendAdditive
     Raw.SDL_BLENDMODE_BLEND -> BlendAlphaBlend
-    Raw.SDL_BLENDMODE_ADD -> BlendAdditive
+    Raw.SDL_BLENDMODE_NONE -> BlendNone
     Raw.SDL_BLENDMODE_MOD -> BlendMod
     _ -> error $ "fromNumber<BlendMode>: unknown blend mode: " ++ show n
 
