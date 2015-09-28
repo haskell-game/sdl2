@@ -8,6 +8,8 @@
   and `SDL_GetRGBA` respectively).
 * `SDL.mapRGB` is now deprecated, as this conversion is always done for you.
   If you still need this routine, use `SDL.Raw.mapRGB`.
+* Fix a runtime crash when reading the current BlendMode of a texture. Thanks to
+  @seppeljordan for discovering and fixing this bug.
 
 2.0.0
 =====
