@@ -97,7 +97,7 @@ Here @events@ is a list of 'Event' values. For our application we will check if 
             'keyboardEventKeyMotion' keyboardEvent == 'Pressed' &&
             'keysymKeycode' ('keyboardEventKeysym' keyboardEvent) == 'KeycodeQ'
           _ -> False
-      qPressed = not (null (filter eventIsQPress events))
+  let qPressed = not (null (filter eventIsQPress events))
 @
 
 In our @appLoop@ we process events and then update the screen accordingly. Here we simply use the 'Renderer'
@@ -142,7 +142,7 @@ appLoop renderer = do
             'keyboardEventKeyMotion' keyboardEvent == 'Pressed' &&
             'keysymKeycode' ('keyboardEventKeysym' keyboardEvent) == 'KeycodeQ'
           _ -> False
-      qPressed = not (null (filter eventIsQPress events))
+  let qPressed = not (null (filter eventIsQPress events))
   'rendererDrawColor' renderer '$=' V4 0 0 255 255
   'clear' renderer
   'present' renderer
