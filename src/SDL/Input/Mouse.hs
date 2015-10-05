@@ -16,6 +16,7 @@ module SDL.Input.Mouse
 
     -- * Mouse State
   , getMouseLocation
+  , getRelativeMouseLocation
   , getMouseButtons
 
     -- * Warping the Mouse
@@ -134,6 +135,15 @@ getMouseLocation = liftIO $
   alloca $ \y -> do
     _ <- Raw.getMouseState x y -- We don't deal with button states here
     P <$> (V2 <$> peek x <*> peek y)
+
+-- | Retrieve mouse motion
+getRelativeMouseLocation :: MonadIO m => m (Point V2 CInt)
+getRelativeMouseLocation = liftIO $
+  alloca $ \x ->
+  alloca $ \y -> do
+    _ <- Raw.getRelativeMouseState x y
+    P <$> (V2 <$> peek x <*> peek y)
+
 
 -- | Retrieve a mapping of which buttons are currently held down.
 getMouseButtons :: MonadIO m => m (MouseButton -> Bool)
