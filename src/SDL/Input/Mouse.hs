@@ -7,8 +7,9 @@
 
 module SDL.Input.Mouse
   ( -- * Relative Mouse Mode
-    setRelativeMouseMode
-  , getRelativeMouseMode
+    LocationMode(..)
+  , setMouseLocationMode
+  , getMouseLocationMode
 
     -- * Mouse and Touch Input
   , MouseButton(..)
@@ -16,6 +17,7 @@ module SDL.Input.Mouse
 
     -- * Mouse State
   , getMouseLocation
+  , getAbsoluteMouseLocation
   , getRelativeMouseLocation
   , getMouseButtons
 
@@ -62,22 +64,31 @@ import qualified SDL.Raw.Types as Raw
 import Control.Applicative
 #endif
 
+data LocationMode = AbsoluteLocation | RelativeLocation deriving Eq
+
 -- | Sets the current relative mouse mode.
 --
 -- When relative mouse mode is enabled, cursor is hidden and mouse position
 -- will not change. However, you will be delivered relative mouse position
 -- change events.
---
--- Throws 'SDLException' on failure.
-setRelativeMouseMode :: (Functor m, MonadIO m) => Bool -> m ()
-setRelativeMouseMode enable =
-    -- relative mouse mode can fail if it's not supported
-    throwIfNeg_ "SDL.Input.Mouse" "SDL_SetRelativeMouseMode" $
-        Raw.setRelativeMouseMode enable
+setMouseLocationMode :: (Functor m, MonadIO m) => LocationMode -> m LocationMode
+setMouseLocationMode mode =
+  Raw.setRelativeMouseMode (mode == RelativeLocation) >> getMouseLocationMode
 
--- | Check if relative mouse mode is enabled.
-getRelativeMouseMode :: MonadIO m => m Bool
-getRelativeMouseMode = Raw.getRelativeMouseMode
+-- | Check which mouse location mode is currently active.
+getMouseLocationMode :: MonadIO m => m LocationMode
+getMouseLocationMode = do
+  relativeMode <- Raw.getRelativeMouseMode
+  return $ if relativeMode then RelativeLocation else AbsoluteLocation
+
+-- | Return proper mouse location depending on mouse mode
+getMouseLocation :: MonadIO m => m (LocationMode, Point V2 CInt)
+getMouseLocation = do
+  mode <- getMouseLocationMode
+  location <- case mode of
+    RelativeLocation -> getRelativeMouseLocation
+    _ -> getAbsoluteMouseLocation
+  return (mode, location)
 
 data MouseButton
   = ButtonLeft
@@ -129,8 +140,8 @@ cursorVisible = makeStateVar getCursorVisible setCursorVisible
   getCursorVisible = (== 1) <$> Raw.showCursor (-1)
 
 -- | Retrieve the current location of the mouse, relative to the currently focused window.
-getMouseLocation :: MonadIO m => m (Point V2 CInt)
-getMouseLocation = liftIO $
+getAbsoluteMouseLocation :: MonadIO m => m (Point V2 CInt)
+getAbsoluteMouseLocation = liftIO $
   alloca $ \x ->
   alloca $ \y -> do
     _ <- Raw.getMouseState x y -- We don't deal with button states here
