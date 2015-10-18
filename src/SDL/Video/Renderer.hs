@@ -78,6 +78,8 @@ module SDL.Video.Renderer
   , formatPalette
   , mapRGB
   , setPaletteColors
+  , pixelFormatToMasks
+  , masksToPixelFormat
 
   -- * Textures
   , Texture
@@ -1193,3 +1195,26 @@ rendererLogicalSize (Renderer r) = makeStateVar renderGetLogicalSize renderSetLo
 -- See @<https://wiki.libsdl.org/SDL_RenderTargetSupported SDL_RenderTargetSupported>@ for C documentation.
 renderTargetSupported :: (MonadIO m) => Renderer -> m Bool
 renderTargetSupported (Renderer r) = Raw.renderTargetSupported r
+
+-- | Convert the given the enumerated pixel format to a bpp value and RGBA masks.
+--
+-- See @<https://wiki.libsdl.org/SDL_PixelFormatEnumToMasks SDL_PixelFormatEnumToMasks>@ for C documentation.
+pixelFormatToMasks :: (MonadIO m) => PixelFormat -> m (CInt, V4 Word32)
+pixelFormatToMasks pf = liftIO $
+  alloca $ \bpp ->
+  alloca $ \r ->
+  alloca $ \g ->
+  alloca $ \b ->
+  alloca $ \a -> do
+    throwIf_ not "SDL.Video.pixelFormatEnumToMasks" "SDL_PixelFormatEnumToMasks" $
+      Raw.pixelFormatEnumToMasks (toNumber pf) bpp r g b a
+    wrap <$> peek bpp <*> peek r <*> peek g <*> peek b <*> peek a
+    where
+      wrap bpp r g b a = (bpp, V4 r g b a)
+
+-- | Convert a bpp value and RGBA masks to an enumerated pixel format.
+--
+-- See @<https://wiki.libsdl.org/SDL_MasksToPixelFormatEnum SDL_MasksToPixelFormatEnum>@ for C documentation.
+masksToPixelFormat :: (MonadIO m) => CInt -> V4 Word32 -> m PixelFormat
+masksToPixelFormat bpp (V4 r g b a) = liftIO $
+  fromNumber <$> Raw.masksToPixelFormatEnum bpp r g b a
