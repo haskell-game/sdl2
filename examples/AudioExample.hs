@@ -15,7 +15,7 @@ sinSamples =
          let t = fromIntegral n / 48000 :: Double
              freq = 440 * 4
          in round (fromIntegral (maxBound `div` 2 :: Int16) * sin (t * freq)))
-      [0 :: Integer ..]
+      [0 :: Int16 ..]
 
 audioCB :: IORef [Int16] -> AudioFormat sampleType -> IOVector sampleType -> IO ()
 audioCB samples format buffer =
