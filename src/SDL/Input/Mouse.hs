@@ -107,12 +107,8 @@ getRelativeMouseMode = Raw.getRelativeMouseMode
 
 --deprecated
 getMouseLocation :: MonadIO m => m (Point V2 CInt)
-{-# DEPRECATED getMouseLocation "Use getModalMouseLocation, getAbsoluteMouseLocation, or getRelativeMouseLocation instead" #-}
-getMouseLocation = liftIO $
-  alloca $ \x ->
-  alloca $ \y -> do
-    _ <- Raw.getMouseState x y -- We don't deal with button states here
-    P <$> (V2 <$> peek x <*> peek y)
+{-# DEPRECATED getMouseLocation "Use getAbsoluteMouseLocation instead, or getModalMouseLocation to match future behavior." #-}
+getMouseLocation = getAbsoluteMouseLocation
 
 data MouseButton
   = ButtonLeft
