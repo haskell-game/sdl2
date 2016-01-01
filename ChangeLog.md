@@ -1,3 +1,12 @@
+2.1.1
+======
+
+* `SDL.Input.Mouse` new has a new API for fetching the location of the mouse. This
+  API gives you greater control over finding the mouse position with respect to the
+  various "modes" a mouse can be in. The old API still exists, but will be removed
+  at some point in the future.
+* `SDL.Raw` now has a binding to `SDL_free`.
+
 2.1.0
 =====
 
