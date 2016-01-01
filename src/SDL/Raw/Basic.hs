@@ -7,6 +7,9 @@ module SDL.Raw.Basic (
   setMainReady,
   wasInit,
 
+  -- * Memory Management
+  free,
+
   -- * Configuration Variables
   addHintCallback,
   clearHints,
@@ -55,6 +58,8 @@ foreign import ccall "SDL.h SDL_QuitSubSystem" quitSubSystemFFI :: InitFlag -> I
 foreign import ccall "SDL.h SDL_SetMainReady" setMainReadyFFI :: IO ()
 foreign import ccall "SDL.h SDL_WasInit" wasInitFFI :: InitFlag -> IO InitFlag
 
+foreign import ccall "SDL.h SDL_free" freeFFI :: Ptr () -> IO ()
+
 foreign import ccall "SDL.h SDL_AddHintCallback" addHintCallbackFFI :: CString -> HintCallback -> Ptr () -> IO ()
 foreign import ccall "SDL.h SDL_ClearHints" clearHintsFFI :: IO ()
 foreign import ccall "SDL.h SDL_DelHintCallback" delHintCallbackFFI :: CString -> HintCallback -> Ptr () -> IO ()
@@ -97,6 +102,10 @@ setMainReady = liftIO setMainReadyFFI
 wasInit :: MonadIO m => InitFlag -> m InitFlag
 wasInit v1 = liftIO $ wasInitFFI v1
 {-# INLINE wasInit #-}
+
+free :: MonadIO m => Ptr () -> m ()
+free v1 = liftIO $ freeFFI v1
+{-# INLINE free #-}
 
 addHintCallback :: MonadIO m => CString -> HintCallback -> Ptr () -> m ()
 addHintCallback v1 v2 v3 = liftIO $ addHintCallbackFFI v1 v2 v3
