@@ -7,15 +7,21 @@
 
 module SDL.Input.Mouse
   ( -- * Relative Mouse Mode
-    setRelativeMouseMode
-  , getRelativeMouseMode
+    LocationMode(..)
+  , setMouseLocationMode
+  , getMouseLocationMode
+  , setRelativeMouseMode --deprecated
+  , getRelativeMouseMode --deprecated
 
     -- * Mouse and Touch Input
   , MouseButton(..)
   , MouseDevice(..)
 
     -- * Mouse State
-  , getMouseLocation
+  , getModalMouseLocation
+  , getMouseLocation --deprecated
+  , getAbsoluteMouseLocation
+  , getRelativeMouseLocation
   , getMouseButtons
 
     -- * Warping the Mouse
@@ -61,22 +67,48 @@ import qualified SDL.Raw.Types as Raw
 import Control.Applicative
 #endif
 
+data LocationMode = AbsoluteLocation | RelativeLocation deriving Eq
+
 -- | Sets the current relative mouse mode.
 --
 -- When relative mouse mode is enabled, cursor is hidden and mouse position
 -- will not change. However, you will be delivered relative mouse position
 -- change events.
---
--- Throws 'SDLException' on failure.
-setRelativeMouseMode :: (Functor m, MonadIO m) => Bool -> m ()
-setRelativeMouseMode enable =
-    -- relative mouse mode can fail if it's not supported
-    throwIfNeg_ "SDL.Input.Mouse" "SDL_SetRelativeMouseMode" $
-        Raw.setRelativeMouseMode enable
+setMouseLocationMode :: (Functor m, MonadIO m) => LocationMode -> m LocationMode
+setMouseLocationMode mode =
+  Raw.setRelativeMouseMode (mode == RelativeLocation) >> getMouseLocationMode
 
--- | Check if relative mouse mode is enabled.
+-- | Check which mouse location mode is currently active.
+getMouseLocationMode :: MonadIO m => m LocationMode
+getMouseLocationMode = do
+  relativeMode <- Raw.getRelativeMouseMode
+  return $ if relativeMode then RelativeLocation else AbsoluteLocation
+
+-- | Return proper mouse location depending on mouse mode
+getModalMouseLocation :: MonadIO m => m (LocationMode, Point V2 CInt)
+getModalMouseLocation = do
+  mode <- getMouseLocationMode
+  location <- case mode of
+    RelativeLocation -> getRelativeMouseLocation
+    _ -> getAbsoluteMouseLocation
+  return (mode, location)
+
+-- deprecated
+setRelativeMouseMode :: (Functor m, MonadIO m) => Bool -> m ()
+{-# DEPRECATED setRelativeMouseMode "Use setMouseLocationMode instead" #-}
+setRelativeMouseMode enable =
+  throwIfNeg_ "SDL.Input.Mouse" "SDL_SetRelativeMouseMode" $
+    Raw.setRelativeMouseMode enable
+
+--deprecated
 getRelativeMouseMode :: MonadIO m => m Bool
+{-# DEPRECATED getRelativeMouseMode "Use getMouseLocationMode instead" #-}
 getRelativeMouseMode = Raw.getRelativeMouseMode
+
+--deprecated
+getMouseLocation :: MonadIO m => m (Point V2 CInt)
+{-# DEPRECATED getMouseLocation "Use getAbsoluteMouseLocation instead, or getModalMouseLocation to match future behavior." #-}
+getMouseLocation = getAbsoluteMouseLocation
 
 data MouseButton
   = ButtonLeft
@@ -128,12 +160,21 @@ cursorVisible = makeStateVar getCursorVisible setCursorVisible
   getCursorVisible = (== 1) <$> Raw.showCursor (-1)
 
 -- | Retrieve the current location of the mouse, relative to the currently focused window.
-getMouseLocation :: MonadIO m => m (Point V2 CInt)
-getMouseLocation = liftIO $
+getAbsoluteMouseLocation :: MonadIO m => m (Point V2 CInt)
+getAbsoluteMouseLocation = liftIO $
   alloca $ \x ->
   alloca $ \y -> do
     _ <- Raw.getMouseState x y -- We don't deal with button states here
     P <$> (V2 <$> peek x <*> peek y)
+
+-- | Retrieve mouse motion
+getRelativeMouseLocation :: MonadIO m => m (Point V2 CInt)
+getRelativeMouseLocation = liftIO $
+  alloca $ \x ->
+  alloca $ \y -> do
+    _ <- Raw.getRelativeMouseState x y
+    P <$> (V2 <$> peek x <*> peek y)
+
 
 -- | Retrieve a mapping of which buttons are currently held down.
 getMouseButtons :: MonadIO m => m (MouseButton -> Bool)
