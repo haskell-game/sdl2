@@ -78,6 +78,8 @@ module SDL.Video.Renderer
   , formatPalette
   , mapRGB
   , setPaletteColors
+  , pixelFormatToMasks
+  , masksToPixelFormat
 
   -- * Textures
   , Texture
@@ -304,31 +306,31 @@ queryTexture (Texture tex) = liftIO $
 -- | Allocate a new RGB surface.
 --
 -- See @<https://wiki.libsdl.org/SDL_CreateRGBSurface SDL_CreateRGBSurface>@ for C documentation.
-createRGBSurface :: (Functor m,MonadIO m)
+createRGBSurface :: (Functor m, MonadIO m)
                  => V2 CInt -- ^ The size of the surface
-                 -> CInt -- ^ The bit-depth of the surface
-                 -> V4 Word32 -- ^ The red, green, blue and alpha mask for the pixels
+                 -> PixelFormat -- ^ The bit depth, red, green, blue and alpha mask for the pixels
                  -> m Surface
-createRGBSurface (V2 w h) d (V4 r g b a) =
+createRGBSurface (V2 w h) pf =
   fmap unmanagedSurface $
-  throwIfNull "SDL.Video.createRGBSurface" "SDL_CreateRGBSurface" $
-  Raw.createRGBSurface 0 w h d r g b a
+    throwIfNull "SDL.Video.createRGBSurface" "SDL_CreateRGBSurface" $ do
+      (bpp, V4 r g b a) <- pixelFormatToMasks pf
+      Raw.createRGBSurface 0 w h bpp r g b a
 
 -- | Allocate a new RGB surface with existing pixel data.
 --
 -- See @<https://wiki.libsdl.org/SDL_CreateRGBSurfaceFrom SDL_CreateRGBSurfaceFrom>@ for C documentation.
-createRGBSurfaceFrom :: (Functor m,MonadIO m)
+createRGBSurfaceFrom :: (Functor m, MonadIO m)
                      => MSV.IOVector Word8 -- ^ The existing pixel data
                      -> V2 CInt -- ^ The size of the surface
-                     -> CInt -- ^ The bit-depth of the surface
                      -> CInt -- ^ The pitch - the length of a row of pixels in bytes
-                     -> V4 Word32 -- ^ The red, green blue and alpha mask for the pixels
+                     -> PixelFormat -- ^ The bit depth, red, green, blue and alpha mask for the pixels
                      -> m Surface
-createRGBSurfaceFrom pixels (V2 w h) d p (V4 r g b a) = liftIO $
+createRGBSurfaceFrom pixels (V2 w h) p pf = liftIO $
   fmap (managedSurface pixels) $
-  throwIfNull "SDL.Video.createRGBSurfaceFrom" "SDL_CreateRGBSurfaceFrom" $
-    MSV.unsafeWith pixels $ \pixelPtr ->
-      Raw.createRGBSurfaceFrom (castPtr pixelPtr) w h d p r g b a
+    throwIfNull "SDL.Video.createRGBSurfaceFrom" "SDL_CreateRGBSurfaceFrom" $ do
+      (bpp, V4 r g b a) <- pixelFormatToMasks pf
+      MSV.unsafeWith pixels $ \pixelPtr ->
+        Raw.createRGBSurfaceFrom (castPtr pixelPtr) w h bpp p r g b a
 
 -- | Perform a fast fill of a rectangle with a specific color.
 --
@@ -1179,3 +1181,26 @@ rendererLogicalSize (Renderer r) = makeStateVar renderGetLogicalSize renderSetLo
 -- See @<https://wiki.libsdl.org/SDL_RenderTargetSupported SDL_RenderTargetSupported>@ for C documentation.
 renderTargetSupported :: (MonadIO m) => Renderer -> m Bool
 renderTargetSupported (Renderer r) = Raw.renderTargetSupported r
+
+-- | Convert the given the enumerated pixel format to a bpp value and RGBA masks.
+--
+-- See @<https://wiki.libsdl.org/SDL_PixelFormatEnumToMasks SDL_PixelFormatEnumToMasks>@ for C documentation.
+pixelFormatToMasks :: (MonadIO m) => PixelFormat -> m (CInt, V4 Word32)
+pixelFormatToMasks pf = liftIO $
+  alloca $ \bpp ->
+  alloca $ \r ->
+  alloca $ \g ->
+  alloca $ \b ->
+  alloca $ \a -> do
+    throwIf_ not "SDL.Video.pixelFormatEnumToMasks" "SDL_PixelFormatEnumToMasks" $
+      Raw.pixelFormatEnumToMasks (toNumber pf) bpp r g b a
+    wrap <$> peek bpp <*> peek r <*> peek g <*> peek b <*> peek a
+    where
+      wrap bpp r g b a = (bpp, V4 r g b a)
+
+-- | Convert a bpp value and RGBA masks to an enumerated pixel format.
+--
+-- See @<https://wiki.libsdl.org/SDL_MasksToPixelFormatEnum SDL_MasksToPixelFormatEnum>@ for C documentation.
+masksToPixelFormat :: (MonadIO m) => CInt -> V4 Word32 -> m PixelFormat
+masksToPixelFormat bpp (V4 r g b a) = liftIO $
+  fromNumber <$> Raw.masksToPixelFormatEnum bpp r g b a
