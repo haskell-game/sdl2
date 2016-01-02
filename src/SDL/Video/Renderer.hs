@@ -306,7 +306,7 @@ queryTexture (Texture tex) = liftIO $
 -- | Allocate a new RGB surface.
 --
 -- See @<https://wiki.libsdl.org/SDL_CreateRGBSurface SDL_CreateRGBSurface>@ for C documentation.
-createRGBSurface :: (MonadIO m)
+createRGBSurface :: (Functor m, MonadIO m)
                  => V2 CInt -- ^ The size of the surface
                  -> PixelFormat -- ^ The bit depth, red, green, blue and alpha mask for the pixels
                  -> m Surface
@@ -319,7 +319,7 @@ createRGBSurface (V2 w h) pf =
 -- | Allocate a new RGB surface with existing pixel data.
 --
 -- See @<https://wiki.libsdl.org/SDL_CreateRGBSurfaceFrom SDL_CreateRGBSurfaceFrom>@ for C documentation.
-createRGBSurfaceFrom :: (Functor m,MonadIO m)
+createRGBSurfaceFrom :: (Functor m, MonadIO m)
                      => MSV.IOVector Word8 -- ^ The existing pixel data
                      -> V2 CInt -- ^ The size of the surface
                      -> CInt -- ^ The pitch - the length of a row of pixels in bytes
