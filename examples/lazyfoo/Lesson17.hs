@@ -120,7 +120,7 @@ main = do
                 Just e' -> (e' :) <$> collectEvents
 
         events <- collectEvents
-        mousePos <- SDL.getMouseLocation
+        mousePos <- SDL.getAbsoluteMouseLocation
 
         let (Any quit, Endo updateButton) =
               foldMap (\case
