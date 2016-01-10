@@ -475,7 +475,8 @@ instance Storable Event where
         text <- peekArray (#const SDL_TEXTEDITINGEVENT_TEXT_SIZE) $ (#ptr SDL_Event, edit.text) ptr
         start <- (#peek SDL_Event, edit.start) ptr
         len <- (#peek SDL_Event, edit.length) ptr
-        return $! TextEditingEvent typ timestamp wid text start len
+        let upToNull = takeWhile (/= 0) text
+        return $! TextEditingEvent typ timestamp wid upToNull start len
       (#const SDL_TEXTINPUT) -> do
         wid <- (#peek SDL_Event, text.windowID) ptr
         text <- peekArray (#const SDL_TEXTINPUTEVENT_TEXT_SIZE) $ (#ptr SDL_Event, text.text) ptr
