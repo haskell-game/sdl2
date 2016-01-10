@@ -2,6 +2,8 @@
 =====
 
 * Lower required SDL2 version to 2.0.2.
+* Fix decoding of `TextEditingEvent` where the Raw bindings failed to stop reading
+  character data past the null terminator.
 
 2.1.1
 =====
