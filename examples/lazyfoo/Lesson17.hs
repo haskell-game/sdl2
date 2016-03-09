@@ -125,7 +125,7 @@ main = do
         SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.clear renderer
 
-        let buttons' = map (\b -> updateButton b) buttons
+        let buttons' = map updateButton buttons
         for_ buttons' (renderButton renderer buttonSpriteSheet)
 
         SDL.present renderer
