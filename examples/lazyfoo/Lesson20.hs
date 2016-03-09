@@ -100,9 +100,9 @@ main = do
                          SDL.QuitEvent -> (Any True, mempty)
                          SDL.KeyboardEvent e ->
                            if | SDL.keyboardEventKeyMotion e == SDL.Pressed ->
-                                  let scancode = SDL.keysymScancode (SDL.keyboardEventKeysym e)
-                                  in if | scancode == SDL.ScancodeEscape -> (Any True, mempty)
-                                        | otherwise -> mempty
+                                  case scancode = SDL.keysymScancode (SDL.keyboardEventKeysym e) of
+                                    SDL.ScancodeEscape -> (Any True, mempty)
+                                    _ -> mempty
                               | otherwise -> mempty
                          SDL.JoyButtonEvent e ->
                            if | SDL.joyButtonEventState e /= 0 -> (mempty, Any True)

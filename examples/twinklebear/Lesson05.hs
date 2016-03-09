@@ -72,13 +72,13 @@ main = do
                 SDL.QuitEvent -> (Any True, mempty)
                 SDL.KeyboardEvent e ->
                   if | SDL.keyboardEventKeyMotion e == SDL.Pressed ->
-                         let scancode = SDL.keysymScancode (SDL.keyboardEventKeysym e)
-                         in if | scancode == SDL.Scancode1 -> (Any False, Last (Just spriteOne))
-                               | scancode == SDL.Scancode2 -> (Any False, Last (Just spriteTwo))
-                               | scancode == SDL.Scancode3 -> (Any False, Last (Just spriteThree))
-                               | scancode == SDL.Scancode4 -> (Any False, Last (Just spriteFour))
-                               | scancode == SDL.ScancodeQ -> (Any True,  mempty)
-                               | otherwise -> mempty
+                         case SDL.keysymScancode (SDL.keyboardEventKeysym e) of
+                           SDL.Scancode1 -> (Any False, Last (Just spriteOne))
+                           SDL.Scancode2 -> (Any False, Last (Just spriteTwo))
+                           SDL.Scancode3 -> (Any False, Last (Just spriteThree))
+                           SDL.Scancode4 -> (Any False, Last (Just spriteFour))
+                           SDL.ScancodeQ -> (Any True,  mempty)
+                           _ -> mempty
                      | otherwise -> mempty
                 _ -> mempty) $
               map SDL.eventPayload events
