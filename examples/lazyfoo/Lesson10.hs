@@ -64,12 +64,7 @@ main = do
   backgroundTexture <- loadTexture renderer "examples/lazyfoo/background.bmp"
 
   let loop = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
-        events <- collectEvents
+        events <- SDL.pollEvents
 
         let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 

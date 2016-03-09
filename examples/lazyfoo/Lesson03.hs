@@ -29,13 +29,7 @@ main = do
 
   let
     loop = do
-      let collectEvents = do
-            e <- SDL.pollEvent
-            case e of
-              Nothing -> return []
-              Just e' -> (e' :) <$> collectEvents
-
-      events <- collectEvents
+      events <- SDL.pollEvents
       let quit = any (\case SDL.QuitEvent -> True
                             _ -> False) $ map SDL.eventPayload events
 

@@ -79,12 +79,7 @@ main = do
   arrowTexture <- loadTexture renderer "examples/lazyfoo/arrow.bmp"
 
   let loop theta flips = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
-        events <- collectEvents
+        events <- SDL.pollEvents
 
         let (Any quit, Sum phi, Last newFlips) =
               foldMap (\case

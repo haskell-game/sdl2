@@ -99,12 +99,7 @@ main = do
   joystickID <- SDL.getJoystickID joystick
 
   let loop (xDir', yDir') = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
-        events <- collectEvents
+        events <- SDL.pollEvents
 
         let (Any quit, Last newDir) =
               foldMap (\case

@@ -78,12 +78,7 @@ main = do
   backgroundTexture <- loadTexture renderer "examples/lazyfoo/fadein.bmp"
 
   let loop alpha = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
-        events <- collectEvents
+        events <- SDL.pollEvents
 
         let (Any quit, Sum alphaAdjustment) =
               foldMap (\case

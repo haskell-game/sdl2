@@ -81,13 +81,7 @@ main = do
 
   let
     loop = do
-      let collectEvents = do
-            e <- SDL.pollEvent
-            case e of
-              Nothing -> return []
-              Just e' -> (e' :) <$> collectEvents
-
-      events <- map SDL.eventPayload <$> collectEvents
+      events <- map SDL.eventPayload <$> SDL.pollEvents
       let quit = any (== SDL.QuitEvent) events
 
       keyMap <- SDL.getKeyboardState

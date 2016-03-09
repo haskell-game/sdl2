@@ -75,12 +75,7 @@ main = do
 
   let loop [] = return ()
       loop (frame:frames) = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
-        events <- collectEvents
+        events <- SDL.pollEvents
 
         let (Any quit) =
               foldMap (\case

@@ -113,13 +113,7 @@ main = do
   buttonSpriteSheet <- loadTexture renderer "examples/lazyfoo/button.bmp"
 
   let loop buttons = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
-
-        events <- collectEvents
+        events <- SDL.pollEvents
         mousePos <- SDL.getAbsoluteMouseLocation
 
         let (Any quit, Endo updateButton) =

@@ -58,12 +58,7 @@ main = do
   image <- getDataFileName "examples/twinklebear/ladybeetle.bmp" >>= loadTexture renderer
 
   let loop imgPos = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
-        events <- collectEvents
+        events <- SDL.pollEvents
 
         let (Any quit, Sum posDelta) =
               foldMap (\case

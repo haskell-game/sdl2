@@ -65,12 +65,7 @@ main = do
           | x <- [0..1], y <- [0..1] ]
 
   let loop spriteRect = do
-        let collectEvents = do
-              e <- SDL.pollEvent
-              case e of
-                Nothing -> return []
-                Just e' -> (e' :) <$> collectEvents
-        events <- collectEvents
+        events <- SDL.pollEvents
 
         let (Any quit, Last newSpriteRect) =
               foldMap (\case
