@@ -77,11 +77,7 @@ main = do
       loop (frame:frames) = do
         events <- SDL.pollEvents
 
-        let (Any quit) =
-              foldMap (\case
-                         SDL.QuitEvent -> (Any True)
-                         _ -> mempty) $
-              map SDL.eventPayload events
+        let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
         SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.clear renderer

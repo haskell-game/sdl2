@@ -30,8 +30,7 @@ main = do
   let
     loop = do
       events <- SDL.pollEvents
-      let quit = any (\case SDL.QuitEvent -> True
-                            _ -> False) $ map SDL.eventPayload events
+      let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
 
       SDL.surfaceBlit xOut Nothing screenSurface Nothing
       SDL.updateWindowSurface window
