@@ -88,6 +88,7 @@ module SDL.Video.Renderer
   , createTexture
   , TextureAccess(..)
   , createTextureFromSurface
+  , updateTexture
   , destroyTexture
   , glBindTexture
   , glUnbindTexture
@@ -124,6 +125,7 @@ import Data.Typeable
 import Data.Word
 import Foreign.C.String
 import Foreign.C.Types
+import Foreign.ForeignPtr
 import Foreign.Marshal.Alloc
 import Foreign.Marshal.Utils
 import Foreign.Ptr
@@ -136,6 +138,7 @@ import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Internal as BSI
 import qualified Data.Text.Encoding as Text
 import qualified Data.Vector.Storable as SV
 import qualified Data.Vector.Storable.Mutable as MSV
@@ -206,6 +209,23 @@ glUnbindTexture :: (Functor m,MonadIO m)
 glUnbindTexture (Texture t) =
   throwIfNeg_ "SDL.Video.Renderer.glUnindTexture" "SDL_GL_UnbindTexture" $
   Raw.glUnbindTexture t
+
+-- | Updates texture rectangle with new pixel data.
+--
+-- See @<https://wiki.libsdl.org/SDL_UpdateTexture SDL_UpdateTexture>@ for C documentation.
+updateTexture :: (Functor m, MonadIO m)
+              => Texture -- ^ The 'Texture' to be updated
+              -> Maybe (Rectangle CInt) -- ^ The area to update, Nothing for entire texture
+              -> BS.ByteString -- ^ The raw pixel data
+              -> CInt -- ^ The number of bytes in a row of pixel data, including padding between lines
+              -> m Texture
+updateTexture tex@(Texture t) rect pixels pitch = do
+  liftIO $ throwIfNeg_ "SDL.Video.updateTexture" "SDL_UpdateTexture" $
+    maybeWith with rect $ \rectPtr ->
+      let (pixelForeign, _, _) = BSI.toForeignPtr pixels
+      in withForeignPtr pixelForeign $ \pixelsPtr ->
+        Raw.updateTexture t (castPtr rectPtr) (castPtr pixelsPtr) pitch
+  return tex
 
 -- | Destroy the specified texture.
 --
