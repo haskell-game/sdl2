@@ -58,7 +58,7 @@ import "SDL"
 
 main :: IO ()
 main = do
-  'initialize' ['InitEverything']
+  'initializeAll'
 @
 
 Next, you can create a 'Window' by using 'createWindow'
@@ -128,7 +128,7 @@ import "Control.Monad" (unless)
 
 main :: IO ()
 main = do
-  'initialize' ['InitEverything']
+  'initializeAll'
   window <- 'createWindow' "My SDL Application" 'defaultWindow'
   renderer <- 'createRenderer' window (-1) 'defaultRenderer'
   appLoop renderer
