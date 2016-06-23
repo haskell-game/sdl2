@@ -142,7 +142,7 @@ appLoop renderer = do
             'keyboardEventKeyMotion' keyboardEvent == 'Pressed' &&
             'keysymKeycode' ('keyboardEventKeysym' keyboardEvent) == 'KeycodeQ'
           _ -> False
-      qPressed = not (null (filter eventIsQPress events))
+      qPressed = any eventIsQPress events
   'rendererDrawColor' renderer '$=' V4 0 0 255 255
   'clear' renderer
   'present' renderer
