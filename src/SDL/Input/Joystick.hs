@@ -70,7 +70,7 @@ availableJoysticks = liftIO $ do
 -- | Open a joystick so that you can start receiving events from interaction with this joystick.
 --
 -- See @<https://wiki.libsdl.org/SDL_JoystickOpen SDL_JoystickOpen>@ for C documentation.
-openJoystick :: (Functor m,MonadIO m)
+openJoystick :: MonadIO m
              => JoystickDevice -- ^ The device to open. Use 'availableJoysticks' to find 'JoystickDevices's
              -> m Joystick
 openJoystick (JoystickDevice _ x) =
@@ -96,7 +96,7 @@ getJoystickID (Joystick j) =
 -- | Determine if a given button is currently held.
 --
 -- See @<https://wiki.libsdl.org/SDL_JoystickGetButton SDL_JoystickGetButton>@ for C documentation.
-buttonPressed :: (Functor m,MonadIO m)
+buttonPressed :: MonadIO m
               => Joystick
               -> CInt -- ^ The index of the button. You can use 'numButtons' to determine how many buttons a given joystick has.
               -> m Bool

@@ -57,13 +57,13 @@ instance ToNumber InitFlag Word32 where
 -- You may call this function again with additional subsystems to initialize.
 --
 -- Throws 'SDLEx.SDLException' if initialization fails.
-initialize :: (Foldable f, Functor m, MonadIO m) => f InitFlag -> m ()
+initialize :: (Foldable f, MonadIO m) => f InitFlag -> m ()
 initialize flags =
   throwIfNeg_ "SDL.Init.init" "SDL_Init" $
     Raw.init (foldFlags toNumber flags)
 
 -- | Equivalent to @'initialize' ['minBound' .. 'maxBound']@.
-initializeAll :: (Functor m, MonadIO m) => m ()
+initializeAll :: MonadIO m => m ()
 initializeAll = initialize [minBound .. maxBound]
 
 -- | Quit and shutdown SDL, freeing any resources that may have been in use.

@@ -164,7 +164,7 @@ surfaceBlit (Surface src _) srcRect (Surface dst _) dstLoc = liftIO $
 -- | Create a texture for a rendering context.
 --
 -- See @<https://wiki.libsdl.org/SDL_CreateTexture SDL_CreateTexture>@ for C documentation.
-createTexture :: (Functor m,MonadIO m)
+createTexture :: MonadIO m
               => Renderer -- ^ The rendering context.
               -> PixelFormat
               -> TextureAccess
@@ -178,7 +178,7 @@ createTexture (Renderer r) fmt access (V2 w h) =
 -- | Create a texture from an existing surface.
 --
 -- See @<https://wiki.libsdl.org/SDL_CreateTextureFromSurface SDL_CreateTextureFromSurface>@ for C documentation.
-createTextureFromSurface :: (Functor m,MonadIO m)
+createTextureFromSurface :: MonadIO m
                          => Renderer -- ^ The rendering context
                          -> Surface -- ^ The surface containing pixel data used to fill the texture
                          -> m Texture
@@ -190,7 +190,7 @@ createTextureFromSurface (Renderer r) (Surface s _) =
 -- | Bind an OpenGL\/ES\/ES2 texture to the current context for use with when rendering OpenGL primitives directly.
 --
 -- See @<https://wiki.libsdl.org/SDL_GL_BindTexture SDL_GL_BindTexture>@ for C documentation.
-glBindTexture :: (Functor m,MonadIO m)
+glBindTexture :: MonadIO m
               => Texture -- ^ The texture to bind to the current OpenGL\/ES\/ES2 context
               -> m ()
 glBindTexture (Texture t) =
@@ -200,7 +200,7 @@ glBindTexture (Texture t) =
 -- | Unbind an OpenGL\/ES\/ES2 texture from the current context.
 --
 -- See @<https://wiki.libsdl.org/SDL_GL_UnbindTexture SDL_GL_UnbindTexture>@ for C documentation.
-glUnbindTexture :: (Functor m,MonadIO m)
+glUnbindTexture :: MonadIO m
                 => Texture -- ^ The texture to unbind from the current OpenGL\/ES\/ES2 context
                 -> m ()
 glUnbindTexture (Texture t) =
@@ -306,7 +306,7 @@ queryTexture (Texture tex) = liftIO $
 -- | Allocate a new RGB surface.
 --
 -- See @<https://wiki.libsdl.org/SDL_CreateRGBSurface SDL_CreateRGBSurface>@ for C documentation.
-createRGBSurface :: (Functor m, MonadIO m)
+createRGBSurface :: MonadIO m
                  => V2 CInt -- ^ The size of the surface
                  -> PixelFormat -- ^ The bit depth, red, green, blue and alpha mask for the pixels
                  -> m Surface
@@ -319,7 +319,7 @@ createRGBSurface (V2 w h) pf =
 -- | Allocate a new RGB surface with existing pixel data.
 --
 -- See @<https://wiki.libsdl.org/SDL_CreateRGBSurfaceFrom SDL_CreateRGBSurfaceFrom>@ for C documentation.
-createRGBSurfaceFrom :: (Functor m, MonadIO m)
+createRGBSurfaceFrom :: MonadIO m
                      => MSV.IOVector Word8 -- ^ The existing pixel data
                      -> V2 CInt -- ^ The size of the surface
                      -> CInt -- ^ The pitch - the length of a row of pixels in bytes
@@ -454,7 +454,7 @@ setPaletteColors (Palette p) colors first = liftIO $
 -- | Get the SDL surface associated with the window.
 --
 -- See @<https://wiki.libsdl.org/SDL_GetWindowSurface SDL_GetWindowSurface>@ for C documentation.
-getWindowSurface :: (Functor m, MonadIO m) => Window -> m Surface
+getWindowSurface :: MonadIO m => Window -> m Surface
 getWindowSurface (Window w) =
   fmap unmanagedSurface $
   throwIfNull "SDL.Video.getWindowSurface" "SDL_GetWindowSurface" $
@@ -504,7 +504,7 @@ rendererDrawColor (Renderer re) = makeStateVar getRenderDrawColor setRenderDrawC
 -- This is the function you use to reflect any changes to the surface on the screen.
 --
 -- See @<https://wiki.libsdl.org/SDL_UpdateWindowSurface SDL_UpdateWindowSurface>@ for C documentation.
-updateWindowSurface :: (Functor m, MonadIO m) => Window -> m ()
+updateWindowSurface :: MonadIO m => Window -> m ()
 updateWindowSurface (Window w) =
   throwIfNeg_ "SDL.Video.updateWindowSurface" "SDL_UpdateWindowSurface" $
     Raw.updateWindowSurface w
@@ -625,7 +625,7 @@ fillRects (Renderer r) rects = liftIO $
 -- | Clear the current rendering target with the drawing color.
 --
 -- See @<https://wiki.libsdl.org/SDL_RenderClear SDL_RenderClear>@ for C documentation.
-clear :: (Functor m, MonadIO m) => Renderer -> m ()
+clear :: MonadIO m => Renderer -> m ()
 clear (Renderer r) =
   throwIfNeg_ "SDL.Video.clear" "SDL_RenderClear" $
   Raw.renderClear r
@@ -739,7 +739,7 @@ copyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
 -- | Draw a line on the current rendering target.
 --
 -- See @<https://wiki.libsdl.org/SDL_RenderDrawLine SDL_RenderDrawLine>@ for C documentation.
-drawLine :: (Functor m,MonadIO m)
+drawLine :: MonadIO m
          => Renderer
          -> Point V2 CInt -- ^ The start point of the line
          -> Point V2 CInt -- ^ The end point of the line
@@ -766,7 +766,7 @@ drawLines (Renderer r) points =
 -- | Draw a point on the current rendering target.
 --
 -- See @<https://wiki.libsdl.org/SDL_RenderDrawPoint SDL_RenderDrawPoint>@ for C documentation.
-drawPoint :: (Functor m, MonadIO m) => Renderer -> Point V2 CInt -> m ()
+drawPoint :: MonadIO m => Renderer -> Point V2 CInt -> m ()
 drawPoint (Renderer r) (P (V2 x y)) =
   throwIfNeg_ "SDL.Video.drawPoint" "SDL_RenderDrawPoint" $
   Raw.renderDrawPoint r x y
@@ -788,7 +788,7 @@ drawPoints (Renderer r) points =
 -- This function is used to optimize images for faster repeat blitting. This is accomplished by converting the original and storing the result as a new surface. The new, optimized surface can then be used as the source for future blits, making them faster.
 --
 -- See @<https://wiki.libsdl.org/SDL_ConvertSurface SDL_ConvertSurface>@ for C documentation.
-convertSurface :: (Functor m,MonadIO m)
+convertSurface :: MonadIO m
                => Surface -- ^ The 'Surface' to convert
                -> SurfacePixelFormat -- ^ The pixel format that the new surface is optimized for
                -> m Surface

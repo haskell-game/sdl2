@@ -159,7 +159,7 @@ uploadEffect (HapticDevice h _ _) effect =
                                     "SDL_HapticNewEffect"
                                     (Raw.hapticNewEffect h ptr)))
 
-runEffect :: (Functor m, MonadIO m) => HapticDevice -> EffectId -> Word32 -> m ()
+runEffect :: MonadIO m => HapticDevice -> EffectId -> Word32 -> m ()
 runEffect (HapticDevice h _ _) (EffectId e) x =
   SDLEx.throwIfNeg_ "SDL.Haptic.runEffect"
                     "SDL_HapticRunEffect"

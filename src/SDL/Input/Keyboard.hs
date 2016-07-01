@@ -57,7 +57,7 @@ import Control.Applicative
 -- | Get the current key modifier state for the keyboard. The key modifier state is a mask special keys that are held down.
 --
 -- See @<https://wiki.libsdl.org/SDL_GetModState SDL_GetModState>@ for C documentation.
-getModState :: (Functor m, MonadIO m) => m KeyModifier
+getModState :: MonadIO m => m KeyModifier
 getModState = fromNumber <$> Raw.getModState
 
 -- | Information about which keys are currently held down. Use 'getModState' to generate this information.

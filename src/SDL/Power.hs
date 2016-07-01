@@ -28,7 +28,7 @@ import qualified SDL.Raw as Raw
 -- Throws 'SDLException' if the current power state can not be determined.
 --
 -- See @<https://wiki.libsdl.org/SDL_GetPowerInfo SDL_GetPowerInfo>@ for C documentation.
-getPowerInfo :: (Functor m, MonadIO m) => m PowerState
+getPowerInfo :: MonadIO m => m PowerState
 getPowerInfo =
   liftIO $
   alloca $ \secsPtr ->

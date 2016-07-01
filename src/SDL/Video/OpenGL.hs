@@ -97,7 +97,7 @@ newtype GLContext = GLContext Raw.GLContext
 -- support, or if context creation fails.
 --
 -- See @<https://wiki.libsdl.org/SDL_GL_CreateContext SDL_GL_CreateContext>@ for C documentation.
-glCreateContext :: (Functor m, MonadIO m) => Window -> m GLContext
+glCreateContext :: (MonadIO m) => Window -> m GLContext
 glCreateContext (Window w) =
   GLContext <$> throwIfNull "SDL.Video.glCreateContext" "SDL_GL_CreateContext"
     (Raw.glCreateContext w)
@@ -107,7 +107,7 @@ glCreateContext (Window w) =
 -- Throws 'SDLException' on failure.
 --
 -- See @<https://wiki.libsdl.org/SDL_GL_MakeCurrent SDL_GL_MakeCurrent>@ for C documentation.
-glMakeCurrent :: (Functor m, MonadIO m) => Window -> GLContext -> m ()
+glMakeCurrent :: (MonadIO m) => Window -> GLContext -> m ()
 glMakeCurrent (Window w) (GLContext ctx) =
   throwIfNeg_ "SDL.Video.OpenGL.glMakeCurrent" "SDL_GL_MakeCurrent" $
     Raw.glMakeCurrent w ctx
