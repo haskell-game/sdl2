@@ -1,3 +1,8 @@
+2.1.2.1
+=======
+* Raise upper bounds for `transformers` to 0.6
+* Update some documentation examples to be more idomatic
+
 2.1.2
 =====
 
