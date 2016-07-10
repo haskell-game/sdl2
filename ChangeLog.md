@@ -1,7 +1,8 @@
 2.1.2.1
 =======
 * Raise upper bounds for `transformers` to 0.6
-* Update some documentation examples to be more idomatic
+* Revise some documentation examples to be more idomatic
+* Update `.gitignore` to cover `stack` and other tools
 
 2.1.2
 =====
