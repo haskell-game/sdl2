@@ -1,12 +1,9 @@
-2.1.2.1
-=======
-* Raise upper bounds for `transformers` to 0.6
-* Revise some documentation examples to be more idomatic
-* Update `.gitignore` to cover `stack` and other tools
-
 2.1.2
 =====
 
+* Revise some documentation examples to be more idomatic
+* Update `.gitignore` to cover `stack` and other tools
+* Raise upper bounds for `transformers` to 0.6
 * Lower required SDL2 version to 2.0.2.
 * Fix decoding of `TextEditingEvent` where the Raw bindings failed to stop reading
   character data past the null terminator.
