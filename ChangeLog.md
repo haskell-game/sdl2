@@ -1,3 +1,7 @@
+2.1.2.2
+=======
+* Minor documentation updates
+
 2.1.2.1
 =======
 
