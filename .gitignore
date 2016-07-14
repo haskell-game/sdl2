@@ -1,6 +1,11 @@
 dist
 dist-*
 cabal-dev
+.stack-work/
+.sosrc
+*.sw[a-z]
+dist/
+*.hi
 *.o
 *.hi
 *.chi

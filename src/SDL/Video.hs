@@ -288,7 +288,6 @@ getWindowAbsolutePosition (Window w) =
         Raw.getWindowPosition w wPtr hPtr
         V2 <$> peek wPtr <*> peek hPtr
 
-
 -- | Get or set the size of a window's client area. Values beyond the maximum supported size are clamped.
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.

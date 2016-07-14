@@ -16,6 +16,9 @@ module SDL.Video.OpenGL
   , glMakeCurrent
   , glDeleteContext
 
+  -- * Querying for the drawable size without a Renderer
+  , glGetDrawableSize
+
   -- * Swapping
   -- | The process of \"swapping\" means to move the back-buffer into the window contents itself.
   , glSwapWindow
@@ -26,10 +29,11 @@ module SDL.Video.OpenGL
   , Raw.glGetProcAddress
   ) where
 
-import Control.Monad.IO.Class (MonadIO)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Data (Data)
 import Data.StateVar
 import Data.Typeable
+import Foreign hiding (void, throwIfNull, throwIfNeg, throwIfNeg_)
 import Foreign.C.Types
 import GHC.Generics (Generic)
 import Linear
@@ -169,3 +173,13 @@ swapInterval = makeStateVar glGetSwapInterval glSetSwapInterval
   glSetSwapInterval i =
     throwIfNeg_ "SDL.Video.glSetSwapInterval" "SDL_GL_SetSwapInterval" $
       Raw.glSetSwapInterval (toNumber i)
+
+-- | Get the size of a window's underlying drawable area in pixels (for use
+-- with glViewport).
+glGetDrawableSize :: MonadIO m => Window -> m (V2 CInt)
+glGetDrawableSize (Window w) =
+    liftIO $
+    alloca $ \wptr ->
+    alloca $ \hptr -> do
+        Raw.glGetDrawableSize w wptr hptr
+        V2 <$> peek wptr <*> peek hptr
