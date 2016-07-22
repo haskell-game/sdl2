@@ -61,6 +61,7 @@ library
     SDL.Input.Mouse
     SDL.Power
     SDL.Time
+    SDL.Vect
     SDL.Video
     SDL.Video.OpenGL
     SDL.Video.Renderer
@@ -110,7 +111,6 @@ library
     base >= 4.7 && < 5,
     bytestring >= 0.10.4.0 && < 0.11,
     exceptions >= 0.4 && < 0.9,
-    linear >= 1.10.1.2 && < 1.21,
     StateVar >= 1.1.0.0 && < 1.2,
     text >= 1.1.0.0 && < 1.3,
     transformers >= 0.2 && < 0.6,
@@ -388,7 +388,7 @@ executable twinklebear-lesson-05
 
 executable audio-example
   if flag(examples)
-    build-depends: base >= 4.7 && < 5, lens >= 4.4.0.2 && < 4.15, linear >= 1.10.1.2 && < 1.21, sdl2, vector
+    build-depends: base >= 4.7 && < 5, sdl2, vector
   else
     buildable: False
 

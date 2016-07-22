@@ -87,8 +87,7 @@ import Data.Typeable
 import Foreign hiding (void, throwIfNull, throwIfNeg, throwIfNeg_)
 import Foreign.C
 import GHC.Generics (Generic)
-import Linear
-import Linear.Affine (Point(P))
+import SDL.Vect
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
@@ -114,7 +113,7 @@ createWindow title config = liftIO $ do
     let create' (V2 w h) = case windowPosition config of
           Centered -> let u = Raw.SDL_WINDOWPOS_CENTERED in create u u w h
           Wherever -> let u = Raw.SDL_WINDOWPOS_UNDEFINED in create u u w h
-          Absolute (P (V2 x y)) -> create x y w h
+          Absolute ((V2 x y)) -> create x y w h
     create' (windowInitialSize config) flags >>= return . Window
   where
     flags = foldr (.|.) 0
@@ -217,7 +216,7 @@ instance FromNumber WindowMode Word32 where
 data WindowPosition
   = Centered
   | Wherever -- ^ Let the window mananger decide where it's best to place the window.
-  | Absolute (Point V2 CInt)
+  | Absolute (V2 CInt)
   deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 -- | Destroy the given window. The 'Window' handler may not be used
@@ -277,7 +276,7 @@ setWindowPosition :: MonadIO m => Window -> WindowPosition -> m ()
 setWindowPosition (Window w) pos = case pos of
   Centered -> let u = Raw.SDL_WINDOWPOS_CENTERED in Raw.setWindowPosition w u u
   Wherever -> let u = Raw.SDL_WINDOWPOS_UNDEFINED in Raw.setWindowPosition w u u
-  Absolute (P (V2 x y)) -> Raw.setWindowPosition w x y
+  Absolute ((V2 x y)) -> Raw.setWindowPosition w x y
 
 -- | Get the position of the window.
 getWindowAbsolutePosition :: MonadIO m => Window -> m (V2 CInt)
@@ -352,7 +351,7 @@ getWindowConfig (Window w) = do
       , windowMode         = fromNumber wFlags
         -- Should we store the openGL config that was used to create the window?
       , windowOpenGL       = Nothing
-      , windowPosition     = Absolute (P wPos)
+      , windowPosition     = Absolute (wPos)
       , windowResizable    = wFlags .&. Raw.SDL_WINDOW_RESIZABLE > 0
       , windowInitialSize  = wSize
     }
@@ -451,7 +450,7 @@ windowGammaRamp (Window w) = makeStateVar getWindowGammaRamp setWindowGammaRamp
 
 data Display = Display {
                displayName           :: String
-             , displayBoundsPosition :: Point V2 CInt
+             , displayBoundsPosition :: V2 CInt
                  -- ^ Position of the desktop area represented by the display,
                  -- with the primary display located at @(0, 0)@.
              , displayBoundsSize     :: V2 CInt
@@ -506,7 +505,7 @@ getDisplays = liftIO $ do
 
     return $ Display {
         displayName = name'
-      , displayBoundsPosition = P (V2 x y)
+      , displayBoundsPosition = (V2 x y)
       , displayBoundsSize = V2 w h
       , displayModes = modes
     }

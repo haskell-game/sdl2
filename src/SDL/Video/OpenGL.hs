@@ -32,7 +32,7 @@ import Data.StateVar
 import Data.Typeable
 import Foreign.C.Types
 import GHC.Generics (Generic)
-import Linear
+import SDL.Vect
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
