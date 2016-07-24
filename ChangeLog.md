@@ -1,5 +1,7 @@
-2.1.2.2
-=======
+2.1.3
+=====
+
+* Expose glGetDrawableSize (can differ from window size in some environments)
 * Minor documentation updates
 
 2.1.2.1
