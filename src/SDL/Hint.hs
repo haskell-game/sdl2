@@ -340,15 +340,15 @@ instance HasGetter (Hint v) v where
          _ -> Nothing)
 
 hintToString :: Hint v -> String
-hintToString HintAccelerometerAsJoystick = "SDL_HINT_ACCELEROMETER_AS_JOYSTICK"
-hintToString HintFramebufferAcceleration = "SDL_HINT_FRAMEBUFFER_ACCELERATION"
-hintToString HintMacCTRLClick            = "SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK"
-hintToString HintMouseRelativeModeWarp   = "SDL_HINT_MOUSE_RELATIVE_MODE_WARP"
-hintToString HintRenderDriver            = "SDL_HINT_RENDER_DRIVER"
-hintToString HintRenderOpenGLShaders     = "SDL_HINT_RENDER_OPENGL_SHADERS"
-hintToString HintRenderScaleQuality      = "SDL_HINT_RENDER_SCALE_QUALITY"
-hintToString HintRenderVSync             = "SDL_HINT_RENDER_VSYNC"
-hintToString HintVideoWinD3DCompiler     = "SDL_HINT_VIDEO_WIN_D3DCOMPILER"
+hintToString HintAccelerometerAsJoystick = "SDL_ACCELEROMETER_AS_JOYSTICK"
+hintToString HintFramebufferAcceleration = "SDL_FRAMEBUFFER_ACCELERATION"
+hintToString HintMacCTRLClick            = "SDL_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK"
+hintToString HintMouseRelativeModeWarp   = "SDL_MOUSE_RELATIVE_MODE_WARP"
+hintToString HintRenderDriver            = "SDL_RENDER_DRIVER"
+hintToString HintRenderOpenGLShaders     = "SDL_RENDER_OPENGL_SHADERS"
+hintToString HintRenderScaleQuality      = "SDL_RENDER_SCALE_QUALITY"
+hintToString HintRenderVSync             = "SDL_RENDER_VSYNC"
+hintToString HintVideoWinD3DCompiler     = "SDL_VIDEO_WIN_D3DCOMPILER"
 
 clearHints :: MonadIO m => m ()
 clearHints = Raw.clearHints
