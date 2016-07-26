@@ -44,6 +44,11 @@ flag examples
   description:       Build examples
   default:           False
 
+flag nolinear
+  description:       Do not depend on 'linear' library
+  default:           False
+  manual:            True
+
 library
   ghc-options: -Wall
 
@@ -86,6 +91,7 @@ library
   other-modules:
     Data.Bitmask
     SDL.Internal.Numbered
+    SDL.Internal.Vect
     SDL.Exception
 
   hs-source-dirs:
@@ -115,6 +121,12 @@ library
     text >= 1.1.0.0 && < 1.3,
     transformers >= 0.2 && < 0.6,
     vector >= 0.10.9.0 && < 0.12
+
+  if flag(nolinear)
+    cpp-options: -Dnolinear
+  else
+    build-depends:
+      linear >= 1.10.1.2 && < 1.21
 
   default-language:
     Haskell2010
