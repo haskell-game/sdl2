@@ -44,7 +44,7 @@ flag examples
   description:       Build examples
   default:           False
 
-flag nolinear
+flag no-linear
   description:       Do not depend on 'linear' library
   default:           False
   manual:            True
@@ -122,7 +122,7 @@ library
     transformers >= 0.2 && < 0.6,
     vector >= 0.10.9.0 && < 0.12
 
-  if flag(nolinear)
+  if flag(no-linear)
     cpp-options: -Dnolinear
   else
     build-depends:
