@@ -152,7 +152,7 @@ surfaceBlit :: MonadIO m
             => Surface -- ^ The 'Surface' to be copied from
             -> Maybe (Rectangle CInt) -- ^ The rectangle to be copied, or 'Nothing' to copy the entire surface
             -> Surface -- ^ The 'Surface' that is the blit target
-            -> Maybe (V2 CInt) -- ^ The position to blit to
+            -> Maybe (Point V2 CInt) -- ^ The position to blit to
             -> m ()
 surfaceBlit (Surface src _) srcRect (Surface dst _) dstLoc = liftIO $
   throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
@@ -549,7 +549,7 @@ instance ToNumber BlendMode Word32 where
   toNumber BlendAdditive = Raw.SDL_BLENDMODE_ADD
   toNumber BlendMod = Raw.SDL_BLENDMODE_MOD
 
-data Rectangle a = Rectangle (V2 a) (V2 a)
+data Rectangle a = Rectangle (Point V2 a) (V2 a)
   deriving (Eq, Functor, Generic, Ord, Read, Show, Typeable)
 
 instance Storable a => Storable (Rectangle a) where
@@ -721,7 +721,7 @@ copyEx :: MonadIO m
        -> Maybe (Rectangle CInt) -- ^ The source rectangle to copy, or 'Nothing' for the whole texture
        -> Maybe (Rectangle CInt) -- ^ The destination rectangle to copy to, or 'Nothing' for the whole rendering target. The texture will be stretched to fill the given rectangle.
        -> CDouble -- ^ An angle in degrees that indicates the point around which the destination rectangle will be rotated.
-       -> Maybe (V2 CInt) -- ^ The point of rotation
+       -> Maybe (Point V2 CInt) -- ^ The point of rotation
        -> V2 Bool -- ^ Whether to flip in the X or Y axis.
        -> m () -- ^ Whether to flip in the X or Y axis.
 copyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
@@ -740,10 +740,10 @@ copyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
 -- See @<https://wiki.libsdl.org/SDL_RenderDrawLine SDL_RenderDrawLine>@ for C documentation.
 drawLine :: (Functor m,MonadIO m)
          => Renderer
-         -> V2 CInt -- ^ The start point of the line
-         -> V2 CInt -- ^ The end point of the line
+         -> Point V2 CInt -- ^ The start point of the line
+         -> Point V2 CInt -- ^ The end point of the line
          -> m ()
-drawLine (Renderer r) ((V2 x y)) ((V2 x' y')) =
+drawLine (Renderer r) (P (V2 x y)) (P (V2 x' y')) =
   throwIfNeg_ "SDL.Video.drawLine" "SDL_RenderDrawLine" $
   Raw.renderDrawLine r x y x' y'
 
@@ -752,7 +752,7 @@ drawLine (Renderer r) ((V2 x y)) ((V2 x' y')) =
 -- See @<https://wiki.libsdl.org/SDL_RenderDrawLines SDL_RenderDrawLines>@ for C documentation.
 drawLines :: MonadIO m
           => Renderer
-          -> SV.Vector (V2 CInt) -- ^ A 'SV.Vector' of points along the line. SDL will draw lines between these points.
+          -> SV.Vector (Point V2 CInt) -- ^ A 'SV.Vector' of points along the line. SDL will draw lines between these points.
           -> m ()
 drawLines (Renderer r) points =
   liftIO $
@@ -765,15 +765,15 @@ drawLines (Renderer r) points =
 -- | Draw a point on the current rendering target.
 --
 -- See @<https://wiki.libsdl.org/SDL_RenderDrawPoint SDL_RenderDrawPoint>@ for C documentation.
-drawPoint :: (Functor m, MonadIO m) => Renderer -> V2 CInt -> m ()
-drawPoint (Renderer r) (V2 x y) =
+drawPoint :: (Functor m, MonadIO m) => Renderer -> Point V2 CInt -> m ()
+drawPoint (Renderer r) (P (V2 x y)) =
   throwIfNeg_ "SDL.Video.drawPoint" "SDL_RenderDrawPoint" $
   Raw.renderDrawPoint r x y
 
 -- | Draw multiple points on the current rendering target.
 --
 -- See @<https://wiki.libsdl.org/SDL_RenderDrawPoints SDL_RenderDrawPoints>@ for C documentation.
-drawPoints :: MonadIO m => Renderer -> SV.Vector (V2 CInt) -> m ()
+drawPoints :: MonadIO m => Renderer -> SV.Vector (Point V2 CInt) -> m ()
 drawPoints (Renderer r) points =
   liftIO $
   throwIfNeg_ "SDL.Video.drawPoints" "SDL_RenderDrawPoints" $

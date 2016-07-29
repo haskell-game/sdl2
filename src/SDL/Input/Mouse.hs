@@ -84,7 +84,7 @@ getMouseLocationMode = do
   return $ if relativeMode then RelativeLocation else AbsoluteLocation
 
 -- | Return proper mouse location depending on mouse mode
-getModalMouseLocation :: MonadIO m => m (LocationMode, V2 CInt)
+getModalMouseLocation :: MonadIO m => m (LocationMode, Point V2 CInt)
 getModalMouseLocation = do
   mode <- getMouseLocationMode
   location <- case mode of
@@ -105,7 +105,7 @@ getRelativeMouseMode :: MonadIO m => m Bool
 getRelativeMouseMode = Raw.getRelativeMouseMode
 
 --deprecated
-getMouseLocation :: MonadIO m => m (V2 CInt)
+getMouseLocation :: MonadIO m => m (Point V2 CInt)
 {-# DEPRECATED getMouseLocation "Use getAbsoluteMouseLocation instead, or getModalMouseLocation to match future behavior." #-}
 getMouseLocation = getAbsoluteMouseLocation
 
@@ -138,9 +138,9 @@ data WarpMouseOrigin
   deriving (Data, Eq, Generic, Ord, Show, Typeable)
 
 -- | Move the current location of a mouse pointer. The 'WarpMouseOrigin' specifies the origin for the given warp coordinates.
-warpMouse :: MonadIO m => WarpMouseOrigin -> V2 CInt -> m ()
-warpMouse (WarpInWindow (Window w)) ((V2 x y)) = Raw.warpMouseInWindow w x y
-warpMouse WarpCurrentFocus ((V2 x y)) = Raw.warpMouseInWindow nullPtr x y
+warpMouse :: MonadIO m => WarpMouseOrigin -> Point V2 CInt -> m ()
+warpMouse (WarpInWindow (Window w)) (P (V2 x y)) = Raw.warpMouseInWindow w x y
+warpMouse WarpCurrentFocus (P (V2 x y)) = Raw.warpMouseInWindow nullPtr x y
 
 -- | Get or set whether the cursor is currently visible.
 --
@@ -159,20 +159,20 @@ cursorVisible = makeStateVar getCursorVisible setCursorVisible
   getCursorVisible = (== 1) <$> Raw.showCursor (-1)
 
 -- | Retrieve the current location of the mouse, relative to the currently focused window.
-getAbsoluteMouseLocation :: MonadIO m => m (V2 CInt)
+getAbsoluteMouseLocation :: MonadIO m => m (Point V2 CInt)
 getAbsoluteMouseLocation = liftIO $
   alloca $ \x ->
   alloca $ \y -> do
     _ <- Raw.getMouseState x y -- We don't deal with button states here
-    (V2 <$> peek x <*> peek y)
+    P <$> (V2 <$> peek x <*> peek y)
 
 -- | Retrieve mouse motion
-getRelativeMouseLocation :: MonadIO m => m (V2 CInt)
+getRelativeMouseLocation :: MonadIO m => m (Point V2 CInt)
 getRelativeMouseLocation = liftIO $
   alloca $ \x ->
   alloca $ \y -> do
     _ <- Raw.getRelativeMouseState x y
-    (V2 <$> peek x <*> peek y)
+    P <$> (V2 <$> peek x <*> peek y)
 
 
 -- | Retrieve a mapping of which buttons are currently held down.
@@ -216,9 +216,9 @@ createCursor :: MonadIO m
              => V.Vector Bool -- ^ Whether this part of the cursor is black. Use 'False' for white and 'True' for black.
              -> V.Vector Bool -- ^ Whether or not pixels are visible. Use 'True' for visible and 'False' for transparent.
              -> V2 CInt -- ^ The width and height of the cursor.
-             -> V2 CInt -- ^ The X- and Y-axis location of the upper left corner of the cursor relative to the actual mouse position
+             -> Point V2 CInt -- ^ The X- and Y-axis location of the upper left corner of the cursor relative to the actual mouse position
              -> m Cursor
-createCursor dta msk (V2 w h) ((V2 hx hy)) =
+createCursor dta msk (V2 w h) (P (V2 hx hy)) =
     liftIO . fmap Cursor $
         throwIfNull "SDL.Input.Mouse.createCursor" "SDL_createCursor" $
             V.unsafeWith (V.map (bool 0 1) dta) $ \unsafeDta ->
@@ -236,9 +236,9 @@ freeCursor = Raw.freeCursor . unwrapCursor
 -- See @<https://wiki.libsdl.org/SDL_CreateColorCursor SDL_CreateColorCursor>@ for C documentation.
 createColorCursor :: MonadIO m
                   => Surface
-                  -> V2 CInt -- ^ The location of the cursor hot spot
+                  -> Point V2 CInt -- ^ The location of the cursor hot spot
                   -> m Cursor
-createColorCursor (Surface surfPtr _) ((V2 hx hy)) =
+createColorCursor (Surface surfPtr _) (P (V2 hx hy)) =
     liftIO . fmap Cursor $
         throwIfNull "SDL.Input.Mouse.createColorCursor" "SDL_createColorCursor" $
             Raw.createColorCursor surfPtr hx hy

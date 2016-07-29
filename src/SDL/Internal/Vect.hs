@@ -1,8 +1,10 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module SDL.Internal.Vect
     ( V2(..)
     , V3(..)
     , V4(..)
+    , Point(..)
     ) where
 
 -- Copied from the 'linear' package by Edward Kmett.
@@ -10,6 +12,9 @@ module SDL.Internal.Vect
 import           Control.Applicative (liftA2)
 import           Foreign.Storable
 import           Foreign.Ptr (castPtr)
+
+newtype Point f a = P (f a)
+  deriving (Show, Read, Ord, Eq, Functor, Applicative, Num, Storable)
 
 data V2 a = V2 !a !a
     deriving (Show, Read, Ord, Eq)

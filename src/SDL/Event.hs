@@ -169,7 +169,7 @@ data WindowExposedEventData =
 data WindowMovedEventData =
   WindowMovedEventData {windowMovedEventWindow :: Window
                         -- ^ The associated 'Window'.
-                       ,windowMovedEventPosition :: V2 Int32
+                       ,windowMovedEventPosition :: Point V2 Int32
                         -- ^ The new position of the 'Window'.
                        }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -289,7 +289,7 @@ data MouseMotionEventData =
                         -- ^ The 'MouseDevice' that was moved.
                        ,mouseMotionEventState :: [MouseButton]
                         -- ^ A collection of 'MouseButton's that are currently held down.
-                       ,mouseMotionEventPos :: V2 Int32
+                       ,mouseMotionEventPos :: Point V2 Int32
                         -- ^ The new position of the mouse.
                        ,mouseMotionEventRelMotion :: V2 Int32
                         -- ^ The relative mouse motion of the mouse.
@@ -308,7 +308,7 @@ data MouseButtonEventData =
                         -- ^ The button that was pressed or released.
                        ,mouseButtonEventClicks :: Word8
                         -- ^ The amount of clicks. 1 for a single-click, 2 for a double-click, etc.
-                       ,mouseButtonEventPos :: V2 Int32
+                       ,mouseButtonEventPos :: Point V2 Int32
                         -- ^ The coordinates of the mouse click.
                        }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -428,7 +428,7 @@ data TouchFingerEventData =
                         -- ^ The touch device index.
                        ,touchFingerEventFingerID :: Raw.FingerID
                         -- ^ The finger index.
-                       ,touchFingerEventPos :: V2 CFloat
+                       ,touchFingerEventPos :: Point V2 CFloat
                         -- ^ The location of the touch event, normalized between 0 and 1.
                        ,touchFingerEventRelMotion :: V2 CFloat
                         -- ^ The distance moved, normalized between -1 and 1.
@@ -445,7 +445,7 @@ data MultiGestureEventData =
                          -- ^ The amount that the fingers rotated during this motion.
                         ,multiGestureEventDDist :: CFloat
                          -- ^ The amount that the fingers pinched during this motion.
-                        ,multiGestureEventPos :: V2 CFloat
+                        ,multiGestureEventPos :: Point V2 CFloat
                          -- ^ The normalized center of the gesture.
                         ,multiGestureEventNumFingers :: Word16
                          -- ^ The number of fingers used in this gesture.
@@ -462,7 +462,7 @@ data DollarGestureEventData =
                           -- ^ The number of fingers used to draw the stroke.
                          ,dollarGestureEventError :: CFloat
                           -- ^ The difference between the gesture template and the actual performed gesture (lower errors correspond to closer matches).
-                         ,dollarGestureEventPos :: V2 CFloat
+                         ,dollarGestureEventPos :: Point V2 CFloat
                           -- ^ The normalized center of the gesture.
                          }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -513,7 +513,7 @@ convertRaw (Raw.WindowEvent t ts a b c d) =
                       Raw.SDL_WINDOWEVENT_MOVED ->
                         WindowMovedEvent
                           (WindowMovedEventData w'
-                                                ((V2 c d)))
+                                                (P (V2 c d)))
                       Raw.SDL_WINDOWEVENT_RESIZED ->
                         WindowResizedEvent
                           (WindowResizedEventData w'
@@ -582,7 +582,7 @@ convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) =
                       (MouseMotionEventData w'
                                             (fromNumber b)
                                             buttons
-                                            ((V2 d e))
+                                            (P (V2 d e))
                                             (V2 f g))))
   where mask `test` x =
           if mask .&. x /= 0
@@ -608,7 +608,7 @@ convertRaw (Raw.MouseButtonEvent t ts a b c _ e f g) =
                                             (fromNumber b)
                                             button
                                             e
-                                            ((V2 f g)))))
+                                            (P (V2 f g)))))
 convertRaw (Raw.MouseWheelEvent _ ts a b c d) =
   do w' <- fmap Window (Raw.getWindowFromID a)
      return (Event ts
@@ -648,7 +648,7 @@ convertRaw (Raw.TouchFingerEvent _ ts a b c d e f g) =
                 (TouchFingerEvent
                    (TouchFingerEventData a
                                          b
-                                         ((V2 c d))
+                                         (P (V2 c d))
                                          (V2 e f)
                                          g)))
 convertRaw (Raw.MultiGestureEvent _ ts a b c d e f) =
@@ -657,7 +657,7 @@ convertRaw (Raw.MultiGestureEvent _ ts a b c d e f) =
                    (MultiGestureEventData a
                                           b
                                           c
-                                          ((V2 d e))
+                                          (P (V2 d e))
                                           f)))
 convertRaw (Raw.DollarGestureEvent _ ts a b c d e f) =
   return (Event ts
@@ -666,7 +666,7 @@ convertRaw (Raw.DollarGestureEvent _ ts a b c d e f) =
                                            b
                                            c
                                            d
-                                           ((V2 e f)))))
+                                           (P (V2 e f)))))
 convertRaw (Raw.DropEvent _ ts a) =
   return (Event ts (DropEvent (DropEventData a)))
 convertRaw (Raw.ClipboardUpdateEvent _ ts) =
