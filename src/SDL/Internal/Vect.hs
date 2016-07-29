@@ -9,7 +9,7 @@ module SDL.Internal.Vect
 
 -- Copied from the 'linear' package by Edward Kmett.
 
-import           Control.Applicative (liftA2)
+import           Control.Applicative (Applicative, liftA2)
 import           Foreign.Storable
 import           Foreign.Ptr (castPtr)
 
