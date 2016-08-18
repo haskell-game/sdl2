@@ -1,5 +1,8 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
+-- 2-D, 3-D and 4-D Vectors.
+-- The interface is compatible with that of the 'linear' package.
 module SDL.Internal.Vect
     ( V2(..)
     , V3(..)
@@ -7,21 +10,38 @@ module SDL.Internal.Vect
     , Point(..)
     ) where
 
--- Copied from the 'linear' package by Edward Kmett.
+-- From the 'linear' package, (c) Edward Kmett.
 
 import           Control.Applicative
 import           Foreign.Storable
 import           Foreign.Ptr (castPtr)
 
+-- | A handy wrapper to help distinguish points from vectors at the
+-- type level.
 newtype Point f a = P (f a)
   deriving (Show, Read, Ord, Eq, Functor, Applicative, Num, Storable)
 
+-- | A 2-dimensional vector
+--
+-- >>> pure 1 :: V2 Int
+-- V2 1 1
+--
+-- >>> V2 1 2 + V2 3 4
+-- V2 4 6
+--
+-- >>> V2 1 2 * V2 3 4
+-- V2 3 8
+--
+-- >>> sum (V2 1 2)
+-- 3
 data V2 a = V2 !a !a
     deriving (Show, Read, Ord, Eq)
 
+-- | A 3-dimensional vector
 data V3 a = V3 !a !a !a
     deriving (Show, Read, Ord, Eq)
 
+-- | A 4-dimensional vector
 data V4 a = V4 !a !a !a !a
     deriving (Show, Read, Ord, Eq)
 

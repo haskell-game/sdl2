@@ -72,6 +72,7 @@ library
     SDL.Video.Renderer
 
     SDL.Internal.Types
+    SDL.Internal.Vect
 
     SDL.Raw
     SDL.Raw.Audio
@@ -91,7 +92,6 @@ library
   other-modules:
     Data.Bitmask
     SDL.Internal.Numbered
-    SDL.Internal.Vect
     SDL.Exception
 
   hs-source-dirs:
