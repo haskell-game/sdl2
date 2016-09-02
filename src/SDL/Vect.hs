@@ -7,6 +7,14 @@
 -- This is useful if one does not want to incur the 'lens' dependency.
 module SDL.Vect
   ( module Vect
+
+  -- * Vectors
+  , V2 (..)
+  , V3 (..)
+  , V4 (..)
+
+  -- * Point
+  , Point (..)
   ) where
 
 #if defined(nolinear)
