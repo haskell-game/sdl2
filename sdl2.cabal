@@ -50,7 +50,7 @@ flag no-linear
   manual:            True
 
 library
-  ghc-options: -Wall
+  -- ghc-options: -Wall
 
   exposed-modules:
     SDL
