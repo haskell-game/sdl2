@@ -14,6 +14,10 @@ On OSX you can install SDL with [homebrew](http://brew.sh/). pkg-config is also 
 
     brew install sdl2 pkg-config
 
+On Windows you can install SDL with `pacman` under [MSYS2](https://msys2.github.io/) (or use  [stack's embedded MSYS2](https://www.reddit.com/r/haskellgamedev/comments/4jpthu/windows_sdl2_is_now_almost_painless_via_stack/)).
+
+    pacman -S mingw-w64-x86_64-pkg-config mingw-w64-x86_64-SDL2
+
 # Contributing
 
 We need your help! The SDL API is fairly large, and the more hands we have, the
