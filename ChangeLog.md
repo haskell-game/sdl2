@@ -1,10 +1,13 @@
 2.1.3
 =====
 
+* Cabal flag `no-linear` removes dependency on `linear` (and thus, transiently,
+  `lens`). See `SDL.Vect` for details.
+* Add `updateTexture` wrapper for native `SDL_UpdateTexture`.
 * Expose `glGetDrawableSize` (can differ from window size in some environments).
 * Correct `hintToString` output to match SDL hint tokens, rather than the names
   of the CPP macros defining them.
-* Minor documentation updates
+* Various documentation updates
 
 2.1.2.1
 =======
