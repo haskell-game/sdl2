@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -10,10 +9,6 @@ import SDL.Vect
 import qualified SDL
 
 import Paths_sdl2 (getDataFileName)
-
-#if !MIN_VERSION_base(4,8,0)
-import Control.Applicative
-#endif
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
@@ -30,7 +25,7 @@ main = do
   let
     loop = do
       events <- SDL.pollEvents
-      let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
+      let quit = elem SDL.QuitEvent $ map SDL.eventPayload events
 
       SDL.surfaceBlit xOut Nothing screenSurface Nothing
       SDL.updateWindowSurface window

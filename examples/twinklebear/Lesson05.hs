@@ -1,8 +1,8 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE MultiWayIf #-}
+{-# LANGUAGE PatternSynonyms #-}
 module TwinkleBear.Lesson05 (main) where
 
 import Prelude hiding (init)
@@ -45,7 +45,7 @@ renderTexture renderer tex clipRect pos = do
         At p     -> p
         Centered -> let cntr a b = (a - b) `div` 2
                     in P $ V2 (cntr screenWidth w) (cntr screenHeight h)
-      extent = (V2 w h)
+      extent = V2 w h
   SDL.copy renderer tex clipRect (Just $ SDL.Rectangle pos' extent)
 
 

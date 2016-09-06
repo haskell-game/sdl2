@@ -1,13 +1,12 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
 module Lazyfoo.Lesson04 (main) where
 
 import Prelude hiding (any, mapM_)
 import Control.Monad hiding (mapM_)
-import Data.Foldable
+import Data.Foldable hiding (elem)
 import Data.Maybe
 import Data.Monoid
 import Foreign.C.Types
@@ -23,7 +22,7 @@ import Control.Applicative
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
 
-loadBMP :: FilePath -> IO (SDL.Surface)
+loadBMP :: FilePath -> IO SDL.Surface
 loadBMP path = getDataFileName path >>= SDL.loadBMP
 
 main :: IO ()
@@ -42,7 +41,7 @@ main = do
   let
     loop oldSurface = do
       events <- map SDL.eventPayload <$> SDL.pollEvents
-      let quit = any (== SDL.QuitEvent) events
+      let quit = SDL.QuitEvent `elem` events
 
           currentSurface =
             fromMaybe oldSurface $ getLast $

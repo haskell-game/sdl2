@@ -1,7 +1,5 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE MultiWayIf #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Lazyfoo.Lesson17 (main) where
 
@@ -102,10 +100,10 @@ main = do
     SDL.createRenderer
       window
       (-1)
-      (SDL.RendererConfig
+      SDL.RendererConfig
         { SDL.rendererType = SDL.AcceleratedVSyncRenderer
         , SDL.rendererTargetTexture = False
-        })
+        }
 
   SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 

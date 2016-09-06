@@ -7,7 +7,7 @@ import Control.Monad
 import Control.Concurrent
 import Data.Int (Int16)
 import SDL
-import Data.Vector.Storable.Mutable as V
+import qualified Data.Vector.Storable.Mutable as V
 
 sinSamples :: [Int16]
 sinSamples =
@@ -17,17 +17,17 @@ sinSamples =
          in round (fromIntegral (maxBound `div` 2 :: Int16) * sin (t * freq)))
       [0 :: Int16 ..]
 
-audioCB :: IORef [Int16] -> AudioFormat sampleType -> IOVector sampleType -> IO ()
+audioCB :: IORef [Int16] -> AudioFormat sampleType -> V.IOVector sampleType -> IO ()
 audioCB samples format buffer =
   case format of
     Signed16BitLEAudio ->
       do samples' <- readIORef samples
          let n = V.length buffer
-         sequence_ (zipWith (write buffer)
-                            [0 ..]
-                            (Prelude.take n samples'))
+         zipWithM_ (V.write buffer)
+                   [0 ..]
+                   (take n samples')
          writeIORef samples
-                    (Prelude.drop n samples')
+                    (drop n samples')
     _ -> error "Unsupported audio format"
 
 main :: IO ()

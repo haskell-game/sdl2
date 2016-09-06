@@ -1,8 +1,8 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE MultiWayIf #-}
+{-# LANGUAGE PatternSynonyms #-}
 module TwinkleBear.Lesson04a (main) where
 
 
@@ -41,7 +41,7 @@ renderTexture renderer tex pos = do
         At p     -> p
         Centered -> let cntr a b = (a - b) `div` 2
                     in P $ V2 (cntr screenWidth w) (cntr screenHeight h)
-      extent = (V2 w h)
+      extent = V2 w h
   SDL.copy renderer tex Nothing (Just $ SDL.Rectangle pos' extent)
 
 
@@ -83,7 +83,7 @@ main = do
 
         unless quit $ loop imgPos'
 
-  loop $ (V2 100 100)
+  loop $ V2 100 100
 
   SDL.destroyTexture image
   SDL.destroyRenderer renderer

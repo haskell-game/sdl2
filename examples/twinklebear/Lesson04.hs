@@ -36,7 +36,7 @@ renderTexture renderer tex pos = do
         At p     -> p
         Centered -> let cntr a b = (a - b) `div` 2
                     in P $ V2 (cntr screenWidth w) (cntr screenHeight h)
-      extent = (V2 w h)
+      extent = V2 w h
   SDL.copy renderer tex Nothing (Just $ SDL.Rectangle pos' extent)
 
 

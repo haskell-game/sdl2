@@ -2,6 +2,7 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Lazyfoo.Lesson15 (main) where
 
 import Control.Monad
@@ -68,10 +69,10 @@ main = do
     SDL.createRenderer
       window
       (-1)
-      (SDL.RendererConfig
+      SDL.RendererConfig
         { SDL.rendererType = SDL.AcceleratedVSyncRenderer
         , SDL.rendererTargetTexture = False
-        })
+        }
 
   SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 

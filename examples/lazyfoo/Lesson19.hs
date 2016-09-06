@@ -2,7 +2,7 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Lazyfoo.Lesson19 (main) where
 
 import Prelude hiding (any, mapM_)
@@ -56,7 +56,7 @@ renderTexture r (Texture t size) xy clip theta center flips =
 textureSize :: Texture -> V2 CInt
 textureSize (Texture _ sz) = sz
 
-getJoystick :: IO (SDL.Joystick)
+getJoystick :: IO SDL.Joystick
 getJoystick = do
   joysticks <- SDL.availableJoysticks
   joystick <- if V.length joysticks == 0
@@ -85,10 +85,10 @@ main = do
     SDL.createRenderer
       window
       (-1)
-      (SDL.RendererConfig
+      SDL.RendererConfig
         { SDL.rendererType = SDL.AcceleratedVSyncRenderer
         , SDL.rendererTargetTexture = False
-        })
+        }
 
   SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
@@ -130,7 +130,7 @@ main = do
         let dir@(xDir, yDir) = fromMaybe (xDir', yDir') newDir
             phi = if xDir == 0 && yDir == 0
                   then 0
-                  else (atan2 yDir xDir) * (180.0 / pi)
+                  else atan2 yDir xDir * (180.0 / pi)
 
         renderTexture renderer arrowTexture (P (fmap (`div` 2) (V2 screenWidth screenHeight) - fmap (`div` 2) (textureSize arrowTexture))) Nothing (Just phi) Nothing Nothing
 

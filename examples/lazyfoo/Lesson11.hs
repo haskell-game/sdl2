@@ -53,10 +53,10 @@ main = do
     SDL.createRenderer
       window
       (-1)
-      (SDL.RendererConfig
-         { SDL.rendererType = SDL.SoftwareRenderer
-         , SDL.rendererTargetTexture = False
-         })
+      SDL.RendererConfig
+        { SDL.rendererType = SDL.SoftwareRenderer
+        , SDL.rendererTargetTexture = False
+        }
 
   SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
@@ -70,7 +70,7 @@ main = do
   let loop = do
         events <- SDL.pollEvents
 
-        let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
+        let quit = elem SDL.QuitEvent $ map SDL.eventPayload events
 
         SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.clear renderer

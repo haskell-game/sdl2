@@ -1,13 +1,11 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
 module Lazyfoo.Lesson43 (main) where
 
 import Prelude hiding (any, mapM_)
 import Control.Monad hiding (mapM_)
-import Data.Foldable
+import Data.Foldable hiding (elem)
 import Data.Maybe
 import Foreign.C.Types
 import SDL.Vect
@@ -61,10 +59,10 @@ main = do
     SDL.createRenderer
       window
       (-1)
-      (SDL.RendererConfig
-         { SDL.rendererType = SDL.AcceleratedVSyncRenderer
-         , SDL.rendererTargetTexture = False
-         })
+      SDL.RendererConfig
+        { SDL.rendererType = SDL.AcceleratedVSyncRenderer
+        , SDL.rendererTargetTexture = False
+        }
 
   SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
@@ -75,7 +73,7 @@ main = do
 
     loop theta = do
       events <- map SDL.eventPayload <$> SDL.pollEvents
-      let quit = any (== SDL.QuitEvent) events
+      let quit = SDL.QuitEvent `elem` events
 
       setAsRenderTarget renderer (Just targetTexture)
 

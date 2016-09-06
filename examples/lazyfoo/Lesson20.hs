@@ -2,7 +2,6 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
 module Lazyfoo.Lesson20 (main) where
 
 import Prelude hiding (any, mapM_)
@@ -50,7 +49,7 @@ renderTexture r (Texture t size) xy clip theta center flips =
                       center
                       (fromMaybe (pure False) flips)
 
-getJoystick :: IO (SDL.Joystick)
+getJoystick :: IO SDL.Joystick
 getJoystick = do
   joysticks <- SDL.availableJoysticks
   joystick <- if V.length joysticks == 0
@@ -78,10 +77,10 @@ main = do
     SDL.createRenderer
       window
       (-1)
-      (SDL.RendererConfig
+      SDL.RendererConfig
         { SDL.rendererType = SDL.AcceleratedVSyncRenderer
         , SDL.rendererTargetTexture = False
-        })
+        }
 
   SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
@@ -99,9 +98,9 @@ main = do
                          SDL.QuitEvent -> (Any True, mempty)
                          SDL.KeyboardEvent e ->
                            if | SDL.keyboardEventKeyMotion e == SDL.Pressed ->
-                                  case scancode = SDL.keysymScancode (SDL.keyboardEventKeysym e) of
-                                    SDL.ScancodeEscape -> (Any True, mempty)
-                                    _ -> mempty
+                                case SDL.keysymScancode (SDL.keyboardEventKeysym e) of
+                                  SDL.ScancodeEscape -> (Any True, mempty)
+                                  _ -> mempty
                               | otherwise -> mempty
                          SDL.JoyButtonEvent e ->
                            if | SDL.joyButtonEventState e /= 0 -> (mempty, Any True)
@@ -109,9 +108,7 @@ main = do
                          _ -> mempty) $
               map SDL.eventPayload events
 
-        if buttonDown
-          then SDL.hapticRumblePlay hapticDevice 0.75 500
-          else return ()
+        when buttonDown $ SDL.hapticRumblePlay hapticDevice 0.75 500
 
         SDL.renderDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.renderClear renderer
@@ -120,7 +117,7 @@ main = do
 
         SDL.renderPresent renderer
 
-        unless quit $ loop
+        unless quit loop
 
   loop
 

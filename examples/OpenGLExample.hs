@@ -16,10 +16,6 @@ import SDL (($=))
 import qualified SDL
 import qualified Graphics.Rendering.OpenGL as GL
 
-#if !MIN_VERSION_base(4,8,0)
-import Control.Applicative
-#endif
-
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
 
@@ -38,18 +34,18 @@ main = do
                          SDL.windowOpenGL = Just SDL.defaultOpenGL}
   SDL.showWindow window
 
-  _ <- SDL.glCreateContext(window)
+  _ <- SDL.glCreateContext window
   (prog, attrib) <- initResources
 
   let loop = do
         events <- SDL.pollEvents
-        let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
+        let quit = elem SDL.QuitEvent $ map SDL.eventPayload events
 
         GL.clear [GL.ColorBuffer]
         draw prog attrib
         SDL.glSwapWindow window
 
-        unless quit (loop)
+        unless quit loop
 
   loop
 
@@ -131,4 +127,3 @@ vertices = V.fromList [  0.0,  0.8
                       , -0.8, -0.8
                       ,  0.8, -0.8
                       ]
-

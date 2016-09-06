@@ -34,7 +34,7 @@ main = do
   let
     loop = do
       events <- SDL.pollEvents
-      let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
+      let quit = elem SDL.QuitEvent $ map SDL.eventPayload events
 
       SDL.surfaceBlitScaled stretchedSurface Nothing screenSurface Nothing
       SDL.updateWindowSurface window

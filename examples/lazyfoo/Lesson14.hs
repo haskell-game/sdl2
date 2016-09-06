@@ -1,23 +1,14 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE MultiWayIf #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Lazyfoo.Lesson14 (main) where
 
 import Control.Monad
-import Data.Monoid
 import Foreign.C.Types
 import SDL.Vect
 import SDL (($=))
 import qualified SDL
 
 import Paths_sdl2 (getDataFileName)
-
-#if !MIN_VERSION_base(4,8,0)
-import Control.Applicative
-import Data.Foldable
-#endif
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
@@ -58,10 +49,10 @@ main = do
     SDL.createRenderer
       window
       (-1)
-      (SDL.RendererConfig
-         { SDL.rendererType = SDL.AcceleratedVSyncRenderer
-         , SDL.rendererTargetTexture = False
-         })
+      SDL.RendererConfig
+        { SDL.rendererType = SDL.AcceleratedVSyncRenderer
+        , SDL.rendererTargetTexture = False
+        }
 
   SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
@@ -76,7 +67,7 @@ main = do
       loop (frame:frames) = do
         events <- SDL.pollEvents
 
-        let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
+        let quit = elem SDL.QuitEvent $ map SDL.eventPayload events
 
         SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.clear renderer

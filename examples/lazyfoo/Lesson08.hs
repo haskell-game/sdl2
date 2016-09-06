@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Lazyfoo.Lesson08 (main) where
 
@@ -8,10 +7,6 @@ import Foreign.C.Types
 import SDL.Vect
 import SDL (($=))
 import qualified SDL
-
-#if !MIN_VERSION_base(4,8,0)
-import Control.Applicative
-#endif
 
 screenWidth, screenHeight :: CInt
 (screenWidth, screenHeight) = (640, 480)
@@ -35,17 +30,17 @@ main = do
     SDL.createRenderer
       window
       (-1)
-      (SDL.RendererConfig
+      SDL.RendererConfig
          { SDL.rendererType = SDL.AcceleratedRenderer
          , SDL.rendererTargetTexture = False
-         })
+         }
 
   SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
   let loop = do
         events <- SDL.pollEvents
 
-        let quit = any (== SDL.QuitEvent) $ map SDL.eventPayload events
+        let quit = elem SDL.QuitEvent $ map SDL.eventPayload events
 
         SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
         SDL.clear renderer

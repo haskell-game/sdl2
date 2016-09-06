@@ -2,6 +2,7 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Lazyfoo.Lesson13 (main) where
 
 import Control.Monad
@@ -15,7 +16,6 @@ import qualified SDL
 import Paths_sdl2 (getDataFileName)
 
 #if !MIN_VERSION_base(4,8,0)
-import Control.Applicative
 import Data.Foldable
 #endif
 
@@ -64,10 +64,10 @@ main = do
     SDL.createRenderer
       window
       (-1)
-      (SDL.RendererConfig
+      SDL.RendererConfig
         { SDL.rendererType = SDL.UnacceleratedRenderer
         , SDL.rendererTargetTexture = False
-        })
+        }
 
   SDL.rendererDrawColor renderer $= V4 maxBound maxBound maxBound maxBound
 
