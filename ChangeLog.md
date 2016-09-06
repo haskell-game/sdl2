@@ -3,11 +3,16 @@
 
 * Cabal flag `no-linear` removes dependency on `linear` (and thus, transiently,
   `lens`). See `SDL.Vect` for details.
+* Remove 'lens' dependency from all examples.
+* Add Cabal flag `opengl-example` to separate that target from `examples`,
+  because it is now the only example with an extra dependency (OpenGL).
+* Make `hlint` happy with examples.
 * Add `updateTexture` wrapper for native `SDL_UpdateTexture`.
 * Expose `glGetDrawableSize` (can differ from window size in some environments).
 * Correct `hintToString` output to match SDL hint tokens, rather than the names
   of the CPP macros defining them.
-* Various documentation updates
+* Removed `ghc-options: -Wall` until we drop support for GHC 7.8. (>1300 warnings!)
+* Various documentation updates.
 
 2.1.2.1
 =======
