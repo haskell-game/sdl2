@@ -87,8 +87,7 @@ import Data.Typeable
 import Foreign hiding (void, throwIfNull, throwIfNeg, throwIfNeg_)
 import Foreign.C
 import GHC.Generics (Generic)
-import Linear
-import Linear.Affine (Point(P))
+import SDL.Vect
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types

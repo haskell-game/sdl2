@@ -52,8 +52,7 @@ import Foreign.Marshal.Alloc
 import Foreign.Ptr
 import Foreign.Storable
 import GHC.Generics (Generic)
-import Linear
-import Linear.Affine
+import SDL.Vect
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types (Window(Window))

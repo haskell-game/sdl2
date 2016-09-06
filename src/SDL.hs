@@ -23,6 +23,7 @@ module SDL
   , module SDL.Input
   , module SDL.Power
   , module SDL.Time
+  , module SDL.Vect
   , module SDL.Video
 
   -- * Working with State Variables
@@ -45,6 +46,7 @@ import SDL.Init
 import SDL.Input
 import SDL.Power
 import SDL.Time
+import SDL.Vect
 import SDL.Video
 
 {- $gettingStarted

@@ -30,7 +30,7 @@ import Foreign.C.Types
 import Foreign.Marshal.Alloc
 import Foreign.Storable
 import GHC.Generics (Generic)
-import Linear
+import SDL.Vect
 import SDL.Exception
 import SDL.Internal.Types
 import qualified Data.ByteString as BS

@@ -80,8 +80,7 @@ import Data.Typeable
 import Foreign
 import Foreign.C
 import GHC.Generics (Generic)
-import Linear
-import Linear.Affine (Point(P))
+import SDL.Vect
 import SDL.Input.Keyboard
 import SDL.Input.Mouse
 import SDL.Internal.Numbered

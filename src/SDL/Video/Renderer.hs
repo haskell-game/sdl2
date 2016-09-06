@@ -131,9 +131,8 @@ import Foreign.Marshal.Utils
 import Foreign.Ptr
 import Foreign.Storable
 import GHC.Generics (Generic)
-import Linear
-import Linear.Affine (Point(P))
 import Prelude hiding (foldr)
+import SDL.Vect
 import SDL.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
