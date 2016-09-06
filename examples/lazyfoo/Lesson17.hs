@@ -5,14 +5,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Lazyfoo.Lesson17 (main) where
 
-import Prelude hiding (foldl1)
+import Prelude hiding (foldl1, and)
 import Control.Monad
 import Data.Foldable
 import Data.Monoid
 import Data.Maybe
 import Foreign.C.Types
-import Linear
-import Linear.Affine
+import SDL.Vect
 import SDL (($=))
 import qualified SDL
 
@@ -59,8 +58,8 @@ buttonSize@(V2 buttonWidth buttonHeight) = V2 300 200
 
 handleEvent :: Point V2 CInt -> SDL.EventPayload -> Button -> Button
 handleEvent mousePos ev (Button buttonPos _) =
-  let inside = foldl1 (&&) ((>=) <$> mousePos <*> buttonPos) &&
-               foldl1 (&&) ((<=) <$> mousePos <*> buttonPos .+^ buttonSize)
+  let inside = and ((>=) <$> mousePos <*> buttonPos) &&
+               and ((<=) <$> mousePos <*> buttonPos + P buttonSize)
       sprite
         | inside = case ev of
                      SDL.MouseButtonEvent e

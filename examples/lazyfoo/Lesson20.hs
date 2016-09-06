@@ -10,8 +10,7 @@ import Control.Monad hiding (mapM_)
 import Data.Maybe
 import Data.Monoid
 import Foreign.C.Types
-import Linear
-import Linear.Affine
+import SDL.Vect
 import SDL (($=))
 import SDL.Haptic
 import qualified SDL

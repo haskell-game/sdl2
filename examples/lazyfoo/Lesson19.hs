@@ -11,8 +11,7 @@ import Data.Int
 import Data.Maybe
 import Data.Monoid
 import Foreign.C.Types
-import Linear
-import Linear.Affine
+import SDL.Vect
 import SDL (($=))
 import qualified SDL
 import qualified Data.Vector as V

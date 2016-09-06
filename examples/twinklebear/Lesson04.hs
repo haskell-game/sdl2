@@ -6,8 +6,7 @@ module TwinkleBear.Lesson04 (main) where
 import Prelude hiding (init)
 import Control.Monad
 import Foreign.C.Types
-import Linear
-import Linear.Affine ( Point(P) )
+import SDL.Vect
 import qualified SDL
 
 import Paths_sdl2 (getDataFileName)

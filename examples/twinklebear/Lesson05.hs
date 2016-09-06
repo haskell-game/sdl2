@@ -10,8 +10,7 @@ import Control.Applicative
 import Control.Monad
 import Data.Monoid
 import Foreign.C.Types
-import Linear
-import Linear.Affine ( Point(P) )
+import SDL.Vect
 import qualified SDL
 
 import Paths_sdl2 (getDataFileName)

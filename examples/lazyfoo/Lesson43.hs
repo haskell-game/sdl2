@@ -10,8 +10,7 @@ import Control.Monad hiding (mapM_)
 import Data.Foldable
 import Data.Maybe
 import Foreign.C.Types
-import Linear
-import Linear.Affine
+import SDL.Vect
 import SDL (($=))
 import qualified SDL
 

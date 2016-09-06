@@ -4,7 +4,7 @@ module Lazyfoo.Lesson05 (main) where
 
 import Control.Monad
 import Foreign.C.Types
-import Linear
+import SDL.Vect
 import qualified SDL
 
 import Paths_sdl2 (getDataFileName)

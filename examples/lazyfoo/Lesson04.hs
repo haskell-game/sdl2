@@ -11,7 +11,7 @@ import Data.Foldable
 import Data.Maybe
 import Data.Monoid
 import Foreign.C.Types
-import Linear
+import SDL.Vect
 import qualified SDL
 
 import Paths_sdl2 (getDataFileName)

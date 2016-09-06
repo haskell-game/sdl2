@@ -3,7 +3,7 @@ module Lazyfoo.Lesson01 (main) where
 
 import Control.Concurrent (threadDelay)
 import Foreign.C.Types
-import Linear
+import SDL.Vect
 import qualified SDL
 
 screenWidth, screenHeight :: CInt

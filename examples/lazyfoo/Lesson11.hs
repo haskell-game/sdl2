@@ -2,11 +2,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Lazyfoo.Lesson11 (main) where
 
-import Control.Lens.Operators
 import Control.Monad
 import Foreign.C.Types
-import Linear
-import Linear.Affine
+import SDL.Vect
 import SDL (($=))
 import qualified SDL
 
@@ -78,9 +76,9 @@ main = do
         SDL.clear renderer
 
         renderTexture renderer spriteSheetTexture (P (V2 0 0)) (Just clip1)
-        renderTexture renderer spriteSheetTexture (P (V2 (screenWidth - spriteSize ^. _x) 0)) (Just clip2)
-        renderTexture renderer spriteSheetTexture (P (V2 0 (screenHeight - spriteSize ^. _y))) (Just clip3)
-        renderTexture renderer spriteSheetTexture (P (V2 (screenWidth - spriteSize ^. _x) (screenHeight - spriteSize ^. _y))) (Just clip4)
+        renderTexture renderer spriteSheetTexture (P (V2 (screenWidth -) (const 0) <*> spriteSize)) (Just clip2)
+        renderTexture renderer spriteSheetTexture (P (V2 (const 0) (screenHeight -) <*> spriteSize)) (Just clip3)
+        renderTexture renderer spriteSheetTexture (P (V2 (screenWidth -) (screenHeight -) <*> spriteSize)) (Just clip4)
 
         SDL.present renderer
 

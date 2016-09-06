@@ -6,7 +6,7 @@ module OpenGLExample where
 
 import Control.Monad
 import Foreign.C.Types
-import Linear
+import SDL.Vect
 import qualified Data.ByteString as BS
 import qualified Data.Vector.Storable as V
 import           System.Exit (exitFailure)

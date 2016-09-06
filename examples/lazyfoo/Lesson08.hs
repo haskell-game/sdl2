@@ -5,8 +5,7 @@ module Lazyfoo.Lesson08 (main) where
 import Control.Monad
 import Data.Foldable (for_)
 import Foreign.C.Types
-import Linear
-import Linear.Affine
+import SDL.Vect
 import SDL (($=))
 import qualified SDL
 

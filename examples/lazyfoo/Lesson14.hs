@@ -8,8 +8,7 @@ module Lazyfoo.Lesson14 (main) where
 import Control.Monad
 import Data.Monoid
 import Foreign.C.Types
-import Linear
-import Linear.Affine
+import SDL.Vect
 import SDL (($=))
 import qualified SDL
 

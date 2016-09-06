@@ -4,8 +4,7 @@ module Lazyfoo.Lesson09 (main) where
 
 import Control.Monad
 import Foreign.C.Types
-import Linear
-import Linear.Affine
+import SDL.Vect
 import SDL (($=))
 import qualified SDL
 

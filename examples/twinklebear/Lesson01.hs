@@ -3,8 +3,7 @@ module TwinkleBear.Lesson01 (main) where
 
 
 import Prelude hiding (init)
-import Linear
-import Linear.Affine ( Point(P) )
+import SDL.Vect
 import qualified SDL
 
 import Paths_sdl2 (getDataFileName)
