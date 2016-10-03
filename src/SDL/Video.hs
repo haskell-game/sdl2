@@ -40,6 +40,7 @@ module SDL.Video
 
   -- * Renderer Management
   , createRenderer
+  , createSoftwareRenderer
   , destroyRenderer
 
   -- * Clipboard Handling
@@ -574,6 +575,15 @@ createRenderer (Window w) driver config =
   liftIO . fmap Renderer $
     throwIfNull "SDL.Video.createRenderer" "SDL_CreateRenderer" $
     Raw.createRenderer w driver (toNumber config)
+
+-- | Creates a 2D software rendering context for the given surface.
+--
+-- See @<https://wiki.libsdl.org/SDL_CreateSoftwareRenderer>@
+createSoftwareRenderer :: MonadIO m => Surface -> m Renderer
+createSoftwareRenderer (Surface ptr _) =
+  liftIO . fmap Renderer $
+    throwIfNull "SDL.Video.createSoftwareRenderer" "SDL_CreateSoftwareRenderer" $
+    Raw.createSoftwareRenderer ptr
 
 destroyRenderer :: MonadIO m => Renderer -> m ()
 destroyRenderer (Renderer r) = Raw.destroyRenderer r
