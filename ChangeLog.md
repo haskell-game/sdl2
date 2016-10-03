@@ -2,6 +2,7 @@
 =====
 
 * Add `SDL.Exception` module, exposing `SDLException`
+* Add new function, `createSoftwareRenderer`, to render onto a surface
 * Add joystick POV hat support
 * Remove deprecated functionality:
   * `InitEverything` enumeration in `SDL.Init`
