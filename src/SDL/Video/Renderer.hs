@@ -155,12 +155,13 @@ surfaceBlit :: MonadIO m
             -> Maybe (Rectangle CInt) -- ^ The rectangle to be copied, or 'Nothing' to copy the entire surface
             -> Surface -- ^ The 'Surface' that is the blit target
             -> Maybe (Point V2 CInt) -- ^ The position to blit to
-            -> m ()
+            -> m (Maybe (Rectangle CInt))
 surfaceBlit (Surface src _) srcRect (Surface dst _) dstLoc = liftIO $
-  throwIfNeg_ "SDL.Video.blitSurface" "SDL_BlitSurface" $
   maybeWith with srcRect $ \srcPtr ->
-  maybeWith with (fmap (flip Rectangle 0) dstLoc) $ \dstPtr ->
-  Raw.blitSurface src (castPtr srcPtr) dst (castPtr dstPtr)
+  maybeWith with (fmap (flip Rectangle 0) dstLoc) $ \dstPtr -> do
+      throwIfNeg "SDL.Video.blitSurface" "SDL_BlitSurface" $
+          Raw.blitSurface src (castPtr srcPtr) dst (castPtr dstPtr)
+      maybe (pure Nothing) (\_ -> Just <$> peek dstPtr) dstLoc
 
 -- | Create a texture for a rendering context.
 --

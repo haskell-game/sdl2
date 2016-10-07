@@ -12,6 +12,8 @@
   * `getMouseLocation` in `SDL.Input.Mouse`
 * Merge `isScreenSaverEnabled, `enableScreenSaver`, and `disableScreenSaver`
   into a `screenSaverEnabled` StateVar.
+* Make function `surfaceBlit` in `SDL.Video.Renderer` return final blit
+  rectangle post-clipping.
 * Fix issue with `setWindowMode` transitions not working properly between
   fullscreen and windowed modes.
 
