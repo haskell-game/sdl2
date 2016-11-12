@@ -1,3 +1,8 @@
+2.2.0
+=====
+
+* Add joystick POV hat support
+
 2.1.3
 =====
 

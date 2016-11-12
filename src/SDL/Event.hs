@@ -81,6 +81,7 @@ import Foreign
 import Foreign.C
 import GHC.Generics (Generic)
 import SDL.Vect
+import SDL.Input.Joystick
 import SDL.Input.Keyboard
 import SDL.Input.Mouse
 import SDL.Internal.Numbered
@@ -352,7 +353,7 @@ data JoyHatEventData =
                     -- ^ The instance id of the joystick that reported the event.
                   ,joyHatEventHat :: Word8
                    -- ^ The index of the hat that changed.
-                  ,joyHatEventValue :: Word8
+                  ,joyHatEventValue :: JoyHatPosition
                    -- ^ The new position of the hat.
                   }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -625,7 +626,11 @@ convertRaw (Raw.JoyBallEvent _ ts a b c d) =
                                      b
                                      (V2 c d))))
 convertRaw (Raw.JoyHatEvent _ ts a b c) =
-  return (Event ts (JoyHatEvent (JoyHatEventData a b c)))
+  return (Event ts
+                (JoyHatEvent
+                   (JoyHatEventData a
+                                    b
+                                    (fromNumber c))))
 convertRaw (Raw.JoyButtonEvent _ ts a b c) =
   return (Event ts (JoyButtonEvent (JoyButtonEventData a b c)))
 convertRaw (Raw.JoyDeviceEvent _ ts a) =

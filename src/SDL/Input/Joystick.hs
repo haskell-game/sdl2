@@ -1,7 +1,9 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PatternSynonyms #-}
 
 module SDL.Input.Joystick
   ( numJoysticks
@@ -19,19 +21,25 @@ module SDL.Input.Joystick
   , numAxes
   , numButtons
   , numBalls
+  , JoyHatPosition(..)
+  , getHat
+  , numHats
   ) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Data (Data)
 import Data.Int
 import Data.Text (Text)
 import Data.Traversable (for)
 import Data.Typeable
+import Data.Word
 import Foreign.C.Types
 import Foreign.Marshal.Alloc
 import Foreign.Storable
 import GHC.Generics (Generic)
 import SDL.Vect
 import SDL.Exception
+import SDL.Internal.Numbered
 import SDL.Internal.Types
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
@@ -96,7 +104,7 @@ getJoystickID (Joystick j) =
 -- | Determine if a given button is currently held.
 --
 -- See @<https://wiki.libsdl.org/SDL_JoystickGetButton SDL_JoystickGetButton>@ for C documentation.
-buttonPressed :: (Functor m,MonadIO m)
+buttonPressed :: (Functor m, MonadIO m)
               => Joystick
               -> CInt -- ^ The index of the button. You can use 'numButtons' to determine how many buttons a given joystick has.
               -> m Bool
@@ -146,3 +154,44 @@ numButtons (Joystick j) = liftIO $ throwIfNeg "SDL.Input.Joystick.numButtons" "S
 -- See @<https://wiki.libsdl.org/SDL_JoystickNumBalls SDL_JoystickNumBalls>@ for C documentation.
 numBalls :: (MonadIO m) => Joystick -> m CInt
 numBalls (Joystick j) = liftIO $ throwIfNeg "SDL.Input.Joystick.numBalls" "SDL_JoystickNumBalls" (Raw.joystickNumBalls j)
+
+-- | Identifies the state of the POV hat on a joystick.
+data JoyHatPosition
+  = HatCentered  -- ^ Centered position
+  | HatUp        -- ^ Up position
+  | HatRight     -- ^ Right position
+  | HatDown      -- ^ Down position
+  | HatLeft      -- ^ Left position
+  | HatRightUp   -- ^ Right-up position
+  | HatRightDown -- ^ Right-down position
+  | HatLeftUp    -- ^ Left-up position
+  | HatLeftDown  -- ^ Left-down position
+  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
+
+instance FromNumber JoyHatPosition Word8 where
+  fromNumber n = case n of
+    Raw.SDL_HAT_CENTERED -> HatCentered
+    Raw.SDL_HAT_UP -> HatUp
+    Raw.SDL_HAT_RIGHT -> HatRight
+    Raw.SDL_HAT_DOWN -> HatDown
+    Raw.SDL_HAT_LEFT -> HatLeft
+    Raw.SDL_HAT_RIGHTUP -> HatRightUp
+    Raw.SDL_HAT_RIGHTDOWN -> HatRightDown
+    Raw.SDL_HAT_LEFTUP -> HatLeftUp
+    Raw.SDL_HAT_LEFTDOWN -> HatLeftDown
+    _ -> HatCentered
+
+-- | Get current position of a POV hat on a joystick.
+--
+-- See @<https://wiki.libsdl.org/SDL_JoystickGetHat SDL_JoystickGetHat>@ for C documentation.
+getHat :: (Functor m, MonadIO m)
+       => Joystick
+       -> CInt -- ^ The index of the POV hat. You can use 'numHats' to determine how many POV hats a given joystick has.
+       -> m JoyHatPosition
+getHat (Joystick j) hatIndex = fromNumber <$> Raw.joystickGetHat j hatIndex
+
+-- | Get the number of POV hats on a joystick.
+--
+-- See @<https://wiki.libsdl.org/https://wiki.libsdl.org/SDL_JoystickNumHats SDL_JoystickNumHats>@ for C documentation.
+numHats :: (MonadIO m) => Joystick -> m CInt
+numHats (Joystick j) = liftIO $ throwIfNeg "SDL.Input.Joystick.numHats" "SDL_JoystickNumHats" (Raw.joystickNumHats j)
