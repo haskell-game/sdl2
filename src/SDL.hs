@@ -26,6 +26,9 @@ module SDL
   , module SDL.Vect
   , module SDL.Video
 
+  -- custom by nek0
+  , module SDL.Internal.Numbered
+
   -- * Working with State Variables
   -- $stateVars
   , get, ($=), ($~)
@@ -48,6 +51,9 @@ import SDL.Power
 import SDL.Time
 import SDL.Vect
 import SDL.Video
+
+-- custom by nek0
+import SDL.Internal.Numbered
 
 {- $gettingStarted
 
