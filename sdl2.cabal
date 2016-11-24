@@ -75,6 +75,7 @@ library
     SDL.Video.OpenGL
     SDL.Video.Renderer
 
+    SDL.Internal.Numbered
     SDL.Internal.Types
     SDL.Internal.Vect
 
