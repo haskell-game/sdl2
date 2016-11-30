@@ -96,7 +96,6 @@ library
 
   other-modules:
     Data.Bitmask
-    SDL.Internal.Numbered
     SDL.Exception
 
   hs-source-dirs:
