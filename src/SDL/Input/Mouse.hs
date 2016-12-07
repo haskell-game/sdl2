@@ -73,7 +73,7 @@ data LocationMode = AbsoluteLocation | RelativeLocation deriving Eq
 -- When relative mouse mode is enabled, cursor is hidden and mouse position
 -- will not change. However, you will be delivered relative mouse position
 -- change events.
-setMouseLocationMode :: (Functor m, MonadIO m) => LocationMode -> m LocationMode
+setMouseLocationMode :: MonadIO m => LocationMode -> m LocationMode
 setMouseLocationMode mode =
   Raw.setRelativeMouseMode (mode == RelativeLocation) >> getMouseLocationMode
 
@@ -93,7 +93,7 @@ getModalMouseLocation = do
   return (mode, location)
 
 -- deprecated
-setRelativeMouseMode :: (Functor m, MonadIO m) => Bool -> m ()
+setRelativeMouseMode :: MonadIO m => Bool -> m ()
 {-# DEPRECATED setRelativeMouseMode "Use setMouseLocationMode instead" #-}
 setRelativeMouseMode enable =
   throwIfNeg_ "SDL.Input.Mouse" "SDL_SetRelativeMouseMode" $
@@ -151,11 +151,11 @@ cursorVisible :: StateVar Bool
 cursorVisible = makeStateVar getCursorVisible setCursorVisible
   where
   -- The usage of 'void' is OK here - Raw.showCursor just returns the old state.
-  setCursorVisible :: (Functor m, MonadIO m) => Bool -> m ()
+  setCursorVisible :: MonadIO m => Bool -> m ()
   setCursorVisible True = void $ Raw.showCursor 1
   setCursorVisible False = void $ Raw.showCursor 0
 
-  getCursorVisible :: (Functor m, MonadIO m) => m Bool
+  getCursorVisible :: MonadIO m => m Bool
   getCursorVisible = (== 1) <$> Raw.showCursor (-1)
 
 -- | Retrieve the current location of the mouse, relative to the currently focused window.

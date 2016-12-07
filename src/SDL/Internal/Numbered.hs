@@ -4,8 +4,8 @@ module SDL.Internal.Numbered
   , ToNumber(..)
   ) where
 
-class (Integral b) => FromNumber a b | a -> b where
+class Integral b => FromNumber a b | a -> b where
   fromNumber :: b -> a
 
-class (Integral b) => ToNumber a b | a -> b where
+class Integral b => ToNumber a b | a -> b where
   toNumber :: a -> b
