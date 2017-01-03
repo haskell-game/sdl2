@@ -5,7 +5,7 @@ module AudioExample where
 import Data.IORef
 import Control.Monad
 import Control.Concurrent
-import Data.Int (Int16)
+import Data.Int (Int16, Int32)
 import SDL
 import qualified Data.Vector.Storable.Mutable as V
 
