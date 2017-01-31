@@ -60,6 +60,7 @@ library
     SDL
     SDL.Audio
     SDL.Event
+    SDL.Exception
     SDL.Filesystem
     SDL.Hint
     SDL.Init
@@ -97,7 +98,6 @@ library
 
   other-modules:
     Data.Bitmask
-    SDL.Exception
 
   hs-source-dirs:
     src/
