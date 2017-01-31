@@ -89,7 +89,7 @@ import Foreign.Ptr
 import Foreign.Storable
 import GHC.Exts (Constraint)
 import GHC.Generics (Generic)
-import SDL.Exception
+import SDL.Internal.Exception
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
 import qualified Data.Vector as V

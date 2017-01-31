@@ -21,7 +21,7 @@ import Data.Word
 import Foreign.Marshal.Alloc
 import Foreign.Storable
 import GHC.Generics
-import SDL.Exception
+import SDL.Internal.Exception
 import SDL.Internal.Numbered
 import qualified SDL.Raw as Raw
 

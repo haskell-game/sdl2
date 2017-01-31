@@ -11,7 +11,7 @@ import Control.Exception
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Text (Text)
 import Foreign.Marshal.Alloc
-import SDL.Exception
+import SDL.Internal.Exception
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text
 import qualified SDL.Raw.Filesystem as Raw

@@ -38,7 +38,7 @@ import Foreign.Marshal.Alloc
 import Foreign.Storable
 import GHC.Generics (Generic)
 import SDL.Vect
-import SDL.Exception
+import SDL.Internal.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
 import qualified Data.ByteString as BS

@@ -77,18 +77,18 @@ import Data.Data (Data)
 import Data.Maybe (catMaybes)
 import Data.Text (Text)
 import Data.Typeable
-import Foreign
+import Foreign hiding (throwIfNeg_)
 import Foreign.C
 import GHC.Generics (Generic)
 import SDL.Vect
 import SDL.Input.Joystick
 import SDL.Input.Keyboard
 import SDL.Input.Mouse
+import SDL.Internal.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types (Window(Window))
 import qualified Data.ByteString.Char8 as BSC8
 import qualified Data.Text.Encoding as Text
-import qualified SDL.Exception as SDLEx
 import qualified SDL.Raw as Raw
 
 #if !MIN_VERSION_base(4,8,0)
@@ -708,7 +708,7 @@ mapEvents h = do
 -- | Wait indefinitely for the next available event.
 waitEvent :: MonadIO m => m Event
 waitEvent = liftIO $ alloca $ \e -> do
-  SDLEx.throwIfNeg_ "SDL.Events.waitEvent" "SDL_WaitEvent" $
+  throwIfNeg_ "SDL.Events.waitEvent" "SDL_WaitEvent" $
     Raw.waitEvent e
   peek e >>= convertRaw
 

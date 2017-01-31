@@ -26,20 +26,20 @@ module SDL
   , module SDL.Vect
   , module SDL.Video
 
+  -- * Error Handling
+  , module SDL.Exception
+
   -- * Working with State Variables
   -- $stateVars
   , get, ($=), ($~)
   -- ** Strict modification
   , ($=!), ($~!)
-
-  -- * Error Handling
-  , SDLException(..)
   ) where
 
 import Data.StateVar
 import SDL.Audio
 import SDL.Event
-import SDL.Exception (SDLException(..))
+import SDL.Exception
 import SDL.Filesystem
 import SDL.Hint
 import SDL.Init

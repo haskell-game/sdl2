@@ -1,6 +1,7 @@
 2.2.0
 =====
 
+* Add `SDL.Exception` module, exposing `SDLException`
 * Add joystick POV hat support
 
 2.1.3.1

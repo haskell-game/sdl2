@@ -22,7 +22,7 @@ import Data.Word
 import Foreign
 import GHC.Generics (Generic)
 
-import SDL.Exception
+import SDL.Internal.Exception
 
 import qualified SDL.Raw.Timer as Raw
 import qualified SDL.Raw.Types as Raw

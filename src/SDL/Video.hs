@@ -88,7 +88,7 @@ import Foreign hiding (void, throwIfNull, throwIfNeg, throwIfNeg_)
 import Foreign.C
 import GHC.Generics (Generic)
 import SDL.Vect
-import SDL.Exception
+import SDL.Internal.Exception
 import SDL.Internal.Numbered
 import SDL.Internal.Types
 import SDL.Video.OpenGL
