@@ -29,7 +29,6 @@ import qualified SDL.Raw as Raw
 import Data.Foldable
 #endif
 
-{-# DEPRECATED InitEverything "Instead of initialize [InitEverything], use initializeAll" #-}
 data InitFlag
   = InitTimer
   | InitAudio
@@ -38,7 +37,6 @@ data InitFlag
   | InitHaptic
   | InitGameController
   | InitEvents
-  | InitEverything
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance ToNumber InitFlag Word32 where
@@ -49,7 +47,6 @@ instance ToNumber InitFlag Word32 where
   toNumber InitHaptic = Raw.SDL_INIT_HAPTIC
   toNumber InitGameController = Raw.SDL_INIT_GAMECONTROLLER
   toNumber InitEvents = Raw.SDL_INIT_EVENTS
-  toNumber InitEverything = Raw.SDL_INIT_EVERYTHING
 
 -- | Initializes SDL and the given subsystems. Do not call any SDL functions
 -- prior to this one, unless otherwise documented that you may do so.
