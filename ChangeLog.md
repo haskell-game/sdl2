@@ -1,3 +1,8 @@
+2.1.3.1
+=======
+
+* Raise upper bounds for `vector` to <0.13
+
 2.1.3
 =====
 
