@@ -3,6 +3,7 @@
 
 * Add `SDL.Exception` module, exposing `SDLException`
 * Add joystick POV hat support
+* Remove deprecated `InitEverything` enumeration
 
 2.1.3.1
 =======
