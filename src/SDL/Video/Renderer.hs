@@ -255,13 +255,13 @@ lockTexture (Texture t) rect = liftIO $
 --
 -- See @<https://wiki.libsdl.org/SDL_UnlockTexture SDL_UnlockTexture>@ for C documentation.
 unlockTexture :: MonadIO m => Texture -> m ()
-unlockTexture (Texture t) = liftIO $ Raw.unlockTexture t
+unlockTexture (Texture t) = Raw.unlockTexture t
 
 -- | Set up a surface for directly accessing the pixels.
 --
 -- See @<https://wiki.libsdl.org/SDL_LockSurface SDL_LockSurface>@ for C documentation.
 lockSurface :: MonadIO m => Surface -> m ()
-lockSurface (Surface s _) = liftIO $
+lockSurface (Surface s _) =
   throwIfNeg_ "lockSurface" "SDL_LockSurface" $
     Raw.lockSurface s
 
@@ -364,7 +364,7 @@ surfaceFillRect :: MonadIO m
 surfaceFillRect (Surface s _) rect (V4 r g b a) = liftIO $
   throwIfNeg_ "SDL.Video.fillRect" "SDL_FillRect" $
   maybeWith with rect $ \rectPtr -> do
-    format <- liftIO (Raw.surfaceFormat <$> peek s)
+    format <- Raw.surfaceFormat <$> peek s
     Raw.mapRGBA format r g b a >>= Raw.fillRect s (castPtr rectPtr)
 
 -- | Perform a fast fill of a set of rectangles with a specific color.
@@ -380,7 +380,7 @@ surfaceFillRects :: MonadIO m
 surfaceFillRects (Surface s _) rects (V4 r g b a) = liftIO $ do
   throwIfNeg_ "SDL.Video.fillRects" "SDL_FillRects" $
     SV.unsafeWith rects $ \rp -> do
-      format <- liftIO (Raw.surfaceFormat <$> peek s)
+      format <- Raw.surfaceFormat <$> peek s
       Raw.fillRects s
                     (castPtr rp)
                     (fromIntegral (SV.length rects))
