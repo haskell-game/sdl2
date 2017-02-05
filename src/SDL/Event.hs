@@ -106,383 +106,383 @@ data Event = Event
 -- | An enumeration of all possible SDL event types. This data type pairs up event types with
 -- their payload, where possible.
 data EventPayload
-  = WindowShownEvent WindowShownEventData
-  | WindowHiddenEvent WindowHiddenEventData
-  | WindowExposedEvent WindowExposedEventData
-  | WindowMovedEvent WindowMovedEventData
-  | WindowResizedEvent WindowResizedEventData
-  | WindowSizeChangedEvent WindowSizeChangedEventData
-  | WindowMinimizedEvent WindowMinimizedEventData
-  | WindowMaximizedEvent WindowMaximizedEventData
-  | WindowRestoredEvent WindowRestoredEventData
-  | WindowGainedMouseFocusEvent WindowGainedMouseFocusEventData
-  | WindowLostMouseFocusEvent WindowLostMouseFocusEventData
-  | WindowGainedKeyboardFocusEvent WindowGainedKeyboardFocusEventData
-  | WindowLostKeyboardFocusEvent WindowLostKeyboardFocusEventData
-  | WindowClosedEvent WindowClosedEventData
-  | KeyboardEvent KeyboardEventData
-  | TextEditingEvent TextEditingEventData
-  | TextInputEvent TextInputEventData
+  = WindowShownEvent !WindowShownEventData
+  | WindowHiddenEvent !WindowHiddenEventData
+  | WindowExposedEvent !WindowExposedEventData
+  | WindowMovedEvent !WindowMovedEventData
+  | WindowResizedEvent !WindowResizedEventData
+  | WindowSizeChangedEvent !WindowSizeChangedEventData
+  | WindowMinimizedEvent !WindowMinimizedEventData
+  | WindowMaximizedEvent !WindowMaximizedEventData
+  | WindowRestoredEvent !WindowRestoredEventData
+  | WindowGainedMouseFocusEvent !WindowGainedMouseFocusEventData
+  | WindowLostMouseFocusEvent !WindowLostMouseFocusEventData
+  | WindowGainedKeyboardFocusEvent !WindowGainedKeyboardFocusEventData
+  | WindowLostKeyboardFocusEvent !WindowLostKeyboardFocusEventData
+  | WindowClosedEvent !WindowClosedEventData
+  | KeyboardEvent !KeyboardEventData
+  | TextEditingEvent !TextEditingEventData
+  | TextInputEvent !TextInputEventData
   | KeymapChangedEvent
-  | MouseMotionEvent MouseMotionEventData
-  | MouseButtonEvent MouseButtonEventData
-  | MouseWheelEvent MouseWheelEventData
-  | JoyAxisEvent JoyAxisEventData
-  | JoyBallEvent JoyBallEventData
-  | JoyHatEvent JoyHatEventData
-  | JoyButtonEvent JoyButtonEventData
-  | JoyDeviceEvent JoyDeviceEventData
-  | ControllerAxisEvent ControllerAxisEventData
-  | ControllerButtonEvent ControllerButtonEventData
-  | ControllerDeviceEvent ControllerDeviceEventData
-  | AudioDeviceEvent AudioDeviceEventData
+  | MouseMotionEvent !MouseMotionEventData
+  | MouseButtonEvent !MouseButtonEventData
+  | MouseWheelEvent !MouseWheelEventData
+  | JoyAxisEvent !JoyAxisEventData
+  | JoyBallEvent !JoyBallEventData
+  | JoyHatEvent !JoyHatEventData
+  | JoyButtonEvent !JoyButtonEventData
+  | JoyDeviceEvent !JoyDeviceEventData
+  | ControllerAxisEvent !ControllerAxisEventData
+  | ControllerButtonEvent !ControllerButtonEventData
+  | ControllerDeviceEvent !ControllerDeviceEventData
+  | AudioDeviceEvent !AudioDeviceEventData
   | QuitEvent
-  | UserEvent UserEventData
-  | SysWMEvent SysWMEventData
-  | TouchFingerEvent TouchFingerEventData
-  | MultiGestureEvent MultiGestureEventData
-  | DollarGestureEvent DollarGestureEventData
-  | DropEvent DropEventData
-  | ClipboardUpdateEvent ClipboardUpdateEventData
-  | UnknownEvent UnknownEventData
+  | UserEvent !UserEventData
+  | SysWMEvent !SysWMEventData
+  | TouchFingerEvent !TouchFingerEventData
+  | MultiGestureEvent !MultiGestureEventData
+  | DollarGestureEvent !DollarGestureEventData
+  | DropEvent !DropEventData
+  | ClipboardUpdateEvent !ClipboardUpdateEventData
+  | UnknownEvent !UnknownEventData
   deriving (Eq, Ord, Generic, Show, Typeable)
 
 -- | A window has been shown.
 data WindowShownEventData =
-  WindowShownEventData {windowShownEventWindow :: Window
+  WindowShownEventData {windowShownEventWindow :: !Window
                         -- ^ The associated 'Window'.
                        }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | A window has been hidden.
 data WindowHiddenEventData =
-  WindowHiddenEventData {windowHiddenEventWindow :: Window
+  WindowHiddenEventData {windowHiddenEventWindow :: !Window
                          -- ^ The associated 'Window'.
                         }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | A part of a window has been exposed - where exposure means to become visible (for example, an overlapping window no longer overlaps with the window).
 data WindowExposedEventData =
-  WindowExposedEventData {windowExposedEventWindow :: Window
+  WindowExposedEventData {windowExposedEventWindow :: !Window
                           -- ^ The associated 'Window'.
                          }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | A 'Window' has been moved.
 data WindowMovedEventData =
-  WindowMovedEventData {windowMovedEventWindow :: Window
+  WindowMovedEventData {windowMovedEventWindow :: !Window
                         -- ^ The associated 'Window'.
-                       ,windowMovedEventPosition :: Point V2 Int32
+                       ,windowMovedEventPosition :: !(Point V2 Int32)
                         -- ^ The new position of the 'Window'.
                        }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Window has been resized. This is event is always preceded by 'WindowSizeChangedEvent'.
 data WindowResizedEventData =
-  WindowResizedEventData {windowResizedEventWindow :: Window
+  WindowResizedEventData {windowResizedEventWindow :: !Window
                           -- ^ The associated 'Window'.
-                         ,windowResizedEventSize :: V2 Int32
+                         ,windowResizedEventSize :: !(V2 Int32)
                           -- ^ The new size of the 'Window'.
                          }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window size has changed, either as a result of an API call or through the system or user changing the window size; this event is followed by 'WindowResizedEvent' if the size was changed by an external event, i.e. the user or the window manager.
 data WindowSizeChangedEventData =
-  WindowSizeChangedEventData {windowSizeChangedEventWindow :: Window
+  WindowSizeChangedEventData {windowSizeChangedEventWindow :: !Window
                               -- ^ The associated 'Window'.
                              }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has been minimized.
 data WindowMinimizedEventData =
-  WindowMinimizedEventData {windowMinimizedEventWindow :: Window
+  WindowMinimizedEventData {windowMinimizedEventWindow :: !Window
                             -- ^ The associated 'Window'.
                            }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has been maximized.
 data WindowMaximizedEventData =
-  WindowMaximizedEventData {windowMaximizedEventWindow :: Window
+  WindowMaximizedEventData {windowMaximizedEventWindow :: !Window
                             -- ^ The associated 'Window'.
                            }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has been restored to normal size and position.
 data WindowRestoredEventData =
-  WindowRestoredEventData {windowRestoredEventWindow :: Window
+  WindowRestoredEventData {windowRestoredEventWindow :: !Window
                            -- ^ The associated 'Window'.
                           }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has gained mouse focus.
 data WindowGainedMouseFocusEventData =
-  WindowGainedMouseFocusEventData {windowGainedMouseFocusEventWindow :: Window
+  WindowGainedMouseFocusEventData {windowGainedMouseFocusEventWindow :: !Window
                                    -- ^ The associated 'Window'.
                                   }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has lost mouse focus.
 data WindowLostMouseFocusEventData =
-  WindowLostMouseFocusEventData {windowLostMouseFocusEventWindow :: Window
+  WindowLostMouseFocusEventData {windowLostMouseFocusEventWindow :: !Window
                                  -- ^ The associated 'Window'.
                                 }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has gained keyboard focus.
 data WindowGainedKeyboardFocusEventData =
-  WindowGainedKeyboardFocusEventData {windowGainedKeyboardFocusEventWindow :: Window
+  WindowGainedKeyboardFocusEventData {windowGainedKeyboardFocusEventWindow :: !Window
                                       -- ^ The associated 'Window'.
                                      }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has lost keyboard focus.
 data WindowLostKeyboardFocusEventData =
-  WindowLostKeyboardFocusEventData {windowLostKeyboardFocusEventWindow :: Window
+  WindowLostKeyboardFocusEventData {windowLostKeyboardFocusEventWindow :: !Window
                                     -- ^ The associated 'Window'.
                                    }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window manager requests that the window be closed.
 data WindowClosedEventData =
-  WindowClosedEventData {windowClosedEventWindow :: Window
+  WindowClosedEventData {windowClosedEventWindow :: !Window
                          -- ^ The associated 'Window'.
                         }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | A keyboard key has been pressed or released.
 data KeyboardEventData =
-  KeyboardEventData {keyboardEventWindow :: Window
+  KeyboardEventData {keyboardEventWindow :: !Window
                      -- ^ The associated 'Window'.
-                    ,keyboardEventKeyMotion :: InputMotion
+                    ,keyboardEventKeyMotion :: !InputMotion
                      -- ^ Whether the key was pressed or released.
-                    ,keyboardEventRepeat :: Bool
+                    ,keyboardEventRepeat :: !Bool
                      -- ^ 'True' if this is a repeating key press from the user holding the key down.
-                    ,keyboardEventKeysym :: Keysym
+                    ,keyboardEventKeysym :: !Keysym
                      -- ^ A description of the key that this event pertains to.
                     }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Keyboard text editing event information.
 data TextEditingEventData =
-  TextEditingEventData {textEditingEventWindow :: Window
+  TextEditingEventData {textEditingEventWindow :: !Window
                         -- ^ The associated 'Window'.
-                       ,textEditingEventText :: Text
+                       ,textEditingEventText :: !Text
                         -- ^ The editing text.
-                       ,textEditingEventStart :: Int32
+                       ,textEditingEventStart :: !Int32
                         -- ^ The location to begin editing from.
-                       ,textEditingEventLength :: Int32
+                       ,textEditingEventLength :: !Int32
                         -- ^ The number of characters to edit from the start point.
                        }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Keyboard text input event information.
 data TextInputEventData =
-  TextInputEventData {textInputEventWindow :: Window
+  TextInputEventData {textInputEventWindow :: !Window
                       -- ^ The associated 'Window'.
-                     ,textInputEventText :: Text
+                     ,textInputEventText :: !Text
                       -- ^ The input text.
                      }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | A mouse or pointer device was moved.
 data MouseMotionEventData =
-  MouseMotionEventData {mouseMotionEventWindow :: Window
+  MouseMotionEventData {mouseMotionEventWindow :: !Window
                         -- ^ The associated 'Window'.
-                       ,mouseMotionEventWhich :: MouseDevice
+                       ,mouseMotionEventWhich :: !MouseDevice
                         -- ^ The 'MouseDevice' that was moved.
-                       ,mouseMotionEventState :: [MouseButton]
+                       ,mouseMotionEventState :: ![MouseButton]
                         -- ^ A collection of 'MouseButton's that are currently held down.
-                       ,mouseMotionEventPos :: Point V2 Int32
+                       ,mouseMotionEventPos :: !(Point V2 Int32)
                         -- ^ The new position of the mouse.
-                       ,mouseMotionEventRelMotion :: V2 Int32
+                       ,mouseMotionEventRelMotion :: !(V2 Int32)
                         -- ^ The relative mouse motion of the mouse.
                        }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | A mouse or pointer device button was pressed or released.
 data MouseButtonEventData =
-  MouseButtonEventData {mouseButtonEventWindow :: Window
+  MouseButtonEventData {mouseButtonEventWindow :: !Window
                         -- ^ The associated 'Window'.
-                       ,mouseButtonEventMotion :: InputMotion
+                       ,mouseButtonEventMotion :: !InputMotion
                         -- ^ Whether the button was pressed or released.
-                       ,mouseButtonEventWhich :: MouseDevice
+                       ,mouseButtonEventWhich :: !MouseDevice
                         -- ^ The 'MouseDevice' whose button was pressed or released.
-                       ,mouseButtonEventButton :: MouseButton
+                       ,mouseButtonEventButton :: !MouseButton
                         -- ^ The button that was pressed or released.
-                       ,mouseButtonEventClicks :: Word8
+                       ,mouseButtonEventClicks :: !Word8
                         -- ^ The amount of clicks. 1 for a single-click, 2 for a double-click, etc.
-                       ,mouseButtonEventPos :: Point V2 Int32
+                       ,mouseButtonEventPos :: !(Point V2 Int32)
                         -- ^ The coordinates of the mouse click.
                        }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Mouse wheel event information.
 data MouseWheelEventData =
-  MouseWheelEventData {mouseWheelEventWindow :: Window
+  MouseWheelEventData {mouseWheelEventWindow :: !Window
                        -- ^ The associated 'Window'.
-                      ,mouseWheelEventWhich :: MouseDevice
+                      ,mouseWheelEventWhich :: !MouseDevice
                        -- ^ The 'MouseDevice' whose wheel was scrolled.
-                      ,mouseWheelEventPos :: V2 Int32
+                      ,mouseWheelEventPos :: !(V2 Int32)
                        -- ^ The amount scrolled.
-                      ,mouseWheelEventDirection :: MouseScrollDirection
+                      ,mouseWheelEventDirection :: !MouseScrollDirection
                        -- ^ The scroll direction mode.
                       }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Joystick axis motion event information
 data JoyAxisEventData =
-  JoyAxisEventData {joyAxisEventWhich :: Raw.JoystickID
+  JoyAxisEventData {joyAxisEventWhich :: !Raw.JoystickID
                     -- ^ The instance id of the joystick that reported the event.
-                   ,joyAxisEventAxis :: Word8
+                   ,joyAxisEventAxis :: !Word8
                     -- ^ The index of the axis that changed.
-                   ,joyAxisEventValue :: Int16
+                   ,joyAxisEventValue :: !Int16
                     -- ^ The current position of the axis, ranging between -32768 and 32767.
                    }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Joystick trackball motion event information.
 data JoyBallEventData =
-  JoyBallEventData {joyBallEventWhich :: Raw.JoystickID
+  JoyBallEventData {joyBallEventWhich :: !Raw.JoystickID
                     -- ^ The instance id of the joystick that reported the event.
-                   ,joyBallEventBall :: Word8
+                   ,joyBallEventBall :: !Word8
                     -- ^ The index of the trackball that changed.
-                   ,joyBallEventRelMotion :: V2 Int16
+                   ,joyBallEventRelMotion :: !(V2 Int16)
                     -- ^ The relative motion of the trackball.
                    }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Joystick hat position change event information
 data JoyHatEventData =
-  JoyHatEventData {joyHatEventWhich :: Raw.JoystickID
+  JoyHatEventData {joyHatEventWhich :: !Raw.JoystickID
                     -- ^ The instance id of the joystick that reported the event.
-                  ,joyHatEventHat :: Word8
+                  ,joyHatEventHat :: !Word8
                    -- ^ The index of the hat that changed.
-                  ,joyHatEventValue :: JoyHatPosition
+                  ,joyHatEventValue :: !JoyHatPosition
                    -- ^ The new position of the hat.
                   }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Joystick button event information.
 data JoyButtonEventData =
-  JoyButtonEventData {joyButtonEventWhich :: Raw.JoystickID
+  JoyButtonEventData {joyButtonEventWhich :: !Raw.JoystickID
                       -- ^ The instance id of the joystick that reported the event.
-                     ,joyButtonEventButton :: Word8
+                     ,joyButtonEventButton :: !Word8
                       -- ^ The index of the button that changed.
-                     ,joyButtonEventState :: Word8
+                     ,joyButtonEventState :: !Word8
                       -- ^ The state of the button.
                      }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Joystick device event information.
 data JoyDeviceEventData =
-  JoyDeviceEventData {joyDeviceEventWhich :: Int32
+  JoyDeviceEventData {joyDeviceEventWhich :: !Int32
                       -- ^ The instance id of the joystick that reported the event.
                      }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Game controller axis motion event information.
 data ControllerAxisEventData =
-  ControllerAxisEventData {controllerAxisEventWhich :: Raw.JoystickID
+  ControllerAxisEventData {controllerAxisEventWhich :: !Raw.JoystickID
                            -- ^ The joystick instance ID that reported the event.
-                          ,controllerAxisEventAxis :: Word8
+                          ,controllerAxisEventAxis :: !Word8
                            -- ^ The index of the axis.
-                          ,controllerAxisEventValue :: Int16
+                          ,controllerAxisEventValue :: !Int16
                            -- ^ The axis value ranging between -32768 and 32767.
                           }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Game controller button event information
 data ControllerButtonEventData =
-  ControllerButtonEventData {controllerButtonEventWhich :: Raw.JoystickID
+  ControllerButtonEventData {controllerButtonEventWhich :: !Raw.JoystickID
                            -- ^ The joystick instance ID that reported the event.
-                            ,controllerButtonEventButton :: Word8
+                            ,controllerButtonEventButton :: !Word8
                              -- ^ The controller button.
-                            ,controllerButtonEventState :: Word8
+                            ,controllerButtonEventState :: !Word8
                              -- ^ The state of the button.
                             }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Controller device event information
 data ControllerDeviceEventData =
-  ControllerDeviceEventData {controllerDeviceEventWhich :: Int32
+  ControllerDeviceEventData {controllerDeviceEventWhich :: !Int32
                              -- ^ The joystick instance ID that reported the event.
                             }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 data AudioDeviceEventData =
-  AudioDeviceEventData {audioDeviceEventWhich :: Word32
+  AudioDeviceEventData {audioDeviceEventWhich :: !Word32
                         -- ^ The audio device  ID that reported the event.
-                       ,audioDeviceEventIsCapture :: Bool
+                       ,audioDeviceEventIsCapture :: !Bool
                         -- * If the audio device is a capture device.
                        }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Event data for application-defined events.
 data UserEventData =
-  UserEventData {userEventWindow :: Window
+  UserEventData {userEventWindow :: !Window
                  -- ^ The associated 'Window'.
-                ,userEventCode :: Int32
+                ,userEventCode :: !Int32
                  -- ^ User defined event code.
-                ,userEventData1 :: Ptr ()
+                ,userEventData1 :: !(Ptr ())
                  -- ^ User defined data pointer.
-                ,userEventData2 :: Ptr ()
+                ,userEventData2 :: !(Ptr ())
                  -- ^ User defined data pointer.
                 }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | A video driver dependent system event
 data SysWMEventData =
-  SysWMEventData {sysWMEventMsg :: Raw.SysWMmsg}
+  SysWMEventData {sysWMEventMsg :: !Raw.SysWMmsg}
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Finger touch event information.
 data TouchFingerEventData =
-  TouchFingerEventData {touchFingerEventTouchID :: Raw.TouchID
+  TouchFingerEventData {touchFingerEventTouchID :: !Raw.TouchID
                         -- ^ The touch device index.
-                       ,touchFingerEventFingerID :: Raw.FingerID
+                       ,touchFingerEventFingerID :: !Raw.FingerID
                         -- ^ The finger index.
-                       ,touchFingerEventPos :: Point V2 CFloat
+                       ,touchFingerEventPos :: !(Point V2 CFloat)
                         -- ^ The location of the touch event, normalized between 0 and 1.
-                       ,touchFingerEventRelMotion :: V2 CFloat
+                       ,touchFingerEventRelMotion :: !(V2 CFloat)
                         -- ^ The distance moved, normalized between -1 and 1.
-                       ,touchFingerEventPressure :: CFloat
+                       ,touchFingerEventPressure :: !CFloat
                         -- ^ The quantity of the pressure applied, normalized between 0 and 1.
                        }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Multiple finger gesture event information
 data MultiGestureEventData =
-  MultiGestureEventData {multiGestureEventTouchID :: Raw.TouchID
+  MultiGestureEventData {multiGestureEventTouchID :: !Raw.TouchID
                          -- ^ The touch device index.
-                        ,multiGestureEventDTheta :: CFloat
+                        ,multiGestureEventDTheta :: !CFloat
                          -- ^ The amount that the fingers rotated during this motion.
-                        ,multiGestureEventDDist :: CFloat
+                        ,multiGestureEventDDist :: !CFloat
                          -- ^ The amount that the fingers pinched during this motion.
-                        ,multiGestureEventPos :: Point V2 CFloat
+                        ,multiGestureEventPos :: !(Point V2 CFloat)
                          -- ^ The normalized center of the gesture.
-                        ,multiGestureEventNumFingers :: Word16
+                        ,multiGestureEventNumFingers :: !Word16
                          -- ^ The number of fingers used in this gesture.
                         }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Complex gesture event information.
 data DollarGestureEventData =
-  DollarGestureEventData {dollarGestureEventTouchID :: Raw.TouchID
+  DollarGestureEventData {dollarGestureEventTouchID :: !Raw.TouchID
                           -- ^ The touch device index.
-                         ,dollarGestureEventGestureID :: Raw.GestureID
+                         ,dollarGestureEventGestureID :: !Raw.GestureID
                           -- ^ The unique id of the closest gesture to the performed stroke.
-                         ,dollarGestureEventNumFingers :: Word32
+                         ,dollarGestureEventNumFingers :: !Word32
                           -- ^ The number of fingers used to draw the stroke.
-                         ,dollarGestureEventError :: CFloat
+                         ,dollarGestureEventError :: !CFloat
                           -- ^ The difference between the gesture template and the actual performed gesture (lower errors correspond to closer matches).
-                         ,dollarGestureEventPos :: Point V2 CFloat
+                         ,dollarGestureEventPos :: !(Point V2 CFloat)
                           -- ^ The normalized center of the gesture.
                          }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | An event used to request a file open by the system
 data DropEventData =
-  DropEventData {dropEventFile :: CString
+  DropEventData {dropEventFile :: !CString
                  -- ^ The file name.
                 }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -494,7 +494,7 @@ data ClipboardUpdateEventData =
 
 -- | SDL reported an unknown event type.
 data UnknownEventData =
-  UnknownEventData {unknownEventType :: Word32
+  UnknownEventData {unknownEventType :: !Word32
                     -- ^ The unknown event code.
                    }
   deriving (Eq,Ord,Generic,Show,Typeable)

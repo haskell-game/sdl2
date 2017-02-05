@@ -46,6 +46,7 @@
   into a `screenSaverEnabled` StateVar.
 * Make function `surfaceBlit` in `SDL.Video.Renderer` return final blit
   rectangle post-clipping.
+* Make all fields in EventData constructors strict
 * Fix issue with `setWindowMode` transitions not working properly between
   fullscreen and windowed modes.
 
