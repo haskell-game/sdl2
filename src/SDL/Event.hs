@@ -54,6 +54,8 @@ module SDL.Event
   , ControllerAxisEventData(..)
   , ControllerButtonEventData(..)
   , ControllerDeviceEventData(..)
+    -- ** Audio events
+  , AudioDeviceEventData(..)
     -- ** User events
   , UserEventData(..)
     -- ** Touch events
