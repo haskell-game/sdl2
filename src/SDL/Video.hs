@@ -265,11 +265,11 @@ setWindowMode :: MonadIO m => Window -> WindowMode -> m ()
 setWindowMode (Window w) mode =
   liftIO . throwIfNot0_ "SDL.Video.setWindowMode" "SDL_SetWindowFullscreen" $
     case mode of
-      Fullscreen -> Raw.setWindowFullscreen w Raw.SDL_WINDOW_FULLSCREEN
-      FullscreenDesktop -> Raw.setWindowFullscreen w Raw.SDL_WINDOW_FULLSCREEN_DESKTOP
+      Fullscreen -> Raw.setWindowFullscreen w Raw.SDL_WINDOW_FULLSCREEN <* Raw.raiseWindow w
+      FullscreenDesktop -> Raw.setWindowFullscreen w Raw.SDL_WINDOW_FULLSCREEN_DESKTOP <* Raw.raiseWindow w
       Maximized -> Raw.setWindowFullscreen w 0 <* Raw.maximizeWindow w
       Minimized -> Raw.minimizeWindow w >> return 0
-      Windowed -> Raw.restoreWindow w >> return 0
+      Windowed -> Raw.setWindowFullscreen w 0 <* Raw.restoreWindow w
 
 -- | Set the position of the window.
 setWindowPosition :: MonadIO m => Window -> WindowPosition -> m ()

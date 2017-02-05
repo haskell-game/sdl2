@@ -4,6 +4,8 @@
 * Add `SDL.Exception` module, exposing `SDLException`
 * Add joystick POV hat support
 * Remove deprecated `InitEverything` enumeration
+* Fix issue with `setWindowMode` transitions not working properly between
+  fullscreen and windowed modes.
 
 2.1.3.1
 =======
