@@ -65,8 +65,6 @@ module SDL.Event
   , DollarGestureEventData(..)
     -- ** Drag and drop events
   , DropEventData(..)
-    -- ** Clipboard events
-  , ClipboardUpdateEventData(..)
     -- ** Unknown events
   , UnknownEventData(..)
     -- * Auxiliary event data
@@ -145,7 +143,7 @@ data EventPayload
   | MultiGestureEvent !MultiGestureEventData
   | DollarGestureEvent !DollarGestureEventData
   | DropEvent !DropEventData
-  | ClipboardUpdateEvent !ClipboardUpdateEventData
+  | ClipboardUpdateEvent
   | UnknownEvent !UnknownEventData
   deriving (Eq, Ord, Generic, Show, Typeable)
 
@@ -489,11 +487,6 @@ data DropEventData =
                 }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
--- | The clipboard changed.
-data ClipboardUpdateEventData =
-  ClipboardUpdateEventData
-  deriving (Eq,Ord,Generic,Show,Typeable)
-
 -- | SDL reported an unknown event type.
 data UnknownEventData =
   UnknownEventData {unknownEventType :: !Word32
@@ -694,7 +687,7 @@ convertRaw (Raw.DollarGestureEvent _ ts a b c d e f) =
 convertRaw (Raw.DropEvent _ ts a) =
   return (Event ts (DropEvent (DropEventData a)))
 convertRaw (Raw.ClipboardUpdateEvent _ ts) =
-  return (Event ts (ClipboardUpdateEvent ClipboardUpdateEventData))
+  return (Event ts ClipboardUpdateEvent)
 convertRaw (Raw.UnknownEvent t ts) =
   return (Event ts (UnknownEvent (UnknownEventData t)))
 

@@ -42,6 +42,7 @@
   * `setRelativeMouseMode` in `SDL.Input.Mouse`
   * `getRelativeMouseMode` in `SDL.Input.Mouse`
   * `getMouseLocation` in `SDL.Input.Mouse`
+* Remove `ClipboardUpdateEventData`
 * Merge `isScreenSaverEnabled, `enableScreenSaver`, and `disableScreenSaver`
   into a `screenSaverEnabled` StateVar.
 * Make function `surfaceBlit` in `SDL.Video.Renderer` return final blit
