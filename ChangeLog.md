@@ -4,6 +4,8 @@
 * Add `SDL.Exception` module, exposing `SDLException`
 * Add joystick POV hat support
 * Remove deprecated `InitEverything` enumeration
+* Merge `isScreenSaverEnabled, `enableScreenSaver`, and `disableScreenSaver`
+  into a `screenSaverEnabled` StateVar.
 * Fix issue with `setWindowMode` transitions not working properly between
   fullscreen and windowed modes.
 

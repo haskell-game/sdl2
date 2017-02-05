@@ -61,9 +61,7 @@ module SDL.Video
   --
   -- Screen savers are disabled by default upon the initialization of the
   -- video subsystem.
-  , disableScreenSaver
-  , enableScreenSaver
-  , isScreenSaverEnabled
+  , screenSaverEnabled
 
   -- * Message Box
   , showSimpleMessageBox
@@ -392,23 +390,16 @@ hideWindow (Window w) = Raw.hideWindow w
 raiseWindow :: MonadIO m => Window -> m ()
 raiseWindow (Window w) = Raw.raiseWindow w
 
--- | Prevent the screen from being blanked by a screen saver. If you disable the screensaver, it is automatically re-enabled when SDL quits.
+-- | Get or set whether to allow the screen to be blanked by a screen saver.
 --
--- See @<https://wiki.libsdl.org/SDL_DisableScreenSaver SDL_DisableScreenSaver>@ for C documentation.
-disableScreenSaver :: MonadIO m => m ()
-disableScreenSaver = Raw.disableScreenSaver
+-- Screen savers are re-enabled, if needed, when SDL quits.
+screenSaverEnabled :: StateVar Bool
+screenSaverEnabled = makeStateVar (isScreenSaverEnabled) (setScreenSaverEnabled)
+  where
+  isScreenSaverEnabled = Raw.isScreenSaverEnabled
 
--- | Allow the screen to be blanked by a screen saver.
---
--- See @<https://wiki.libsdl.org/SDL_EnableScreenSaver SDL_EnableScreenSaver>@ for C documentation.
-enableScreenSaver :: MonadIO m => m ()
-enableScreenSaver = Raw.enableScreenSaver
-
--- | Check whether screen savers are enabled .
---
--- See @<https://wiki.libsdl.org/SDL_IsScreenSaverEnabled SDL_IsScreenSaverEnabled>@ for C documentation.
-isScreenSaverEnabled :: MonadIO m => m Bool
-isScreenSaverEnabled = Raw.isScreenSaverEnabled
+  setScreenSaverEnabled True = Raw.enableScreenSaver
+  setScreenSaverEnabled False = Raw.disableScreenSaver
 
 -- | Show a window.
 --
