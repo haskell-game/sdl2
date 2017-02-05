@@ -3,7 +3,9 @@
 
 * Add `SDL.Exception` module, exposing `SDLException`
 * Add joystick POV hat support
-* Remove deprecated `InitEverything` enumeration
+* Remove deprecated functionality:
+  * `InitEverything` enumeration in `SDL.Init`
+  * `mapRGB` in `SDL.Video.Renderer`
 * Merge `isScreenSaverEnabled, `enableScreenSaver`, and `disableScreenSaver`
   into a `screenSaverEnabled` StateVar.
 * Fix issue with `setWindowMode` transitions not working properly between

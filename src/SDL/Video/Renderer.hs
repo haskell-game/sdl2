@@ -76,7 +76,6 @@ module SDL.Video.Renderer
   , PixelFormat(..)
   , SurfacePixelFormat
   , formatPalette
-  , mapRGB
   , setPaletteColors
   , pixelFormatToMasks
   , masksToPixelFormat
@@ -405,27 +404,6 @@ loadBMP filePath = liftIO $
 
 newtype SurfacePixelFormat = SurfacePixelFormat (Ptr Raw.PixelFormat)
   deriving (Eq, Typeable)
-
--- It's possible we could use unsafePerformIO here, but I'm not
--- sure. De need to guarantee that pointers aren't reused?
--- | Map an RGB triple to an opaque pixel value for a given pixel format.
---
--- This function maps the RGB color value to the specified pixel format and returns the pixel value best approximating the given RGB color value for the given pixel format.
---
--- If the format has a palette (8-bit) the index of the closest matching color in the palette will be returned.
---
--- If the specified pixel format has an alpha component it will be returned as all 1 bits (fully opaque).
---
--- If the pixel format bpp (color depth) is less than 32-bpp then the unused upper bits of the return value can safely be ignored (e.g., with a 16-bpp format the return value can be assigned to a 'Word16', and similarly a 'Word8' for an 8-bpp format).
---
--- See @<https://wiki.libsdl.org/SDL_MapRGB SDL_MapRGB>@ for C documentation.
-mapRGB :: MonadIO m
-       => SurfacePixelFormat -- ^ The format of the pixel
-       -> V3 Word8 -- ^ The color to map
-       -> m Word32
-mapRGB (SurfacePixelFormat fmt) (V3 r g b) = Raw.mapRGB fmt r g b
-
-{-# DEPRECATED mapRGB "mapRGB is no longer needed, as it called implictly. If you still need this, use SDL.Raw.mapRGB" #-}
 
 -- It's possible we could use unsafePerformIO here, but I'm not
 -- sure. surface->{w,h} are immutable, but do we need to guarantee that pointers
