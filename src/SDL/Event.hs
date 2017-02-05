@@ -413,7 +413,7 @@ data AudioDeviceEventData =
   AudioDeviceEventData {audioDeviceEventWhich :: !Word32
                         -- ^ The audio device  ID that reported the event.
                        ,audioDeviceEventIsCapture :: !Bool
-                        -- * If the audio device is a capture device.
+                        -- ^ If the audio device is a capture device.
                        }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
