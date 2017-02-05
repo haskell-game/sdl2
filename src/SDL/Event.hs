@@ -410,8 +410,10 @@ data ControllerDeviceEventData =
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 data AudioDeviceEventData =
-  AudioDeviceEventData {audioDeviceEventWhich :: !Word32
-                        -- ^ The audio device  ID that reported the event.
+  AudioDeviceEventData {audioDeviceEventIsAddition :: !Bool
+                        -- ^ If the audio device is an addition, or a removal.
+                       ,audioDeviceEventWhich :: !Word32
+                        -- ^ The audio device ID that reported the event.
                        ,audioDeviceEventIsCapture :: !Bool
                         -- ^ If the audio device is a capture device.
                        }
@@ -651,8 +653,12 @@ convertRaw (Raw.ControllerButtonEvent _ ts a b c) =
   return (Event ts (ControllerButtonEvent (ControllerButtonEventData a b c)))
 convertRaw (Raw.ControllerDeviceEvent _ ts a) =
   return (Event ts (ControllerDeviceEvent (ControllerDeviceEventData a)))
-convertRaw (Raw.AudioDeviceEvent _ ts a b) =
-  return (Event ts (AudioDeviceEvent (AudioDeviceEventData a (b /= 0))))
+convertRaw (Raw.AudioDeviceEvent Raw.SDL_AUDIODEVICEADDED ts a b) =
+  return (Event ts (AudioDeviceEvent (AudioDeviceEventData True a (b /= 0))))
+convertRaw (Raw.AudioDeviceEvent Raw.SDL_AUDIODEVICEREMOVED ts a b) =
+  return (Event ts (AudioDeviceEvent (AudioDeviceEventData False a (b /= 0))))
+convertRaw (Raw.AudioDeviceEvent _ _ _ _) =
+  error "convertRaw: Unknown audio device motion"
 convertRaw (Raw.QuitEvent _ ts) =
   return (Event ts QuitEvent)
 convertRaw (Raw.UserEvent _ ts a b c d) =
