@@ -6,6 +6,9 @@
 * Remove deprecated functionality:
   * `InitEverything` enumeration in `SDL.Init`
   * `mapRGB` in `SDL.Video.Renderer`
+  * `setRelativeMouseMode` in `SDL.Input.Mouse`
+  * `getRelativeMouseMode` in `SDL.Input.Mouse`
+  * `getMouseLocation` in `SDL.Input.Mouse`
 * Merge `isScreenSaverEnabled, `enableScreenSaver`, and `disableScreenSaver`
   into a `screenSaverEnabled` StateVar.
 * Fix issue with `setWindowMode` transitions not working properly between
