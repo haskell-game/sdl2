@@ -53,6 +53,7 @@ import Control.Applicative
 --   { 'glColorPrecision' = V4 8 8 8 0
 --   , 'glDepthPrecision' = 24
 --   , 'glStencilPrecision' = 8
+--   , 'glMultisampleSamples' = 1
 --   , 'glProfile' = 'Compatibility' 'Normal' 2 1
 --   }
 -- @
@@ -61,15 +62,17 @@ defaultOpenGL = OpenGLConfig
   { glColorPrecision = V4 8 8 8 0
   , glDepthPrecision = 24
   , glStencilPrecision = 8
+  , glMultisampleSamples = 1
   , glProfile = Compatibility Normal 2 1
   }
 
 -- | Configuration used when creating an OpenGL rendering context.
 data OpenGLConfig = OpenGLConfig
-  { glColorPrecision   :: V4 CInt -- ^ Defaults to 'V4' @8 8 8 0@.
-  , glDepthPrecision   :: CInt    -- ^ Defaults to @24@.
-  , glStencilPrecision :: CInt    -- ^ Defaults to @8@.
-  , glProfile          :: Profile -- ^ Defaults to 'Compatibility' 'Normal' @2 1@.
+  { glColorPrecision     :: V4 CInt -- ^ Defaults to 'V4' @8 8 8 0@.
+  , glDepthPrecision     :: CInt    -- ^ Defaults to @24@.
+  , glStencilPrecision   :: CInt    -- ^ Defaults to @8@.
+  , glMultisampleSamples :: CInt    -- ^ Defaults to @1@.
+  , glProfile            :: Profile -- ^ Defaults to 'Compatibility' 'Normal' @2 1@.
   } deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 -- | The profile a driver should use when creating an OpenGL context.

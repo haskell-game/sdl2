@@ -124,7 +124,7 @@ createWindow title config = liftIO $ do
       , if isJust $ windowOpenGL config then Raw.SDL_WINDOW_OPENGL else 0
       , if windowResizable config then Raw.SDL_WINDOW_RESIZABLE else 0
       ]
-    setGLAttributes (OpenGLConfig (V4 r g b a) d s p) = do
+    setGLAttributes (OpenGLConfig (V4 r g b a) d s ms p) = do
       let (msk, v0, v1, flg) = case p of
             Core Debug v0' v1' -> (Raw.SDL_GL_CONTEXT_PROFILE_CORE, v0', v1', Raw.SDL_GL_CONTEXT_DEBUG_FLAG)
             Core Normal v0' v1' -> (Raw.SDL_GL_CONTEXT_PROFILE_CORE, v0', v1', 0)
@@ -139,6 +139,8 @@ createWindow title config = liftIO $ do
         , (Raw.SDL_GL_ALPHA_SIZE, a)
         , (Raw.SDL_GL_DEPTH_SIZE, d)
         , (Raw.SDL_GL_STENCIL_SIZE, s)
+        , (Raw.SDL_GL_MULTISAMPLEBUFFERS, if ms > 1 then 1 else 0)
+        , (Raw.SDL_GL_MULTISAMPLESAMPLES, if ms > 1 then ms else 0)
         , (Raw.SDL_GL_CONTEXT_PROFILE_MASK, msk)
         , (Raw.SDL_GL_CONTEXT_MAJOR_VERSION, v0)
         , (Raw.SDL_GL_CONTEXT_MINOR_VERSION, v1)
