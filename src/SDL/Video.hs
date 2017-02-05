@@ -324,8 +324,6 @@ windowTitle (Window w) = makeStateVar getWindowTitle setWindowTitle
 -- window and name.
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
---
--- See @<https://wiki.libsdl.org/SDL_SetWindowTitle SDL_SetWindowTitle>@ and @<https://wiki.libsdl.org/SDL_GetWindowTitle SDL_GetWindowTitle>@ for C documentation.
 windowData :: Window -> CString -> StateVar (Ptr ())
 windowData (Window w) key = makeStateVar getWindowData setWindowData
   where
