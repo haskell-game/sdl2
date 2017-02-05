@@ -1,6 +1,6 @@
 name:                sdl2
 version:             2.2.0
-synopsis:            Both high- and low-level bindings to the SDL library (version 2.0.2+).
+synopsis:            Both high- and low-level bindings to the SDL library (version 2.0.4+).
 description:
   This package contains bindings to the SDL 2 library, in both high- and
   low-level forms:
@@ -116,7 +116,7 @@ library
     SDL2
 
   pkgconfig-depends:
-    sdl2 >= 2.0.2
+    sdl2 >= 2.0.4
 
   build-depends:
     base >= 4.7 && < 5,

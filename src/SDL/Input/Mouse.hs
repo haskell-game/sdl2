@@ -14,6 +14,7 @@ module SDL.Input.Mouse
     -- * Mouse and Touch Input
   , MouseButton(..)
   , MouseDevice(..)
+  , MouseScrollDirection(..)
 
     -- * Mouse State
   , getModalMouseLocation
@@ -108,6 +109,18 @@ instance FromNumber MouseDevice Word32 where
   fromNumber n' = case n' of
     Raw.SDL_TOUCH_MOUSEID -> Touch
     n -> Mouse $ fromIntegral n
+
+-- | Identifies mouse scroll direction.
+data MouseScrollDirection
+  = ScrollNormal
+  | ScrollFlipped
+  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
+
+instance FromNumber MouseScrollDirection Word32 where
+  fromNumber n' = case n' of
+    Raw.SDL_MOUSEWHEEL_NORMAL -> ScrollNormal
+    Raw.SDL_MOUSEWHEEL_FLIPPED -> ScrollFlipped
+    _ -> ScrollNormal
 
 data WarpMouseOrigin
   = WarpInWindow Window

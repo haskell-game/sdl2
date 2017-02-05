@@ -3,6 +3,7 @@ module SDL.Raw.Audio (
   audioInit,
   audioQuit,
   buildAudioCVT,
+  clearQueuedAudio,
   closeAudio,
   closeAudioDevice,
   convertAudio,
@@ -14,6 +15,7 @@ module SDL.Raw.Audio (
   getCurrentAudioDriver,
   getNumAudioDevices,
   getNumAudioDrivers,
+  getQueuedAudioSize,
   loadWAV,
   loadWAV_RW,
   lockAudio,
@@ -24,6 +26,7 @@ module SDL.Raw.Audio (
   openAudioDevice,
   pauseAudio,
   pauseAudioDevice,
+  queueAudio,
   unlockAudio,
   unlockAudioDevice
 ) where
@@ -40,6 +43,7 @@ import SDL.Raw.Types
 foreign import ccall "SDL.h SDL_AudioInit" audioInitFFI :: CString -> IO CInt
 foreign import ccall "SDL.h SDL_AudioQuit" audioQuitFFI :: IO ()
 foreign import ccall "SDL.h SDL_BuildAudioCVT" buildAudioCVTFFI :: Ptr AudioCVT -> AudioFormat -> Word8 -> CInt -> AudioFormat -> Word8 -> CInt -> IO CInt
+foreign import ccall "SDL.h SDL_ClearQueuedAudio" clearQueuedAudioFFI :: AudioDeviceID -> IO ()
 foreign import ccall "SDL.h SDL_CloseAudio" closeAudioFFI :: IO ()
 foreign import ccall "SDL.h SDL_CloseAudioDevice" closeAudioDeviceFFI :: AudioDeviceID -> IO ()
 foreign import ccall "SDL.h SDL_ConvertAudio" convertAudioFFI :: Ptr AudioCVT -> IO CInt
@@ -51,6 +55,7 @@ foreign import ccall "SDL.h SDL_GetAudioStatus" getAudioStatusFFI :: IO AudioSta
 foreign import ccall "SDL.h SDL_GetCurrentAudioDriver" getCurrentAudioDriverFFI :: IO CString
 foreign import ccall "SDL.h SDL_GetNumAudioDevices" getNumAudioDevicesFFI :: CInt -> IO CInt
 foreign import ccall "SDL.h SDL_GetNumAudioDrivers" getNumAudioDriversFFI :: IO CInt
+foreign import ccall "SDL.h SDL_GetQueuedAudioSize" getQueuedAudioSizeFFI :: AudioDeviceID -> IO Word32
 foreign import ccall "SDL.h SDL_LoadWAV_RW" loadWAV_RWFFI :: Ptr RWops -> CInt -> Ptr AudioSpec -> Ptr (Ptr Word8) -> Ptr Word32 -> IO (Ptr AudioSpec)
 foreign import ccall "SDL.h SDL_LockAudio" lockAudioFFI :: IO ()
 foreign import ccall "SDL.h SDL_LockAudioDevice" lockAudioDeviceFFI :: AudioDeviceID -> IO ()
@@ -60,6 +65,7 @@ foreign import ccall "SDL.h SDL_OpenAudio" openAudioFFI :: Ptr AudioSpec -> Ptr 
 foreign import ccall "SDL.h SDL_OpenAudioDevice" openAudioDeviceFFI :: CString -> CInt -> Ptr AudioSpec -> Ptr AudioSpec -> CInt -> IO AudioDeviceID
 foreign import ccall "SDL.h SDL_PauseAudio" pauseAudioFFI :: CInt -> IO ()
 foreign import ccall "SDL.h SDL_PauseAudioDevice" pauseAudioDeviceFFI :: AudioDeviceID -> CInt -> IO ()
+foreign import ccall "SDL.h SDL_QueueAudio" queueAudioFFI :: AudioDeviceID -> Ptr () -> Word32 -> IO CInt
 foreign import ccall "SDL.h SDL_UnlockAudio" unlockAudioFFI :: IO ()
 foreign import ccall "SDL.h SDL_UnlockAudioDevice" unlockAudioDeviceFFI :: AudioDeviceID -> IO ()
 
@@ -74,6 +80,10 @@ audioQuit = liftIO audioQuitFFI
 buildAudioCVT :: MonadIO m => Ptr AudioCVT -> AudioFormat -> Word8 -> CInt -> AudioFormat -> Word8 -> CInt -> m CInt
 buildAudioCVT v1 v2 v3 v4 v5 v6 v7 = liftIO $ buildAudioCVTFFI v1 v2 v3 v4 v5 v6 v7
 {-# INLINE buildAudioCVT #-}
+
+clearQueuedAudio :: MonadIO m => AudioDeviceID -> m ()
+clearQueuedAudio v1 = liftIO $ clearQueuedAudioFFI v1
+{-# INLINE clearQueuedAudio #-}
 
 closeAudio :: MonadIO m => m ()
 closeAudio = liftIO closeAudioFFI
@@ -119,6 +129,10 @@ getNumAudioDrivers :: MonadIO m => m CInt
 getNumAudioDrivers = liftIO getNumAudioDriversFFI
 {-# INLINE getNumAudioDrivers #-}
 
+getQueuedAudioSize :: MonadIO m => AudioDeviceID -> m Word32
+getQueuedAudioSize v1 = liftIO $ getQueuedAudioSizeFFI v1
+{-# INLINE getQueuedAudioSize #-}
+
 loadWAV :: MonadIO m => CString -> Ptr AudioSpec -> Ptr (Ptr Word8) -> Ptr Word32 -> m (Ptr AudioSpec)
 loadWAV file spec audio_buf audio_len = liftIO $ do
   rw <- withCString "rb" $ rwFromFile file
@@ -160,6 +174,10 @@ pauseAudio v1 = liftIO $ pauseAudioFFI v1
 pauseAudioDevice :: MonadIO m => AudioDeviceID -> CInt -> m ()
 pauseAudioDevice v1 v2 = liftIO $ pauseAudioDeviceFFI v1 v2
 {-# INLINE pauseAudioDevice #-}
+
+queueAudio :: MonadIO m => AudioDeviceID -> Ptr () -> Word32 -> m CInt
+queueAudio v1 v2 v3 = liftIO $ queueAudioFFI v1 v2 v3
+{-# INLINE queueAudio #-}
 
 unlockAudio :: MonadIO m => m ()
 unlockAudio = liftIO unlockAudioFFI

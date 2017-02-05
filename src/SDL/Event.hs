@@ -123,6 +123,7 @@ data EventPayload
   | KeyboardEvent KeyboardEventData
   | TextEditingEvent TextEditingEventData
   | TextInputEvent TextInputEventData
+  | KeymapChangedEvent
   | MouseMotionEvent MouseMotionEventData
   | MouseButtonEvent MouseButtonEventData
   | MouseWheelEvent MouseWheelEventData
@@ -134,6 +135,7 @@ data EventPayload
   | ControllerAxisEvent ControllerAxisEventData
   | ControllerButtonEvent ControllerButtonEventData
   | ControllerDeviceEvent ControllerDeviceEventData
+  | AudioDeviceEvent AudioDeviceEventData
   | QuitEvent
   | UserEvent UserEventData
   | SysWMEvent SysWMEventData
@@ -322,6 +324,8 @@ data MouseWheelEventData =
                        -- ^ The 'MouseDevice' whose wheel was scrolled.
                       ,mouseWheelEventPos :: V2 Int32
                        -- ^ The amount scrolled.
+                      ,mouseWheelEventDirection :: MouseScrollDirection
+                       -- ^ The scroll direction mode.
                       }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
@@ -403,6 +407,14 @@ data ControllerDeviceEventData =
   ControllerDeviceEventData {controllerDeviceEventWhich :: Int32
                              -- ^ The joystick instance ID that reported the event.
                             }
+  deriving (Eq,Ord,Generic,Show,Typeable)
+
+data AudioDeviceEventData =
+  AudioDeviceEventData {audioDeviceEventWhich :: Word32
+                        -- ^ The audio device  ID that reported the event.
+                       ,audioDeviceEventIsCapture :: Bool
+                        -- * If the audio device is a capture device.
+                       }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Event data for application-defined events.
@@ -570,6 +582,8 @@ convertRaw (Raw.TextInputEvent _ ts a b) =
                    (TextInputEvent
                       (TextInputEventData w'
                                           (ccharStringToText b))))
+convertRaw (Raw.KeymapChangedEvent _ ts) =
+  return (Event ts KeymapChangedEvent)
 convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) =
   do w' <- fmap Window (Raw.getWindowFromID a)
      let buttons =
@@ -610,13 +624,14 @@ convertRaw (Raw.MouseButtonEvent t ts a b c _ e f g) =
                                             button
                                             e
                                             (P (V2 f g)))))
-convertRaw (Raw.MouseWheelEvent _ ts a b c d) =
+convertRaw (Raw.MouseWheelEvent _ ts a b c d e) =
   do w' <- fmap Window (Raw.getWindowFromID a)
      return (Event ts
                    (MouseWheelEvent
                       (MouseWheelEventData w'
                                            (fromNumber b)
-                                           (V2 c d))))
+                                           (V2 c d)
+                                           (fromNumber e))))
 convertRaw (Raw.JoyAxisEvent _ ts a b c) =
   return (Event ts (JoyAxisEvent (JoyAxisEventData a b c)))
 convertRaw (Raw.JoyBallEvent _ ts a b c d) =
@@ -641,6 +656,8 @@ convertRaw (Raw.ControllerButtonEvent _ ts a b c) =
   return (Event ts (ControllerButtonEvent (ControllerButtonEventData a b c)))
 convertRaw (Raw.ControllerDeviceEvent _ ts a) =
   return (Event ts (ControllerDeviceEvent (ControllerDeviceEventData a)))
+convertRaw (Raw.AudioDeviceEvent _ ts a b) =
+  return (Event ts (AudioDeviceEvent (AudioDeviceEventData a (b /= 0))))
 convertRaw (Raw.QuitEvent _ ts) =
   return (Event ts QuitEvent)
 convertRaw (Raw.UserEvent _ ts a b c d) =

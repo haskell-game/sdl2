@@ -304,6 +304,10 @@ data Event
     , textInputEventWindowID :: !Word32
     , textInputEventText :: ![CChar]
     }
+  | KeymapChangedEvent
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    }
   | MouseMotionEvent
     { eventType :: !Word32
     , eventTimestamp :: !Word32
@@ -333,6 +337,7 @@ data Event
     , mouseWheelEventWhich :: !Word32
     , mouseWheelEventX :: !Int32
     , mouseWheelEventY :: !Int32
+    , mouseWheelEventDirection :: !Word32
     }
   | JoyAxisEvent
     { eventType :: !Word32
@@ -386,6 +391,12 @@ data Event
     { eventType :: !Word32
     , eventTimestamp :: !Word32
     , controllerDeviceEventWhich :: !Int32
+    }
+  | AudioDeviceEvent
+    { eventType :: !Word32
+    , eventTimestamp :: !Word32
+    , audioDeviceEventWhich :: !Word32
+    , audioDeviceEventIsCapture :: !Word8
     }
   | QuitEvent
     { eventType :: !Word32
@@ -482,6 +493,8 @@ instance Storable Event where
         text <- peekArray (#const SDL_TEXTINPUTEVENT_TEXT_SIZE) $ (#ptr SDL_Event, text.text) ptr
         let upToNull = takeWhile (/= 0) text
         return $! TextInputEvent typ timestamp wid upToNull
+      (#const SDL_KEYMAPCHANGED) ->
+        return $! KeymapChangedEvent typ timestamp
       (#const SDL_MOUSEMOTION) -> do
         wid <- (#peek SDL_Event, motion.windowID) ptr
         which <- (#peek SDL_Event, motion.which) ptr
@@ -498,7 +511,8 @@ instance Storable Event where
         which <- (#peek SDL_Event, wheel.which) ptr
         x <- (#peek SDL_Event, wheel.x) ptr
         y <- (#peek SDL_Event, wheel.y) ptr
-        return $! MouseWheelEvent typ timestamp wid which x y
+        direction <- (#peek SDL_Event, wheel.direction) ptr
+        return $! MouseWheelEvent typ timestamp wid which x y direction
       (#const SDL_JOYAXISMOTION) -> do
         which <- (#peek SDL_Event, jaxis.which) ptr
         axis <- (#peek SDL_Event, jaxis.axis) ptr
@@ -529,6 +543,8 @@ instance Storable Event where
       (#const SDL_CONTROLLERDEVICEADDED) -> controllerdevice $ ControllerDeviceEvent typ timestamp
       (#const SDL_CONTROLLERDEVICEREMOVED) -> controllerdevice $ ControllerDeviceEvent typ timestamp
       (#const SDL_CONTROLLERDEVICEREMAPPED) -> controllerdevice $ ControllerDeviceEvent typ timestamp
+      (#const SDL_AUDIODEVICEADDED) -> audiodevice $ AudioDeviceEvent typ timestamp
+      (#const SDL_AUDIODEVICEREMOVED) -> audiodevice $ AudioDeviceEvent typ timestamp
       (#const SDL_FINGERDOWN) -> finger $ TouchFingerEvent typ timestamp
       (#const SDL_FINGERUP) -> finger $ TouchFingerEvent typ timestamp
       (#const SDL_FINGERMOTION) -> finger $ TouchFingerEvent typ timestamp
@@ -592,6 +608,11 @@ instance Storable Event where
       which <- (#peek SDL_Event, cdevice.which) ptr
       return $! f which
 
+    audiodevice f = do
+      which <- (#peek SDL_Event, adevice.which) ptr
+      iscapture <- (#peek SDL_Event, adevice.iscapture) ptr
+      return $! f which iscapture
+
     finger f = do
       touchId <- (#peek SDL_Event, tfinger.touchId) ptr
       fingerId <- (#peek SDL_Event, tfinger.fingerId) ptr
@@ -637,6 +658,9 @@ instance Storable Event where
       (#poke SDL_Event, common.timestamp) ptr timestamp
       (#poke SDL_Event, text.windowID) ptr wid
       pokeArray ((#ptr SDL_Event, text.text) ptr) text
+    KeymapChangedEvent typ timestamp -> do
+      (#poke SDL_Event, common.type) ptr typ
+      (#poke SDL_Event, common.timestamp) ptr timestamp
     MouseMotionEvent typ timestamp wid which state x y xrel yrel -> do
       (#poke SDL_Event, common.type) ptr typ
       (#poke SDL_Event, common.timestamp) ptr timestamp
@@ -657,13 +681,14 @@ instance Storable Event where
       (#poke SDL_Event, button.clicks) ptr clicks
       (#poke SDL_Event, button.x) ptr x
       (#poke SDL_Event, button.y) ptr y
-    MouseWheelEvent typ timestamp wid which x y -> do
+    MouseWheelEvent typ timestamp wid which x y direction -> do
       (#poke SDL_Event, common.type) ptr typ
       (#poke SDL_Event, common.timestamp) ptr timestamp
       (#poke SDL_Event, wheel.windowID) ptr wid
       (#poke SDL_Event, wheel.which) ptr which
       (#poke SDL_Event, wheel.x) ptr x
       (#poke SDL_Event, wheel.y) ptr y
+      (#poke SDL_Event, wheel.direction) ptr direction
     JoyAxisEvent typ timestamp which axis value -> do
       (#poke SDL_Event, common.type) ptr typ
       (#poke SDL_Event, common.timestamp) ptr timestamp
@@ -709,6 +734,11 @@ instance Storable Event where
       (#poke SDL_Event, common.type) ptr typ
       (#poke SDL_Event, common.timestamp) ptr timestamp
       (#poke SDL_Event, cdevice.which) ptr which
+    AudioDeviceEvent typ timestamp which iscapture -> do
+      (#poke SDL_Event, common.type) ptr typ
+      (#poke SDL_Event, common.timestamp) ptr timestamp
+      (#poke SDL_Event, adevice.which) ptr which
+      (#poke SDL_Event, adevice.iscapture) ptr iscapture
     QuitEvent typ timestamp -> do
       (#poke SDL_Event, common.type) ptr typ
       (#poke SDL_Event, common.timestamp) ptr timestamp

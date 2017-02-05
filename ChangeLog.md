@@ -1,6 +1,38 @@
 2.2.0
 =====
 
+* Version 2.0.4 of the SDL2 C library is now required:
+  * `SDL.Event`:
+    * Add `AudioDeviceEvent` constructor to `Event`
+    * Add `KeymapChangedEvent` constructor to `EventPayload`
+    * Add `mouseWheelEventDirection` field to `MouseWheelEventData`
+  * `SDL.Input.Mouse`:
+    * Add `MouseScrollDirection` enumeration
+  * `SDL.Raw.Audio`:
+    * Add `clearQueuedAudio` function
+    * Add `getQueuedAudioSize` function
+    * Add `queueAudio` function
+  * `SDL.Raw.Enum`:
+    * Add `SDL_GL_CONTEXT_RELEASE_BEHAVIOR` pattern synonym
+    * Add `JoystickPowerLevel` pattern synonyms
+    * Add `SDL_MOUSEWHEEL_NORMAL` and `SDL_MOUSEWHEEL_FLIPPED` pattern synonyms
+    * Add `SDL_KEYMAPCHANGED`, `SDL_AUDIODEVICEADDED`, `SDL_AUDIODEVICEREMOVED`,
+      `SDL_RENDER_TARGETS_RESET`, and `SDL_RENDER_DEVICE_RESET` pattern synonyms
+    * Add `SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE` and
+      `SDL_GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH` pattern synonyms
+    * Add `SDL_WINDOW_MOUSE_CAPTURE` pattern synonym
+  * `SDL.Raw.Event`:
+    * Add `captureMouse` function
+    * Add `getGlobalMouseState` function
+    * Add `warpMouseGlobal` function
+    * Add `joystickCurrentPowerLevel` function
+    * Add `joystickFromInstanceID` function
+    * Add `gameControllerFromInstanceID` function
+  * `SDL.Raw.Event`:
+    * Add `AudioDeviceEvent` constructor to `Event`
+    * Add `KeymapChangedEvent` constructor to `Event`
+    * Add `mouseWheelEventDirection` field to `MouseMotionEvent` constructor
+
 * Add `SDL.Exception` module, exposing `SDLException`
 * Add new function, `createSoftwareRenderer`, to render onto a surface
 * Add joystick POV hat support

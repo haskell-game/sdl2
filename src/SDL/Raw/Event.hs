@@ -46,12 +46,14 @@ module SDL.Raw.Event (
   stopTextInput,
 
   -- * Mouse Support
+  captureMouse,
   createColorCursor,
   createCursor,
   createSystemCursor,
   freeCursor,
   getCursor,
   getDefaultCursor,
+  getGlobalMouseState,
   getMouseFocus,
   getMouseState,
   getRelativeMouseMode,
@@ -59,11 +61,14 @@ module SDL.Raw.Event (
   setCursor,
   setRelativeMouseMode,
   showCursor,
+  warpMouseGlobal,
   warpMouseInWindow,
 
   -- * Joystick Support
   joystickClose,
+  joystickCurrentPowerLevel,
   joystickEventState,
+  joystickFromInstanceID,
   joystickGetAttached,
   joystickGetAxis,
   joystickGetBall,
@@ -90,6 +95,7 @@ module SDL.Raw.Event (
   gameControllerAddMappingsFromRW,
   gameControllerClose,
   gameControllerEventState,
+  gameControllerFromInstanceID,
   gameControllerGetAttached,
   gameControllerGetAxis,
   gameControllerGetAxisFromString,
@@ -164,12 +170,14 @@ foreign import ccall "SDL.h SDL_SetTextInputRect" setTextInputRectFFI :: Ptr Rec
 foreign import ccall "SDL.h SDL_StartTextInput" startTextInputFFI :: IO ()
 foreign import ccall "SDL.h SDL_StopTextInput" stopTextInputFFI :: IO ()
 
+foreign import ccall "SDL.h SDL_CaptureMouse" captureMouseFFI :: Bool -> IO CInt
 foreign import ccall "SDL.h SDL_CreateColorCursor" createColorCursorFFI :: Ptr Surface -> CInt -> CInt -> IO Cursor
 foreign import ccall "SDL.h SDL_CreateCursor" createCursorFFI :: Ptr Word8 -> Ptr Word8 -> CInt -> CInt -> CInt -> CInt -> IO Cursor
 foreign import ccall "SDL.h SDL_CreateSystemCursor" createSystemCursorFFI :: SystemCursor -> IO Cursor
 foreign import ccall "SDL.h SDL_FreeCursor" freeCursorFFI :: Cursor -> IO ()
 foreign import ccall "SDL.h SDL_GetCursor" getCursorFFI :: IO Cursor
 foreign import ccall "SDL.h SDL_GetDefaultCursor" getDefaultCursorFFI :: IO Cursor
+foreign import ccall "SDL.h SDL_GetGlobalMouseState" getGlobalMouseStateFFI :: Ptr CInt -> Ptr CInt -> IO Word32
 foreign import ccall "SDL.h SDL_GetMouseFocus" getMouseFocusFFI :: IO Window
 foreign import ccall "SDL.h SDL_GetMouseState" getMouseStateFFI :: Ptr CInt -> Ptr CInt -> IO Word32
 foreign import ccall "SDL.h SDL_GetRelativeMouseMode" getRelativeMouseModeFFI :: IO Bool
@@ -177,10 +185,13 @@ foreign import ccall "SDL.h SDL_GetRelativeMouseState" getRelativeMouseStateFFI 
 foreign import ccall "SDL.h SDL_SetCursor" setCursorFFI :: Cursor -> IO ()
 foreign import ccall "SDL.h SDL_SetRelativeMouseMode" setRelativeMouseModeFFI :: Bool -> IO CInt
 foreign import ccall "SDL.h SDL_ShowCursor" showCursorFFI :: CInt -> IO CInt
+foreign import ccall "SDL.h SDL_WarpMouseGlobal" warpMouseGlobalFFI :: CInt -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_WarpMouseInWindow" warpMouseInWindowFFI :: Window -> CInt -> CInt -> IO ()
 
 foreign import ccall "SDL.h SDL_JoystickClose" joystickCloseFFI :: Joystick -> IO ()
+foreign import ccall "SDL.h SDL_JoystickCurrentPowerLevel" joystickCurrentPowerLevelFFI :: Joystick -> IO JoystickPowerLevel
 foreign import ccall "SDL.h SDL_JoystickEventState" joystickEventStateFFI :: CInt -> IO CInt
+foreign import ccall "SDL.h SDL_JoystickFromInstanceID" joystickFromInstanceIDFFI :: JoystickID -> IO Joystick
 foreign import ccall "SDL.h SDL_JoystickGetAttached" joystickGetAttachedFFI :: Joystick -> IO Bool
 foreign import ccall "SDL.h SDL_JoystickGetAxis" joystickGetAxisFFI :: Joystick -> CInt -> IO Int16
 foreign import ccall "SDL.h SDL_JoystickGetBall" joystickGetBallFFI :: Joystick -> CInt -> Ptr CInt -> Ptr CInt -> IO CInt
@@ -205,6 +216,7 @@ foreign import ccall "SDL.h SDL_GameControllerAddMapping" gameControllerAddMappi
 foreign import ccall "SDL.h SDL_GameControllerAddMappingsFromRW" gameControllerAddMappingsFromRWFFI :: Ptr RWops -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_GameControllerClose" gameControllerCloseFFI :: GameController -> IO ()
 foreign import ccall "SDL.h SDL_GameControllerEventState" gameControllerEventStateFFI :: CInt -> IO CInt
+foreign import ccall "SDL.h SDL_GameControllerFromInstanceID" gameControllerFromInstanceIDFFI :: JoystickID -> IO GameController
 foreign import ccall "SDL.h SDL_GameControllerGetAttached" gameControllerGetAttachedFFI :: GameController -> IO Bool
 foreign import ccall "SDL.h SDL_GameControllerGetAxis" gameControllerGetAxisFFI :: GameController -> GameControllerAxis -> IO Int16
 foreign import ccall "SDL.h SDL_GameControllerGetAxisFromString" gameControllerGetAxisFromStringFFI :: CString -> IO GameControllerAxis
@@ -394,6 +406,10 @@ stopTextInput :: MonadIO m => m ()
 stopTextInput = liftIO stopTextInputFFI
 {-# INLINE stopTextInput #-}
 
+captureMouse :: MonadIO m => Bool -> m CInt
+captureMouse v1 = liftIO $ captureMouseFFI v1
+{-# INLINE captureMouse #-}
+
 createColorCursor :: MonadIO m => Ptr Surface -> CInt -> CInt -> m Cursor
 createColorCursor v1 v2 v3 = liftIO $ createColorCursorFFI v1 v2 v3
 {-# INLINE createColorCursor #-}
@@ -417,6 +433,10 @@ getCursor = liftIO getCursorFFI
 getDefaultCursor :: MonadIO m => m Cursor
 getDefaultCursor = liftIO getDefaultCursorFFI
 {-# INLINE getDefaultCursor #-}
+
+getGlobalMouseState :: MonadIO m => Ptr CInt -> Ptr CInt -> m Word32
+getGlobalMouseState v1 v2 = liftIO $ getGlobalMouseStateFFI v1 v2
+{-# INLINE getGlobalMouseState #-}
 
 getMouseFocus :: MonadIO m => m Window
 getMouseFocus = liftIO getMouseFocusFFI
@@ -446,6 +466,10 @@ showCursor :: MonadIO m => CInt -> m CInt
 showCursor v1 = liftIO $ showCursorFFI v1
 {-# INLINE showCursor #-}
 
+warpMouseGlobal :: MonadIO m => CInt -> CInt -> m CInt
+warpMouseGlobal v1 v2 = liftIO $ warpMouseGlobalFFI v1 v2
+{-# INLINE warpMouseGlobal #-}
+
 warpMouseInWindow :: MonadIO m => Window -> CInt -> CInt -> m ()
 warpMouseInWindow v1 v2 v3 = liftIO $ warpMouseInWindowFFI v1 v2 v3
 {-# INLINE warpMouseInWindow #-}
@@ -454,9 +478,17 @@ joystickClose :: MonadIO m => Joystick -> m ()
 joystickClose v1 = liftIO $ joystickCloseFFI v1
 {-# INLINE joystickClose #-}
 
+joystickCurrentPowerLevel :: MonadIO m => Joystick -> m JoystickPowerLevel
+joystickCurrentPowerLevel v1 = liftIO $ joystickCurrentPowerLevelFFI v1
+{-# INLINE joystickCurrentPowerLevel #-}
+
 joystickEventState :: MonadIO m => CInt -> m CInt
 joystickEventState v1 = liftIO $ joystickEventStateFFI v1
 {-# INLINE joystickEventState #-}
+
+joystickFromInstanceID :: MonadIO m => JoystickID -> m Joystick
+joystickFromInstanceID v1 = liftIO $ joystickFromInstanceIDFFI v1
+{-# INLINE joystickFromInstanceID #-}
 
 joystickGetAttached :: MonadIO m => Joystick -> m Bool
 joystickGetAttached v1 = liftIO $ joystickGetAttachedFFI v1
@@ -563,6 +595,10 @@ gameControllerClose v1 = liftIO $ gameControllerCloseFFI v1
 gameControllerEventState :: MonadIO m => CInt -> m CInt
 gameControllerEventState v1 = liftIO $ gameControllerEventStateFFI v1
 {-# INLINE gameControllerEventState #-}
+
+gameControllerFromInstanceID :: MonadIO m => JoystickID -> m GameController
+gameControllerFromInstanceID v1 = liftIO $ gameControllerFromInstanceIDFFI v1
+{-# INLINE gameControllerFromInstanceID #-}
 
 gameControllerGetAttached :: MonadIO m => GameController -> m Bool
 gameControllerGetAttached v1 = liftIO $ gameControllerGetAttachedFFI v1

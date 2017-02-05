@@ -29,8 +29,10 @@ module SDL.Raw.Video (
   getCurrentVideoDriver,
   getDesktopDisplayMode,
   getDisplayBounds,
+  getDisplayDPI,
   getDisplayMode,
   getDisplayName,
+  getGrabbedWindow,
   getNumDisplayModes,
   getNumVideoDisplays,
   getNumVideoDrivers,
@@ -113,6 +115,7 @@ module SDL.Raw.Video (
   renderGetLogicalSize,
   renderGetScale,
   renderGetViewport,
+  renderIsClipEnabled,
   renderPresent,
   renderReadPixels,
   renderSetClipRect,
@@ -232,8 +235,10 @@ foreign import ccall "SDL.h SDL_GetCurrentDisplayMode" getCurrentDisplayModeFFI 
 foreign import ccall "SDL.h SDL_GetCurrentVideoDriver" getCurrentVideoDriverFFI :: IO CString
 foreign import ccall "SDL.h SDL_GetDesktopDisplayMode" getDesktopDisplayModeFFI :: CInt -> Ptr DisplayMode -> IO CInt
 foreign import ccall "SDL.h SDL_GetDisplayBounds" getDisplayBoundsFFI :: CInt -> Ptr Rect -> IO CInt
+foreign import ccall "SDL.h SDL_GetDisplayDPI" getDisplayDPIFFI :: CInt -> Ptr CFloat -> Ptr CFloat -> Ptr CFloat -> IO CInt
 foreign import ccall "SDL.h SDL_GetDisplayMode" getDisplayModeFFI :: CInt -> CInt -> Ptr DisplayMode -> IO CInt
 foreign import ccall "SDL.h SDL_GetDisplayName" getDisplayNameFFI :: CInt -> IO CString
+foreign import ccall "SDL.h SDL_GetGrabbedWindow" getGrabbedWindowFFI :: IO Window
 foreign import ccall "SDL.h SDL_GetNumDisplayModes" getNumDisplayModesFFI :: CInt -> IO CInt
 foreign import ccall "SDL.h SDL_GetNumVideoDisplays" getNumVideoDisplaysFFI :: IO CInt
 foreign import ccall "SDL.h SDL_GetNumVideoDrivers" getNumVideoDriversFFI :: IO CInt
@@ -315,6 +320,7 @@ foreign import ccall "SDL.h SDL_RenderGetClipRect" renderGetClipRectFFI :: Rende
 foreign import ccall "SDL.h SDL_RenderGetLogicalSize" renderGetLogicalSizeFFI :: Renderer -> Ptr CInt -> Ptr CInt -> IO ()
 foreign import ccall "SDL.h SDL_RenderGetScale" renderGetScaleFFI :: Renderer -> Ptr CFloat -> Ptr CFloat -> IO ()
 foreign import ccall "SDL.h SDL_RenderGetViewport" renderGetViewportFFI :: Renderer -> Ptr Rect -> IO ()
+foreign import ccall "SDL.h SDL_RenderIsClipEnabled" renderIsClipEnabledFFI :: Renderer -> IO Bool
 foreign import ccall "SDL.h SDL_RenderPresent" renderPresentFFI :: Renderer -> IO ()
 foreign import ccall "SDL.h SDL_RenderReadPixels" renderReadPixelsFFI :: Renderer -> Ptr Rect -> Word32 -> Ptr () -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderSetClipRect" renderSetClipRectFFI :: Renderer -> Ptr Rect -> IO CInt
@@ -504,6 +510,10 @@ getDisplayBounds :: MonadIO m => CInt -> Ptr Rect -> m CInt
 getDisplayBounds v1 v2 = liftIO $ getDisplayBoundsFFI v1 v2
 {-# INLINE getDisplayBounds #-}
 
+getDisplayDPI :: MonadIO m => CInt -> Ptr CFloat -> Ptr CFloat -> Ptr CFloat -> m CInt
+getDisplayDPI v1 v2 v3 v4 = liftIO $ getDisplayDPIFFI v1 v2 v3 v4
+{-# INLINE getDisplayDPI #-}
+
 getDisplayMode :: MonadIO m => CInt -> CInt -> Ptr DisplayMode -> m CInt
 getDisplayMode v1 v2 v3 = liftIO $ getDisplayModeFFI v1 v2 v3
 {-# INLINE getDisplayMode #-}
@@ -511,6 +521,10 @@ getDisplayMode v1 v2 v3 = liftIO $ getDisplayModeFFI v1 v2 v3
 getDisplayName :: MonadIO m => CInt -> m CString
 getDisplayName v1 = liftIO $ getDisplayNameFFI v1
 {-# INLINE getDisplayName #-}
+
+getGrabbedWindow :: MonadIO m => m Window
+getGrabbedWindow = liftIO getGrabbedWindowFFI
+{-# INLINE getGrabbedWindow #-}
 
 getNumDisplayModes :: MonadIO m => CInt -> m CInt
 getNumDisplayModes v1 = liftIO $ getNumDisplayModesFFI v1
@@ -831,6 +845,10 @@ renderGetScale v1 v2 v3 = liftIO $ renderGetScaleFFI v1 v2 v3
 renderGetViewport :: MonadIO m => Renderer -> Ptr Rect -> m ()
 renderGetViewport v1 v2 = liftIO $ renderGetViewportFFI v1 v2
 {-# INLINE renderGetViewport #-}
+
+renderIsClipEnabled :: MonadIO m => Renderer -> m Bool
+renderIsClipEnabled v1 = liftIO $ renderIsClipEnabledFFI v1
+{-# INLINE renderIsClipEnabled #-}
 
 renderPresent :: MonadIO m => Renderer -> m ()
 renderPresent v1 = liftIO $ renderPresentFFI v1
