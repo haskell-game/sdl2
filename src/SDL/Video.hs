@@ -30,6 +30,7 @@ module SDL.Video
   , windowGammaRamp
   , windowGrab
   , setWindowMode
+  , getWindowDrawableSize
   , getWindowAbsolutePosition
   , setWindowPosition
   , windowTitle
@@ -287,6 +288,16 @@ getWindowAbsolutePosition (Window w) =
     alloca $ \hPtr -> do
         Raw.getWindowPosition w wPtr hPtr
         V2 <$> peek wPtr <*> peek hPtr
+
+-- | Get the drawable size of the window. This is the actual pixel size of the
+-- window's framebuffer.
+getWindowDrawableSize :: MonadIO m => Window -> m (V2 CInt)
+getWindowDrawableSize (Window w) =
+  liftIO $
+  alloca $ \wPtr ->
+  alloca $ \hPtr -> do
+    Raw.glGetDrawableSize w wPtr hPtr
+    V2 <$> peek wPtr <*> peek hPtr
 
 -- | Get or set the size of a window's client area. Values beyond the maximum supported size are clamped.
 --
