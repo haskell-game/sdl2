@@ -136,6 +136,9 @@ library
   default-language:
     Haskell2010
 
+  if os(windows)
+    cpp-options: -D_SDL_main_h
+
 executable lazyfoo-lesson-01
   if flag(examples)
     build-depends: base, sdl2
