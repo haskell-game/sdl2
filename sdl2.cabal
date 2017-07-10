@@ -417,6 +417,16 @@ executable audio-example
   default-language: Haskell2010
   ghc-options: -main-is AudioExample -threaded
 
+executable eventwatch-example
+  if flag(examples)
+    build-depends: base, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples
+  main-is: EventWatch.hs
+  default-language: Haskell2010
+  ghc-options: -main-is EventWatch
 
 executable opengl-example
   if flag(opengl-example)
