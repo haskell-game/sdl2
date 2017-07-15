@@ -73,6 +73,9 @@ module SDL.Video.Renderer
 
   -- * 'Palette's and pixel formats
   , Palette
+  , paletteNColors
+  , paletteColors
+  , paletteColor
   , PixelFormat(..)
   , SurfacePixelFormat
   , formatPalette
@@ -126,6 +129,7 @@ import Foreign.C.String
 import Foreign.C.Types
 import Foreign.ForeignPtr
 import Foreign.Marshal.Alloc
+import Foreign.Marshal.Array
 import Foreign.Marshal.Utils
 import Foreign.Ptr
 import Foreign.Storable
@@ -433,6 +437,27 @@ formatPalette (SurfacePixelFormat f) = liftIO $ wrap . Raw.pixelFormatPalette <$
   where wrap p
           | p == nullPtr = Nothing
           | otherwise = Just (Palette p)
+
+paletteNColors :: MonadIO m => Palette -> m CInt
+paletteNColors (Palette p) = liftIO $ Raw.paletteNColors <$> peek p
+
+paletteColors :: MonadIO m => Palette -> m (Maybe (SV.Vector (V4 Word8)))
+paletteColors q@(Palette p) = do
+  n <- liftIO $ fromIntegral <$> paletteNColors q
+  let wrap p | p == nullPtr = Nothing
+             | otherwise    = return p
+  mv <- liftIO $ wrap . castPtr . Raw.paletteColors <$> peek p
+  mColor <- liftIO $ mapM newForeignPtr_ mv
+  return $ flip SV.unsafeFromForeignPtr0 n <$> mColor
+
+paletteColor :: MonadIO m => Palette -> CInt -> m (Maybe (V4 Word8))
+paletteColor q@(Palette p) i = do
+    rp <- liftIO $ peek p
+    m <- paletteNColors q
+    if m > i && i >= 0 then
+      liftIO $ fmap return . flip peekElemOff (fromIntegral i) . castPtr . Raw.paletteColors $ rp
+    else
+      return Nothing
 
 -- | Set a range of colors in a palette.
 --
