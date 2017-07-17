@@ -148,7 +148,7 @@ import qualified SDL.Raw as Raw
 
 #if !MIN_VERSION_base(4,8,0)
 import Control.Applicative
-import Data.Traversable
+import Data.Traversable hiding (mapM)
 #endif
 
 -- | Perform a fast surface copy to a destination surface.
