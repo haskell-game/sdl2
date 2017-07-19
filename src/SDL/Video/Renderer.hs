@@ -148,7 +148,7 @@ import qualified SDL.Raw as Raw
 
 #if !MIN_VERSION_base(4,8,0)
 import Control.Applicative
-import Data.Traversable hiding (mapM)
+import Data.Traversable
 #endif
 
 -- | Perform a fast surface copy to a destination surface.
@@ -447,7 +447,7 @@ paletteColors q@(Palette p) = do
   let wrap p | p == nullPtr = Nothing
              | otherwise    = return p
   mv <- liftIO $ wrap . castPtr . Raw.paletteColors <$> peek p
-  mColor <- liftIO $ mapM newForeignPtr_ mv
+  mColor <- liftIO $ traverse newForeignPtr_ mv
   return $ flip SV.unsafeFromForeignPtr0 n <$> mColor
 
 paletteColor :: MonadIO m => Palette -> CInt -> m (Maybe (V4 Word8))
