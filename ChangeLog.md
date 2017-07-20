@@ -2,6 +2,7 @@ Unreleased
 ==========
 
 * Windows builds now use `-D_SDL_main_h`. See https://github.com/haskell-game/sdl2/issues/139 for more discussion.
+* Support for event watching: `addEventWatch` and `delEventWatch`.
 
 2.2.0
 =====

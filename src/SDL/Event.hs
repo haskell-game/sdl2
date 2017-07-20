@@ -17,6 +17,11 @@ module SDL.Event
   , pumpEvents
   , waitEvent
   , waitEventTimeout
+    -- * Watching events
+  , EventWatchCallback
+  , EventWatch
+  , addEventWatch
+  , delEventWatch
     -- * Event data
   , Event(..)
   , EventPayload(..)
@@ -751,3 +756,32 @@ waitEventTimeout timeout = liftIO $ alloca $ \e -> do
 -- See @<https://wiki.libsdl.org/SDL_PumpEvents SDL_PumpEvents>@ for C documentation.
 pumpEvents :: MonadIO m => m ()
 pumpEvents = Raw.pumpEvents
+
+-- | An 'EventWatchCallback' can process and respond to an event
+-- when it is added to the event queue.
+type EventWatchCallback = Event -> IO ()
+newtype EventWatch = EventWatch {runEventWatchRemoval :: IO ()}
+
+-- | Trigger an 'EventWatchCallback' when an event is added to the SDL
+-- event queue.
+--
+-- See @<https://wiki.libsdl.org/SDL_AddEventWatch>@ for C documentation.
+addEventWatch :: MonadIO m => EventWatchCallback -> m EventWatch
+addEventWatch callback = liftIO $ do
+  rawFilter <- Raw.mkEventFilter wrappedCb
+  Raw.addEventWatch rawFilter nullPtr
+  return (EventWatch $ auxRemove rawFilter)
+  where
+    wrappedCb :: Ptr () -> Ptr Raw.Event -> IO CInt
+    wrappedCb _ evPtr = 0 <$ (callback =<< convertRaw =<< peek evPtr)
+
+    auxRemove :: Raw.EventFilter -> IO ()
+    auxRemove rawFilter = do
+      Raw.delEventWatch rawFilter nullPtr
+      freeHaskellFunPtr rawFilter
+
+-- | Remove an 'EventWatch'.
+--
+-- See @<https://wiki.libsdl.org/SDL_DelEventWatch>@ for C documentation.
+delEventWatch :: MonadIO m => EventWatch -> m ()
+delEventWatch = liftIO . runEventWatchRemoval
