@@ -159,8 +159,8 @@ surfaceBlit :: MonadIO m
 surfaceBlit (Surface src _) srcRect (Surface dst _) dstLoc = liftIO $
   maybeWith with srcRect $ \srcPtr ->
   maybeWith with (fmap (flip Rectangle 0) dstLoc) $ \dstPtr -> do
-      throwIfNeg "SDL.Video.blitSurface" "SDL_BlitSurface" $
-          Raw.blitSurface src (castPtr srcPtr) dst (castPtr dstPtr)
+      _ <- throwIfNeg "SDL.Video.blitSurface" "SDL_BlitSurface" $
+           Raw.blitSurface src (castPtr srcPtr) dst (castPtr dstPtr)
       maybe (pure Nothing) (\_ -> Just <$> peek dstPtr) dstLoc
 
 -- | Create a texture for a rendering context.
