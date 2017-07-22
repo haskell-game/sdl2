@@ -99,6 +99,14 @@ data MouseButton
   | ButtonExtra !Int -- ^ An unknown mouse button.
   deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
+instance FromNumber MouseButton Word8 where
+  fromNumber Raw.SDL_BUTTON_LEFT   = ButtonLeft
+  fromNumber Raw.SDL_BUTTON_MIDDLE = ButtonMiddle
+  fromNumber Raw.SDL_BUTTON_RIGHT  = ButtonRight
+  fromNumber Raw.SDL_BUTTON_X1     = ButtonX1
+  fromNumber Raw.SDL_BUTTON_X2     = ButtonX2
+  fromNumber buttonCode            = ButtonExtra $ fromIntegral buttonCode
+
 -- | Identifies what kind of mouse-like device this is.
 data MouseDevice
   = Mouse !Int -- ^ An actual mouse. The number identifies which mouse.
