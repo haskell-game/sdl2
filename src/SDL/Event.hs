@@ -611,19 +611,12 @@ convertRaw (Raw.MouseButtonEvent t ts a b c _ e f g) =
            | t == Raw.SDL_MOUSEBUTTONUP = Released
            | t == Raw.SDL_MOUSEBUTTONDOWN = Pressed
            | otherwise = error "convertRaw: Unexpected mouse button motion"
-         button
-           | c == Raw.SDL_BUTTON_LEFT = ButtonLeft
-           | c == Raw.SDL_BUTTON_MIDDLE = ButtonMiddle
-           | c == Raw.SDL_BUTTON_RIGHT = ButtonRight
-           | c == Raw.SDL_BUTTON_X1 = ButtonX1
-           | c == Raw.SDL_BUTTON_X2 = ButtonX2
-           | otherwise = ButtonExtra $ fromIntegral c
      return (Event ts
                    (MouseButtonEvent
                       (MouseButtonEventData w'
                                             motion
                                             (fromNumber b)
-                                            button
+                                            (fromNumber c)
                                             e
                                             (P (V2 f g)))))
 convertRaw (Raw.MouseWheelEvent _ ts a b c d e) =
