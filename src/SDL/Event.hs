@@ -380,7 +380,9 @@ data JoyButtonEventData =
 
 -- | Joystick device event information.
 data JoyDeviceEventData =
-  JoyDeviceEventData {joyDeviceEventWhich :: !Int32
+  JoyDeviceEventData {joyDeviceEventConnection :: !JoyDeviceConnection
+                      -- ^ Was the device added or removed?
+                     ,joyDeviceEventWhich :: !Int32
                       -- ^ The instance id of the joystick that reported the event.
                      }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -650,8 +652,8 @@ convertRaw (Raw.JoyHatEvent _ ts a b c) =
                                     (fromNumber c))))
 convertRaw (Raw.JoyButtonEvent _ ts a b c) =
   return (Event ts (JoyButtonEvent (JoyButtonEventData a b c)))
-convertRaw (Raw.JoyDeviceEvent _ ts a) =
-  return (Event ts (JoyDeviceEvent (JoyDeviceEventData a)))
+convertRaw (Raw.JoyDeviceEvent t ts a) =
+  return (Event ts (JoyDeviceEvent (JoyDeviceEventData (fromNumber t) a)))
 convertRaw (Raw.ControllerAxisEvent _ ts a b c) =
   return (Event ts (ControllerAxisEvent (ControllerAxisEventData a b c)))
 convertRaw (Raw.ControllerButtonEvent _ ts a b c) =
