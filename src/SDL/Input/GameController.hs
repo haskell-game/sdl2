@@ -34,7 +34,6 @@ data ControllerButton
   | ControllerButtonDpadDown
   | ControllerButtonDpadLeft
   | ControllerButtonDpadRight
-  | ControllerButtonMax
   deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber ControllerButton Int32 where
@@ -54,7 +53,6 @@ instance FromNumber ControllerButton Int32 where
     Raw.SDL_CONTROLLER_BUTTON_DPAD_DOWN -> ControllerButtonDpadDown
     Raw.SDL_CONTROLLER_BUTTON_DPAD_LEFT -> ControllerButtonDpadLeft
     Raw.SDL_CONTROLLER_BUTTON_DPAD_RIGHT -> ControllerButtonDpadRight
-    Raw.SDL_CONTROLLER_BUTTON_MAX -> ControllerButtonMax
     _ -> ControllerButtonInvalid
 
 -- | Identifies the state of a controller button.
