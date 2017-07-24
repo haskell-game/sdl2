@@ -401,7 +401,7 @@ data ControllerAxisEventData =
 data ControllerButtonEventData =
   ControllerButtonEventData {controllerButtonEventWhich :: !Raw.JoystickID
                            -- ^ The joystick instance ID that reported the event.
-                            ,controllerButtonEventButton :: !Word8
+                            ,controllerButtonEventButton :: !ControllerButton
                              -- ^ The controller button.
                             ,controllerButtonEventState :: !ControllerButtonState
                              -- ^ The state of the button.
@@ -656,7 +656,11 @@ convertRaw (Raw.JoyDeviceEvent _ ts a) =
 convertRaw (Raw.ControllerAxisEvent _ ts a b c) =
   return (Event ts (ControllerAxisEvent (ControllerAxisEventData a b c)))
 convertRaw (Raw.ControllerButtonEvent _ ts a b c) =
-  return (Event ts (ControllerButtonEvent (ControllerButtonEventData a b (fromNumber c))))
+  return (Event ts 
+           (ControllerButtonEvent
+             (ControllerButtonEventData a 
+                                        (fromNumber $ fromIntegral b)
+                                        (fromNumber c))))
 convertRaw (Raw.ControllerDeviceEvent _ ts a) =
   return (Event ts (ControllerDeviceEvent (ControllerDeviceEventData a)))
 convertRaw (Raw.AudioDeviceEvent Raw.SDL_AUDIODEVICEADDED ts a b) =
