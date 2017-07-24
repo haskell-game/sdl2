@@ -87,6 +87,7 @@ import Foreign.C
 import GHC.Generics (Generic)
 import SDL.Vect
 import SDL.Input.Joystick
+import SDL.Input.GameController
 import SDL.Input.Keyboard
 import SDL.Input.Mouse
 import SDL.Internal.Exception
@@ -402,7 +403,7 @@ data ControllerButtonEventData =
                            -- ^ The joystick instance ID that reported the event.
                             ,controllerButtonEventButton :: !Word8
                              -- ^ The controller button.
-                            ,controllerButtonEventState :: !Word8
+                            ,controllerButtonEventState :: !ControllerButtonState
                              -- ^ The state of the button.
                             }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -655,7 +656,7 @@ convertRaw (Raw.JoyDeviceEvent _ ts a) =
 convertRaw (Raw.ControllerAxisEvent _ ts a b c) =
   return (Event ts (ControllerAxisEvent (ControllerAxisEventData a b c)))
 convertRaw (Raw.ControllerButtonEvent _ ts a b c) =
-  return (Event ts (ControllerButtonEvent (ControllerButtonEventData a b c)))
+  return (Event ts (ControllerButtonEvent (ControllerButtonEventData a b (fromNumber c))))
 convertRaw (Raw.ControllerDeviceEvent _ ts a) =
   return (Event ts (ControllerDeviceEvent (ControllerDeviceEventData a)))
 convertRaw (Raw.AudioDeviceEvent Raw.SDL_AUDIODEVICEADDED ts a b) =

@@ -65,6 +65,7 @@ library
     SDL.Hint
     SDL.Init
     SDL.Input
+    SDL.Input.GameController
     SDL.Input.Joystick
     SDL.Input.Keyboard
     SDL.Input.Keyboard.Codes
