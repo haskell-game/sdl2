@@ -5,6 +5,7 @@ Unreleased
 * Support for event watching: `addEventWatch` and `delEventWatch`.
 * High-level structure for controller button state: `ControllerButtonState`.
 * High-level structure for controller buttons: `ControllerButton`.
+* High-level structure for controller connection: `ControllerDeviceConnection`.
 
 2.2.0
 =====

@@ -5,6 +5,7 @@
 module SDL.Input.GameController
   ( ControllerButton(..)
   , ControllerButtonState(..)
+  , ControllerDeviceConnection(..)
   ) where
 
 import Data.Data (Data)
@@ -65,3 +66,16 @@ instance FromNumber ControllerButtonState Word8 where
     Raw.SDL_PRESSED -> ControllerButtonPressed
     Raw.SDL_RELEASED -> ControllerButtonReleased
     _ -> ControllerButtonPressed
+
+-- | Identified whether the game controller was added, removed, or remapped.
+data ControllerDeviceConnection
+  = ControllerDeviceAdded
+  | ControllerDeviceRemoved
+  | ControllerDeviceRemapped
+  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
+
+instance FromNumber ControllerDeviceConnection Word32 where
+  fromNumber n = case n of
+    Raw.SDL_CONTROLLERDEVICEADDED -> ControllerDeviceAdded
+    Raw.SDL_CONTROLLERDEVICEREMOVED -> ControllerDeviceRemoved
+    _ -> ControllerDeviceRemapped
