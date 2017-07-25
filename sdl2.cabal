@@ -429,6 +429,17 @@ executable eventwatch-example
   default-language: Haskell2010
   ghc-options: -main-is EventWatch
 
+executable userevent-example
+  if flag(examples)
+    build-depends: base, text, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples
+  main-is: UserEvents.hs
+  default-language: Haskell2010
+  ghc-options: -main-is UserEvents
+
 executable opengl-example
   if flag(opengl-example)
     build-depends: base, OpenGL, bytestring, vector, sdl2

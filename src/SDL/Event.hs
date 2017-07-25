@@ -17,6 +17,12 @@ module SDL.Event
   , pumpEvents
   , waitEvent
   , waitEventTimeout
+    -- * Registering user events
+  , RegisteredEventType(..)
+  , RegisteredEventData(..)
+  , EventPushResult(..)
+  , emptyRegisteredEvent
+  , registerEvent
     -- * Watching events
   , EventWatchCallback
   , EventWatch
@@ -24,6 +30,7 @@ module SDL.Event
   , delEventWatch
     -- * Event data
   , Event(..)
+  , Timestamp
   , EventPayload(..)
     -- ** Window events
   , WindowShownEventData(..)
@@ -104,11 +111,13 @@ import Control.Applicative
 
 -- | A single SDL event. This event occured at 'eventTimestamp' and carries data under 'eventPayload'.
 data Event = Event
-  { eventTimestamp :: Word32
+  { eventTimestamp :: Timestamp
     -- ^ The time the event occured.
   , eventPayload :: EventPayload
     -- ^ Data pertaining to this event.
   } deriving (Eq, Ord, Generic, Show, Typeable)
+
+type Timestamp = Word32
 
 -- | An enumeration of all possible SDL event types. This data type pairs up event types with
 -- their payload, where possible.
@@ -433,8 +442,10 @@ data AudioDeviceEventData =
 
 -- | Event data for application-defined events.
 data UserEventData =
-  UserEventData {userEventWindow :: !(Maybe Window)
-                 -- ^ The associated 'Window', if any.
+  UserEventData {userEventType :: !Word32
+                 -- ^ User defined event type.
+                ,userEventWindow :: !(Maybe Window)
+                 -- ^ The associated 'Window'.
                 ,userEventCode :: !Int32
                  -- ^ User defined event code.
                 ,userEventData1 :: !(Ptr ())
@@ -685,9 +696,9 @@ convertRaw (Raw.AudioDeviceEvent _ _ _ _) =
   error "convertRaw: Unknown audio device motion"
 convertRaw (Raw.QuitEvent _ ts) =
   return (Event ts QuitEvent)
-convertRaw (Raw.UserEvent _ ts a b c d) =
+convertRaw (Raw.UserEvent t ts a b c d) =
   do w <- getWindowFromID a
-     return (Event ts (UserEvent (UserEventData w b c d)))
+     return (Event ts (UserEvent (UserEventData t w b c d)))
 convertRaw (Raw.SysWMEvent _ ts a) =
   return (Event ts (SysWMEvent (SysWMEventData a)))
 convertRaw (Raw.TouchFingerEvent t ts a b c d e f g) =
@@ -773,6 +784,76 @@ waitEventTimeout timeout = liftIO $ alloca $ \e -> do
   if n == 0
      then return Nothing
      else fmap Just (peek e >>= convertRaw)
+
+-- | A user defined event structure that has been registered with SDL.
+--
+-- Use 'registerEvent', below, to obtain an instance.
+data RegisteredEventType a =
+  RegisteredEventType {pushRegisteredEvent :: a -> IO EventPushResult
+                      ,getRegisteredEvent :: Event -> IO (Maybe a)
+                      }
+
+-- | A record used to convert between SDL Events and user-defined data structures.
+--
+-- Used for 'registerEvent', below.
+data RegisteredEventData =
+  RegisteredEventData {registeredEventWindow :: !(Maybe Window)
+                       -- ^ The associated 'Window'.
+                      ,registeredEventCode :: !Int32
+                       -- ^ User defined event code.
+                      ,registeredEventData1 :: !(Ptr ())
+                       -- ^ User defined data pointer.
+                      ,registeredEventData2 :: !(Ptr ())
+                       -- ^ User defined data pointer.
+                      }
+  deriving (Eq,Ord,Generic,Show,Typeable)
+
+-- | A registered event with no associated data.
+--
+-- This is a resonable baseline to modify for converting to
+-- 'RegisteredEventData'.
+emptyRegisteredEvent :: RegisteredEventData
+emptyRegisteredEvent = RegisteredEventData Nothing 0 nullPtr nullPtr
+
+-- | Possible results of an attempted push of an event to the queue.
+data EventPushResult = EventPushSuccess | EventPushFiltered | EventPushFailure Text
+  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
+
+-- | Register a new event type with SDL.
+--
+-- Provide functions that convert between 'UserEventData' and your structure.
+-- You can then use 'pushRegisteredEvent' to add a custom event of the
+-- registered type to the queue, and 'getRegisteredEvent' to test for such
+-- events in the main loop.
+registerEvent :: MonadIO m
+              => (RegisteredEventData -> Timestamp -> IO (Maybe a))
+              -> (a -> IO RegisteredEventData)
+              -> m (Maybe (RegisteredEventType a))
+registerEvent registeredEventDataToEvent eventToRegisteredEventData = do
+  typ <- Raw.registerEvents 1
+  if typ == maxBound
+  then return Nothing
+  else
+    let pushEv ev = do
+          RegisteredEventData mWin code d1 d2 <- eventToRegisteredEventData ev
+          windowID <- case mWin of
+            Just (Window w) -> Raw.getWindowID w
+            Nothing         -> return 0
+          -- timestamp will be filled in by SDL
+          let rawEvent = Raw.UserEvent typ 0 windowID code d1 d2
+          liftIO . alloca $ \eventPtr -> do
+            poke eventPtr rawEvent
+            pushResult <- Raw.pushEvent eventPtr
+            case pushResult of
+              1 -> return $ EventPushSuccess
+              0 -> return $ EventPushFiltered
+              _ -> EventPushFailure <$> getError
+
+        getEv (Event ts (UserEvent (UserEventData typ mWin code d1 d2))) =
+          registeredEventDataToEvent (RegisteredEventData mWin code d1 d2) ts
+        getEv _ = return Nothing
+
+    in return . Just $ RegisteredEventType pushEv getEv
 
 -- | Pump the event loop, gathering events from the input devices.
 --
