@@ -410,7 +410,7 @@ data ControllerButtonEventData =
 
 -- | Controller device event information
 data ControllerDeviceEventData =
-  ControllerDeviceEventData {controllerDeviceEventConnection :: !ControllerDeviceEventConnection
+  ControllerDeviceEventData {controllerDeviceEventConnection :: !ControllerDeviceConnection
                              -- ^ Was the device added, removed, or remapped?
                             ,controllerDeviceEventWhich :: !Int32
                              -- ^ The joystick instance ID that reported the event.
