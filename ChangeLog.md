@@ -3,6 +3,8 @@ Unreleased
 
 * Windows builds now use `-D_SDL_main_h`. See https://github.com/haskell-game/sdl2/issues/139 for more discussion.
 * Support for event watching: `addEventWatch` and `delEventWatch`.
+* High-level bindings now distinguish between finger down / motion / up.
+  See SDL.Event.TouchFingerEvent and SDL.Event.TouchFingerMotionEvent.
 
 2.2.0
 =====
