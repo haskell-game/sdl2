@@ -373,7 +373,7 @@ data JoyButtonEventData =
                       -- ^ The instance id of the joystick that reported the event.
                      ,joyButtonEventButton :: !Word8
                       -- ^ The index of the button that changed.
-                     ,joyButtonEventState :: !Word8
+                     ,joyButtonEventState :: !JoyButtonState
                       -- ^ The state of the button.
                      }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -613,19 +613,12 @@ convertRaw (Raw.MouseButtonEvent t ts a b c _ e f g) =
            | t == Raw.SDL_MOUSEBUTTONUP = Released
            | t == Raw.SDL_MOUSEBUTTONDOWN = Pressed
            | otherwise = error "convertRaw: Unexpected mouse button motion"
-         button
-           | c == Raw.SDL_BUTTON_LEFT = ButtonLeft
-           | c == Raw.SDL_BUTTON_MIDDLE = ButtonMiddle
-           | c == Raw.SDL_BUTTON_RIGHT = ButtonRight
-           | c == Raw.SDL_BUTTON_X1 = ButtonX1
-           | c == Raw.SDL_BUTTON_X2 = ButtonX2
-           | otherwise = ButtonExtra $ fromIntegral c
      return (Event ts
                    (MouseButtonEvent
                       (MouseButtonEventData w'
                                             motion
                                             (fromNumber b)
-                                            button
+                                            (fromNumber c)
                                             e
                                             (P (V2 f g)))))
 convertRaw (Raw.MouseWheelEvent _ ts a b c d e) =
@@ -651,7 +644,7 @@ convertRaw (Raw.JoyHatEvent _ ts a b c) =
                                     b
                                     (fromNumber c))))
 convertRaw (Raw.JoyButtonEvent _ ts a b c) =
-  return (Event ts (JoyButtonEvent (JoyButtonEventData a b c)))
+  return (Event ts (JoyButtonEvent (JoyButtonEventData a b (fromNumber c))))
 convertRaw (Raw.JoyDeviceEvent t ts a) =
   return (Event ts (JoyDeviceEvent (JoyDeviceEventData (fromNumber t) a)))
 convertRaw (Raw.ControllerAxisEvent _ ts a b c) =
