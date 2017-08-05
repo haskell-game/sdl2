@@ -257,8 +257,8 @@ data WindowClosedEventData =
 
 -- | A keyboard key has been pressed or released.
 data KeyboardEventData =
-  KeyboardEventData {keyboardEventWindow :: !Window
-                     -- ^ The associated 'Window'.
+  KeyboardEventData {keyboardEventWindow :: !(Maybe Window)
+                     -- ^ The 'Window' with keyboard focus, if any.
                     ,keyboardEventKeyMotion :: !InputMotion
                      -- ^ Whether the key was pressed or released.
                     ,keyboardEventRepeat :: !Bool
@@ -270,8 +270,8 @@ data KeyboardEventData =
 
 -- | Keyboard text editing event information.
 data TextEditingEventData =
-  TextEditingEventData {textEditingEventWindow :: !Window
-                        -- ^ The associated 'Window'.
+  TextEditingEventData {textEditingEventWindow :: !(Maybe Window)
+                        -- ^ The 'Window' with keyboard focus, if any.
                        ,textEditingEventText :: !Text
                         -- ^ The editing text.
                        ,textEditingEventStart :: !Int32
@@ -283,8 +283,8 @@ data TextEditingEventData =
 
 -- | Keyboard text input event information.
 data TextInputEventData =
-  TextInputEventData {textInputEventWindow :: !Window
-                      -- ^ The associated 'Window'.
+  TextInputEventData {textInputEventWindow :: !(Maybe Window)
+                      -- ^ The 'Window' with keyboard focus, if any.
                      ,textInputEventText :: !Text
                       -- ^ The input text.
                      }
@@ -292,8 +292,8 @@ data TextInputEventData =
 
 -- | A mouse or pointer device was moved.
 data MouseMotionEventData =
-  MouseMotionEventData {mouseMotionEventWindow :: !Window
-                        -- ^ The associated 'Window'.
+  MouseMotionEventData {mouseMotionEventWindow :: !(Maybe Window)
+                        -- ^ The 'Window' with mouse focus, if any.
                        ,mouseMotionEventWhich :: !MouseDevice
                         -- ^ The 'MouseDevice' that was moved.
                        ,mouseMotionEventState :: ![MouseButton]
@@ -307,8 +307,8 @@ data MouseMotionEventData =
 
 -- | A mouse or pointer device button was pressed or released.
 data MouseButtonEventData =
-  MouseButtonEventData {mouseButtonEventWindow :: !Window
-                        -- ^ The associated 'Window'.
+  MouseButtonEventData {mouseButtonEventWindow :: !(Maybe Window)
+                        -- ^ The 'Window' with mouse focus, if any.
                        ,mouseButtonEventMotion :: !InputMotion
                         -- ^ Whether the button was pressed or released.
                        ,mouseButtonEventWhich :: !MouseDevice
@@ -324,8 +324,8 @@ data MouseButtonEventData =
 
 -- | Mouse wheel event information.
 data MouseWheelEventData =
-  MouseWheelEventData {mouseWheelEventWindow :: !Window
-                       -- ^ The associated 'Window'.
+  MouseWheelEventData {mouseWheelEventWindow :: !(Maybe Window)
+                        -- ^ The 'Window' with mouse focus, if any.
                       ,mouseWheelEventWhich :: !MouseDevice
                        -- ^ The 'MouseDevice' whose wheel was scrolled.
                       ,mouseWheelEventPos :: !(V2 Int32)
@@ -431,8 +431,8 @@ data AudioDeviceEventData =
 
 -- | Event data for application-defined events.
 data UserEventData =
-  UserEventData {userEventWindow :: !Window
-                 -- ^ The associated 'Window'.
+  UserEventData {userEventWindow :: !(Maybe Window)
+                 -- ^ The associated 'Window', if any.
                 ,userEventCode :: !Int32
                  -- ^ User defined event code.
                 ,userEventData1 :: !(Ptr ())
@@ -521,78 +521,78 @@ fromRawKeysym (Raw.Keysym scancode keycode modifier) =
 
 convertRaw :: Raw.Event -> IO Event
 convertRaw (Raw.WindowEvent t ts a b c d) =
-  do w' <- fmap Window (Raw.getWindowFromID a)
+  do w <- fmap Window (Raw.getWindowFromID a)
      return (Event ts
                    (case b of
                       Raw.SDL_WINDOWEVENT_SHOWN ->
-                        WindowShownEvent (WindowShownEventData w')
+                        WindowShownEvent (WindowShownEventData w)
                       Raw.SDL_WINDOWEVENT_HIDDEN ->
-                        WindowHiddenEvent (WindowHiddenEventData w')
+                        WindowHiddenEvent (WindowHiddenEventData w)
                       Raw.SDL_WINDOWEVENT_EXPOSED ->
-                        WindowExposedEvent (WindowExposedEventData w')
+                        WindowExposedEvent (WindowExposedEventData w)
                       Raw.SDL_WINDOWEVENT_MOVED ->
                         WindowMovedEvent
-                          (WindowMovedEventData w'
+                          (WindowMovedEventData w
                                                 (P (V2 c d)))
                       Raw.SDL_WINDOWEVENT_RESIZED ->
                         WindowResizedEvent
-                          (WindowResizedEventData w'
+                          (WindowResizedEventData w
                                                   (V2 c d))
                       Raw.SDL_WINDOWEVENT_SIZE_CHANGED ->
-                        WindowSizeChangedEvent (WindowSizeChangedEventData w')
+                        WindowSizeChangedEvent (WindowSizeChangedEventData w)
                       Raw.SDL_WINDOWEVENT_MINIMIZED ->
-                        WindowMinimizedEvent (WindowMinimizedEventData w')
+                        WindowMinimizedEvent (WindowMinimizedEventData w)
                       Raw.SDL_WINDOWEVENT_MAXIMIZED ->
-                        WindowMaximizedEvent (WindowMaximizedEventData w')
+                        WindowMaximizedEvent (WindowMaximizedEventData w)
                       Raw.SDL_WINDOWEVENT_RESTORED ->
-                        WindowRestoredEvent (WindowRestoredEventData w')
+                        WindowRestoredEvent (WindowRestoredEventData w)
                       Raw.SDL_WINDOWEVENT_ENTER ->
-                        WindowGainedMouseFocusEvent (WindowGainedMouseFocusEventData w')
+                        WindowGainedMouseFocusEvent (WindowGainedMouseFocusEventData w)
                       Raw.SDL_WINDOWEVENT_LEAVE ->
-                        WindowLostMouseFocusEvent (WindowLostMouseFocusEventData w')
+                        WindowLostMouseFocusEvent (WindowLostMouseFocusEventData w)
                       Raw.SDL_WINDOWEVENT_FOCUS_GAINED ->
-                        WindowGainedKeyboardFocusEvent (WindowGainedKeyboardFocusEventData w')
+                        WindowGainedKeyboardFocusEvent (WindowGainedKeyboardFocusEventData w)
                       Raw.SDL_WINDOWEVENT_FOCUS_LOST ->
-                        WindowLostKeyboardFocusEvent (WindowLostKeyboardFocusEventData w')
+                        WindowLostKeyboardFocusEvent (WindowLostKeyboardFocusEventData w)
                       Raw.SDL_WINDOWEVENT_CLOSE ->
-                        WindowClosedEvent (WindowClosedEventData w')
+                        WindowClosedEvent (WindowClosedEventData w)
                       _ ->
                         UnknownEvent (UnknownEventData t)))
 convertRaw (Raw.KeyboardEvent Raw.SDL_KEYDOWN ts a _ c d) =
-  do w' <- fmap Window (Raw.getWindowFromID a)
+  do w <- getWindowFromID a
      return (Event ts
                    (KeyboardEvent
-                      (KeyboardEventData w'
+                      (KeyboardEventData w
                                          Pressed
                                          (c /= 0)
                                          (fromRawKeysym d))))
 convertRaw (Raw.KeyboardEvent Raw.SDL_KEYUP ts a _ c d) =
-  do w' <- fmap Window (Raw.getWindowFromID a)
+  do w <- getWindowFromID a
      return (Event ts
                    (KeyboardEvent
-                      (KeyboardEventData w'
+                      (KeyboardEventData w
                                          Released
                                          (c /= 0)
                                          (fromRawKeysym d))))
 convertRaw (Raw.KeyboardEvent _ _ _ _ _ _) = error "convertRaw: Unknown keyboard motion"
 convertRaw (Raw.TextEditingEvent _ ts a b c d) =
-  do w' <- fmap Window (Raw.getWindowFromID a)
+  do w <- getWindowFromID a
      return (Event ts
                    (TextEditingEvent
-                      (TextEditingEventData w'
+                      (TextEditingEventData w
                                             (ccharStringToText b)
                                             c
                                             d)))
 convertRaw (Raw.TextInputEvent _ ts a b) =
-  do w' <- fmap Window (Raw.getWindowFromID a)
+  do w <- getWindowFromID a
      return (Event ts
                    (TextInputEvent
-                      (TextInputEventData w'
+                      (TextInputEventData w
                                           (ccharStringToText b))))
 convertRaw (Raw.KeymapChangedEvent _ ts) =
   return (Event ts KeymapChangedEvent)
 convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) =
-  do w' <- fmap Window (Raw.getWindowFromID a)
+  do w <- getWindowFromID a
      let buttons =
            catMaybes [(Raw.SDL_BUTTON_LMASK `test` c) ButtonLeft
                      ,(Raw.SDL_BUTTON_RMASK `test` c) ButtonRight
@@ -601,7 +601,7 @@ convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) =
                      ,(Raw.SDL_BUTTON_X2MASK `test` c) ButtonX2]
      return (Event ts
                    (MouseMotionEvent
-                      (MouseMotionEventData w'
+                      (MouseMotionEventData w
                                             (fromNumber b)
                                             buttons
                                             (P (V2 d e))
@@ -611,24 +611,24 @@ convertRaw (Raw.MouseMotionEvent _ ts a b c d e f g) =
              then Just
              else const Nothing
 convertRaw (Raw.MouseButtonEvent t ts a b c _ e f g) =
-  do w' <- fmap Window (Raw.getWindowFromID a)
+  do w <- getWindowFromID a
      let motion
            | t == Raw.SDL_MOUSEBUTTONUP = Released
            | t == Raw.SDL_MOUSEBUTTONDOWN = Pressed
            | otherwise = error "convertRaw: Unexpected mouse button motion"
      return (Event ts
                    (MouseButtonEvent
-                      (MouseButtonEventData w'
+                      (MouseButtonEventData w
                                             motion
                                             (fromNumber b)
                                             (fromNumber c)
                                             e
                                             (P (V2 f g)))))
 convertRaw (Raw.MouseWheelEvent _ ts a b c d e) =
-  do w' <- fmap Window (Raw.getWindowFromID a)
+  do w <- getWindowFromID a
      return (Event ts
                    (MouseWheelEvent
-                      (MouseWheelEventData w'
+                      (MouseWheelEventData w
                                            (fromNumber b)
                                            (V2 c d)
                                            (fromNumber e))))
@@ -669,8 +669,8 @@ convertRaw (Raw.AudioDeviceEvent _ _ _ _) =
 convertRaw (Raw.QuitEvent _ ts) =
   return (Event ts QuitEvent)
 convertRaw (Raw.UserEvent _ ts a b c d) =
-  do w' <- fmap Window (Raw.getWindowFromID a)
-     return (Event ts (UserEvent (UserEventData w' b c d)))
+  do w <- getWindowFromID a
+     return (Event ts (UserEvent (UserEventData w b c d)))
 convertRaw (Raw.SysWMEvent _ ts a) =
   return (Event ts (SysWMEvent (SysWMEventData a)))
 convertRaw (Raw.TouchFingerEvent _ ts a b c d e f g) =
@@ -787,3 +787,9 @@ addEventWatch callback = liftIO $ do
 -- See @<https://wiki.libsdl.org/SDL_DelEventWatch>@ for C documentation.
 delEventWatch :: MonadIO m => EventWatch -> m ()
 delEventWatch = liftIO . runEventWatchRemoval
+
+-- | Checks raw Windows for null references.
+getWindowFromID :: MonadIO m => Word32 -> m (Maybe Window)
+getWindowFromID id = do
+  rawWindow <- Raw.getWindowFromID id
+  return $ if rawWindow == nullPtr then Nothing else Just $ Window rawWindow
