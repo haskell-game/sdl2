@@ -107,6 +107,14 @@ instance FromNumber MouseButton Word8 where
   fromNumber Raw.SDL_BUTTON_X2     = ButtonX2
   fromNumber buttonCode            = ButtonExtra $ fromIntegral buttonCode
 
+instance ToNumber MouseButton Word8 where
+  toNumber ButtonLeft      = Raw.SDL_BUTTON_LEFT
+  toNumber ButtonMiddle    = Raw.SDL_BUTTON_MIDDLE
+  toNumber ButtonRight     = Raw.SDL_BUTTON_RIGHT
+  toNumber ButtonX1        = Raw.SDL_BUTTON_X1
+  toNumber ButtonX2        = Raw.SDL_BUTTON_X2
+  toNumber (ButtonExtra i) = fromIntegral i
+
 -- | Identifies what kind of mouse-like device this is.
 data MouseDevice
   = Mouse !Int -- ^ An actual mouse. The number identifies which mouse.
@@ -181,15 +189,7 @@ getMouseButtons :: MonadIO m => m (MouseButton -> Bool)
 getMouseButtons = liftIO $
   convert <$> Raw.getMouseState nullPtr nullPtr
   where
-    convert w b = w `testBit` index
-      where
-      index = case b of
-                ButtonLeft    -> 0
-                ButtonMiddle  -> 1
-                ButtonRight   -> 2
-                ButtonX1      -> 3
-                ButtonX2      -> 4
-                ButtonExtra i -> i
+    convert w b = w `testBit` fromIntegral (toNumber b)
 
 newtype Cursor = Cursor { unwrapCursor :: Raw.Cursor }
     deriving (Eq, Typeable)

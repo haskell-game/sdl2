@@ -4,6 +4,11 @@ Unreleased
 * Windows builds now use `-D_SDL_main_h`. See https://github.com/haskell-game/sdl2/issues/139 for more discussion.
 * Support for event watching: `addEventWatch` and `delEventWatch`.
 * Several event payloads now have their `Window` fields modified to use `Maybe Window`, substituting `Nothing` for null pointers.
+* High-level structure for controller button state: `ControllerButtonState`.
+* High-level structure for controller buttons: `ControllerButton`.
+* High-level structure for controller connection: `ControllerDeviceConnection`.
+* High-level structure for joystick device connection: `JoyDeviceConnection`.
+* High-level structure for joystick button state: `JoyButtonState`.
 
 2.2.0
 =====
@@ -50,7 +55,7 @@ Unreleased
   * `getRelativeMouseMode` in `SDL.Input.Mouse`
   * `getMouseLocation` in `SDL.Input.Mouse`
 * Remove `ClipboardUpdateEventData`
-* Merge `isScreenSaverEnabled, `enableScreenSaver`, and `disableScreenSaver`
+* Merge `isScreenSaverEnabled`, `enableScreenSaver`, and `disableScreenSaver`
   into a `screenSaverEnabled` StateVar.
 * Make function `surfaceBlit` in `SDL.Video.Renderer` return final blit
   rectangle post-clipping.

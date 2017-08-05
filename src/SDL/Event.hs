@@ -87,6 +87,7 @@ import Foreign.C
 import GHC.Generics (Generic)
 import SDL.Vect
 import SDL.Input.Joystick
+import SDL.Input.GameController
 import SDL.Input.Keyboard
 import SDL.Input.Mouse
 import SDL.Internal.Exception
@@ -373,14 +374,16 @@ data JoyButtonEventData =
                       -- ^ The instance id of the joystick that reported the event.
                      ,joyButtonEventButton :: !Word8
                       -- ^ The index of the button that changed.
-                     ,joyButtonEventState :: !Word8
+                     ,joyButtonEventState :: !JoyButtonState
                       -- ^ The state of the button.
                      }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Joystick device event information.
 data JoyDeviceEventData =
-  JoyDeviceEventData {joyDeviceEventWhich :: !Int32
+  JoyDeviceEventData {joyDeviceEventConnection :: !JoyDeviceConnection
+                      -- ^ Was the device added or removed?
+                     ,joyDeviceEventWhich :: !Int32
                       -- ^ The instance id of the joystick that reported the event.
                      }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -400,16 +403,18 @@ data ControllerAxisEventData =
 data ControllerButtonEventData =
   ControllerButtonEventData {controllerButtonEventWhich :: !Raw.JoystickID
                            -- ^ The joystick instance ID that reported the event.
-                            ,controllerButtonEventButton :: !Word8
+                            ,controllerButtonEventButton :: !ControllerButton
                              -- ^ The controller button.
-                            ,controllerButtonEventState :: !Word8
+                            ,controllerButtonEventState :: !ControllerButtonState
                              -- ^ The state of the button.
                             }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Controller device event information
 data ControllerDeviceEventData =
-  ControllerDeviceEventData {controllerDeviceEventWhich :: !Int32
+  ControllerDeviceEventData {controllerDeviceEventConnection :: !ControllerDeviceConnection
+                             -- ^ Was the device added, removed, or remapped?
+                            ,controllerDeviceEventWhich :: !Int32
                              -- ^ The joystick instance ID that reported the event.
                             }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -642,15 +647,19 @@ convertRaw (Raw.JoyHatEvent _ ts a b c) =
                                     b
                                     (fromNumber c))))
 convertRaw (Raw.JoyButtonEvent _ ts a b c) =
-  return (Event ts (JoyButtonEvent (JoyButtonEventData a b c)))
-convertRaw (Raw.JoyDeviceEvent _ ts a) =
-  return (Event ts (JoyDeviceEvent (JoyDeviceEventData a)))
+  return (Event ts (JoyButtonEvent (JoyButtonEventData a b (fromNumber c))))
+convertRaw (Raw.JoyDeviceEvent t ts a) =
+  return (Event ts (JoyDeviceEvent (JoyDeviceEventData (fromNumber t) a)))
 convertRaw (Raw.ControllerAxisEvent _ ts a b c) =
   return (Event ts (ControllerAxisEvent (ControllerAxisEventData a b c)))
 convertRaw (Raw.ControllerButtonEvent _ ts a b c) =
-  return (Event ts (ControllerButtonEvent (ControllerButtonEventData a b c)))
-convertRaw (Raw.ControllerDeviceEvent _ ts a) =
-  return (Event ts (ControllerDeviceEvent (ControllerDeviceEventData a)))
+  return (Event ts 
+           (ControllerButtonEvent
+             (ControllerButtonEventData a 
+                                        (fromNumber $ fromIntegral b)
+                                        (fromNumber c))))
+convertRaw (Raw.ControllerDeviceEvent t ts a) =
+  return (Event ts (ControllerDeviceEvent (ControllerDeviceEventData (fromNumber t) a)))
 convertRaw (Raw.AudioDeviceEvent Raw.SDL_AUDIODEVICEADDED ts a b) =
   return (Event ts (AudioDeviceEvent (AudioDeviceEventData True a (b /= 0))))
 convertRaw (Raw.AudioDeviceEvent Raw.SDL_AUDIODEVICEREMOVED ts a b) =

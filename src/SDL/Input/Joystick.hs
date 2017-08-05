@@ -15,6 +15,7 @@ module SDL.Input.Joystick
 
   , getJoystickID
   , Joystick
+  , JoyButtonState(..)
   , buttonPressed
   , ballDelta
   , axisPosition
@@ -24,6 +25,7 @@ module SDL.Input.Joystick
   , JoyHatPosition(..)
   , getHat
   , numHats
+  , JoyDeviceConnection(..)
   ) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
@@ -56,6 +58,16 @@ data JoystickDevice = JoystickDevice
   { joystickDeviceName :: Text
   , joystickDeviceId :: CInt
   } deriving (Eq, Generic, Read, Ord, Show, Typeable)
+
+-- | Identifies the state of a joystick button.
+data JoyButtonState = JoyButtonPressed | JoyButtonReleased
+  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
+
+instance FromNumber JoyButtonState Word8 where
+  fromNumber n = case n of
+    Raw.SDL_PRESSED -> JoyButtonPressed
+    Raw.SDL_RELEASED -> JoyButtonReleased
+    _ -> JoyButtonReleased
 
 -- | Count the number of joysticks attached to the system.
 --
@@ -195,3 +207,13 @@ getHat (Joystick j) hatIndex = fromNumber <$> Raw.joystickGetHat j hatIndex
 -- See @<https://wiki.libsdl.org/https://wiki.libsdl.org/SDL_JoystickNumHats SDL_JoystickNumHats>@ for C documentation.
 numHats :: (MonadIO m) => Joystick -> m CInt
 numHats (Joystick j) = liftIO $ throwIfNeg "SDL.Input.Joystick.numHats" "SDL_JoystickNumHats" (Raw.joystickNumHats j)
+
+-- | Identifies whether a joystick has been connected or disconnected.
+data JoyDeviceConnection = JoyDeviceAdded | JoyDeviceRemoved
+  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
+
+instance FromNumber JoyDeviceConnection Word32 where
+  fromNumber n = case n of
+    Raw.SDL_JOYDEVICEADDED -> JoyDeviceAdded
+    Raw.SDL_JOYDEVICEREMOVED -> JoyDeviceRemoved
+    _ -> JoyDeviceAdded
