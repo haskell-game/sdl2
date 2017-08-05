@@ -65,6 +65,7 @@ module SDL.Event
   , UserEventData(..)
     -- ** Touch events
   , TouchFingerEventData(..)
+  , TouchFingerMotionEventData(..)
     -- ** Gesture events
   , MultiGestureEventData(..)
   , DollarGestureEventData(..)
@@ -146,6 +147,7 @@ data EventPayload
   | UserEvent !UserEventData
   | SysWMEvent !SysWMEventData
   | TouchFingerEvent !TouchFingerEventData
+  | TouchFingerMotionEvent !TouchFingerMotionEventData
   | MultiGestureEvent !MultiGestureEventData
   | DollarGestureEvent !DollarGestureEventData
   | DropEvent !DropEventData
@@ -453,13 +455,28 @@ data TouchFingerEventData =
                         -- ^ The touch device index.
                        ,touchFingerEventFingerID :: !Raw.FingerID
                         -- ^ The finger index.
+                       ,touchFingerEventMotion :: !InputMotion
+                        -- ^ Whether the finger was pressed or released.
                        ,touchFingerEventPos :: !(Point V2 CFloat)
                         -- ^ The location of the touch event, normalized between 0 and 1.
-                       ,touchFingerEventRelMotion :: !(V2 CFloat)
-                        -- ^ The distance moved, normalized between -1 and 1.
                        ,touchFingerEventPressure :: !CFloat
                         -- ^ The quantity of the pressure applied, normalized between 0 and 1.
                        }
+  deriving (Eq,Ord,Generic,Show,Typeable)
+
+-- | Finger motion event information.
+data TouchFingerMotionEventData =
+  TouchFingerMotionEventData {touchFingerMotionEventTouchID :: !Raw.TouchID
+                              -- ^ The touch device index.
+                             ,touchFingerMotionEventFingerID :: !Raw.FingerID
+                              -- ^ The finger index.
+                             ,touchFingerMotionEventPos :: !(Point V2 CFloat)
+                              -- ^ The location of the touch event, normalized between 0 and 1.
+                             ,touchFingerMotionEventRelMotion :: !(V2 CFloat)
+                              -- ^ The distance moved, normalized between -1 and 1.
+                             ,touchFingerMotionEventPressure :: !CFloat
+                              -- ^ The quantity of the pressure applied, normalized between 0 and 1.
+                             }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Multiple finger gesture event information
@@ -673,14 +690,24 @@ convertRaw (Raw.UserEvent _ ts a b c d) =
      return (Event ts (UserEvent (UserEventData w b c d)))
 convertRaw (Raw.SysWMEvent _ ts a) =
   return (Event ts (SysWMEvent (SysWMEventData a)))
-convertRaw (Raw.TouchFingerEvent _ ts a b c d e f g) =
-  return (Event ts
-                (TouchFingerEvent
-                   (TouchFingerEventData a
-                                         b
-                                         (P (V2 c d))
-                                         (V2 e f)
-                                         g)))
+convertRaw (Raw.TouchFingerEvent t ts a b c d e f g) =
+  do let touchFingerEvent motion = TouchFingerEvent
+                                     (TouchFingerEventData a
+                                                           b
+                                                           motion
+                                                           (P (V2 c d))
+                                                           g)
+     let touchFingerMotionEvent = TouchFingerMotionEvent
+                                    (TouchFingerMotionEventData a
+                                                                b
+                                                                (P (V2 c d))
+                                                                (V2 e f)
+                                                                g)
+     case t of
+       Raw.SDL_FINGERDOWN   -> return (Event ts (touchFingerEvent Pressed))
+       Raw.SDL_FINGERUP     -> return (Event ts (touchFingerEvent Released))
+       Raw.SDL_FINGERMOTION -> return (Event ts touchFingerMotionEvent)
+       _                    -> error "convertRaw: Unexpected touch finger event"
 convertRaw (Raw.MultiGestureEvent _ ts a b c d e f) =
   return (Event ts
                 (MultiGestureEvent
