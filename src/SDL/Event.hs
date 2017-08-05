@@ -87,6 +87,7 @@ import Foreign.C
 import GHC.Generics (Generic)
 import SDL.Vect
 import SDL.Input.Joystick
+import SDL.Input.GameController
 import SDL.Input.Keyboard
 import SDL.Input.Mouse
 import SDL.Internal.Exception
@@ -402,16 +403,18 @@ data ControllerAxisEventData =
 data ControllerButtonEventData =
   ControllerButtonEventData {controllerButtonEventWhich :: !Raw.JoystickID
                            -- ^ The joystick instance ID that reported the event.
-                            ,controllerButtonEventButton :: !Word8
+                            ,controllerButtonEventButton :: !ControllerButton
                              -- ^ The controller button.
-                            ,controllerButtonEventState :: !Word8
+                            ,controllerButtonEventState :: !ControllerButtonState
                              -- ^ The state of the button.
                             }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Controller device event information
 data ControllerDeviceEventData =
-  ControllerDeviceEventData {controllerDeviceEventWhich :: !Int32
+  ControllerDeviceEventData {controllerDeviceEventConnection :: !ControllerDeviceConnection
+                             -- ^ Was the device added, removed, or remapped?
+                            ,controllerDeviceEventWhich :: !Int32
                              -- ^ The joystick instance ID that reported the event.
                             }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -650,9 +653,13 @@ convertRaw (Raw.JoyDeviceEvent t ts a) =
 convertRaw (Raw.ControllerAxisEvent _ ts a b c) =
   return (Event ts (ControllerAxisEvent (ControllerAxisEventData a b c)))
 convertRaw (Raw.ControllerButtonEvent _ ts a b c) =
-  return (Event ts (ControllerButtonEvent (ControllerButtonEventData a b c)))
-convertRaw (Raw.ControllerDeviceEvent _ ts a) =
-  return (Event ts (ControllerDeviceEvent (ControllerDeviceEventData a)))
+  return (Event ts 
+           (ControllerButtonEvent
+             (ControllerButtonEventData a 
+                                        (fromNumber $ fromIntegral b)
+                                        (fromNumber c))))
+convertRaw (Raw.ControllerDeviceEvent t ts a) =
+  return (Event ts (ControllerDeviceEvent (ControllerDeviceEventData (fromNumber t) a)))
 convertRaw (Raw.AudioDeviceEvent Raw.SDL_AUDIODEVICEADDED ts a b) =
   return (Event ts (AudioDeviceEvent (AudioDeviceEventData True a (b /= 0))))
 convertRaw (Raw.AudioDeviceEvent Raw.SDL_AUDIODEVICEREMOVED ts a b) =

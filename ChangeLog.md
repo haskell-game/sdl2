@@ -3,6 +3,9 @@ Unreleased
 
 * Windows builds now use `-D_SDL_main_h`. See https://github.com/haskell-game/sdl2/issues/139 for more discussion.
 * Support for event watching: `addEventWatch` and `delEventWatch`.
+* High-level structure for controller button state: `ControllerButtonState`.
+* High-level structure for controller buttons: `ControllerButton`.
+* High-level structure for controller connection: `ControllerDeviceConnection`.
 * High-level structure for joystick device connection: `JoyDeviceConnection`.
 * High-level structure for joystick button state: `JoyButtonState`.
 
