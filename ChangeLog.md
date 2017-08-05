@@ -6,6 +6,8 @@ Unreleased
 * High-level structure for controller button state: `ControllerButtonState`.
 * High-level structure for controller buttons: `ControllerButton`.
 * High-level structure for controller connection: `ControllerDeviceConnection`.
+* High-level structure for joystick device connection: `JoyDeviceConnection`.
+* High-level structure for joystick button state: `JoyButtonState`.
 
 2.2.0
 =====
@@ -52,7 +54,7 @@ Unreleased
   * `getRelativeMouseMode` in `SDL.Input.Mouse`
   * `getMouseLocation` in `SDL.Input.Mouse`
 * Remove `ClipboardUpdateEventData`
-* Merge `isScreenSaverEnabled, `enableScreenSaver`, and `disableScreenSaver`
+* Merge `isScreenSaverEnabled`, `enableScreenSaver`, and `disableScreenSaver`
   into a `screenSaverEnabled` StateVar.
 * Make function `surfaceBlit` in `SDL.Video.Renderer` return final blit
   rectangle post-clipping.

@@ -129,7 +129,6 @@ import Foreign.C.String
 import Foreign.C.Types
 import Foreign.ForeignPtr
 import Foreign.Marshal.Alloc
-import Foreign.Marshal.Array
 import Foreign.Marshal.Utils
 import Foreign.Ptr
 import Foreign.Storable
@@ -444,8 +443,8 @@ paletteNColors (Palette p) = liftIO $ Raw.paletteNColors <$> peek p
 paletteColors :: MonadIO m => Palette -> m (Maybe (SV.Vector (V4 Word8)))
 paletteColors q@(Palette p) = do
   n <- liftIO $ fromIntegral <$> paletteNColors q
-  let wrap p | p == nullPtr = Nothing
-             | otherwise    = return p
+  let wrap p' | p' == nullPtr = Nothing
+              | otherwise     = return p'
   mv <- liftIO $ wrap . castPtr . Raw.paletteColors <$> peek p
   mColor <- liftIO $ traverse newForeignPtr_ mv
   return $ flip SV.unsafeFromForeignPtr0 n <$> mColor
