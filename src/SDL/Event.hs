@@ -591,7 +591,7 @@ convertRaw (Raw.KeyboardEvent Raw.SDL_KEYUP ts a _ c d) =
                                          Released
                                          (c /= 0)
                                          (fromRawKeysym d))))
-convertRaw (Raw.KeyboardEvent _ _ _ _ _ _) = error "convertRaw: Unknown keyboard motion"
+convertRaw Raw.KeyboardEvent{} = error "convertRaw: Unknown keyboard motion"
 convertRaw (Raw.TextEditingEvent _ ts a b c d) =
   do w <- getWindowFromID a
      return (Event ts
@@ -681,7 +681,7 @@ convertRaw (Raw.AudioDeviceEvent Raw.SDL_AUDIODEVICEADDED ts a b) =
   return (Event ts (AudioDeviceEvent (AudioDeviceEventData True a (b /= 0))))
 convertRaw (Raw.AudioDeviceEvent Raw.SDL_AUDIODEVICEREMOVED ts a b) =
   return (Event ts (AudioDeviceEvent (AudioDeviceEventData False a (b /= 0))))
-convertRaw (Raw.AudioDeviceEvent _ _ _ _) =
+convertRaw Raw.AudioDeviceEvent{} =
   error "convertRaw: Unknown audio device motion"
 convertRaw (Raw.QuitEvent _ ts) =
   return (Event ts QuitEvent)
