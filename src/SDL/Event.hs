@@ -156,22 +156,22 @@ data EventPayload
   deriving (Eq, Ord, Generic, Show, Typeable)
 
 -- | A window has been shown.
-data WindowShownEventData =
-  WindowShownEventData {windowShownEventWindow :: !Window
+newtype WindowShownEventData =
+  WindowShownEventData {windowShownEventWindow :: Window
                         -- ^ The associated 'Window'.
                        }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | A window has been hidden.
-data WindowHiddenEventData =
-  WindowHiddenEventData {windowHiddenEventWindow :: !Window
+newtype WindowHiddenEventData =
+  WindowHiddenEventData {windowHiddenEventWindow :: Window
                          -- ^ The associated 'Window'.
                         }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | A part of a window has been exposed - where exposure means to become visible (for example, an overlapping window no longer overlaps with the window).
-data WindowExposedEventData =
-  WindowExposedEventData {windowExposedEventWindow :: !Window
+newtype WindowExposedEventData =
+  WindowExposedEventData {windowExposedEventWindow :: Window
                           -- ^ The associated 'Window'.
                          }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -195,64 +195,64 @@ data WindowResizedEventData =
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window size has changed, either as a result of an API call or through the system or user changing the window size; this event is followed by 'WindowResizedEvent' if the size was changed by an external event, i.e. the user or the window manager.
-data WindowSizeChangedEventData =
-  WindowSizeChangedEventData {windowSizeChangedEventWindow :: !Window
+newtype WindowSizeChangedEventData =
+  WindowSizeChangedEventData {windowSizeChangedEventWindow :: Window
                               -- ^ The associated 'Window'.
                              }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has been minimized.
-data WindowMinimizedEventData =
-  WindowMinimizedEventData {windowMinimizedEventWindow :: !Window
+newtype WindowMinimizedEventData =
+  WindowMinimizedEventData {windowMinimizedEventWindow :: Window
                             -- ^ The associated 'Window'.
                            }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has been maximized.
-data WindowMaximizedEventData =
-  WindowMaximizedEventData {windowMaximizedEventWindow :: !Window
+newtype WindowMaximizedEventData =
+  WindowMaximizedEventData {windowMaximizedEventWindow :: Window
                             -- ^ The associated 'Window'.
                            }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has been restored to normal size and position.
-data WindowRestoredEventData =
-  WindowRestoredEventData {windowRestoredEventWindow :: !Window
+newtype WindowRestoredEventData =
+  WindowRestoredEventData {windowRestoredEventWindow :: Window
                            -- ^ The associated 'Window'.
                           }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has gained mouse focus.
-data WindowGainedMouseFocusEventData =
-  WindowGainedMouseFocusEventData {windowGainedMouseFocusEventWindow :: !Window
+newtype WindowGainedMouseFocusEventData =
+  WindowGainedMouseFocusEventData {windowGainedMouseFocusEventWindow :: Window
                                    -- ^ The associated 'Window'.
                                   }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has lost mouse focus.
-data WindowLostMouseFocusEventData =
-  WindowLostMouseFocusEventData {windowLostMouseFocusEventWindow :: !Window
+newtype WindowLostMouseFocusEventData =
+  WindowLostMouseFocusEventData {windowLostMouseFocusEventWindow :: Window
                                  -- ^ The associated 'Window'.
                                 }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has gained keyboard focus.
-data WindowGainedKeyboardFocusEventData =
-  WindowGainedKeyboardFocusEventData {windowGainedKeyboardFocusEventWindow :: !Window
+newtype WindowGainedKeyboardFocusEventData =
+  WindowGainedKeyboardFocusEventData {windowGainedKeyboardFocusEventWindow :: Window
                                       -- ^ The associated 'Window'.
                                      }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window has lost keyboard focus.
-data WindowLostKeyboardFocusEventData =
-  WindowLostKeyboardFocusEventData {windowLostKeyboardFocusEventWindow :: !Window
+newtype WindowLostKeyboardFocusEventData =
+  WindowLostKeyboardFocusEventData {windowLostKeyboardFocusEventWindow :: Window
                                     -- ^ The associated 'Window'.
                                    }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window manager requests that the window be closed.
-data WindowClosedEventData =
-  WindowClosedEventData {windowClosedEventWindow :: !Window
+newtype WindowClosedEventData =
+  WindowClosedEventData {windowClosedEventWindow :: Window
                          -- ^ The associated 'Window'.
                         }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -445,8 +445,8 @@ data UserEventData =
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | A video driver dependent system event
-data SysWMEventData =
-  SysWMEventData {sysWMEventMsg :: !Raw.SysWMmsg}
+newtype SysWMEventData =
+  SysWMEventData {sysWMEventMsg :: Raw.SysWMmsg}
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | Finger touch event information.
@@ -510,15 +510,15 @@ data DollarGestureEventData =
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | An event used to request a file open by the system
-data DropEventData =
-  DropEventData {dropEventFile :: !CString
+newtype DropEventData =
+  DropEventData {dropEventFile :: CString
                  -- ^ The file name.
                 }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | SDL reported an unknown event type.
-data UnknownEventData =
-  UnknownEventData {unknownEventType :: !Word32
+newtype UnknownEventData =
+  UnknownEventData {unknownEventType :: Word32
                     -- ^ The unknown event code.
                    }
   deriving (Eq,Ord,Generic,Show,Typeable)
