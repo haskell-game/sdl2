@@ -11,6 +11,7 @@ Unreleased
 * High-level structure for controller connection: `ControllerDeviceConnection`.
 * High-level structure for joystick device connection: `JoyDeviceConnection`.
 * High-level structure for joystick button state: `JoyButtonState`.
+* Initial window visibility can be specified in `WindowConfig` for `createWindow` function.
 
 2.2.0
 =====
