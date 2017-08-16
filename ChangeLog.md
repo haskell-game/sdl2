@@ -1,7 +1,13 @@
 Unreleased
 ==========
 
+
+
+2.3.0
+=====
+
 * Windows builds now use `-D_SDL_main_h`. See https://github.com/haskell-game/sdl2/issues/139 for more discussion.
+* Some basic support for game controller events have been added. See `SDL.Input.GameController` and changes to `ControllerDeviceEventData`.
 * Support for event watching: `addEventWatch` and `delEventWatch`.
 * High-level bindings now distinguish between finger down / motion / up.
   See SDL.Event.TouchFingerEvent and SDL.Event.TouchFingerMotionEvent.
@@ -13,6 +19,9 @@ Unreleased
 * High-level structure for joystick button state: `JoyButtonState`.
 * Support for user defined events: `registerEvent`, `pushRegisteredEvent`, and `getRegisteredEvent`.
 * Initial window visibility can be specified in `WindowConfig` for `createWindow` function.
+* `WarpMouseOrigin` is now fully exported and can warp to global coordinates.
+* It's possible to retrieve palette information with `paletteNColors`, `paletteColors` and `palletColor`.
+
 
 2.2.0
 =====
