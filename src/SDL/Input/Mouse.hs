@@ -23,7 +23,7 @@ module SDL.Input.Mouse
   , getMouseButtons
 
     -- * Warping the Mouse
-  , WarpMouseOrigin
+  , WarpMouseOrigin(..)
   , warpMouse
 
     -- * Cursor Visibility
@@ -143,13 +143,16 @@ data WarpMouseOrigin
     -- ^ Move the mouse pointer within a given 'Window'.
   | WarpCurrentFocus
     -- ^ Move the mouse pointer within whichever 'Window' currently has focus.
-  -- WarpGlobal -- Needs 2.0.4
+  | WarpGlobal
+    -- ^ Move the mouse pointer in global screen space.
   deriving (Data, Eq, Generic, Ord, Show, Typeable)
 
 -- | Move the current location of a mouse pointer. The 'WarpMouseOrigin' specifies the origin for the given warp coordinates.
 warpMouse :: MonadIO m => WarpMouseOrigin -> Point V2 CInt -> m ()
 warpMouse (WarpInWindow (Window w)) (P (V2 x y)) = Raw.warpMouseInWindow w x y
 warpMouse WarpCurrentFocus (P (V2 x y)) = Raw.warpMouseInWindow nullPtr x y
+warpMouse WarpGlobal (P (V2 x y)) = throwIfNeg_ "SDL.Mouse.warpMouse" "SDL_WarpMouseGlobal" $
+  Raw.warpMouseGlobal x y
 
 -- | Get or set whether the cursor is currently visible.
 --
