@@ -7,11 +7,11 @@ mkDerivation {
   src = ./.;
   isLibrary = true;
   isExecutable = true;
-  buildDepends = [
+  libraryHaskellDepends = [
     base bytestring lens linear StateVar text transformers vector
   ];
-  extraLibraries = [ SDL2 ];
-  pkgconfigDepends = [ SDL2 ];
-  description = "Both high- and low-level bindings to the SDL library (version 2.0.3).";
+  description = "Both high- and low-level bindings to the SDL library (version 2.0.4).";
   license = stdenv.lib.licenses.bsd3;
+  librarySystemDepends = [ SDL2 ];
+  libraryPkgconfigDepends = [ SDL2 ];
 }
