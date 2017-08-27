@@ -745,7 +745,7 @@ copyEx :: MonadIO m
        -> Maybe (Rectangle CInt) -- ^ The destination rectangle to copy to, or 'Nothing' for the whole rendering target. The texture will be stretched to fill the given rectangle.
        -> CDouble -- ^ The angle of rotation in degrees. The rotation will be performed clockwise.
        -> Maybe (Point V2 CInt) -- ^ The point indicating the center of the rotation, or 'Nothing' to rotate around the center of the destination rectangle
-       -> V2 Bool -- ^ Whether to flip the destination rectangle on the X and/or Y axis
+       -> V2 Bool -- ^ Whether to flip the texture on the X and/or Y axis
        -> m ()
 copyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
   liftIO $
