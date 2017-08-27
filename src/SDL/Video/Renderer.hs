@@ -737,16 +737,16 @@ copy (Renderer r) (Texture t) srcRect dstRect =
 
 -- | Copy a portion of the texture to the current rendering target, optionally rotating it by angle around the given center and also flipping it top-bottom and/or left-right.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderCopy SDL_RenderCopyEx>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL_RenderCopyEx SDL_RenderCopyEx>@ for C documentation.
 copyEx :: MonadIO m
        => Renderer -- ^ The rendering context
        -> Texture -- ^ The source texture
        -> Maybe (Rectangle CInt) -- ^ The source rectangle to copy, or 'Nothing' for the whole texture
        -> Maybe (Rectangle CInt) -- ^ The destination rectangle to copy to, or 'Nothing' for the whole rendering target. The texture will be stretched to fill the given rectangle.
-       -> CDouble -- ^ An angle in degrees that indicates the point around which the destination rectangle will be rotated.
-       -> Maybe (Point V2 CInt) -- ^ The point of rotation
-       -> V2 Bool -- ^ Whether to flip in the X or Y axis.
-       -> m () -- ^ Whether to flip in the X or Y axis.
+       -> CDouble -- ^ The angle of rotation in degrees. The rotation will be performed clockwise.
+       -> Maybe (Point V2 CInt) -- ^ The point indicating the center of the rotation, or 'Nothing' to rotate around the center of the destination rectangle
+       -> V2 Bool -- ^ Whether to flip the destination rectangle on the X and/or Y axis
+       -> m ()
 copyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
   liftIO $
   throwIfNeg_ "SDL.Video.copyEx" "SDL_RenderCopyEx" $
