@@ -99,7 +99,7 @@ Here @events@ is a list of 'Event' values. For our application we will check if 
             'keyboardEventKeyMotion' keyboardEvent == 'Pressed' &&
             'keysymKeycode' ('keyboardEventKeysym' keyboardEvent) == 'KeycodeQ'
           _ -> False
-      qPressed = not (null (filter eventIsQPress events))
+      qPressed = any eventIsQPress events
 @
 
 In our @appLoop@ we process events and then update the screen accordingly. Here we simply use the 'Renderer'
