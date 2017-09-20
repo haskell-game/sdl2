@@ -680,12 +680,12 @@ convertRaw (Raw.JoyDeviceEvent t ts a) =
   return (Event ts (JoyDeviceEvent (JoyDeviceEventData (fromNumber t) a)))
 convertRaw (Raw.ControllerAxisEvent _ ts a b c) =
   return (Event ts (ControllerAxisEvent (ControllerAxisEventData a b c)))
-convertRaw (Raw.ControllerButtonEvent _ ts a b c) =
+convertRaw (Raw.ControllerButtonEvent t ts a b _) =
   return (Event ts 
            (ControllerButtonEvent
              (ControllerButtonEventData a 
                                         (fromNumber $ fromIntegral b)
-                                        (fromNumber c))))
+                                        (fromNumber t))))
 convertRaw (Raw.ControllerDeviceEvent t ts a) =
   return (Event ts (ControllerDeviceEvent (ControllerDeviceEventData (fromNumber t) a)))
 convertRaw (Raw.AudioDeviceEvent Raw.SDL_AUDIODEVICEADDED ts a b) =
