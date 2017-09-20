@@ -182,12 +182,12 @@ getAbsoluteMouseLocation = liftIO $
     P <$> (V2 <$> peek x <*> peek y)
 
 -- | Retrieve mouse motion
-getRelativeMouseLocation :: MonadIO m => m (Point V2 CInt)
+getRelativeMouseLocation :: MonadIO m => m (V2 CInt)
 getRelativeMouseLocation = liftIO $
   alloca $ \x ->
   alloca $ \y -> do
     _ <- Raw.getRelativeMouseState x y
-    P <$> (V2 <$> peek x <*> peek y)
+    V2 <$> peek x <*> peek y
 
 
 -- | Retrieve a mapping of which buttons are currently held down.
