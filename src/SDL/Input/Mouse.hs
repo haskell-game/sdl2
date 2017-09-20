@@ -84,14 +84,22 @@ getMouseLocationMode = do
   relativeMode <- Raw.getRelativeMouseMode
   return $ if relativeMode then RelativeLocation else AbsoluteLocation
 
+data ModalLocation
+  = AbsoluteModalLocation (Point V2 CInt)
+  | RelativeModalLocation (V2 CInt)
+  deriving (Eq, Generic, Ord, Read, Show, Typeable)
+
 -- | Return proper mouse location depending on mouse mode
-getModalMouseLocation :: MonadIO m => m (LocationMode, Point V2 CInt)
+getModalMouseLocation :: MonadIO m => m ModalLocation
 getModalMouseLocation = do
   mode <- getMouseLocationMode
-  location <- case mode of
-    RelativeLocation -> getRelativeMouseLocation
-    _ -> getAbsoluteMouseLocation
-  return (mode, location)
+  case mode of
+    AbsoluteLocation -> do
+      location <- getAbsoluteMouseLocation
+      return (AbsoluteModalLocation location)
+    RelativeLocation -> do
+      location <- getRelativeMouseLocation
+      return (RelativeModalLocation location)
 
 data MouseButton
   = ButtonLeft
