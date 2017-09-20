@@ -204,9 +204,11 @@ data WindowResizedEventData =
   deriving (Eq,Ord,Generic,Show,Typeable)
 
 -- | The window size has changed, either as a result of an API call or through the system or user changing the window size; this event is followed by 'WindowResizedEvent' if the size was changed by an external event, i.e. the user or the window manager.
-newtype WindowSizeChangedEventData =
-  WindowSizeChangedEventData {windowSizeChangedEventWindow :: Window
+data WindowSizeChangedEventData =
+  WindowSizeChangedEventData {windowSizeChangedEventWindow :: !Window
                               -- ^ The associated 'Window'.
+                             ,windowSizeChangedEventSize :: !(V2 Int32)
+                              -- ^ The new size of the 'Window'.
                              }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
@@ -567,7 +569,7 @@ convertRaw (Raw.WindowEvent t ts a b c d) =
                           (WindowResizedEventData w
                                                   (V2 c d))
                       Raw.SDL_WINDOWEVENT_SIZE_CHANGED ->
-                        WindowSizeChangedEvent (WindowSizeChangedEventData w)
+                        WindowSizeChangedEvent (WindowSizeChangedEventData w (V2 c d))
                       Raw.SDL_WINDOWEVENT_MINIMIZED ->
                         WindowMinimizedEvent (WindowMinimizedEventData w)
                       Raw.SDL_WINDOWEVENT_MAXIMIZED ->
