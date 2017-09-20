@@ -57,14 +57,17 @@ instance FromNumber ControllerButton Int32 where
     _ -> ControllerButtonInvalid
 
 -- | Identifies the state of a controller button.
-data ControllerButtonState = ControllerButtonPressed | ControllerButtonReleased
+data ControllerButtonState
+  = ControllerButtonPressed
+  | ControllerButtonReleased
+  | ControllerButtonInvalidState
   deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
-instance FromNumber ControllerButtonState Word8 where
+instance FromNumber ControllerButtonState Word32 where
   fromNumber n = case n of
-    Raw.SDL_PRESSED -> ControllerButtonPressed
-    Raw.SDL_RELEASED -> ControllerButtonReleased
-    _ -> ControllerButtonPressed
+    Raw.SDL_CONTROLLERBUTTONDOWN -> ControllerButtonPressed
+    Raw.SDL_CONTROLLERBUTTONUP -> ControllerButtonReleased
+    _ -> ControllerButtonInvalidState
 
 -- | Identified whether the game controller was added, removed, or remapped.
 data ControllerDeviceConnection
