@@ -64,7 +64,10 @@ import qualified SDL.Raw.Types as Raw
 import Control.Applicative
 #endif
 
-data LocationMode = AbsoluteLocation | RelativeLocation deriving Eq
+data LocationMode
+  = AbsoluteLocation
+  | RelativeLocation
+  deriving (Bounded, Data, Eq, Enum, Generic, Ord, Read, Show, Typeable)
 
 -- | Sets the current relative mouse mode.
 --
@@ -130,7 +133,7 @@ instance FromNumber MouseDevice Word32 where
 data MouseScrollDirection
   = ScrollNormal
   | ScrollFlipped
-  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
+  deriving (Bounded, Data, Eq, Enum, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber MouseScrollDirection Word32 where
   fromNumber n' = case n' of
