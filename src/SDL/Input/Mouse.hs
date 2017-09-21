@@ -64,7 +64,10 @@ import qualified SDL.Raw.Types as Raw
 import Control.Applicative
 #endif
 
-data LocationMode = AbsoluteLocation | RelativeLocation deriving Eq
+data LocationMode
+  = AbsoluteLocation
+  | RelativeLocation
+  deriving (Bounded, Data, Eq, Enum, Generic, Ord, Read, Show, Typeable)
 
 -- | Sets the current relative mouse mode.
 --
@@ -81,14 +84,22 @@ getMouseLocationMode = do
   relativeMode <- Raw.getRelativeMouseMode
   return $ if relativeMode then RelativeLocation else AbsoluteLocation
 
+data ModalLocation
+  = AbsoluteModalLocation (Point V2 CInt)
+  | RelativeModalLocation (V2 CInt)
+  deriving (Eq, Generic, Ord, Read, Show, Typeable)
+
 -- | Return proper mouse location depending on mouse mode
-getModalMouseLocation :: MonadIO m => m (LocationMode, Point V2 CInt)
+getModalMouseLocation :: MonadIO m => m ModalLocation
 getModalMouseLocation = do
   mode <- getMouseLocationMode
-  location <- case mode of
-    RelativeLocation -> getRelativeMouseLocation
-    _ -> getAbsoluteMouseLocation
-  return (mode, location)
+  case mode of
+    AbsoluteLocation -> do
+      location <- getAbsoluteMouseLocation
+      return (AbsoluteModalLocation location)
+    RelativeLocation -> do
+      location <- getRelativeMouseLocation
+      return (RelativeModalLocation location)
 
 data MouseButton
   = ButtonLeft
@@ -130,7 +141,7 @@ instance FromNumber MouseDevice Word32 where
 data MouseScrollDirection
   = ScrollNormal
   | ScrollFlipped
-  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
+  deriving (Bounded, Data, Eq, Enum, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber MouseScrollDirection Word32 where
   fromNumber n' = case n' of
@@ -179,12 +190,12 @@ getAbsoluteMouseLocation = liftIO $
     P <$> (V2 <$> peek x <*> peek y)
 
 -- | Retrieve mouse motion
-getRelativeMouseLocation :: MonadIO m => m (Point V2 CInt)
+getRelativeMouseLocation :: MonadIO m => m (V2 CInt)
 getRelativeMouseLocation = liftIO $
   alloca $ \x ->
   alloca $ \y -> do
     _ <- Raw.getRelativeMouseState x y
-    P <$> (V2 <$> peek x <*> peek y)
+    V2 <$> peek x <*> peek y
 
 
 -- | Retrieve a mapping of which buttons are currently held down.
