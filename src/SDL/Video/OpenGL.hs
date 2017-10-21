@@ -179,6 +179,8 @@ swapInterval = makeStateVar glGetSwapInterval glSetSwapInterval
 
 -- | Get the size of a window's underlying drawable area in pixels (for use
 -- with glViewport).
+--
+-- It may differ from 'SDL.Video.windowSize' if window was created with 'SDL.Video.windowHighDPI' flag.
 glGetDrawableSize :: MonadIO m => Window -> m (V2 CInt)
 glGetDrawableSize (Window w) =
     liftIO $

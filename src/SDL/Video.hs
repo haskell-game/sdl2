@@ -183,8 +183,8 @@ data WindowConfig = WindowConfig
   , windowMode         :: WindowMode         -- ^ Defaults to 'Windowed'.
   , windowOpenGL       :: Maybe OpenGLConfig -- ^ Defaults to 'Nothing'. Can not be changed after window creation.
   , windowPosition     :: WindowPosition     -- ^ Defaults to 'Wherever'.
-  , windowResizable    :: Bool               -- ^ Defaults to 'False'. Whether the window can be resized by the user. It is still possible to programatically change the size with 'setWindowSize'.
-  , windowInitialSize  :: V2 CInt            -- ^ Defaults to @(800, 600)@.
+  , windowResizable    :: Bool               -- ^ Defaults to 'False'. Whether the window can be resized by the user. It is still possible to programatically change the size by changing 'windowSize'.
+  , windowInitialSize  :: V2 CInt            -- ^ Defaults to @(800, 600)@. If you set 'windowHighDPI' flag, window size in screen coordinates may differ from the size in pixels. Use 'glGetDrawableSize' to get size in pixels.
   , windowVisible      :: Bool               -- ^ Defaults to 'True'.
   } deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
@@ -293,6 +293,8 @@ getWindowAbsolutePosition (Window w) =
         V2 <$> peek wPtr <*> peek hPtr
 
 -- | Get or set the size of a window's client area. Values beyond the maximum supported size are clamped.
+--
+-- If window was created with 'windowHighDPI' flag, this size may differ from the size in pixels. Use 'glGetDrawableSize' to get size in pixels.
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
