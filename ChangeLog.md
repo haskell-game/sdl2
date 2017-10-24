@@ -10,7 +10,7 @@ Unreleased
 * Some basic support for game controller events have been added. See `SDL.Input.GameController` and changes to `ControllerDeviceEventData`.
 * Support for event watching: `addEventWatch` and `delEventWatch`.
 * High-level bindings now distinguish between finger down / motion / up.
-  See SDL.Event.TouchFingerEvent and SDL.Event.TouchFingerMotionEvent.
+  See `SDL.Event.TouchFingerEvent` and `SDL.Event.TouchFingerMotionEvent`.
 * Several event payloads now have their `Window` fields modified to use `Maybe Window`, substituting `Nothing` for null pointers.
 * High-level structure for controller button state: `ControllerButtonState`.
 * High-level structure for controller buttons: `ControllerButton`.
