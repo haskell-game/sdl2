@@ -138,7 +138,7 @@ library
     Haskell2010
 
   if os(windows)
-    cpp-options: -D_SDL_main_h
+    cpp-options: -D_SDL_main_h -DSDL_main_h_
 
 executable lazyfoo-lesson-01
   if flag(examples)
