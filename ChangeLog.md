@@ -1,6 +1,9 @@
-Unreleased
-==========
-
+2.4.0
+=====
+* `getRelativeMouseLocation` now returns `Vector` instead of `Point`.
+* `getModalMouseLocation` returns either a `Vector` or a `Point`, wrapped in (new) `ModalLocation`.
+* `WindowSizeChangedEventData` includes the new window size.
+* Added an invalid state to the `ControllerButtonState` enum, and switched to a more reliable state detection method.
 
 
 2.3.0
