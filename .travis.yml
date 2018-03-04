@@ -17,8 +17,8 @@ before_install:
       export CABAL=cabal-1.18
       export PATH=/opt/ghc/$GHCVER/bin:$PATH
     fi
-  - wget http://libsdl.org/release/SDL2-2.0.4.tar.gz -O - | tar xz
-  - cd SDL2-2.0.4 && ./configure && make -j && sudo make install && cd ..
+  - wget http://libsdl.org/release/SDL2-2.0.6.tar.gz -O - | tar xz
+  - cd SDL2-2.0.6 && ./configure && make -j && sudo make install && cd ..
   - cabal install --only-d
 
 script:

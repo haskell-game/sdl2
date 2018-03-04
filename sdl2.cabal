@@ -1,6 +1,6 @@
 name:                sdl2
-version:             2.4.0.1
-synopsis:            Both high- and low-level bindings to the SDL library (version 2.0.4+).
+version:             2.4.0.2
+synopsis:            Both high- and low-level bindings to the SDL library (version 2.0.6+).
 description:
   This package contains bindings to the SDL 2 library, in both high- and
   low-level forms:
@@ -78,6 +78,7 @@ library
     SDL.Video
     SDL.Video.OpenGL
     SDL.Video.Renderer
+    SDL.Video.Vulkan
 
     SDL.Internal.Exception
     SDL.Internal.Numbered
@@ -113,13 +114,14 @@ library
 
   includes:
     SDL.h
+    SDL_vulkan.h
     sdlhelper.h
 
   extra-libraries:
     SDL2
 
   pkgconfig-depends:
-    sdl2 >= 2.0.4
+    sdl2 >= 2.0.6
 
   build-depends:
     base >= 4.7 && < 5,

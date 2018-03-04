@@ -27,6 +27,7 @@ main = do
     , windowResizable    = True
     , windowInitialSize  = V2 800 600
     , windowVisible      = True
+    , windowVulkan       = False
   }
   renderer <- createRenderer window (-1) defaultRenderer
   addEventWatch $ \ev ->

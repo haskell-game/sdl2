@@ -1,3 +1,9 @@
+2.4.0.2
+=======
+* Version 2.0.6 of the SDL2 C library is now required:
+  * Added Vulkan support. See `SDL.Video.Vulkan` module.
+
+
 2.4.0.1
 =======
 * Raise upper bounds for `exceptions` to <0.11

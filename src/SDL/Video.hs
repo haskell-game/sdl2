@@ -123,6 +123,7 @@ createWindow title config = liftIO $ do
       , if isJust $ windowOpenGL config then Raw.SDL_WINDOW_OPENGL else 0
       , if windowResizable config then Raw.SDL_WINDOW_RESIZABLE else 0
       , if windowVisible config then 0 else Raw.SDL_WINDOW_HIDDEN
+      , if windowVulkan config then Raw.SDL_WINDOW_VULKAN else 0
       ]
     setGLAttributes (OpenGLConfig (V4 r g b a) d s ms p) = do
       let (msk, v0, v1, flg) = case p of
@@ -161,6 +162,7 @@ createWindow title config = liftIO $ do
 --   , 'windowResizable'    = False
 --   , 'windowInitialSize'  = V2 800 600
 --   , 'windowVisible'      = True
+--   , 'windowVulkan'       = False
 --   }
 -- @
 defaultWindow :: WindowConfig
@@ -174,6 +176,7 @@ defaultWindow = WindowConfig
   , windowResizable    = False
   , windowInitialSize  = V2 800 600
   , windowVisible      = True
+  , windowVulkan       = False
   }
 
 data WindowConfig = WindowConfig
@@ -184,8 +187,9 @@ data WindowConfig = WindowConfig
   , windowOpenGL       :: Maybe OpenGLConfig -- ^ Defaults to 'Nothing'. Can not be changed after window creation.
   , windowPosition     :: WindowPosition     -- ^ Defaults to 'Wherever'.
   , windowResizable    :: Bool               -- ^ Defaults to 'False'. Whether the window can be resized by the user. It is still possible to programatically change the size by changing 'windowSize'.
-  , windowInitialSize  :: V2 CInt            -- ^ Defaults to @(800, 600)@. If you set 'windowHighDPI' flag, window size in screen coordinates may differ from the size in pixels. Use 'glGetDrawableSize' to get size in pixels.
+  , windowInitialSize  :: V2 CInt            -- ^ Defaults to @(800, 600)@. If you set 'windowHighDPI' flag, window size in screen coordinates may differ from the size in pixels. Use 'glGetDrawableSize' or 'SDL.Video.Vulkan.vkGetDrawableSize' to get size in pixels.
   , windowVisible      :: Bool               -- ^ Defaults to 'True'.
+  , windowVulkan       :: Bool               -- ^ Defaults to 'False'. If 'True', function 'SDL.Video.Vulkan.vkLoadLibrary' 'Nothing' will be called automatically before first window creation, and 'SDL.Video.Vulkan.vkUnloadLibrary' will be called after last window destruction.
   } deriving (Eq, Generic, Ord, Read, Show, Typeable)
 
 data WindowMode
@@ -294,7 +298,8 @@ getWindowAbsolutePosition (Window w) =
 
 -- | Get or set the size of a window's client area. Values beyond the maximum supported size are clamped.
 --
--- If window was created with 'windowHighDPI' flag, this size may differ from the size in pixels. Use 'glGetDrawableSize' to get size in pixels.
+-- If window was created with 'windowHighDPI' flag, this size may differ from the size in pixels.
+-- Use 'glGetDrawableSize' or 'SDL.Video.Vulkan.vkGetDrawableSize' to get size in pixels.
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
@@ -359,6 +364,7 @@ getWindowConfig (Window w) = do
       , windowResizable    = wFlags .&. Raw.SDL_WINDOW_RESIZABLE > 0
       , windowInitialSize  = wSize
       , windowVisible      = wFlags .&. Raw.SDL_WINDOW_SHOWN > 0
+      , windowVulkan       = wFlags .&. Raw.SDL_WINDOW_VULKAN > 0
     }
 
 -- | Get the pixel format that is used for the given window.
