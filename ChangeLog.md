@@ -4,6 +4,7 @@
 * `getModalMouseLocation` returns either a `Vector` or a `Point`, wrapped in (new) `ModalLocation`.
 * `WindowSizeChangedEventData` includes the new window size.
 * Added an invalid state to the `ControllerButtonState` enum, and switched to a more reliable state detection method.
+* Raise upper bounds for `exceptions` to <0.10
 
 
 2.3.0
