@@ -150,6 +150,7 @@ executable lazyfoo-lesson-01
   main-is: Lesson01.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson01
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-02
   if flag(examples)
@@ -161,6 +162,7 @@ executable lazyfoo-lesson-02
   main-is: Lesson02.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson02
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-03
   if flag(examples)
@@ -172,6 +174,7 @@ executable lazyfoo-lesson-03
   main-is: Lesson03.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson03
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-04
   if flag(examples)
@@ -183,6 +186,7 @@ executable lazyfoo-lesson-04
   main-is: Lesson04.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson04
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-05
   if flag(examples)
@@ -194,6 +198,7 @@ executable lazyfoo-lesson-05
   main-is: Lesson05.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson05
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-07
   if flag(examples)
@@ -205,6 +210,7 @@ executable lazyfoo-lesson-07
   main-is: Lesson07.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson07
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-08
   if flag(examples)
@@ -216,6 +222,7 @@ executable lazyfoo-lesson-08
   main-is: Lesson08.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson08
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-09
   if flag(examples)
@@ -227,6 +234,7 @@ executable lazyfoo-lesson-09
   main-is: Lesson09.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson09
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-10
   if flag(examples)
@@ -238,6 +246,7 @@ executable lazyfoo-lesson-10
   main-is: Lesson10.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson10
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-11
   if flag(examples)
@@ -249,6 +258,7 @@ executable lazyfoo-lesson-11
   main-is: Lesson11.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson11
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-12
   if flag(examples)
@@ -260,6 +270,7 @@ executable lazyfoo-lesson-12
   main-is: Lesson12.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson12
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-13
   if flag(examples)
@@ -271,6 +282,7 @@ executable lazyfoo-lesson-13
   main-is: Lesson13.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson13
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-14
   if flag(examples)
@@ -282,6 +294,7 @@ executable lazyfoo-lesson-14
   main-is: Lesson14.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson14
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-15
   if flag(examples)
@@ -293,6 +306,7 @@ executable lazyfoo-lesson-15
   main-is: Lesson15.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson15
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-17
   if flag(examples)
@@ -304,6 +318,7 @@ executable lazyfoo-lesson-17
   main-is: Lesson17.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson17
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-18
   if flag(examples)
@@ -315,6 +330,7 @@ executable lazyfoo-lesson-18
   main-is: Lesson18.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson18
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-19
   if flag(examples)
@@ -326,6 +342,7 @@ executable lazyfoo-lesson-19
   main-is: Lesson19.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson19
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-20
   if flag(examples)
@@ -340,6 +357,7 @@ executable lazyfoo-lesson-20
   main-is: Lesson20.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson20
+  other-modules: Paths_sdl2
 
 executable lazyfoo-lesson-43
   if flag(examples)
@@ -351,6 +369,7 @@ executable lazyfoo-lesson-43
   main-is: Lesson43.hs
   default-language: Haskell2010
   ghc-options: -main-is Lazyfoo.Lesson43
+  other-modules: Paths_sdl2
 
 executable twinklebear-lesson-01
   if flag(examples)
@@ -362,6 +381,7 @@ executable twinklebear-lesson-01
   main-is: Lesson01.hs
   default-language: Haskell2010
   ghc-options: -main-is TwinkleBear.Lesson01
+  other-modules: Paths_sdl2
 
 executable twinklebear-lesson-02
   if flag(examples)
@@ -373,6 +393,7 @@ executable twinklebear-lesson-02
   main-is: Lesson02.hs
   default-language: Haskell2010
   ghc-options: -main-is TwinkleBear.Lesson02
+  other-modules: Paths_sdl2
 
 executable twinklebear-lesson-04
   if flag(examples)
@@ -384,6 +405,7 @@ executable twinklebear-lesson-04
   main-is: Lesson04.hs
   default-language: Haskell2010
   ghc-options: -main-is TwinkleBear.Lesson04
+  other-modules: Paths_sdl2
 
 executable twinklebear-lesson-04a
   if flag(examples)
@@ -395,6 +417,7 @@ executable twinklebear-lesson-04a
   main-is: Lesson04a.hs
   default-language: Haskell2010
   ghc-options: -main-is TwinkleBear.Lesson04a
+  other-modules: Paths_sdl2
 
 executable twinklebear-lesson-05
   if flag(examples)
@@ -406,6 +429,7 @@ executable twinklebear-lesson-05
   main-is: Lesson05.hs
   default-language: Haskell2010
   ghc-options: -main-is TwinkleBear.Lesson05
+  other-modules: Paths_sdl2
 
 executable audio-example
   if flag(examples)
@@ -417,6 +441,7 @@ executable audio-example
   main-is: AudioExample.hs
   default-language: Haskell2010
   ghc-options: -main-is AudioExample -threaded
+  other-modules: Paths_sdl2
 
 executable eventwatch-example
   if flag(examples)
@@ -428,6 +453,7 @@ executable eventwatch-example
   main-is: EventWatch.hs
   default-language: Haskell2010
   ghc-options: -main-is EventWatch
+  other-modules: Paths_sdl2
 
 executable userevent-example
   if flag(examples)
@@ -439,6 +465,7 @@ executable userevent-example
   main-is: UserEvents.hs
   default-language: Haskell2010
   ghc-options: -main-is UserEvents
+  other-modules: Paths_sdl2
 
 executable opengl-example
   if flag(opengl-example)
@@ -450,3 +477,4 @@ executable opengl-example
   main-is: OpenGLExample.hs
   default-language: Haskell2010
   ghc-options: -main-is OpenGLExample
+  other-modules: Paths_sdl2
