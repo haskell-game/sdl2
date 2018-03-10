@@ -83,9 +83,9 @@ main = do
                                     SDL.ScancodeQ -> Sum (V3 32 0 0)
                                     SDL.ScancodeW -> Sum (V3 0 32 0)
                                     SDL.ScancodeE -> Sum (V3 0 0 32)
-                                    SDL.ScancodeA -> Sum (V3 (-32) 0 0)
-                                    SDL.ScancodeS -> Sum (V3 0 (-32) 0)
-                                    SDL.ScancodeD -> Sum (V3 0 0 (-32))
+                                    SDL.ScancodeA -> Sum (V3 224 0 0)
+                                    SDL.ScancodeS -> Sum (V3 0 224 0)
+                                    SDL.ScancodeD -> Sum (V3 0 0 224)
                                     _ -> mempty
                               | otherwise -> mempty
                          _ -> mempty) $
