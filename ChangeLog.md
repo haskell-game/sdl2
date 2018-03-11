@@ -1,3 +1,8 @@
+2.4.0.1
+=======
+* Raise upper bounds for `exceptions` to <0.11
+
+
 2.4.0
 =====
 * `getRelativeMouseLocation` now returns `Vector` instead of `Point`.
