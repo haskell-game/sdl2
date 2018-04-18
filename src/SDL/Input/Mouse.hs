@@ -203,7 +203,7 @@ getMouseButtons :: MonadIO m => m (MouseButton -> Bool)
 getMouseButtons = liftIO $
   convert <$> Raw.getMouseState nullPtr nullPtr
   where
-    convert w b = w `testBit` fromIntegral (toNumber b)
+    convert w b = w `testBit` fromIntegral (toNumber b - 1)
 
 newtype Cursor = Cursor { unwrapCursor :: Raw.Cursor }
     deriving (Eq, Typeable)
