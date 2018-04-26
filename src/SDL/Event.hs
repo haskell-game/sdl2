@@ -746,11 +746,18 @@ convertRaw (Raw.UnknownEvent t ts) =
 
 -- | Poll for currently pending events. You can only call this function in the thread that set the video mode.
 pollEvent :: MonadIO m => m (Maybe Event)
-pollEvent = liftIO $ alloca $ \e -> do
-  n <- Raw.pollEvent e
-  if n == 0
-     then return Nothing
-     else fmap Just (peek e >>= convertRaw)
+pollEvent =
+  liftIO $ do
+    n <- Raw.pollEvent nullPtr
+    -- We use NULL first to check if there's an event.
+    if n == 0
+      then return Nothing
+      else alloca $ \e -> do
+             n <- Raw.pollEvent e
+             -- Checking 0 again doesn't hurt and it's good to be safe.
+             if n == 0
+               then return Nothing
+               else fmap Just (peek e >>= convertRaw)
 
 -- | Clear the event queue by polling for all pending events.
 pollEvents :: (Functor m, MonadIO m) => m [Event]
