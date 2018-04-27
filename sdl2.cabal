@@ -140,6 +140,18 @@ library
   if os(windows)
     cpp-options: -D_SDL_main_h -DSDL_main_h_
 
+test-suite sdl-space
+  type:                exitcode-stdio-1.0
+  main-is:             Space.hs
+  hs-source-dirs:      bench
+  build-depends:       base
+                     , weigh
+                     , linear
+                     , sdl2
+                     , deepseq
+  ghc-options:         -Wall -rtsopts -O2
+  default-language:    Haskell2010
+
 executable lazyfoo-lesson-01
   if flag(examples)
     build-depends: base, sdl2
