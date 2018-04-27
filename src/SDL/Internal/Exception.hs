@@ -33,6 +33,7 @@ getError = liftIO $ do
   cstr <- Raw.getError
   Text.decodeUtf8 <$> BS.packCString cstr
 
+{-# INLINE throwIf #-}
 throwIf :: MonadIO m => (a -> Bool) -> Text -> Text -> m a -> m a
 throwIf f caller funName m = do
   a <- m
@@ -40,24 +41,31 @@ throwIf f caller funName m = do
     (SDLCallFailed caller funName <$> getError) >>= throwIO
   return a
 
+{-# INLINE throwIf_ #-}
 throwIf_ :: MonadIO m => (a -> Bool) -> Text -> Text -> m a -> m ()
 throwIf_ f caller funName m = throwIf f caller funName m >> return ()
 
+{-# INLINE throwIfNeg #-}
 throwIfNeg :: (MonadIO m, Num a, Ord a) => Text -> Text -> m a -> m a
 throwIfNeg = throwIf (< 0)
 
+{-# INLINE throwIfNeg_ #-}
 throwIfNeg_ :: (MonadIO m, Num a, Ord a) => Text -> Text -> m a -> m ()
 throwIfNeg_ = throwIf_ (< 0)
 
+{-# INLINE throwIfNull #-}
 throwIfNull :: (MonadIO m) => Text -> Text -> m (Ptr a) -> m (Ptr a)
 throwIfNull = throwIf (== nullPtr)
 
+{-# INLINE throwIf0 #-}
 throwIf0 :: (Eq a, MonadIO m, Num a) => Text -> Text -> m a -> m a
 throwIf0 = throwIf (== 0)
 
+{-# INLINE throwIfNot0 #-}
 throwIfNot0 :: (Eq a, MonadIO m, Num a) => Text -> Text -> m a -> m a
 throwIfNot0 = throwIf (/= 0)
 
+{-# INLINE throwIfNot0_ #-}
 throwIfNot0_ :: (Eq a, MonadIO m, Num a) => Text -> Text -> m a -> m ()
 throwIfNot0_ = throwIf_ (/= 0)
 

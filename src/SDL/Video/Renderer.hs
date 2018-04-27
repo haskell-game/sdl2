@@ -651,6 +651,7 @@ clear :: (Functor m, MonadIO m) => Renderer -> m ()
 clear (Renderer r) =
   throwIfNeg_ "SDL.Video.clear" "SDL_RenderClear" $
   Raw.renderClear r
+{-# INLINE clear #-}
 
 -- | Get or set the drawing scale for rendering on the current target.
 --

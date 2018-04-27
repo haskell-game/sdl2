@@ -25,6 +25,20 @@ main =
                                "Allocated >2KB! Allocations should be constant."
                         else Nothing)
           | i <- [1, 10, 100, 1000, 10000]
+          ]
+        sequence_
+          [ validateAction
+            ("pollEvent + clear " ++ show i)
+            pollEventClearTest
+            i
+            (\weight ->
+               if weightGCs weight > 0
+                 then Just "Non-zero number of garbage collections!"
+                 else if weightAllocatedBytes weight > 3000
+                        then Just
+                               "Allocated >3KB! Allocations should be constant."
+                        else Nothing)
+          | i <- [1, 10, 100, 1000, 10000]
           ])
 
 -- | Test that merely polling does not allocate or engage the GC.
@@ -36,5 +50,20 @@ pollEventTest iters = do
       go 0 = pure ()
       go i = do
         _ <- pollEvent
+        go (i - 1)
+  go iters
+
+-- | Test that merely polling and clearing the screen does not
+-- allocate or engage the GC.
+pollEventClearTest :: Int -> IO ()
+pollEventClearTest iters = do
+  initializeAll
+  window <- createWindow "pollEventClearTest" defaultWindow
+  renderer <- createRenderer window (-1) defaultRenderer
+  let go :: Int -> IO ()
+      go 0 = pure ()
+      go i = do
+        _ <- pollEvent
+        clear renderer
         go (i - 1)
   go iters
