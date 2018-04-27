@@ -12,8 +12,6 @@ import Weigh
 -- | Main entry point.
 main :: IO ()
 main =
-
-
   mainWith
     (do setColumns [Case, Allocated, GCs]
         sequence_
@@ -99,8 +97,7 @@ main =
                                "Allocated >4KB! Allocations should be constant."
                         else Nothing)
           | i <- [1, 10, 100, 1000, 2000]
-          ]
-    )
+          ])
 
 -- | Test that merely polling does not allocate or engage the GC.
 -- <https://github.com/haskell-game/sdl2/issues/178>
