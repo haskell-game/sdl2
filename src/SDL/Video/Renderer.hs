@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveFunctor #-}
@@ -118,6 +119,7 @@ module SDL.Video.Renderer
   ) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Exception (catch, throw, SomeException, uninterruptibleMask_)
 import Data.Bits
 import Data.Data (Data)
 import Data.Foldable
@@ -623,15 +625,18 @@ drawRects (Renderer r) rects = liftIO $
 -- | Fill a rectangle on the current rendering target with the drawing color.
 --
 -- See @<https://wiki.libsdl.org/SDL_RenderFillRect SDL_RenderFillRect>@ for C documentation.
-fillRect :: MonadIO m
-         => Renderer
-         -> Maybe (Rectangle CInt) -- ^ The rectangle to fill. 'Nothing' for the entire rendering context.
-         -> m ()
-fillRect (Renderer r) rect = liftIO $ do
+fillRect ::
+     MonadIO m
+  => Renderer
+  -> Maybe (Rectangle CInt) -- ^ The rectangle to fill.
+  -> m ()
+fillRect (Renderer r) rect =
+  liftIO $
   throwIfNeg_ "SDL.Video.fillRect" "SDL_RenderFillRect" $
-    maybeWith with rect $ \rPtr ->
-      Raw.renderFillRect r
-                         (castPtr rPtr)
+  case rect of
+    Nothing -> Raw.renderFillRect r nullPtr
+    Just (Rectangle (P (V2 x y)) (V2 w h)) -> Raw.renderFillRectEx r x y w h
+{-# INLINE fillRect #-}
 
 -- | Fill some number of rectangles on the current rendering target with the drawing color.
 --

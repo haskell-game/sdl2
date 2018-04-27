@@ -75,3 +75,13 @@ int SDLHelper_SetError (const char *str)
 {
   return SDL_SetError ("%s", str);
 }
+
+int SDLHelper_RenderFillRectEx(SDL_Renderer*   renderer, int x, int y, int w, int h)
+{
+  SDL_Rect rect;
+  rect.x=x;
+  rect.y=y;
+  rect.w=w;
+  rect.h=h;
+  return SDL_RenderFillRect(renderer,&rect);
+}

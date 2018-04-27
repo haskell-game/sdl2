@@ -110,6 +110,7 @@ module SDL.Raw.Video (
   renderDrawRect,
   renderDrawRects,
   renderFillRect,
+  renderFillRectEx,
   renderFillRects,
   renderGetClipRect,
   renderGetLogicalSize,
@@ -315,6 +316,7 @@ foreign import ccall "SDL.h SDL_RenderDrawPoints" renderDrawPointsFFI :: Rendere
 foreign import ccall "SDL.h SDL_RenderDrawRect" renderDrawRectFFI :: Renderer -> Ptr Rect -> IO CInt
 foreign import ccall "SDL.h SDL_RenderDrawRects" renderDrawRectsFFI :: Renderer -> Ptr Rect -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderFillRect" renderFillRectFFI :: Renderer -> Ptr Rect -> IO CInt
+foreign import ccall "sqlhelper.c SDLHelper_RenderFillRectEx" renderFillRectExFFI :: Renderer -> CInt -> CInt -> CInt -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderFillRects" renderFillRectsFFI :: Renderer -> Ptr Rect -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderGetClipRect" renderGetClipRectFFI :: Renderer -> Ptr Rect -> IO ()
 foreign import ccall "SDL.h SDL_RenderGetLogicalSize" renderGetLogicalSizeFFI :: Renderer -> Ptr CInt -> Ptr CInt -> IO ()
@@ -821,6 +823,10 @@ renderDrawRect v1 v2 = liftIO $ renderDrawRectFFI v1 v2
 renderDrawRects :: MonadIO m => Renderer -> Ptr Rect -> CInt -> m CInt
 renderDrawRects v1 v2 v3 = liftIO $ renderDrawRectsFFI v1 v2 v3
 {-# INLINE renderDrawRects #-}
+
+renderFillRectEx :: MonadIO m => Renderer -> CInt -> CInt -> CInt -> CInt -> m CInt
+renderFillRectEx v1 x y w h = liftIO $ renderFillRectExFFI v1 x y w h
+{-# INLINE renderFillRectEx #-}
 
 renderFillRect :: MonadIO m => Renderer -> Ptr Rect -> m CInt
 renderFillRect v1 v2 = liftIO $ renderFillRectFFI v1 v2

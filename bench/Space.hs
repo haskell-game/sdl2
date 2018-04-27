@@ -48,9 +48,9 @@ main =
             (\weight ->
                if weightGCs weight > 0
                  then Just "Non-zero number of garbage collections!"
-                 else if weightAllocatedBytes weight > 3000
+                 else if weightAllocatedBytes weight > 4000
                         then Just
-                               "Allocated >3KB! Allocations should be constant."
+                               "Allocated >4KB! Allocations should be constant."
                         else Nothing)
           | i <- [1, 10, 100, 1000]
           ]
@@ -62,12 +62,27 @@ main =
             (\weight ->
                if weightGCs weight > 0
                  then Just "Non-zero number of garbage collections!"
-                 else if weightAllocatedBytes weight > 3000
+                 else if weightAllocatedBytes weight > 4000
                         then Just
-                               "Allocated >3KB! Allocations should be constant."
+                               "Allocated >KB! Allocations should be constant."
                         else Nothing)
           | i <- [1, 10, 100, 1000, 2000]
-          ])
+          ]
+        sequence_
+          [ validateAction
+            ("pollEvent + drawRect " ++ show i)
+            pollEventDrawRectTest
+            i
+            (\weight ->
+               if weightGCs weight > 0
+                 then Just "Non-zero number of garbage collections!"
+                 else if weightAllocatedBytes weight > 4000
+                        then Just
+                               "Allocated >4KB! Allocations should be constant."
+                        else Nothing)
+          | i <- [1, 10, 100, 1000]
+          ]
+    )
 
 -- | Test that merely polling does not allocate or engage the GC.
 -- <https://github.com/haskell-game/sdl2/issues/178>
@@ -101,7 +116,7 @@ pollEventClearTest iters = do
 pollEventPresentTest :: Int -> IO ()
 pollEventPresentTest iters = do
   initializeAll
-  window <- createWindow "pollEventClearTest" defaultWindow
+  window <- createWindow "pollEventPresentTest" defaultWindow
   renderer <- createRenderer window (-1) defaultRenderer
   let go :: Int -> IO ()
       go 0 = pure ()
@@ -117,7 +132,7 @@ pollEventPresentTest iters = do
 pollEventDrawColorTest :: Int -> IO ()
 pollEventDrawColorTest iters = do
   initializeAll
-  window <- createWindow "pollEventClearTest" defaultWindow
+  window <- createWindow "pollEventDrawColorTest" defaultWindow
   renderer <- createRenderer window (-1) defaultRenderer
   let go :: Int -> IO ()
       go 0 = pure ()
@@ -125,6 +140,24 @@ pollEventDrawColorTest iters = do
         _ <- pollEvent
         rendererDrawColor renderer $= V4 0 0 255 255
         clear renderer
+        present renderer
+        go (i - 1)
+  go iters
+
+-- | Draw a rectangle on screen.
+pollEventDrawRectTest :: Int -> IO ()
+pollEventDrawRectTest iters = do
+  initializeAll
+  window <- createWindow "pollEventDrawRectTest" defaultWindow
+  renderer <- createRenderer window (-1) defaultRenderer
+  let go :: Int -> IO ()
+      go 0 = pure ()
+      go i = do
+        _ <- pollEvent
+        rendererDrawColor renderer $= V4 40 40 40 255
+        clear renderer
+        rendererDrawColor renderer $= V4 255 255 255 255
+        fillRect renderer (Just (Rectangle (P (V2 40 40)) (V2 80 80)))
         present renderer
         go (i - 1)
   go iters
