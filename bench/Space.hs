@@ -14,90 +14,102 @@ main :: IO ()
 main =
   mainWith
     (do setColumns [Case, Allocated, GCs]
-        sequence_
-          [ validateAction
-            ("pollEvent " ++ show i)
-            pollEventTest
-            i
-            (\weight ->
-               if weightGCs weight > 0
-                 then Just "Non-zero number of garbage collections!"
-                 else if weightAllocatedBytes weight > 2000
-                        then Just
-                               "Allocated >2KB! Allocations should be constant."
-                        else Nothing)
-          | i <- [1, 10, 100, 1000, 10000]
-          ]
-        sequence_
-          [ validateAction
-            ("pollEvent + clear " ++ show i)
-            pollEventClearTest
-            i
-            (\weight ->
-               if weightGCs weight > 0
-                 then Just "Non-zero number of garbage collections!"
-                 else if weightAllocatedBytes weight > 3000
-                        then Just
-                               "Allocated >3KB! Allocations should be constant."
-                        else Nothing)
-          | i <- [1, 10, 100, 1000, 10000]
-          ]
-        sequence_
-          [ validateAction
-            ("pollEvent + present " ++ show i)
-            pollEventPresentTest
-            i
-            (\weight ->
-               if weightGCs weight > 0
-                 then Just "Non-zero number of garbage collections!"
-                 else if weightAllocatedBytes weight > 4000
-                        then Just
-                               "Allocated >4KB! Allocations should be constant."
-                        else Nothing)
-          | i <- [1, 10, 100, 1000]
-          ]
-        sequence_
-          [ validateAction
-            ("pollEvent + drawColor " ++ show i)
-            pollEventDrawColorTest
-            i
-            (\weight ->
-               if weightGCs weight > 0
-                 then Just "Non-zero number of garbage collections!"
-                 else if weightAllocatedBytes weight > 4000
-                        then Just
-                               "Allocated >KB! Allocations should be constant."
-                        else Nothing)
-          | i <- [1, 10, 100, 1000, 2000]
-          ]
-        sequence_
-          [ validateAction
-            ("pollEvent + drawRect " ++ show i)
-            pollEventDrawRectTest
-            i
-            (\weight ->
-               if weightGCs weight > 0
-                 then Just "Non-zero number of garbage collections!"
-                 else if weightAllocatedBytes weight > 4000
-                        then Just
-                               "Allocated >4KB! Allocations should be constant."
-                        else Nothing)
-          | i <- [1, 10, 100, 1000]
-          ]
-        sequence_
-          [ validateAction
-            ("animated rect " ++ show i)
-            pollEventAnimRectTest
-            i
-            (\weight ->
-               if weightGCs weight > 0
-                 then Just "Non-zero number of garbage collections!"
-                 else if weightAllocatedBytes weight > 4000
-                        then Just
-                               "Allocated >4KB! Allocations should be constant."
-                        else Nothing)
-          | i <- [1, 10, 100, 1000, 2000]
-          ])
+        wgroup
+          "pollEvent"
+          (sequence_
+             [ validateAction
+               ("pollEvent " ++ show i)
+               pollEventTest
+               i
+               (\weight ->
+                  if weightGCs weight > 0
+                    then Just "Non-zero number of garbage collections!"
+                    else if weightAllocatedBytes weight > 2000
+                           then Just
+                                  "Allocated >2KB! Allocations should be constant."
+                           else Nothing)
+             | i <- [1, 10, 100, 1000, 10000]
+             ])
+        wgroup
+          "pollEvent+clear"
+          (sequence_
+             [ validateAction
+               ("pollEvent + clear " ++ show i)
+               pollEventClearTest
+               i
+               (\weight ->
+                  if weightGCs weight > 0
+                    then Just "Non-zero number of garbage collections!"
+                    else if weightAllocatedBytes weight > 3000
+                           then Just
+                                  "Allocated >3KB! Allocations should be constant."
+                           else Nothing)
+             | i <- [1, 10, 100, 1000, 10000]
+             ])
+        wgroup
+          "pollEvent+present"
+          (sequence_
+             [ validateAction
+               ("pollEvent + present " ++ show i)
+               pollEventPresentTest
+               i
+               (\weight ->
+                  if weightGCs weight > 0
+                    then Just "Non-zero number of garbage collections!"
+                    else if weightAllocatedBytes weight > 4000
+                           then Just
+                                  "Allocated >4KB! Allocations should be constant."
+                           else Nothing)
+             | i <- [1, 10, 100, 1000]
+             ])
+        wgroup
+          "pollEvent+drawColor"
+          (sequence_
+             [ validateAction
+               ("pollEvent + drawColor " ++ show i)
+               pollEventDrawColorTest
+               i
+               (\weight ->
+                  if weightGCs weight > 0
+                    then Just "Non-zero number of garbage collections!"
+                    else if weightAllocatedBytes weight > 4000
+                           then Just
+                                  "Allocated >KB! Allocations should be constant."
+                           else Nothing)
+             | i <- [1, 10, 100, 1000, 2000]
+             ])
+        wgroup
+          "pollEvent+drawRect"
+          (sequence_
+             [ validateAction
+               ("pollEvent + drawRect " ++ show i)
+               pollEventDrawRectTest
+               i
+               (\weight ->
+                  if weightGCs weight > 0
+                    then Just "Non-zero number of garbage collections!"
+                    else if weightAllocatedBytes weight > 4000
+                           then Just
+                                  "Allocated >4KB! Allocations should be constant."
+                           else Nothing)
+             | i <- [1, 10, 100, 1000]
+             ])
+        wgroup
+          "animated rect"
+          (sequence_
+             [ validateAction
+               ("animated rect " ++ show i)
+               pollEventAnimRectTest
+               i
+               (\weight ->
+                  if weightGCs weight > 0
+                    then Just "Non-zero number of garbage collections!"
+                    else if weightAllocatedBytes weight > 4000
+                           then Just
+                                  "Allocated >4KB! Allocations should be constant."
+                           else Nothing)
+             | i <- [1, 10, 100, 1000, 2000]
+             ]))
 
 -- | Test that merely polling does not allocate or engage the GC.
 -- <https://github.com/haskell-game/sdl2/issues/178>

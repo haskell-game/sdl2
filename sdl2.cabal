@@ -145,7 +145,7 @@ test-suite sdl-space
   main-is:             Space.hs
   hs-source-dirs:      bench
   build-depends:       base
-                     , weigh
+                     , weigh >= 0.0.8
                      , linear
                      , sdl2
                      , deepseq
