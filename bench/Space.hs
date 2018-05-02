@@ -5,9 +5,13 @@
 
 module Main where
 
-import Foreign.C (CInt)
-import SDL
-import Weigh
+import qualified Data.Vector.Storable as SV
+import qualified Data.Vector.Storable.Mutable as SVM
+import           Foreign.C (CInt)
+import           Foreign.Ptr
+import           Foreign.Storable
+import           SDL
+import           Weigh
 
 -- | Main entry point.
 main :: IO ()
@@ -109,6 +113,22 @@ main =
                                   "Allocated >4KB! Allocations should be constant."
                            else Nothing)
              | i <- [1, 10, 100, 1000, 2000]
+             ])
+        wgroup
+          "animated rects"
+          (sequence_
+             [ validateAction
+               ("animated rects " ++ show i)
+               pollEventAnimRectsTest
+               i
+               (\weight ->
+                  if weightGCs weight > 0
+                    then Just "Non-zero number of garbage collections!"
+                    else if weightAllocatedBytes weight > 5000
+                           then Just
+                                  "Allocated >4KB! Allocations should be constant."
+                           else Nothing)
+             | i <- [1, 10, 100, 1000, 2000, 3000]
              ]))
 
 -- | Test that merely polling does not allocate or engage the GC.
@@ -228,6 +248,84 @@ pollEventAnimRectTest iters = do
         present renderer
         go (State (i - 1) v' p')
   go (State iters (V2 2 1) (V2 0 0))
+  where
+    defaultWindowSize :: V2 CInt
+    defaultWindowSize = V2 800 600
+    mw :: CInt
+    mh :: CInt
+    V2 mw mh = defaultWindowSize
+    w :: CInt
+    h :: CInt
+    (w, h) = (100, 100)
+
+--------------------------------------------------------------------------------
+-- Animated rects test
+
+data Square = Square
+  {  squareV :: !(V2 CInt)
+   , squareP :: !(V2 CInt)
+  }
+
+instance Storable Square where
+  sizeOf _ = sizeOf (undefined :: V2 CInt) * 2
+  alignment _ = 1
+  poke  ptr (Square x y) = do
+    poke (castPtr ptr) x
+    poke (plusPtr ptr (sizeOf x)) y
+  peek ptr = do
+    x <- peek (castPtr ptr)
+    y <- peek (plusPtr ptr (sizeOf x))
+    pure (Square x y)
+
+-- | Animate a rectangle on the screen for n iterations.
+pollEventAnimRectsTest :: CInt -> IO ()
+pollEventAnimRectsTest iters = do
+  initializeAll
+  window <-
+    createWindow
+      "pollEventAnimRectsTest"
+      defaultWindow {windowInitialSize = defaultWindowSize}
+  renderer <- createRenderer window (-1) defaultRenderer
+  squares <-
+    SV.unsafeThaw
+      (SV.fromList
+         [ Square (V2 2 1) (V2 0 0)
+         , Square (V2 3 2) (V2 300 200)
+         , Square (V2 1 1) (V2 100 500)
+         , Square (V2 1 1) (V2 400 100)
+         , Square (V2 1 2) (V2 200 400)
+         , Square (V2 2 1) (V2 250 0)
+         , Square (V2 1 2) (V2 300 500)
+         , Square (V2 1 2) (V2 230 100)
+         , Square (V2 1 1) (V2 200 490)
+         ])
+  let go :: CInt -> IO ()
+      go !0 = pure ()
+      go !i = do
+        _ <- pollEvent
+        rendererDrawColor renderer $= V4 40 40 40 255
+        clear renderer
+        rendererDrawColor renderer $= V4 255 255 255 255
+        let animateSquare si = do
+              Square (V2 xv yv) p@(V2 x y) <- SVM.read squares si
+              let xv'
+                    | x + w > mw = -xv
+                    | x < 0 = -xv
+                    | otherwise = xv
+                  yv'
+                    | y + h > mh = -yv
+                    | y < 0 = -yv
+                    | otherwise = yv
+                  v' = V2 xv' yv'
+                  p' = p + v'
+              SVM.write squares si (Square v' p')
+              fillRect renderer (Just (Rectangle (P p') (V2 w h)))
+        let loop 0 = pure ()
+            loop si = animateSquare si>>loop (si-1)
+        loop (SVM.length squares - 1)
+        present renderer
+        go (i - 1)
+  go iters
   where
     defaultWindowSize :: V2 CInt
     defaultWindowSize = V2 800 600

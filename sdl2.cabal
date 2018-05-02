@@ -149,6 +149,7 @@ test-suite sdl-space
                      , linear
                      , sdl2
                      , deepseq
+                     , vector
   ghc-options:         -Wall -rtsopts -O2
   default-language:    Haskell2010
 
