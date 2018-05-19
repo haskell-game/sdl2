@@ -12,6 +12,8 @@ description:
   Haskell FFI calls. As such, this does not contain sum types nor error
   checking. Thus this namespace is suitable for building your own abstraction
   over SDL, but is not recommended for day-to-day programming.
+  .
+  Read "SDL" for a getting started guide.
 
 license:             BSD3
 license-file:        LICENSE

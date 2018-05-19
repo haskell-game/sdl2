@@ -1,3 +1,20 @@
+This package provides Haskell bindings for the SDL2 library.
+
+# What is SDL2?
+
+SDL (Simple DirectMedia Layer) is a library for cross-platform development of interactive applications.
+SDL provides routines for managing windows, rendering graphics, processing sound, collecting input data, and much more.
+
+The Haskell sdl2 library provides both a high- and low-level API to interface with SDL.
+
+You may also want to check out:
+
+- [sdl2-image](https://hackage.haskell.org/package/sdl2-image) - For handling different image formats such as `jpg` and `png`.
+- [sdl2-mixer](https://hackage.haskell.org/package/sdl2-mixer) - For playing audio.
+- [sdl2-gfx](https://hackage.haskell.org/package/sdl2-gfx) - For drawing graphics primitives such as circles and polygons.
+- [sdl2-ttf](https://hackage.haskell.org/package/sdl2-ttf) - For handling true type fonts.
+
+
 # Building
 
 [![Build Status](https://travis-ci.org/haskell-game/sdl2.svg?branch=master)](https://travis-ci.org/haskell-game/sdl2)
@@ -17,6 +34,10 @@ On OSX you can install SDL with [homebrew](http://brew.sh/). pkg-config is also 
 On Windows you can install SDL with `pacman` under [MSYS2](https://msys2.github.io/) (or use  [stack's embedded MSYS2](https://www.reddit.com/r/haskellgamedev/comments/4jpthu/windows_sdl2_is_now_almost_painless_via_stack/)).
 
     pacman -S mingw-w64-x86_64-pkg-config mingw-w64-x86_64-SDL2
+
+# Get Started
+
+Take a look at the [getting started guide](https://hackage.haskell.org/package/sdl2/docs/SDL.html).
 
 # Contributing
 
