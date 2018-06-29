@@ -1,3 +1,17 @@
+2.4.1.0
+=======
+
+* More SDL functions no longer allocate. See
+  https://github.com/haskell-game/sdl2/pull/179 and
+  https://github.com/haskell-game/sdl2/issues/178. Thanks to @chrisdone for this
+  work.
+
+
+* Fixed an off-by-one bug in `SDL.Input.Mouse.getMouseButtons`. See
+  https://github.com/haskell-game/sdl2/pull/177 for more information. Thanks to
+  @Linearity for identifying and fixing this bug.
+
+
 2.4.0.1
 =======
 * Raise upper bounds for `exceptions` to <0.11
