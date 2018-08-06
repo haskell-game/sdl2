@@ -75,10 +75,16 @@ If you wish to use SDL's 2D graphics API, you can also create a 'Renderer':
   renderer <- 'createRenderer' window (-1) 'defaultRenderer'
 @
 
-Finally, we enter our main application loop:
+Then, we enter our main application loop:
 
 @
   appLoop renderer
+@
+
+Finally, once our appLoop has returned we destroy the 'Window' using 'destroyWindow':
+
+@
+  'destroyWindow' window
 @
 
 For the body of your application, we enter a loop. Inside this loop you should begin by collecting all events that
@@ -134,6 +140,7 @@ main = do
   window <- 'createWindow' "My SDL Application" 'defaultWindow'
   renderer <- 'createRenderer' window (-1) 'defaultRenderer'
   appLoop renderer
+  destroyWindow window
 
 appLoop :: 'Renderer' -> IO ()
 appLoop renderer = do
