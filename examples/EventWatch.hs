@@ -18,16 +18,15 @@ main :: IO ()
 main = do
   initializeAll
   window <- createWindow "resize" WindowConfig {
-      windowBorder       = True
-    , windowHighDPI      = False
-    , windowInputGrabbed = False
-    , windowMode         = Windowed
-    , windowOpenGL       = Nothing
-    , windowPosition     = Wherever
-    , windowResizable    = True
-    , windowInitialSize  = V2 800 600
-    , windowVisible      = True
-    , windowVulkan       = False
+      windowBorder          = True
+    , windowHighDPI         = False
+    , windowInputGrabbed    = False
+    , windowMode            = Windowed
+    , windowGraphicsContext = NoGraphicsContext
+    , windowPosition        = Wherever
+    , windowResizable       = True
+    , windowInitialSize     = V2 800 600
+    , windowVisible         = True
   }
   renderer <- createRenderer window (-1) defaultRenderer
   addEventWatch $ \ev ->

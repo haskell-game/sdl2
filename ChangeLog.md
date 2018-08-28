@@ -1,8 +1,9 @@
 Upcoming
 =======
+
 * Version 2.0.6 of the SDL2 C library is now required.
 
-* Added Vulkan support. See `SDL.Video.Vulkan` module.
+* Added Vulkan support. See `SDL.Video.WindowGraphicsContext` data type and `SDL.Video.Vulkan` module.
 
 
 2.4.1.0

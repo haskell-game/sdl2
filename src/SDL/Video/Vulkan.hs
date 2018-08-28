@@ -35,10 +35,10 @@ import Control.Applicative
 --
 -- This function should be called after initializing the video driver
 -- (i.e. 'SDL.Init.initialize' ['SDL.Init.InitVideo']), but before
--- creating any windows with 'SDL.Video.windowVulkan' flag.
--- If no Vulkan loader library is loaded,
--- 'vkLoadLibrary' 'Nothing' will be automatically called
--- upon creation of the first Vulkan window.
+-- creating any windows with 'SDL.Video.windowGraphicsContext' = 'SDL.Video.VulkanContext'.
+--
+-- If no Vulkan loader library is loaded, analogue of 'vkLoadLibrary' 'Nothing'
+-- will be automatically called by SDL C library upon creation of the first Vulkan window.
 --
 -- Throws 'SDL.Exception.SDLException' if there are no working Vulkan drivers installed.
 vkLoadLibrary :: MonadIO m => Maybe FilePath -> m ()
@@ -50,8 +50,9 @@ vkLoadLibrary = \case
 
 -- | Unload the Vulkan loader library previously loaded by 'vkLoadLibrary'.
 --
--- This function will be automatically called after destruction of the last
--- window with 'SDL.Video.windowVulkan' flag.
+-- Analogue of this function will be automatically called by SDL C library
+-- after destruction of the last window with
+-- 'SDL.Video.windowGraphicsContext' = 'SDL.Video.VulkanContext'.
 vkUnloadLibrary :: MonadIO m => m ()
 vkUnloadLibrary = Raw.vkUnloadLibrary
 
@@ -73,7 +74,7 @@ vkGetVkGetInstanceProcAddr = mkVkGetInstanceProcAddrFunc <$> Raw.vkGetVkGetInsta
 -- (see <https://www.khronos.org/registry/vulkan/specs/1.0/man/html/vkCreateInstance.html>),
 -- otherwise 'vkCreateSurface' will fail.
 --
--- Window should have been created with the 'SDL.Video.windowVulkan' flag.
+-- Window should have been created with 'SDL.Video.windowGraphicsContext' = 'SDL.Video.VulkanContext'.
 --
 -- Throws 'SDL.Exception.SDLException' on failure.
 vkGetInstanceExtensions :: MonadIO m => Window -> m [CString]
@@ -87,7 +88,7 @@ vkGetInstanceExtensions (Window w) = liftIO . alloca $ \countPtr -> do
 
 -- | Create a Vulkan rendering surface for a window.
 --
--- Window should have been created with the 'SDL.Video.windowVulkan' flag.
+-- Window should have been created with 'SDL.Video.windowGraphicsContext' = 'SDL.Video.VulkanContext'.
 --
 -- Instance should have been created with the extensions returned
 -- by 'vkGetInstanceExtensions' enabled.
