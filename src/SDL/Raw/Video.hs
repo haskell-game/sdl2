@@ -195,7 +195,15 @@ module SDL.Raw.Video (
   -- * Clipboard Handling
   getClipboardText,
   hasClipboardText,
-  setClipboardText
+  setClipboardText,
+
+  -- * Vulkan support functions
+  vkLoadLibrary,
+  vkGetVkGetInstanceProcAddr,
+  vkUnloadLibrary,
+  vkGetInstanceExtensions,
+  vkCreateSurface,
+  vkGetDrawableSize
 ) where
 
 import Control.Monad.IO.Class
@@ -395,6 +403,13 @@ foreign import ccall "SDL.h SDL_GetWindowWMInfo" getWindowWMInfoFFI :: Window ->
 foreign import ccall "SDL.h SDL_GetClipboardText" getClipboardTextFFI :: IO CString
 foreign import ccall "SDL.h SDL_HasClipboardText" hasClipboardTextFFI :: IO Bool
 foreign import ccall "SDL.h SDL_SetClipboardText" setClipboardTextFFI :: CString -> IO CInt
+
+foreign import ccall "SDL_vulkan.h SDL_Vulkan_LoadLibrary" vkLoadLibraryFFI :: CString -> IO CInt
+foreign import ccall "SDL_vulkan.h SDL_Vulkan_GetVkGetInstanceProcAddr" vkGetVkGetInstanceProcAddrFFI :: IO (FunPtr VkGetInstanceProcAddrFunc)
+foreign import ccall "SDL_vulkan.h SDL_Vulkan_UnloadLibrary" vkUnloadLibraryFFI :: IO ()
+foreign import ccall "SDL_vulkan.h SDL_Vulkan_GetInstanceExtensions" vkGetInstanceExtensionsFFI :: Window -> Ptr CUInt -> Ptr CString -> IO Bool
+foreign import ccall "SDL_vulkan.h SDL_Vulkan_CreateSurface" vkCreateSurfaceFFI :: Window -> VkInstance -> Ptr VkSurfaceKHR -> IO Bool
+foreign import ccall "SDL_vulkan.h SDL_Vulkan_GetDrawableSize" vkGetDrawableSizeFFI :: Window -> Ptr CInt -> Ptr CInt -> IO ()
 
 createWindow :: MonadIO m => CString -> CInt -> CInt -> CInt -> CInt -> Word32 -> m Window
 createWindow v1 v2 v3 v4 v5 v6 = liftIO $ createWindowFFI v1 v2 v3 v4 v5 v6
@@ -1135,3 +1150,27 @@ hasClipboardText = liftIO hasClipboardTextFFI
 setClipboardText :: MonadIO m => CString -> m CInt
 setClipboardText v1 = liftIO $ setClipboardTextFFI v1
 {-# INLINE setClipboardText #-}
+
+vkLoadLibrary :: MonadIO m => CString -> m CInt
+vkLoadLibrary v1 = liftIO $ setClipboardTextFFI v1
+{-# INLINE vkLoadLibrary #-}
+
+vkGetVkGetInstanceProcAddr :: MonadIO m => m (FunPtr VkGetInstanceProcAddrFunc)
+vkGetVkGetInstanceProcAddr = liftIO vkGetVkGetInstanceProcAddrFFI
+{-# INLINE vkGetVkGetInstanceProcAddr #-}
+
+vkUnloadLibrary :: MonadIO m => m ()
+vkUnloadLibrary = liftIO vkUnloadLibraryFFI
+{-# INLINE vkUnloadLibrary #-}
+
+vkGetInstanceExtensions :: MonadIO m => Window -> Ptr CUInt -> Ptr CString -> m Bool
+vkGetInstanceExtensions v1 v2 v3 = liftIO $ vkGetInstanceExtensionsFFI v1 v2 v3
+{-# INLINE vkGetInstanceExtensions #-}
+
+vkCreateSurface :: MonadIO m => Window -> VkInstance -> Ptr VkSurfaceKHR -> m Bool
+vkCreateSurface v1 v2 v3 = liftIO $ vkCreateSurfaceFFI v1 v2 v3
+{-# INLINE vkCreateSurface #-}
+
+vkGetDrawableSize :: MonadIO m => Window -> Ptr CInt -> Ptr CInt -> m ()
+vkGetDrawableSize v1 v2 v3 = liftIO $ vkGetDrawableSizeFFI v1 v2 v3
+{-# INLINE vkGetDrawableSize #-}

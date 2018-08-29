@@ -10,7 +10,7 @@ mkDerivation {
   libraryHaskellDepends = [
     base bytestring lens linear StateVar text transformers vector
   ];
-  description = "Both high- and low-level bindings to the SDL library (version 2.0.4).";
+  description = "Both high- and low-level bindings to the SDL library (version 2.0.6).";
   license = stdenv.lib.licenses.bsd3;
   librarySystemDepends = [ SDL2 ];
   libraryPkgconfigDepends = [ SDL2 ];

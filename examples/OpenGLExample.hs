@@ -31,7 +31,7 @@ main = do
     SDL.createWindow
       "SDL / OpenGL Example"
       SDL.defaultWindow {SDL.windowInitialSize = V2 screenWidth screenHeight,
-                         SDL.windowOpenGL = Just SDL.defaultOpenGL}
+                         SDL.windowGraphicsContext = OpenGLContext SDL.defaultOpenGL}
   SDL.showWindow window
 
   _ <- SDL.glCreateContext window

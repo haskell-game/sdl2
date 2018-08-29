@@ -19,7 +19,7 @@ You may also want to check out:
 
 [![Build Status](https://travis-ci.org/haskell-game/sdl2.svg?branch=master)](https://travis-ci.org/haskell-game/sdl2)
 
-If you don't have SDL 2.0.4 or higher on your system via your
+If you don't have SDL 2.0.6 or higher on your system via your
 package manager, you can install it from the
 [official SDL site](https://www.libsdl.org/download-2.0.php).
 

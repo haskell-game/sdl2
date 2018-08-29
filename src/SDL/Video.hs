@@ -12,6 +12,7 @@ module SDL.Video
   , createWindow
   , defaultWindow
   , WindowConfig(..)
+  , WindowGraphicsContext(..)
   , WindowMode(..)
   , WindowPosition(..)
   , destroyWindow
@@ -103,9 +104,9 @@ import qualified SDL.Raw as Raw
 -- Throws 'SDLException' on failure.
 createWindow :: MonadIO m => Text -> WindowConfig -> m Window
 createWindow title config = liftIO $ do
-  case windowOpenGL config of
-    Just glcfg -> setGLAttributes glcfg
-    Nothing    -> return ()
+  case windowGraphicsContext config of
+    OpenGLContext glcfg -> setGLAttributes glcfg
+    _                   -> return ()
 
   BS.useAsCString (Text.encodeUtf8 title) $ \title' -> do
     let create = Raw.createWindow title'
@@ -120,9 +121,10 @@ createWindow title config = liftIO $ do
       , if windowHighDPI config then Raw.SDL_WINDOW_ALLOW_HIGHDPI else 0
       , if windowInputGrabbed config then Raw.SDL_WINDOW_INPUT_GRABBED else 0
       , toNumber $ windowMode config
-      , if isJust $ windowOpenGL config then Raw.SDL_WINDOW_OPENGL else 0
+      , if ctxIsOpenGL (windowGraphicsContext config) then Raw.SDL_WINDOW_OPENGL else 0
       , if windowResizable config then Raw.SDL_WINDOW_RESIZABLE else 0
       , if windowVisible config then 0 else Raw.SDL_WINDOW_HIDDEN
+      , if windowGraphicsContext config == VulkanContext then Raw.SDL_WINDOW_VULKAN else 0
       ]
     setGLAttributes (OpenGLConfig (V4 r g b a) d s ms p) = do
       let (msk, v0, v1, flg) = case p of
@@ -152,41 +154,58 @@ createWindow title config = liftIO $ do
 --
 -- @
 -- 'defaultWindow' = 'WindowConfig'
---   { 'windowBorder'       = True
---   , 'windowHighDPI'      = False
---   , 'windowInputGrabbed' = False
---   , 'windowMode'         = 'Windowed'
---   , 'windowOpenGL'       = Nothing
---   , 'windowPosition'     = 'Wherever'
---   , 'windowResizable'    = False
---   , 'windowInitialSize'  = V2 800 600
---   , 'windowVisible'      = True
+--   { 'windowBorder'          = True
+--   , 'windowHighDPI'         = False
+--   , 'windowInputGrabbed'    = False
+--   , 'windowMode'            = 'Windowed'
+--   , 'windowGraphicsContext' = NoGraphicsContext
+--   , 'windowPosition'        = 'Wherever'
+--   , 'windowResizable'       = False
+--   , 'windowInitialSize'     = V2 800 600
+--   , 'windowVisible'         = True
 --   }
 -- @
 defaultWindow :: WindowConfig
 defaultWindow = WindowConfig
-  { windowBorder       = True
-  , windowHighDPI      = False
-  , windowInputGrabbed = False
-  , windowMode         = Windowed
-  , windowOpenGL       = Nothing
-  , windowPosition     = Wherever
-  , windowResizable    = False
-  , windowInitialSize  = V2 800 600
-  , windowVisible      = True
+  { windowBorder          = True
+  , windowHighDPI         = False
+  , windowInputGrabbed    = False
+  , windowMode            = Windowed
+  , windowGraphicsContext = NoGraphicsContext
+  , windowPosition        = Wherever
+  , windowResizable       = False
+  , windowInitialSize     = V2 800 600
+     , windowVisible      = True
   }
 
 data WindowConfig = WindowConfig
-  { windowBorder       :: Bool               -- ^ Defaults to 'True'.
-  , windowHighDPI      :: Bool               -- ^ Defaults to 'False'. Can not be changed after window creation.
-  , windowInputGrabbed :: Bool               -- ^ Defaults to 'False'. Whether the mouse shall be confined to the window.
-  , windowMode         :: WindowMode         -- ^ Defaults to 'Windowed'.
-  , windowOpenGL       :: Maybe OpenGLConfig -- ^ Defaults to 'Nothing'. Can not be changed after window creation.
-  , windowPosition     :: WindowPosition     -- ^ Defaults to 'Wherever'.
-  , windowResizable    :: Bool               -- ^ Defaults to 'False'. Whether the window can be resized by the user. It is still possible to programatically change the size by changing 'windowSize'.
-  , windowInitialSize  :: V2 CInt            -- ^ Defaults to @(800, 600)@. If you set 'windowHighDPI' flag, window size in screen coordinates may differ from the size in pixels. Use 'glGetDrawableSize' to get size in pixels.
-  , windowVisible      :: Bool               -- ^ Defaults to 'True'.
+  { windowBorder          :: Bool                  -- ^ Defaults to 'True'.
+  , windowHighDPI         :: Bool                  -- ^ Defaults to 'False'. Can not be changed after window creation.
+  , windowInputGrabbed    :: Bool                  -- ^ Defaults to 'False'. Whether the mouse shall be confined to the window.
+  , windowMode            :: WindowMode            -- ^ Defaults to 'Windowed'.
+  , windowGraphicsContext :: WindowGraphicsContext -- ^ Defaults to 'NoGraphicsContext'. Can not be changed after window creation.
+  , windowPosition        :: WindowPosition        -- ^ Defaults to 'Wherever'.
+  , windowResizable       :: Bool                  -- ^ Defaults to 'False'. Whether the window can be resized by the user. It is still possible to programatically change the size by changing 'windowSize'.
+  , windowInitialSize     :: V2 CInt               -- ^ Defaults to @(800, 600)@. If you set 'windowHighDPI' flag, window size in screen coordinates may differ from the size in pixels. Use 'glGetDrawableSize' or 'SDL.Video.Vulkan.vkGetDrawableSize' to get size in pixels.
+  , windowVisible         :: Bool                  -- ^ Defaults to 'True'.
   } deriving (Eq, Generic, Ord, Read, Show, Typeable)
+
+-- | Configuration of additional graphics context that will be created for window.
+--
+--   Can not be changed after window creation.
+data WindowGraphicsContext
+  = NoGraphicsContext          -- ^ Window will be created without any additional graphics context.
+  | OpenGLContext OpenGLConfig -- ^ Window will be created with OpenGL support with parameters from 'OpenGLConfig'.
+  | VulkanContext              -- ^ Window will be created with Vulkan support.
+                               --   The following functions will be implicitly called by SDL C library:
+                               --
+                               --     1. analogue of 'SDL.Video.Vulkan.vkLoadLibrary' 'Nothing' will be called automatically before first window creation;
+                               --     2. analogue of 'SDL.Video.Vulkan.vkUnloadLibrary' will be called after last window destruction.
+  deriving (Eq, Generic, Ord, Read, Show, Typeable)
+
+ctxIsOpenGL :: WindowGraphicsContext -> Bool
+ctxIsOpenGL (OpenGLContext _) = True
+ctxIsOpenGL _                 = False
 
 data WindowMode
   = Fullscreen        -- ^ Real fullscreen with a video mode change
@@ -294,7 +313,8 @@ getWindowAbsolutePosition (Window w) =
 
 -- | Get or set the size of a window's client area. Values beyond the maximum supported size are clamped.
 --
--- If window was created with 'windowHighDPI' flag, this size may differ from the size in pixels. Use 'glGetDrawableSize' to get size in pixels.
+-- If window was created with 'windowHighDPI' flag, this size may differ from the size in pixels.
+-- Use 'glGetDrawableSize' or 'SDL.Video.Vulkan.vkGetDrawableSize' to get size in pixels.
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
@@ -339,7 +359,7 @@ windowData (Window w) key = makeStateVar getWindowData setWindowData
 
 -- | Retrieve the configuration of the given window.
 --
--- Note that 'Nothing' will be returned instead of potential OpenGL parameters
+-- Note that 'NoGraphicsContext' will be returned instead of potential OpenGL parameters
 -- used during the creation of the window.
 getWindowConfig :: MonadIO m => Window -> m WindowConfig
 getWindowConfig (Window w) = do
@@ -349,16 +369,17 @@ getWindowConfig (Window w) = do
     wPos  <- getWindowAbsolutePosition (Window w)
 
     return WindowConfig {
-        windowBorder       = wFlags .&. Raw.SDL_WINDOW_BORDERLESS == 0
-      , windowHighDPI      = wFlags .&. Raw.SDL_WINDOW_ALLOW_HIGHDPI > 0
-      , windowInputGrabbed = wFlags .&. Raw.SDL_WINDOW_INPUT_GRABBED > 0
-      , windowMode         = fromNumber wFlags
-        -- Should we store the openGL config that was used to create the window?
-      , windowOpenGL       = Nothing
-      , windowPosition     = Absolute (P wPos)
-      , windowResizable    = wFlags .&. Raw.SDL_WINDOW_RESIZABLE > 0
-      , windowInitialSize  = wSize
-      , windowVisible      = wFlags .&. Raw.SDL_WINDOW_SHOWN > 0
+        windowBorder          = wFlags .&. Raw.SDL_WINDOW_BORDERLESS == 0
+      , windowHighDPI         = wFlags .&. Raw.SDL_WINDOW_ALLOW_HIGHDPI > 0
+      , windowInputGrabbed    = wFlags .&. Raw.SDL_WINDOW_INPUT_GRABBED > 0
+      , windowMode            = fromNumber wFlags
+        -- Should we store the OpenGL config that was used to create the window?
+      , windowGraphicsContext = if wFlags .&. Raw.SDL_WINDOW_VULKAN > 0
+                                  then VulkanContext else NoGraphicsContext
+      , windowPosition        = Absolute (P wPos)
+      , windowResizable       = wFlags .&. Raw.SDL_WINDOW_RESIZABLE > 0
+      , windowInitialSize     = wSize
+      , windowVisible         = wFlags .&. Raw.SDL_WINDOW_SHOWN > 0
     }
 
 -- | Get the pixel format that is used for the given window.

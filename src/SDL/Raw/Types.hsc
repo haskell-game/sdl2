@@ -2,6 +2,8 @@
 module SDL.Raw.Types (
   -- * Type Aliases
   -- ** Function Types
+  VkGetInstanceProcAddrFunc,
+
   AudioCallback,
   EventFilter,
   HintCallback,
@@ -40,6 +42,8 @@ module SDL.Raw.Types (
   TimerID,
   TLSID,
   TouchID,
+  VkInstance,
+  VkSurfaceKHR,
   Window,
 
   -- * Data Structures
@@ -80,6 +84,8 @@ import Foreign.Marshal.Array
 import Foreign.Ptr
 import Foreign.Storable
 import SDL.Raw.Enum
+
+type VkGetInstanceProcAddrFunc = VkInstance -> CString -> IO (FunPtr ())
 
 type AudioCallback = FunPtr (Ptr () -> Ptr Word8 -> CInt -> IO ())
 type EventFilter = FunPtr (Ptr () -> Ptr Event -> IO CInt)
@@ -140,6 +146,8 @@ type ThreadID = CULong
 type TimerID = CInt
 type TLSID = CUInt
 type TouchID = Int64
+type VkInstance = Ptr ()
+type VkSurfaceKHR = Word64
 type Window = Ptr ()
 
 data Atomic = Atomic
