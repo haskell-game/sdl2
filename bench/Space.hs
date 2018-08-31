@@ -44,9 +44,9 @@ main =
                (\weight ->
                   if weightGCs weight > 0
                     then Just "Non-zero number of garbage collections!"
-                    else if weightAllocatedBytes weight > 3000
+                    else if weightAllocatedBytes weight > 4000
                            then Just
-                                  "Allocated >3KB! Allocations should be constant."
+                                  "Allocated >4KB! Allocations should be constant."
                            else Nothing)
              | i <- [1, 10, 100, 1000, 10000]
              ])
