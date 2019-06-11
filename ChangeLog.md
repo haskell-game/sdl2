@@ -1,4 +1,4 @@
-Upcoming
+2.5.0.0
 =======
 
 * Version 2.0.6 of the SDL2 C library is now required.
