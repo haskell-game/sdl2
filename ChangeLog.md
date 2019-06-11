@@ -5,6 +5,8 @@ Upcoming
 
 * Added Vulkan support. See `SDL.Video.WindowGraphicsContext` data type and `SDL.Video.Vulkan` module.
 
+* Support `StateVar` < 1.3
+
 
 2.4.1.0
 =======
