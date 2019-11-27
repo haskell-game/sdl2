@@ -33,6 +33,27 @@ module SDL.Raw.Enum (
   pattern SDL_BLENDMODE_ADD,
   pattern SDL_BLENDMODE_MOD,
 
+  -- ** Blend Operation
+  BlendOperation,
+  pattern SDL_BLENDOPERATION_ADD,
+  pattern SDL_BLENDOPERATION_SUBTRACT,
+  pattern SDL_BLENDOPERATION_REV_SUBTRACT,
+  pattern SDL_BLENDOPERATION_MINIMUM,
+  pattern SDL_BLENDOPERATION_MAXIMUM,
+
+  -- ** Blend Factor
+  BlendFactor,
+  pattern SDL_BLENDFACTOR_ZERO,
+  pattern SDL_BLENDFACTOR_ONE,
+  pattern SDL_BLENDFACTOR_SRC_COLOR,
+  pattern SDL_BLENDFACTOR_ONE_MINUS_SRC_COLOR,
+  pattern SDL_BLENDFACTOR_SRC_ALPHA,
+  pattern SDL_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+  pattern SDL_BLENDFACTOR_DST_COLOR,
+  pattern SDL_BLENDFACTOR_ONE_MINUS_DST_COLOR,
+  pattern SDL_BLENDFACTOR_DST_ALPHA,
+  pattern SDL_BLENDFACTOR_ONE_MINUS_DST_ALPHA,
+
   -- ** Endian Detetection
   pattern SDL_BYTEORDER,
   pattern SDL_LIL_ENDIAN,
@@ -918,6 +939,8 @@ import Foreign.C.Types
 type AudioFormat = (#type SDL_AudioFormat)
 type AudioStatus = (#type SDL_AudioStatus)
 type BlendMode = (#type SDL_BlendMode)
+type BlendOperation = (#type SDL_BlendOperation)
+type BlendFactor = (#type SDL_BlendFactor)
 type Endian = CInt
 type EventAction = (#type SDL_eventaction)
 type GameControllerAxis = (#type SDL_GameControllerAxis)
@@ -958,6 +981,23 @@ pattern SDL_BLENDMODE_NONE = (#const SDL_BLENDMODE_NONE) :: BlendMode
 pattern SDL_BLENDMODE_BLEND = (#const SDL_BLENDMODE_BLEND) :: BlendMode
 pattern SDL_BLENDMODE_ADD = (#const SDL_BLENDMODE_ADD) :: BlendMode
 pattern SDL_BLENDMODE_MOD = (#const SDL_BLENDMODE_MOD) :: BlendMode
+
+pattern SDL_BLENDOPERATION_ADD = (#const SDL_BLENDOPERATION_ADD) :: BlendOperation
+pattern SDL_BLENDOPERATION_SUBTRACT = (#const SDL_BLENDOPERATION_SUBTRACT) :: BlendOperation
+pattern SDL_BLENDOPERATION_REV_SUBTRACT = (#const SDL_BLENDOPERATION_REV_SUBTRACT) :: BlendOperation
+pattern SDL_BLENDOPERATION_MINIMUM = (#const SDL_BLENDOPERATION_MINIMUM) :: BlendOperation
+pattern SDL_BLENDOPERATION_MAXIMUM = (#const SDL_BLENDOPERATION_MAXIMUM) :: BlendOperation
+
+pattern SDL_BLENDFACTOR_ZERO = (#const SDL_BLENDFACTOR_ZERO) :: BlendFactor
+pattern SDL_BLENDFACTOR_ONE = (#const SDL_BLENDFACTOR_ONE) :: BlendFactor
+pattern SDL_BLENDFACTOR_SRC_COLOR = (#const SDL_BLENDFACTOR_SRC_COLOR) :: BlendFactor
+pattern SDL_BLENDFACTOR_ONE_MINUS_SRC_COLOR = (#const SDL_BLENDFACTOR_ONE_MINUS_SRC_COLOR) :: BlendFactor
+pattern SDL_BLENDFACTOR_SRC_ALPHA = (#const SDL_BLENDFACTOR_SRC_ALPHA) :: BlendFactor
+pattern SDL_BLENDFACTOR_ONE_MINUS_SRC_ALPHA = (#const SDL_BLENDFACTOR_ONE_MINUS_SRC_ALPHA) :: BlendFactor
+pattern SDL_BLENDFACTOR_DST_COLOR = (#const SDL_BLENDFACTOR_DST_COLOR) :: BlendFactor
+pattern SDL_BLENDFACTOR_ONE_MINUS_DST_COLOR = (#const SDL_BLENDFACTOR_ONE_MINUS_DST_COLOR) :: BlendFactor
+pattern SDL_BLENDFACTOR_DST_ALPHA = (#const SDL_BLENDFACTOR_DST_ALPHA) :: BlendFactor
+pattern SDL_BLENDFACTOR_ONE_MINUS_DST_ALPHA = (#const SDL_BLENDFACTOR_ONE_MINUS_DST_ALPHA) :: BlendFactor
 
 pattern SDL_BYTEORDER = (#const SDL_BYTEORDER) :: Endian
 pattern SDL_LIL_ENDIAN = (#const SDL_LIL_ENDIAN) :: Endian
