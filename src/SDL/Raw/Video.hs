@@ -1152,7 +1152,7 @@ setClipboardText v1 = liftIO $ setClipboardTextFFI v1
 {-# INLINE setClipboardText #-}
 
 vkLoadLibrary :: MonadIO m => CString -> m CInt
-vkLoadLibrary v1 = liftIO $ setClipboardTextFFI v1
+vkLoadLibrary v1 = liftIO $ vkLoadLibraryFFI v1
 {-# INLINE vkLoadLibrary #-}
 
 vkGetVkGetInstanceProcAddr :: MonadIO m => m (FunPtr VkGetInstanceProcAddrFunc)
