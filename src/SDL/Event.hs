@@ -760,7 +760,7 @@ pollEvent =
                else fmap Just (peek e >>= convertRaw)
 
 -- | Clear the event queue by polling for all pending events.
-pollEvents :: (Functor m, MonadIO m) => m [Event]
+pollEvents :: MonadIO m => m [Event]
 pollEvents =
   do e <- pollEvent
      case e of
