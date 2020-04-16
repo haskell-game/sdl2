@@ -1,6 +1,12 @@
 2.5.2.0
 =======
 
+* Correct SDL.Raw.Video.vkLoadLibrary to correctly call vkLoadLibraryFFI, rather
+  than setClipboardTextFFI. See https://github.com/haskell-game/sdl2/pull/209.
+
+2.5.1.0
+=======
+
 * Support `linear-1.21`
 
 
