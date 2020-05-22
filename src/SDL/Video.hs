@@ -225,8 +225,8 @@ instance ToNumber WindowMode Word32 where
 instance FromNumber WindowMode Word32 where
   fromNumber n = fromMaybe Windowed . getFirst $
     foldMap First [
-        sdlWindowFullscreen
-      , sdlWindowFullscreenDesktop
+        sdlWindowFullscreenDesktop
+      , sdlWindowFullscreen
       , sdlWindowMaximized
       , sdlWindowMinimized
       ]
