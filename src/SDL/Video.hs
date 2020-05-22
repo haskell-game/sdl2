@@ -225,15 +225,15 @@ instance ToNumber WindowMode Word32 where
 instance FromNumber WindowMode Word32 where
   fromNumber n = fromMaybe Windowed . getFirst $
     foldMap First [
-        sdlWindowFullscreen
-      , sdlWindowFullscreenDesktop
+        sdlWindowFullscreenDesktop
+      , sdlWindowFullscreen
       , sdlWindowMaximized
       , sdlWindowMinimized
       ]
     where
-      maybeBit val msk = if n .&. msk > 0 then Just val else Nothing
-      sdlWindowFullscreen        = maybeBit Fullscreen Raw.SDL_WINDOW_FULLSCREEN
+      maybeBit val msk = if n .&. msk == msk then Just val else Nothing
       sdlWindowFullscreenDesktop = maybeBit FullscreenDesktop Raw.SDL_WINDOW_FULLSCREEN_DESKTOP
+      sdlWindowFullscreen        = maybeBit Fullscreen Raw.SDL_WINDOW_FULLSCREEN
       sdlWindowMaximized         = maybeBit Maximized Raw.SDL_WINDOW_MAXIMIZED
       sdlWindowMinimized         = maybeBit Minimized Raw.SDL_WINDOW_MINIMIZED
 
