@@ -545,7 +545,7 @@ instance Storable Event where
         which <- (#peek SDL_Event, caxis.which) ptr
         axis <- (#peek SDL_Event, caxis.axis) ptr
         value <- (#peek SDL_Event, caxis.value) ptr
-        return $! ControllerButtonEvent typ timestamp which axis value
+        return $! ControllerAxisEvent typ timestamp which axis value
       (#const SDL_CONTROLLERBUTTONDOWN) -> controllerbutton $ ControllerButtonEvent typ timestamp
       (#const SDL_CONTROLLERBUTTONUP) -> controllerbutton $ ControllerButtonEvent typ timestamp
       (#const SDL_CONTROLLERDEVICEADDED) -> controllerdevice $ ControllerDeviceEvent typ timestamp
