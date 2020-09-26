@@ -13,8 +13,8 @@ sinSamples :: [Int16]
 sinSamples =
   map (\n ->
          let t = fromIntegral n / 48000 :: Double
-             freq = 440 * 4
-         in round (fromIntegral (maxBound `div` 2 :: Int16) * sin (t * freq)))
+             freq = 440
+         in round (fromIntegral (maxBound `div` 2 :: Int16) * sin (2 * pi * t * freq)))
       [0 :: Int32 ..]
 
 audioCB :: IORef [Int16] -> AudioFormat sampleType -> V.IOVector sampleType -> IO ()
