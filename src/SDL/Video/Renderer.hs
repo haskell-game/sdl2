@@ -78,7 +78,7 @@ module SDL.Video.Renderer
   , paletteColors
   , paletteColor
   , PixelFormat(..)
-  , SurfacePixelFormat
+  , SurfacePixelFormat(..)
   , formatPalette
   , setPaletteColors
   , pixelFormatToMasks
