@@ -764,7 +764,7 @@ pollEvent =
 --
 -- Like 'pollEvent' this function should only be called in the OS thread which
 -- set the video mode.
-pollEvents :: (Functor m, MonadIO m) => m [Event]
+pollEvents :: MonadIO m => m [Event]
 pollEvents =
   do e <- pollEvent
      case e of
