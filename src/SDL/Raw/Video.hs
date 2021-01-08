@@ -32,11 +32,13 @@ module SDL.Raw.Video (
   getDisplayDPI,
   getDisplayMode,
   getDisplayName,
+  getDisplayUsableBounds,
   getGrabbedWindow,
   getNumDisplayModes,
   getNumVideoDisplays,
   getNumVideoDrivers,
   getVideoDriver,
+  getWindowBordersSize,
   getWindowBrightness,
   getWindowData,
   getWindowDisplayIndex,
@@ -81,6 +83,7 @@ module SDL.Raw.Video (
   videoQuit,
 
   -- * 2D Accelerated Rendering
+  composeCustomBlendMode,
   createRenderer,
   createSoftwareRenderer,
   createTexture,
@@ -247,11 +250,13 @@ foreign import ccall "SDL.h SDL_GetDisplayBounds" getDisplayBoundsFFI :: CInt ->
 foreign import ccall "SDL.h SDL_GetDisplayDPI" getDisplayDPIFFI :: CInt -> Ptr CFloat -> Ptr CFloat -> Ptr CFloat -> IO CInt
 foreign import ccall "SDL.h SDL_GetDisplayMode" getDisplayModeFFI :: CInt -> CInt -> Ptr DisplayMode -> IO CInt
 foreign import ccall "SDL.h SDL_GetDisplayName" getDisplayNameFFI :: CInt -> IO CString
+foreign import ccall "SDL.h SDL_GetDisplayUsableBounds" getDisplayUsableBoundsFFI :: CInt -> Ptr Rect -> IO CInt
 foreign import ccall "SDL.h SDL_GetGrabbedWindow" getGrabbedWindowFFI :: IO Window
 foreign import ccall "SDL.h SDL_GetNumDisplayModes" getNumDisplayModesFFI :: CInt -> IO CInt
 foreign import ccall "SDL.h SDL_GetNumVideoDisplays" getNumVideoDisplaysFFI :: IO CInt
 foreign import ccall "SDL.h SDL_GetNumVideoDrivers" getNumVideoDriversFFI :: IO CInt
 foreign import ccall "SDL.h SDL_GetVideoDriver" getVideoDriverFFI :: CInt -> IO CString
+foreign import ccall "SDL.h SDL_GetWindowBordersSize" getWindowBordersSizeFFI :: Window -> Ptr CInt -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 foreign import ccall "SDL.h SDL_GetWindowBrightness" getWindowBrightnessFFI :: Window -> IO CFloat
 foreign import ccall "SDL.h SDL_GetWindowData" getWindowDataFFI :: Window -> CString -> IO (Ptr ())
 foreign import ccall "SDL.h SDL_GetWindowDisplayIndex" getWindowDisplayIndexFFI :: Window -> IO CInt
@@ -295,6 +300,7 @@ foreign import ccall "SDL.h SDL_UpdateWindowSurfaceRects" updateWindowSurfaceRec
 foreign import ccall "SDL.h SDL_VideoInit" videoInitFFI :: CString -> IO CInt
 foreign import ccall "SDL.h SDL_VideoQuit" videoQuitFFI :: IO ()
 
+foreign import ccall "SDL.h SDL_ComposeCustomBlendMode" composeCustomBlendModeFFI :: BlendFactor -> BlendFactor -> BlendOperation -> BlendFactor -> BlendFactor -> BlendOperation -> IO BlendMode
 foreign import ccall "SDL.h SDL_CreateRenderer" createRendererFFI :: Window -> CInt -> Word32 -> IO Renderer
 foreign import ccall "SDL.h SDL_CreateSoftwareRenderer" createSoftwareRendererFFI :: Ptr Surface -> IO Renderer
 foreign import ccall "SDL.h SDL_CreateTexture" createTextureFFI :: Renderer -> Word32 -> CInt -> CInt -> CInt -> IO Texture
@@ -539,6 +545,10 @@ getDisplayName :: MonadIO m => CInt -> m CString
 getDisplayName v1 = liftIO $ getDisplayNameFFI v1
 {-# INLINE getDisplayName #-}
 
+getDisplayUsableBounds :: MonadIO m => CInt -> Ptr Rect -> m CInt
+getDisplayUsableBounds v1 v2 = liftIO $ getDisplayUsableBoundsFFI v1 v2
+{-# INLINE getDisplayUsableBounds #-}
+
 getGrabbedWindow :: MonadIO m => m Window
 getGrabbedWindow = liftIO getGrabbedWindowFFI
 {-# INLINE getGrabbedWindow #-}
@@ -558,6 +568,10 @@ getNumVideoDrivers = liftIO getNumVideoDriversFFI
 getVideoDriver :: MonadIO m => CInt -> m CString
 getVideoDriver v1 = liftIO $ getVideoDriverFFI v1
 {-# INLINE getVideoDriver #-}
+
+getWindowBordersSize :: MonadIO m => Window -> Ptr CInt -> Ptr CInt -> Ptr CInt -> Ptr CInt -> m CInt
+getWindowBordersSize v1 v2 v3 v4 v5 = liftIO $ getWindowBordersSizeFFI v1 v2 v3 v4 v5
+{-# INLINE getWindowBordersSize #-}
 
 getWindowBrightness :: MonadIO m => Window -> m CFloat
 getWindowBrightness v1 = liftIO $ getWindowBrightnessFFI v1
@@ -726,6 +740,10 @@ videoInit v1 = liftIO $ videoInitFFI v1
 videoQuit :: MonadIO m => m ()
 videoQuit = liftIO videoQuitFFI
 {-# INLINE videoQuit #-}
+
+composeCustomBlendMode :: MonadIO m => BlendFactor -> BlendFactor -> BlendOperation -> BlendFactor -> BlendFactor -> BlendOperation -> m BlendMode
+composeCustomBlendMode v1 v2 v3 v4 v5 v6 = liftIO $ composeCustomBlendModeFFI v1 v2 v3 v4 v5 v6
+{-# INLINE composeCustomBlendMode #-}
 
 createRenderer :: MonadIO m => Window -> CInt -> Word32 -> m Renderer
 createRenderer v1 v2 v3 = liftIO $ createRendererFFI v1 v2 v3
