@@ -17,6 +17,7 @@ module SDL.Input.Mouse
   , MouseScrollDirection(..)
 
     -- * Mouse State
+  , ModalLocation(..)
   , getModalMouseLocation
   , getAbsoluteMouseLocation
   , getRelativeMouseLocation
