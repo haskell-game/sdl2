@@ -66,7 +66,9 @@ module SDL.Raw.Types (
   Palette(..),
   PixelFormat(..),
   Point(..),
+  FPoint(..),
   Rect(..),
+  FRect(..),
   RendererInfo(..),
   RWops(..),
   Surface(..),
@@ -1332,6 +1334,22 @@ instance Storable Point where
     (#poke SDL_Point, x) ptr x
     (#poke SDL_Point, y) ptr y
 
+data FPoint = FPoint
+  { fPointX :: !CFloat
+  , fPointY :: !CFloat
+  } deriving (Eq, Show, Typeable)
+
+instance Storable FPoint where
+  sizeOf _ = (#size SDL_FPoint)
+  alignment = sizeOf
+  peek ptr = do
+    x <- (#peek SDL_FPoint, x) ptr
+    y <- (#peek SDL_FPoint, y) ptr
+    return $! FPoint x y
+  poke ptr (FPoint x y) = do
+    (#poke SDL_FPoint, x) ptr x
+    (#poke SDL_FPoint, y) ptr y
+
 data Rect = Rect
   { rectX :: !CInt
   , rectY :: !CInt
@@ -1353,6 +1371,28 @@ instance Storable Rect where
     (#poke SDL_Rect, y) ptr y
     (#poke SDL_Rect, w) ptr w
     (#poke SDL_Rect, h) ptr h
+
+data FRect = FRect
+  { fRectX :: !CFloat
+  , fRectY :: !CFloat
+  , fRectW :: !CFloat
+  , fRectH :: !CFloat
+  } deriving (Eq, Show, Typeable)
+
+instance Storable FRect where
+  sizeOf _ = (#size SDL_FRect)
+  alignment = sizeOf
+  peek ptr = do
+    x <- (#peek SDL_FRect, x) ptr
+    y <- (#peek SDL_FRect, y) ptr
+    w <- (#peek SDL_FRect, w) ptr
+    h <- (#peek SDL_FRect, h) ptr
+    return $! FRect x y w h
+  poke ptr (FRect x y w h) = do
+    (#poke SDL_FRect, x) ptr x
+    (#poke SDL_FRect, y) ptr y
+    (#poke SDL_FRect, w) ptr w
+    (#poke SDL_FRect, h) ptr h
 
 data RendererInfo = RendererInfo
   { rendererInfoName :: !CString
