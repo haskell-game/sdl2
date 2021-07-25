@@ -37,6 +37,7 @@ module SDL.Raw.Video (
   getNumVideoDisplays,
   getNumVideoDrivers,
   getVideoDriver,
+  getWindowBordersSize,
   getWindowBrightness,
   getWindowData,
   getWindowDisplayIndex,
@@ -252,6 +253,7 @@ foreign import ccall "SDL.h SDL_GetNumDisplayModes" getNumDisplayModesFFI :: CIn
 foreign import ccall "SDL.h SDL_GetNumVideoDisplays" getNumVideoDisplaysFFI :: IO CInt
 foreign import ccall "SDL.h SDL_GetNumVideoDrivers" getNumVideoDriversFFI :: IO CInt
 foreign import ccall "SDL.h SDL_GetVideoDriver" getVideoDriverFFI :: CInt -> IO CString
+foreign import ccall "SDL.h SDL_GetWindowBordersSize" getWindowBordersSize :: Window -> Ptr CInt -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 foreign import ccall "SDL.h SDL_GetWindowBrightness" getWindowBrightnessFFI :: Window -> IO CFloat
 foreign import ccall "SDL.h SDL_GetWindowData" getWindowDataFFI :: Window -> CString -> IO (Ptr ())
 foreign import ccall "SDL.h SDL_GetWindowDisplayIndex" getWindowDisplayIndexFFI :: Window -> IO CInt
