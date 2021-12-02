@@ -161,9 +161,6 @@ data WarpMouseOrigin
     -- ^ Move the mouse pointer in global screen space.
   deriving (Data, Eq, Generic, Ord, Show, Typeable)
 
-
-
-
 -- | Move the current location of a mouse pointer. The 'WarpMouseOrigin' specifies the origin for the given warp coordinates.
 warpMouse :: MonadIO m => WarpMouseOrigin -> Point V2 CInt -> m ()
 warpMouse (WarpInWindow (Window w)) (P (V2 x y)) = Raw.warpMouseInWindow w x y
