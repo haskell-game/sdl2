@@ -1,3 +1,23 @@
+2.5.3.0
+=======
+
+* Correct the Storable instance for SDL.Raw.Types.Event to correctly convert
+  SDL_CONTROLLERAXISMOTION to a ControllerAxisEvent (it was previously
+  ControllerButtonEvent). See https://github.com/haskell-game/sdl2/pull/218 for
+  more details.
+
+2.5.2.0
+=======
+
+* Correct SDL.Raw.Video.vkLoadLibrary to correctly call vkLoadLibraryFFI, rather
+  than setClipboardTextFFI. See https://github.com/haskell-game/sdl2/pull/209.
+
+2.5.1.0
+=======
+
+* Support `linear-1.21`
+
+
 2.5.0.0
 =======
 

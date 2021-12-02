@@ -56,6 +56,25 @@ instance FromNumber ControllerButton Int32 where
     Raw.SDL_CONTROLLER_BUTTON_DPAD_RIGHT -> ControllerButtonDpadRight
     _ -> ControllerButtonInvalid
 
+instance ToNumber ControllerButton Int32 where
+  toNumber c = case c of
+    ControllerButtonA -> Raw.SDL_CONTROLLER_BUTTON_A
+    ControllerButtonB -> Raw.SDL_CONTROLLER_BUTTON_B
+    ControllerButtonX -> Raw.SDL_CONTROLLER_BUTTON_X
+    ControllerButtonY -> Raw.SDL_CONTROLLER_BUTTON_Y
+    ControllerButtonBack -> Raw.SDL_CONTROLLER_BUTTON_BACK
+    ControllerButtonGuide -> Raw.SDL_CONTROLLER_BUTTON_GUIDE
+    ControllerButtonStart -> Raw.SDL_CONTROLLER_BUTTON_START
+    ControllerButtonLeftStick -> Raw.SDL_CONTROLLER_BUTTON_LEFTSTICK
+    ControllerButtonRightStick -> Raw.SDL_CONTROLLER_BUTTON_RIGHTSTICK
+    ControllerButtonLeftShoulder -> Raw.SDL_CONTROLLER_BUTTON_LEFTSHOULDER
+    ControllerButtonRightShoulder -> Raw.SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
+    ControllerButtonDpadUp -> Raw.SDL_CONTROLLER_BUTTON_DPAD_UP
+    ControllerButtonDpadDown -> Raw.SDL_CONTROLLER_BUTTON_DPAD_DOWN
+    ControllerButtonDpadLeft -> Raw.SDL_CONTROLLER_BUTTON_DPAD_LEFT
+    ControllerButtonDpadRight -> Raw.SDL_CONTROLLER_BUTTON_DPAD_RIGHT
+    ControllerButtonInvalid -> Raw.SDL_CONTROLLER_BUTTON_INVALID
+
 -- | Identifies the state of a controller button.
 data ControllerButtonState
   = ControllerButtonPressed

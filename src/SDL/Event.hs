@@ -744,7 +744,8 @@ convertRaw (Raw.ClipboardUpdateEvent _ ts) =
 convertRaw (Raw.UnknownEvent t ts) =
   return (Event ts (UnknownEvent (UnknownEventData t)))
 
--- | Poll for currently pending events. You can only call this function in the thread that set the video mode.
+-- | Poll for currently pending events. You can only call this function in the
+-- OS thread that set the video mode.
 pollEvent :: MonadIO m => m (Maybe Event)
 pollEvent =
   liftIO $ do
@@ -760,7 +761,10 @@ pollEvent =
                else fmap Just (peek e >>= convertRaw)
 
 -- | Clear the event queue by polling for all pending events.
-pollEvents :: (Functor m, MonadIO m) => m [Event]
+--
+-- Like 'pollEvent' this function should only be called in the OS thread which
+-- set the video mode.
+pollEvents :: MonadIO m => m [Event]
 pollEvents =
   do e <- pollEvent
      case e of
@@ -868,7 +872,7 @@ registerEvent registeredEventDataToEvent eventToRegisteredEventData = do
 --
 -- This function updates the event queue and internal input device state.
 --
--- This should only be run in the thread that initialized the video subsystem, and for extra safety, you should consider only doing those things on the main thread in any case.
+-- This should only be run in the OS thread that initialized the video subsystem, and for extra safety, you should consider only doing those things on the main thread in any case.
 --
 -- 'pumpEvents' gathers all the pending input information from devices and places it in the event queue. Without calls to 'pumpEvents' no events would ever be placed on the queue. Often the need for calls to 'pumpEvents' is hidden from the user since 'pollEvent' and 'waitEvent' implicitly call 'pumpEvents'. However, if you are not polling or waiting for events (e.g. you are filtering them), then you must call 'pumpEvents' to force an event queue update.
 --

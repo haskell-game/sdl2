@@ -32,6 +32,7 @@ module SDL.Video
   , windowGrab
   , setWindowMode
   , getWindowAbsolutePosition
+  , getWindowBordersSize
   , setWindowPosition
   , windowTitle
   , windowData
@@ -225,15 +226,15 @@ instance ToNumber WindowMode Word32 where
 instance FromNumber WindowMode Word32 where
   fromNumber n = fromMaybe Windowed . getFirst $
     foldMap First [
-        sdlWindowFullscreen
-      , sdlWindowFullscreenDesktop
+        sdlWindowFullscreenDesktop
+      , sdlWindowFullscreen
       , sdlWindowMaximized
       , sdlWindowMinimized
       ]
     where
-      maybeBit val msk = if n .&. msk > 0 then Just val else Nothing
-      sdlWindowFullscreen        = maybeBit Fullscreen Raw.SDL_WINDOW_FULLSCREEN
+      maybeBit val msk = if n .&. msk == msk then Just val else Nothing
       sdlWindowFullscreenDesktop = maybeBit FullscreenDesktop Raw.SDL_WINDOW_FULLSCREEN_DESKTOP
+      sdlWindowFullscreen        = maybeBit Fullscreen Raw.SDL_WINDOW_FULLSCREEN
       sdlWindowMaximized         = maybeBit Maximized Raw.SDL_WINDOW_MAXIMIZED
       sdlWindowMinimized         = maybeBit Minimized Raw.SDL_WINDOW_MINIMIZED
 
@@ -310,6 +311,21 @@ getWindowAbsolutePosition (Window w) =
     alloca $ \hPtr -> do
         Raw.getWindowPosition w wPtr hPtr
         V2 <$> peek wPtr <*> peek hPtr
+
+-- | Get the size of a window's borders (decorations) around the client area (top, left, bottom, right).
+--
+-- See @<https://wiki.libsdl.org/SDL_GetWindowBordersSize SDL_GetWindowBordersSize>@ for C documentation.
+getWindowBordersSize :: MonadIO m => Window -> m (Maybe (V4 CInt))
+getWindowBordersSize (Window win) =
+  liftIO $
+  alloca $ \tPtr ->
+  alloca $ \lPtr ->
+  alloca $ \bPtr ->
+  alloca $ \rPtr -> do
+    n <- Raw.getWindowBordersSize win tPtr lPtr bPtr rPtr
+    if n /= 0
+      then return Nothing
+      else fmap Just $ V4 <$> peek tPtr <*> peek lPtr <*> peek bPtr <*> peek rPtr
 
 -- | Get or set the size of a window's client area. Values beyond the maximum supported size are clamped.
 --

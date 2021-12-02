@@ -54,13 +54,7 @@ module SDL.Audio
   , getAudioDeviceNames
 
     -- * 'AudioSpec'
-  , AudioSpec
-  , audioSpecFreq
-  , audioSpecFormat
-  , audioSpecChannels
-  , audioSpecSilence
-  , audioSpecSize
-  , audioSpecCallback
+  , AudioSpec(..)
 
     -- * Audio Drivers
   , getAudioDrivers
@@ -175,9 +169,9 @@ openAudioDevice OpenDeviceSpec{..} = liftIO $
         return (audioDevice, spec)
 
   where
-  changes = foldl (.|.) 0 [ foldChangeable (const Raw.SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) (const 0) openDeviceFreq
-                          , foldChangeable (const Raw.SDL_AUDIO_ALLOW_FORMAT_CHANGE) (const 0) openDeviceFormat
-                          , foldChangeable (const Raw.SDL_AUDIO_ALLOW_CHANNELS_CHANGE) (const 0) openDeviceChannels
+  changes = foldl (.|.) 0 [ foldChangeable (const 0) (const Raw.SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) openDeviceFreq
+                          , foldChangeable (const 0) (const Raw.SDL_AUDIO_ALLOW_FORMAT_CHANGE) openDeviceFormat
+                          , foldChangeable (const 0) (const Raw.SDL_AUDIO_ALLOW_CHANNELS_CHANGE) openDeviceChannels
                           ]
 
   channelsToWord8 Mono = 1
