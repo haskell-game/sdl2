@@ -1,5 +1,5 @@
 name:                sdl2
-version:             2.5.3.0
+version:             2.5.3.1
 synopsis:            Both high- and low-level bindings to the SDL library (version 2.0.6+).
 description:
   This package contains bindings to the SDL 2 library, in both high- and

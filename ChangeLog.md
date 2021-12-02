@@ -1,3 +1,11 @@
+2.5.3.1
+=======
+
+* Constructors exported for ModalLocation, SurfacePixelFormat, AudioSpec.
+* Added getWindowBordersSize.
+* Added SDL.Input.Mouse.createSystemCursor.
+
+
 2.5.3.0
 =======
 
