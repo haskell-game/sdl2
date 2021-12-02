@@ -54,13 +54,7 @@ module SDL.Audio
   , getAudioDeviceNames
 
     -- * 'AudioSpec'
-  , AudioSpec
-  , audioSpecFreq
-  , audioSpecFormat
-  , audioSpecChannels
-  , audioSpecSilence
-  , audioSpecSize
-  , audioSpecCallback
+  , AudioSpec(..)
 
     -- * Audio Drivers
   , getAudioDrivers
