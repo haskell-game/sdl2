@@ -131,7 +131,7 @@ instance Applicative V2 where
   {-# INLINE (<*>) #-}
 
 instance Monad V2 where
-  return a = V2 a a
+  return = pure
   {-# INLINE return #-}
   V2 a b >>= f = V2 a' b' where
     V2 a' _ = f a
@@ -311,7 +311,7 @@ instance Applicative V3 where
   {-# INLINE (<*>) #-}
 
 instance Monad V3 where
-  return a = V3 a a a
+  return = pure
   {-# INLINE return #-}
   V3 a b c >>= f = V3 a' b' c' where
     V3 a' _ _ = f a
@@ -504,7 +504,7 @@ instance Applicative V4 where
   {-# INLINE (<*>) #-}
 
 instance Monad V4 where
-  return a = V4 a a a a
+  return = pure
   {-# INLINE return #-}
   V4 a b c d >>= f = V4 a' b' c' d' where
     V4 a' _ _ _ = f a
