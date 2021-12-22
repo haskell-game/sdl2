@@ -471,7 +471,7 @@ data Event
 
 instance Storable Event where
   sizeOf _ = (#size SDL_Event)
-  alignment = sizeOf
+  alignment _ = 16
   peek ptr = do
     typ <- (#peek SDL_Event, common.type) ptr
     timestamp <- (#peek SDL_Event, common.timestamp) ptr
