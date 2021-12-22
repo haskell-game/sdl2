@@ -1,0 +1,4 @@
+packages: .
+
+package sdl2
+  ghc-options: -Wall -Wcompat
