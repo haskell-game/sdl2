@@ -1,0 +1,48 @@
+on: [push, pull_request]
+
+name: build
+
+jobs:
+  build: # TODO: split by OS
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        ghc: ['8.8', '8.10', '9.0', '9.2']
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        # exclude:
+        #   # GHC 8.8+ only works with cabal v3+
+        #   - ghc: 8.8.4
+        #     cabal: 2.4.1.0
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os }} ghc-${{ matrix.ghc }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: haskell/actions/setup@v1
+        with:
+          ghc-version: ${{ matrix.ghc }}
+          cabal-version: ${{ matrix.cabal }}
+
+      - if: matrix.os == 'ubuntu-latest'
+        run: sudo apt install -y libsdl2-dev
+
+      - if: matrix.os == 'macOS-latest'
+        run: brew install pkg-config SDL2
+
+      - run: cabal build --only-dependencies -j2
+
+      - if: matrix.os != 'windows-latest'
+        run: cabal build
+
+      - if: matrix.os == 'windows-latest'
+        uses: msys2/setup-msys2@v2
+        with:
+          path-type: inherit
+          update: true
+          install: >-
+            mingw-w64-x86_64-pkg-config
+            mingw-w64-x86_64-SDL2
+      - if: matrix.os == 'windows-latest'
+        shell: msys2 {0}
+        run: cabal build
