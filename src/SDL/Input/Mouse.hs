@@ -17,6 +17,7 @@ module SDL.Input.Mouse
   , MouseScrollDirection(..)
 
     -- * Mouse State
+  , ModalLocation(..)
   , getModalMouseLocation
   , getAbsoluteMouseLocation
   , getRelativeMouseLocation
@@ -31,10 +32,12 @@ module SDL.Input.Mouse
 
     -- * Cursor Shape
   , Cursor
+  , SystemCursor(..)
   , activeCursor
   , createCursor
   , freeCursor
   , createColorCursor
+  , createSystemCursor
   ) where
 
 import Control.Monad (void)
@@ -208,6 +211,35 @@ getMouseButtons = liftIO $
 newtype Cursor = Cursor { unwrapCursor :: Raw.Cursor }
     deriving (Eq, Typeable)
 
+data SystemCursor
+  = SystemCursorArrow
+  | SystemCursorIBeam
+  | SystemCursorWait
+  | SystemCursorCrossHair
+  | SystemCursorWaitArrow
+  | SystemCursorSizeNWSE
+  | SystemCursorSizeNESW
+  | SystemCursorSizeWE
+  | SystemCursorSizeNS
+  | SystemCursorSizeAll
+  | SystemCursorNo
+  | SystemCursorHand
+
+
+instance ToNumber SystemCursor Word32 where
+  toNumber SystemCursorArrow        = Raw.SDL_SYSTEM_CURSOR_ARROW
+  toNumber SystemCursorIBeam        = Raw.SDL_SYSTEM_CURSOR_IBEAM
+  toNumber SystemCursorWait         = Raw.SDL_SYSTEM_CURSOR_WAIT
+  toNumber SystemCursorCrossHair    = Raw.SDL_SYSTEM_CURSOR_CROSSHAIR
+  toNumber SystemCursorWaitArrow    = Raw.SDL_SYSTEM_CURSOR_WAITARROW
+  toNumber SystemCursorSizeNWSE     = Raw.SDL_SYSTEM_CURSOR_SIZENWSE
+  toNumber SystemCursorSizeNESW     = Raw.SDL_SYSTEM_CURSOR_SIZENESW
+  toNumber SystemCursorSizeWE       = Raw.SDL_SYSTEM_CURSOR_SIZEWE
+  toNumber SystemCursorSizeNS       = Raw.SDL_SYSTEM_CURSOR_SIZENS
+  toNumber SystemCursorSizeAll      = Raw.SDL_SYSTEM_CURSOR_SIZEALL
+  toNumber SystemCursorNo           = Raw.SDL_SYSTEM_CURSOR_NO
+  toNumber SystemCursorHand         = Raw.SDL_SYSTEM_CURSOR_HAND
+
 -- | Get or set the currently active cursor. You can create new 'Cursor's with 'createCursor'.
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
@@ -240,7 +272,8 @@ createCursor dta msk (V2 w h) (P (V2 hx hy)) =
             V.unsafeWith (V.map (bool 0 1) msk) $ \unsafeMsk ->
                 Raw.createCursor unsafeDta unsafeMsk w h hx hy
 
--- | Free a cursor created with 'createCursor' and 'createColorCusor'.
+
+-- | Free a cursor created with 'createCursor', 'createColorCusor' and 'createSystemCursor'.
 --
 -- See @<https://wiki.libsdl.org/SDL_FreeCursor SDL_FreeCursor>@ for C documentation.
 freeCursor :: MonadIO m => Cursor -> m ()
@@ -257,3 +290,12 @@ createColorCursor (Surface surfPtr _) (P (V2 hx hy)) =
     liftIO . fmap Cursor $
         throwIfNull "SDL.Input.Mouse.createColorCursor" "SDL_createColorCursor" $
             Raw.createColorCursor surfPtr hx hy
+
+-- | Create system cursor.
+--
+-- See @<https://wiki.libsdl.org/SDL_CreateSystemCursor SDL_CreateSystemCursor>@ for C documentation.
+createSystemCursor :: MonadIO m => SystemCursor -> m Cursor
+createSystemCursor sc =
+    liftIO . fmap Cursor $
+        throwIfNull "SDL.Input.Mouse.createSystemCursor" "SDL_CreateSystemCursor" $
+            Raw.createSystemCursor (toNumber sc)

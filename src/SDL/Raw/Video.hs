@@ -32,11 +32,13 @@ module SDL.Raw.Video (
   getDisplayDPI,
   getDisplayMode,
   getDisplayName,
+  getDisplayUsableBounds,
   getGrabbedWindow,
   getNumDisplayModes,
   getNumVideoDisplays,
   getNumVideoDrivers,
   getVideoDriver,
+  getWindowBordersSize,
   getWindowBrightness,
   getWindowData,
   getWindowDisplayIndex,
@@ -81,6 +83,7 @@ module SDL.Raw.Video (
   videoQuit,
 
   -- * 2D Accelerated Rendering
+  composeCustomBlendMode,
   createRenderer,
   createSoftwareRenderer,
   createTexture,
@@ -103,6 +106,7 @@ module SDL.Raw.Video (
   renderClear,
   renderCopy,
   renderCopyEx,
+  renderCopyExF,
   renderDrawLine,
   renderDrawLines,
   renderDrawPoint,
@@ -247,11 +251,13 @@ foreign import ccall "SDL.h SDL_GetDisplayBounds" getDisplayBoundsFFI :: CInt ->
 foreign import ccall "SDL.h SDL_GetDisplayDPI" getDisplayDPIFFI :: CInt -> Ptr CFloat -> Ptr CFloat -> Ptr CFloat -> IO CInt
 foreign import ccall "SDL.h SDL_GetDisplayMode" getDisplayModeFFI :: CInt -> CInt -> Ptr DisplayMode -> IO CInt
 foreign import ccall "SDL.h SDL_GetDisplayName" getDisplayNameFFI :: CInt -> IO CString
+foreign import ccall "SDL.h SDL_GetDisplayUsableBounds" getDisplayUsableBoundsFFI :: CInt -> Ptr Rect -> IO CInt
 foreign import ccall "SDL.h SDL_GetGrabbedWindow" getGrabbedWindowFFI :: IO Window
 foreign import ccall "SDL.h SDL_GetNumDisplayModes" getNumDisplayModesFFI :: CInt -> IO CInt
 foreign import ccall "SDL.h SDL_GetNumVideoDisplays" getNumVideoDisplaysFFI :: IO CInt
 foreign import ccall "SDL.h SDL_GetNumVideoDrivers" getNumVideoDriversFFI :: IO CInt
 foreign import ccall "SDL.h SDL_GetVideoDriver" getVideoDriverFFI :: CInt -> IO CString
+foreign import ccall "SDL.h SDL_GetWindowBordersSize" getWindowBordersSizeFFI :: Window -> Ptr CInt -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 foreign import ccall "SDL.h SDL_GetWindowBrightness" getWindowBrightnessFFI :: Window -> IO CFloat
 foreign import ccall "SDL.h SDL_GetWindowData" getWindowDataFFI :: Window -> CString -> IO (Ptr ())
 foreign import ccall "SDL.h SDL_GetWindowDisplayIndex" getWindowDisplayIndexFFI :: Window -> IO CInt
@@ -295,6 +301,7 @@ foreign import ccall "SDL.h SDL_UpdateWindowSurfaceRects" updateWindowSurfaceRec
 foreign import ccall "SDL.h SDL_VideoInit" videoInitFFI :: CString -> IO CInt
 foreign import ccall "SDL.h SDL_VideoQuit" videoQuitFFI :: IO ()
 
+foreign import ccall "SDL.h SDL_ComposeCustomBlendMode" composeCustomBlendModeFFI :: BlendFactor -> BlendFactor -> BlendOperation -> BlendFactor -> BlendFactor -> BlendOperation -> IO BlendMode
 foreign import ccall "SDL.h SDL_CreateRenderer" createRendererFFI :: Window -> CInt -> Word32 -> IO Renderer
 foreign import ccall "SDL.h SDL_CreateSoftwareRenderer" createSoftwareRendererFFI :: Ptr Surface -> IO Renderer
 foreign import ccall "SDL.h SDL_CreateTexture" createTextureFFI :: Renderer -> Word32 -> CInt -> CInt -> CInt -> IO Texture
@@ -317,6 +324,7 @@ foreign import ccall "SDL.h SDL_QueryTexture" queryTextureFFI :: Texture -> Ptr 
 foreign import ccall "SDL.h SDL_RenderClear" renderClearFFI :: Renderer -> IO CInt
 foreign import ccall "SDL.h SDL_RenderCopy" renderCopyFFI :: Renderer -> Texture -> Ptr Rect -> Ptr Rect -> IO CInt
 foreign import ccall "SDL.h SDL_RenderCopyEx" renderCopyExFFI :: Renderer -> Texture -> Ptr Rect -> Ptr Rect -> CDouble -> Ptr Point -> RendererFlip -> IO CInt
+foreign import ccall "SDL.h SDL_RenderCopyExF" renderCopyExFFFI :: Renderer -> Texture -> Ptr Rect -> Ptr FRect -> CDouble -> Ptr FPoint -> RendererFlip -> IO CInt
 foreign import ccall "SDL.h SDL_RenderDrawLine" renderDrawLineFFI :: Renderer -> CInt -> CInt -> CInt -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderDrawLines" renderDrawLinesFFI :: Renderer -> Ptr Point -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderDrawPoint" renderDrawPointFFI :: Renderer -> CInt -> CInt -> IO CInt
@@ -539,6 +547,10 @@ getDisplayName :: MonadIO m => CInt -> m CString
 getDisplayName v1 = liftIO $ getDisplayNameFFI v1
 {-# INLINE getDisplayName #-}
 
+getDisplayUsableBounds :: MonadIO m => CInt -> Ptr Rect -> m CInt
+getDisplayUsableBounds v1 v2 = liftIO $ getDisplayUsableBoundsFFI v1 v2
+{-# INLINE getDisplayUsableBounds #-}
+
 getGrabbedWindow :: MonadIO m => m Window
 getGrabbedWindow = liftIO getGrabbedWindowFFI
 {-# INLINE getGrabbedWindow #-}
@@ -558,6 +570,10 @@ getNumVideoDrivers = liftIO getNumVideoDriversFFI
 getVideoDriver :: MonadIO m => CInt -> m CString
 getVideoDriver v1 = liftIO $ getVideoDriverFFI v1
 {-# INLINE getVideoDriver #-}
+
+getWindowBordersSize :: MonadIO m => Window -> Ptr CInt -> Ptr CInt -> Ptr CInt -> Ptr CInt -> m CInt
+getWindowBordersSize v1 v2 v3 v4 v5 = liftIO $ getWindowBordersSizeFFI v1 v2 v3 v4 v5
+{-# INLINE getWindowBordersSize #-}
 
 getWindowBrightness :: MonadIO m => Window -> m CFloat
 getWindowBrightness v1 = liftIO $ getWindowBrightnessFFI v1
@@ -727,6 +743,10 @@ videoQuit :: MonadIO m => m ()
 videoQuit = liftIO videoQuitFFI
 {-# INLINE videoQuit #-}
 
+composeCustomBlendMode :: MonadIO m => BlendFactor -> BlendFactor -> BlendOperation -> BlendFactor -> BlendFactor -> BlendOperation -> m BlendMode
+composeCustomBlendMode v1 v2 v3 v4 v5 v6 = liftIO $ composeCustomBlendModeFFI v1 v2 v3 v4 v5 v6
+{-# INLINE composeCustomBlendMode #-}
+
 createRenderer :: MonadIO m => Window -> CInt -> Word32 -> m Renderer
 createRenderer v1 v2 v3 = liftIO $ createRendererFFI v1 v2 v3
 {-# INLINE createRenderer #-}
@@ -814,6 +834,10 @@ renderCopy v1 v2 v3 v4 = liftIO $ renderCopyFFI v1 v2 v3 v4
 renderCopyEx :: MonadIO m => Renderer -> Texture -> Ptr Rect -> Ptr Rect -> CDouble -> Ptr Point -> RendererFlip -> m CInt
 renderCopyEx v1 v2 v3 v4 v5 v6 v7 = liftIO $ renderCopyExFFI v1 v2 v3 v4 v5 v6 v7
 {-# INLINE renderCopyEx #-}
+
+renderCopyExF :: MonadIO m => Renderer -> Texture -> Ptr Rect -> Ptr FRect -> CDouble -> Ptr FPoint -> RendererFlip -> m CInt
+renderCopyExF v1 v2 v3 v4 v5 v6 v7 = liftIO $ renderCopyExFFFI v1 v2 v3 v4 v5 v6 v7
+{-# INLINE renderCopyExF #-}
 
 renderDrawLine :: MonadIO m => Renderer -> CInt -> CInt -> CInt -> CInt -> m CInt
 renderDrawLine v1 v2 v3 v4 v5 = liftIO $ renderDrawLineFFI v1 v2 v3 v4 v5
