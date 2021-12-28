@@ -925,7 +925,7 @@ textureColorMod (Texture t) = makeStateVar getTextureColorMod setTextureColorMod
     Raw.setTextureColorMod t r g b
 
 data PixelFormat
-  = Unknown
+  = Unknown !Word32
   | Index1LSB
   | Index1MSB
   | Index4LSB
@@ -961,11 +961,10 @@ data PixelFormat
   | YUY2
   | UYVY
   | YVYU
-  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
+  deriving (Data, Eq, Generic, Ord, Read, Show, Typeable)
 
 instance FromNumber PixelFormat Word32 where
   fromNumber n' = case n' of
-    Raw.SDL_PIXELFORMAT_UNKNOWN -> Unknown
     Raw.SDL_PIXELFORMAT_INDEX1LSB -> Index1LSB
     Raw.SDL_PIXELFORMAT_INDEX1MSB -> Index1MSB
     Raw.SDL_PIXELFORMAT_INDEX4LSB -> Index4LSB
@@ -1001,11 +1000,12 @@ instance FromNumber PixelFormat Word32 where
     Raw.SDL_PIXELFORMAT_YUY2 -> YUY2
     Raw.SDL_PIXELFORMAT_UYVY -> UYVY
     Raw.SDL_PIXELFORMAT_YVYU -> YVYU
-    _ -> error "fromNumber: not numbered"
+    Raw.SDL_PIXELFORMAT_UNKNOWN -> Unknown n'
+    _ -> Unknown n'
 
 instance ToNumber PixelFormat Word32 where
   toNumber pf = case pf of
-    Unknown -> Raw.SDL_PIXELFORMAT_UNKNOWN
+    Unknown _ -> Raw.SDL_PIXELFORMAT_UNKNOWN
     Index1LSB -> Raw.SDL_PIXELFORMAT_INDEX1LSB
     Index1MSB -> Raw.SDL_PIXELFORMAT_INDEX1MSB
     Index4LSB -> Raw.SDL_PIXELFORMAT_INDEX4LSB
