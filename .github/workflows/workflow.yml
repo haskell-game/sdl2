@@ -25,7 +25,7 @@ jobs:
           cabal-version: ${{ matrix.cabal }}
 
       - if: matrix.os == 'ubuntu-latest'
-        run: sudo apt install -y libsdl2-dev
+        run: sudo apt update; sudo apt install -y libsdl2-dev
 
       - if: matrix.os == 'macOS-latest'
         run: brew install pkg-config SDL2
