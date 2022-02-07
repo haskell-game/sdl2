@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include "SDL.h"
 
+int SDLHelper_GetEventBufferSize(void);
+SDL_Event *SDLHelper_GetEventBuffer(void);
 void SDLHelper_JoystickGetDeviceGUID (int device_index, SDL_JoystickGUID *guid);
 void SDLHelper_JoystickGetGUID (SDL_Joystick *joystick, SDL_JoystickGUID *guid);
 void SDLHelper_JoystickGetGUIDFromString (const char *pchGUID, SDL_JoystickGUID *guid);

@@ -1,5 +1,16 @@
 #include <string.h>
+#include <stdlib.h>
 #include "sdlhelper.h"
+
+int SDLHelper_GetEventBufferSize() { return 64; }
+SDL_Event *SDLHelper_GetEventBuffer() {
+  static SDL_Event *buffer = NULL;
+  if(buffer == NULL) {
+    /* leak an inconsequental amount of memory */
+    buffer = calloc(SDLHelper_GetEventBufferSize(), sizeof(SDL_Event));
+  }
+  return buffer;
+}
 
 void SDLHelper_JoystickGetDeviceGUID (int device_index, SDL_JoystickGUID *guid)
 {
