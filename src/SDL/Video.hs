@@ -34,6 +34,7 @@ module SDL.Video
   , getWindowAbsolutePosition
   , getWindowBordersSize
   , setWindowPosition
+  , setWindowIcon
   , windowTitle
   , windowData
   , getWindowConfig
@@ -326,6 +327,11 @@ getWindowBordersSize (Window win) =
     if n /= 0
       then return Nothing
       else fmap Just $ V4 <$> peek tPtr <*> peek lPtr <*> peek bPtr <*> peek rPtr
+
+-- | Set the icon for a window.
+setWindowIcon :: MonadIO m => Window -> Surface -> m ()
+setWindowIcon (Window win) (Surface sfc _) =
+  Raw.setWindowIcon win sfc
 
 -- | Get or set the size of a window's client area. Values beyond the maximum supported size are clamped.
 --
