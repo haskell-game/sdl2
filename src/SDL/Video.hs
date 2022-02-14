@@ -33,8 +33,8 @@ module SDL.Video
   , setWindowMode
   , getWindowAbsolutePosition
   , getWindowBordersSize
-  , setWindowPosition
   , setWindowIcon
+  , setWindowPosition
   , windowTitle
   , windowData
   , getWindowConfig
@@ -297,6 +297,11 @@ setWindowMode (Window w) mode =
       Minimized -> Raw.minimizeWindow w >> return 0
       Windowed -> Raw.setWindowFullscreen w 0 <* Raw.restoreWindow w
 
+-- | Set the icon for a window.
+setWindowIcon :: MonadIO m => Window -> Surface -> m ()
+setWindowIcon (Window win) (Surface sfc _) =
+  Raw.setWindowIcon win sfc
+
 -- | Set the position of the window.
 setWindowPosition :: MonadIO m => Window -> WindowPosition -> m ()
 setWindowPosition (Window w) pos = case pos of
@@ -327,11 +332,6 @@ getWindowBordersSize (Window win) =
     if n /= 0
       then return Nothing
       else fmap Just $ V4 <$> peek tPtr <*> peek lPtr <*> peek bPtr <*> peek rPtr
-
--- | Set the icon for a window.
-setWindowIcon :: MonadIO m => Window -> Surface -> m ()
-setWindowIcon (Window win) (Surface sfc _) =
-  Raw.setWindowIcon win sfc
 
 -- | Get or set the size of a window's client area. Values beyond the maximum supported size are clamped.
 --
