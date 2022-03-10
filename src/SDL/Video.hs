@@ -33,6 +33,7 @@ module SDL.Video
   , setWindowMode
   , getWindowAbsolutePosition
   , getWindowBordersSize
+  , setWindowIcon
   , setWindowPosition
   , windowTitle
   , windowData
@@ -295,6 +296,11 @@ setWindowMode (Window w) mode =
       Maximized -> Raw.setWindowFullscreen w 0 <* Raw.maximizeWindow w
       Minimized -> Raw.minimizeWindow w >> return 0
       Windowed -> Raw.setWindowFullscreen w 0 <* Raw.restoreWindow w
+
+-- | Set the icon for a window.
+setWindowIcon :: MonadIO m => Window -> Surface -> m ()
+setWindowIcon (Window win) (Surface sfc _) =
+  Raw.setWindowIcon win sfc
 
 -- | Set the position of the window.
 setWindowPosition :: MonadIO m => Window -> WindowPosition -> m ()
