@@ -3,6 +3,8 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE PatternSynonyms #-}
 
+{-# OPTIONS_GHC -fno-warn-missing-pattern-synonym-signatures #-}
+
 {-|
 
 An enumeration of scancodes and keycodes, allowing you to pattern match on keyboard keys.
