@@ -45,15 +45,22 @@ source-repository head
 flag examples
   description:       Build examples (except opengl-example)
   default:           False
+  manual:            True
 
 flag opengl-example
   description:       Build opengl-example
   default:           False
+  manual:            True
 
 flag no-linear
   description:       Do not depend on 'linear' library
   default:           False
   manual:            True
+
+flag recent-ish
+  description:       Use features from a more recent libsdl2 release.
+  default:           True
+  manual:            False
 
 library
   -- ghc-options: -Wall
@@ -120,8 +127,14 @@ library
   extra-libraries:
     SDL2
 
-  pkgconfig-depends:
-    sdl2 >= 2.0.6
+  if flag(recent-ish)
+    cpp-options:
+      -D RECENT_ISH
+    pkgconfig-depends:
+      sdl2 >= 2.0.10
+  else
+    pkgconfig-depends:
+      sdl2 >= 2.0.6
 
   build-depends:
     base >= 4.7 && < 5,

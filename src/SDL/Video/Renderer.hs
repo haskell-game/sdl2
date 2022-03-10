@@ -23,7 +23,9 @@ module SDL.Video.Renderer
   , clear
   , copy
   , copyEx
+#ifdef RECENT_ISH
   , copyExF
+#endif
   , drawLine
   , drawLines
   , drawPoint
@@ -765,6 +767,7 @@ copyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
                       V2 x y -> (if x then Raw.SDL_FLIP_HORIZONTAL else 0) .|.
                                (if y then Raw.SDL_FLIP_VERTICAL else 0))
 
+#ifdef RECENT_ISH
 -- | Copy a portion of the texture to the current rendering target, optionally rotating it by angle around the given center and also flipping it top-bottom and/or left-right.
 copyExF :: MonadIO m
        => Renderer -- ^ The rendering context
@@ -785,6 +788,7 @@ copyExF (Renderer r) (Texture t) srcRect dstRect theta center flips =
                    (case flips of
                       V2 x y -> (if x then Raw.SDL_FLIP_HORIZONTAL else 0) .|.
                                (if y then Raw.SDL_FLIP_VERTICAL else 0))
+#endif
 
 -- | Draw a line on the current rendering target.
 --
