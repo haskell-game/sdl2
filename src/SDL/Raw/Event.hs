@@ -112,7 +112,9 @@ module SDL.Raw.Event (
   gameControllerNameForIndex,
   gameControllerOpen,
   gameControllerUpdate,
-  isGameController
+  isGameController,
+  eventBuffer,
+  eventBufferSize
 ) where
 
 import Control.Monad.IO.Class
@@ -234,6 +236,9 @@ foreign import ccall "SDL.h SDL_GameControllerNameForIndex" gameControllerNameFo
 foreign import ccall "SDL.h SDL_GameControllerOpen" gameControllerOpenFFI :: CInt -> IO GameController
 foreign import ccall "SDL.h SDL_GameControllerUpdate" gameControllerUpdateFFI :: IO ()
 foreign import ccall "SDL.h SDL_IsGameController" isGameControllerFFI :: CInt -> IO Bool
+
+foreign import ccall "sdlhelper.c SDLHelper_GetEventBufferSize" eventBufferSize :: CInt
+foreign import ccall "sdlhelper.c SDLHelper_GetEventBuffer"  eventBuffer :: Ptr Event
 
 addEventWatch :: MonadIO m => EventFilter -> Ptr () -> m ()
 addEventWatch v1 v2 = liftIO $ addEventWatchFFI v1 v2

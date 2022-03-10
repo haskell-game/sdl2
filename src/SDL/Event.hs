@@ -92,6 +92,7 @@ import Data.Text (Text)
 import Data.Typeable
 import Foreign hiding (throwIfNeg_)
 import Foreign.C
+import Foreign.Marshal.Array
 import GHC.Generics (Generic)
 import SDL.Vect
 import SDL.Input.Joystick
@@ -765,11 +766,20 @@ pollEvent =
 -- Like 'pollEvent' this function should only be called in the OS thread which
 -- set the video mode.
 pollEvents :: MonadIO m => m [Event]
-pollEvents =
-  do e <- pollEvent
-     case e of
-       Nothing -> return []
-       Just e' -> (e' :) <$> pollEvents
+pollEvents = liftIO $ do 
+  Raw.pumpEvents
+  peepAllEvents >>= mapM convertRaw where
+    peepAllEvents = do
+      numPeeped <- Raw.peepEvents
+        Raw.eventBuffer
+        Raw.eventBufferSize
+        Raw.SDL_GETEVENT
+        Raw.SDL_FIRSTEVENT
+        Raw.SDL_LASTEVENT
+      peeped <- peekArray (fromIntegral numPeeped) Raw.eventBuffer
+      if numPeeped == Raw.eventBufferSize -- are there more events to peep?
+        then (peeped ++) <$> peepAllEvents
+        else return peeped
 
 -- | Run a monadic computation, accumulating over all known 'Event's.
 --
