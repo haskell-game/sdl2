@@ -82,7 +82,7 @@ import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Data (Data)
 import Data.Foldable
-import Data.Maybe (isJust, fromMaybe)
+import Data.Maybe (fromMaybe)
 import Data.Monoid (First(..))
 import Data.Text (Text)
 import Data.Typeable

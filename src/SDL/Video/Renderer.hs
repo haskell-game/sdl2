@@ -122,7 +122,6 @@ module SDL.Video.Renderer
   ) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Exception (catch, throw, SomeException, uninterruptibleMask_)
 import Data.Bits
 import Data.Data (Data)
 import Data.Foldable
