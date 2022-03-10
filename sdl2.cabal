@@ -63,7 +63,7 @@ flag recent-ish
   manual:            False
 
 library
-  -- ghc-options: -Wall
+  -- ghc-options: -Wall -Werror
 
   exposed-modules:
     SDL

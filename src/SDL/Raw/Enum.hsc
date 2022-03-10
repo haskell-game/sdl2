@@ -1,5 +1,8 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE PatternSynonyms #-}
+
+{-# OPTIONS_GHC -fno-warn-missing-pattern-synonym-signatures #-}
+
 module SDL.Raw.Enum (
   -- * Enumerations
 

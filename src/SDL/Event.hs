@@ -92,7 +92,6 @@ import Data.Text (Text)
 import Data.Typeable
 import Foreign hiding (throwIfNeg_)
 import Foreign.C
-import Foreign.Marshal.Array
 import GHC.Generics (Generic)
 import SDL.Vect
 import SDL.Input.Joystick
@@ -684,9 +683,9 @@ convertRaw (Raw.JoyDeviceEvent t ts a) =
 convertRaw (Raw.ControllerAxisEvent _ ts a b c) =
   return (Event ts (ControllerAxisEvent (ControllerAxisEventData a b c)))
 convertRaw (Raw.ControllerButtonEvent t ts a b _) =
-  return (Event ts 
+  return (Event ts
            (ControllerButtonEvent
-             (ControllerButtonEventData a 
+             (ControllerButtonEventData a
                                         (fromNumber $ fromIntegral b)
                                         (fromNumber t))))
 convertRaw (Raw.ControllerDeviceEvent t ts a) =
@@ -755,9 +754,9 @@ pollEvent =
     if n == 0
       then return Nothing
       else alloca $ \e -> do
-             n <- Raw.pollEvent e
+             n' <- Raw.pollEvent e
              -- Checking 0 again doesn't hurt and it's good to be safe.
-             if n == 0
+             if n' == 0
                then return Nothing
                else fmap Just (peek e >>= convertRaw)
 
@@ -766,7 +765,7 @@ pollEvent =
 -- Like 'pollEvent' this function should only be called in the OS thread which
 -- set the video mode.
 pollEvents :: MonadIO m => m [Event]
-pollEvents = liftIO $ do 
+pollEvents = liftIO $ do
   Raw.pumpEvents
   peepAllEvents >>= mapM convertRaw where
     peepAllEvents = do
@@ -872,7 +871,7 @@ registerEvent registeredEventDataToEvent eventToRegisteredEventData = do
               0 -> return $ EventPushFiltered
               _ -> EventPushFailure <$> getError
 
-        getEv (Event ts (UserEvent (UserEventData typ mWin code d1 d2))) =
+        getEv (Event ts (UserEvent (UserEventData _typ mWin code d1 d2))) =
           registeredEventDataToEvent (RegisteredEventData mWin code d1 d2) ts
         getEv _ = return Nothing
 
@@ -921,6 +920,6 @@ delEventWatch = liftIO . runEventWatchRemoval
 
 -- | Checks raw Windows for null references.
 getWindowFromID :: MonadIO m => Word32 -> m (Maybe Window)
-getWindowFromID id = do
-  rawWindow <- Raw.getWindowFromID id
+getWindowFromID windowId = do
+  rawWindow <- Raw.getWindowFromID windowId
   return $ if rawWindow == nullPtr then Nothing else Just $ Window rawWindow
