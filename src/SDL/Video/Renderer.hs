@@ -224,14 +224,13 @@ updateTexture :: (Functor m, MonadIO m)
               -> Maybe (Rectangle CInt) -- ^ The area to update, Nothing for entire texture
               -> BS.ByteString -- ^ The raw pixel data
               -> CInt -- ^ The number of bytes in a row of pixel data, including padding between lines
-              -> m Texture
-updateTexture tex@(Texture t) rect pixels pitch = do
+              -> m ()
+updateTexture (Texture t) rect pixels pitch = do
   liftIO $ throwIfNeg_ "SDL.Video.updateTexture" "SDL_UpdateTexture" $
     maybeWith with rect $ \rectPtr ->
       let (pixelForeign, _, _) = BSI.toForeignPtr pixels
       in withForeignPtr pixelForeign $ \pixelsPtr ->
         Raw.updateTexture t (castPtr rectPtr) (castPtr pixelsPtr) pitch
-  return tex
 
 -- | Destroy the specified texture.
 --
