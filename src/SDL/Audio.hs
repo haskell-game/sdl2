@@ -98,6 +98,12 @@ import Data.Foldable (Foldable)
 import Data.Traversable (Traversable)
 #endif
 
+#if MIN_VERSION_base(4,12,0)
+import Data.Kind (Type)
+#else
+# define Type *
+#endif
+
 {-
 
 $audioDevice
@@ -213,7 +219,7 @@ openAudioDevice OpenDeviceSpec{..} = liftIO $
   audioFormatStorable FloatingBEAudio = Dict
   audioFormatStorable FloatingNativeAudio = Dict
 
-data Dict :: Constraint -> * where
+data Dict :: Constraint -> Type where
   Dict :: c => Dict c
 
 -- |
