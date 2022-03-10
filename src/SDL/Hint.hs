@@ -141,7 +141,7 @@ data VideoWinD3DCompilerOptions
 -- the 'HasSetter' interface is fairly relaxed - if a hint cannot be set, the
 -- failure will be silently discarded. For more feedback and control when setting
 -- hints, see 'setHintWithPriority'.
-data Hint :: * -> * where
+data Hint v where
   HintAccelerometerAsJoystick :: Hint AccelerometerJoystickOptions
   HintFramebufferAcceleration :: Hint FramebufferAccelerationOptions
   HintMacCTRLClick :: Hint MacCTRLClickOptions
