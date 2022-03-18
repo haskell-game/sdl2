@@ -1,6 +1,7 @@
 module UserEvents where
 
 import Control.Concurrent (myThreadId)
+import Control.Monad (void)
 import Data.Maybe (Maybe(Nothing))
 import Data.Word (Word32)
 import qualified Data.Text as Text
@@ -26,7 +27,7 @@ main = do
   case registeredEvent of
     Nothing -> putStrLn "Fatal error: unable to register timer events."
     Just registeredTimerEvent -> do
-      addTimer 1000 $ mkTimerCb registeredTimerEvent
+      void . addTimer 1000 $ mkTimerCb registeredTimerEvent
       putStrLn "press q at any time to quit"
       appLoop registeredTimerEvent
 
@@ -40,7 +41,7 @@ mkTimerCb (RegisteredEventType pushTimerEvent _) interval = do
   return $ Reschedule interval
 
 appLoop :: RegisteredEventType TimerEvent -> IO ()
-appLoop (RegisteredEventType pushTimerEvent getTimerEvent) = waitEvent >>= go
+appLoop (RegisteredEventType _pushTimerEvent getTimerEvent) = waitEvent >>= go
   where
   go :: Event -> IO ()
   go ev =

@@ -2,6 +2,7 @@
 module Lazyfoo.Lesson02 (main) where
 
 import Control.Concurrent (threadDelay)
+import Control.Monad (void)
 import Foreign.C.Types
 import SDL.Vect
 import qualified SDL
@@ -20,7 +21,7 @@ main = do
 
   helloWorld <- getDataFileName "examples/lazyfoo/hello_world.bmp" >>= SDL.loadBMP
 
-  SDL.surfaceBlit helloWorld Nothing screenSurface Nothing
+  void $ SDL.surfaceBlit helloWorld Nothing screenSurface Nothing
   SDL.updateWindowSurface window
 
   threadDelay 2000000
