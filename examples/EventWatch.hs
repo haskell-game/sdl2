@@ -14,6 +14,8 @@ module EventWatch where
 
 import SDL
 
+import Control.Monad (void)
+
 main :: IO ()
 main = do
   initializeAll
@@ -28,8 +30,8 @@ main = do
     , windowInitialSize     = V2 800 600
     , windowVisible         = True
   }
-  renderer <- createRenderer window (-1) defaultRenderer
-  addEventWatch $ \ev ->
+  _renderer <- createRenderer window (-1) defaultRenderer
+  void . addEventWatch $ \ev ->
     case eventPayload ev of
       WindowSizeChangedEvent sizeChangeData ->
         putStrLn $ "eventWatch windowSizeChanged: " ++ show sizeChangeData

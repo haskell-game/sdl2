@@ -27,7 +27,7 @@ main = do
       events <- SDL.pollEvents
       let quit = elem SDL.QuitEvent $ map SDL.eventPayload events
 
-      SDL.surfaceBlit xOut Nothing screenSurface Nothing
+      void $ SDL.surfaceBlit xOut Nothing screenSurface Nothing
       SDL.updateWindowSurface window
 
       unless quit loop
