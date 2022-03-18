@@ -4,6 +4,7 @@
 {-# LANGUAGE PatternSynonyms #-}
 
 {-# OPTIONS_GHC -fno-warn-missing-pattern-synonym-signatures #-}
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
 {-|
 
