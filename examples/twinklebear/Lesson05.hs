@@ -59,9 +59,12 @@ main = do
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
 
   spriteSheet <- getDataFileName "examples/twinklebear/spritesheet.bmp" >>= loadTexture renderer
-  let [spriteOne, spriteTwo, spriteThree, spriteFour] =
-        [ SDL.Rectangle (P (V2 (x * spriteWidth) (y * spriteHeight))) (V2 spriteWidth spriteHeight)
-          | x <- [0..1], y <- [0..1] ]
+
+  let mkSprite x y = SDL.Rectangle (P (V2 (x * spriteWidth) (y * spriteHeight))) (V2 spriteWidth spriteHeight)
+      spriteOne   = mkSprite 0 0
+      spriteTwo   = mkSprite 0 1
+      spriteThree = mkSprite 1 0
+      spriteFour  = mkSprite 1 1
 
   let loop spriteRect = do
         events <- SDL.pollEvents
