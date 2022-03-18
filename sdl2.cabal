@@ -129,7 +129,7 @@ library
 
   if flag(recent-ish)
     cpp-options:
-      -D RECENT_ISH
+      -D __RECENT_ISH__
     pkgconfig-depends:
       sdl2 >= 2.0.10
   else
