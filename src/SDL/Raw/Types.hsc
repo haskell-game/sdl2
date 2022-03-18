@@ -69,7 +69,7 @@ module SDL.Raw.Types (
   PixelFormat(..),
   Point(..),
   Rect(..),
-#ifdef __RECENT_ISH__
+#ifdef RECENT_ISH
   FPoint(..),
   FRect(..),
 #endif
@@ -1360,7 +1360,7 @@ instance Storable Rect where
     (#poke SDL_Rect, w) ptr w
     (#poke SDL_Rect, h) ptr h
 
-#ifdef __RECENT_ISH__
+#ifdef RECENT_ISH
 
 data FPoint = FPoint
   { fPointX :: !CFloat
