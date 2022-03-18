@@ -1,3 +1,13 @@
+2.5.3.2
+=======
+
+* Added high-level binding for `setWindowIcon`.
+* Raised `text` upper bound to 2.0.
+* Fixed and optimized even polling for SDL 2.0.20.
+* `copyExF` and related are under a package flag now.
+  Turn on `recent-ish` if you have at least 2.0.10.
+* Removed misleading result type from `updateTexture`.
+
 2.5.3.1
 =======
 
