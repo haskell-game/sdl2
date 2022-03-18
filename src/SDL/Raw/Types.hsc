@@ -1,4 +1,6 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
+
 module SDL.Raw.Types (
   -- * Type Aliases
   -- ** Function Types
@@ -67,7 +69,7 @@ module SDL.Raw.Types (
   PixelFormat(..),
   Point(..),
   Rect(..),
-#ifdef RECENT_ISH
+#ifdef __RECENT_ISH__
   FPoint(..),
   FRect(..),
 #endif
@@ -1358,7 +1360,7 @@ instance Storable Rect where
     (#poke SDL_Rect, w) ptr w
     (#poke SDL_Rect, h) ptr h
 
-#ifdef RECENT_ISH
+#ifdef __RECENT_ISH__
 
 data FPoint = FPoint
   { fPointX :: !CFloat

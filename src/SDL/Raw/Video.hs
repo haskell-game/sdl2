@@ -108,7 +108,7 @@ module SDL.Raw.Video (
   renderClear,
   renderCopy,
   renderCopyEx,
-#ifdef RECENT_ISH
+#ifdef __RECENT_ISH__
   renderCopyExF,
 #endif
   renderDrawLine,
@@ -328,7 +328,7 @@ foreign import ccall "SDL.h SDL_QueryTexture" queryTextureFFI :: Texture -> Ptr 
 foreign import ccall "SDL.h SDL_RenderClear" renderClearFFI :: Renderer -> IO CInt
 foreign import ccall "SDL.h SDL_RenderCopy" renderCopyFFI :: Renderer -> Texture -> Ptr Rect -> Ptr Rect -> IO CInt
 foreign import ccall "SDL.h SDL_RenderCopyEx" renderCopyExFFI :: Renderer -> Texture -> Ptr Rect -> Ptr Rect -> CDouble -> Ptr Point -> RendererFlip -> IO CInt
-#ifdef RECENT_ISH
+#ifdef __RECENT_ISH__
 foreign import ccall "SDL.h SDL_RenderCopyExF" renderCopyExFFFI :: Renderer -> Texture -> Ptr Rect -> Ptr FRect -> CDouble -> Ptr FPoint -> RendererFlip -> IO CInt
 #endif
 foreign import ccall "SDL.h SDL_RenderDrawLine" renderDrawLineFFI :: Renderer -> CInt -> CInt -> CInt -> CInt -> IO CInt
@@ -841,7 +841,7 @@ renderCopyEx :: MonadIO m => Renderer -> Texture -> Ptr Rect -> Ptr Rect -> CDou
 renderCopyEx v1 v2 v3 v4 v5 v6 v7 = liftIO $ renderCopyExFFI v1 v2 v3 v4 v5 v6 v7
 {-# INLINE renderCopyEx #-}
 
-#ifdef RECENT_ISH
+#ifdef __RECENT_ISH__
 renderCopyExF :: MonadIO m => Renderer -> Texture -> Ptr Rect -> Ptr FRect -> CDouble -> Ptr FPoint -> RendererFlip -> m CInt
 renderCopyExF v1 v2 v3 v4 v5 v6 v7 = liftIO $ renderCopyExFFFI v1 v2 v3 v4 v5 v6 v7
 {-# INLINE renderCopyExF #-}
