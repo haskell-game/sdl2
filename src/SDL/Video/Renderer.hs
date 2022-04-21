@@ -580,7 +580,7 @@ data Rectangle a = Rectangle (Point V2 a) (V2 a)
 
 instance Storable a => Storable (Rectangle a) where
   sizeOf ~(Rectangle o s) = sizeOf o + sizeOf s
-  alignment _ = 0
+  alignment _ = alignment (undefined :: a)
   peek ptr = do
     o <- peek (castPtr ptr)
     s <- peek (castPtr (ptr `plusPtr` sizeOf o))

@@ -162,7 +162,7 @@ data Atomic = Atomic
 
 instance Storable Atomic where
   sizeOf _ = (#size SDL_atomic_t)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_atomic_t)
   peek ptr = do
     value <- (#peek SDL_atomic_t, value) ptr
     return $! Atomic value
@@ -183,7 +183,7 @@ data AudioCVT = AudioCVT
 
 instance Storable AudioCVT where
   sizeOf _ = (#size SDL_AudioCVT)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_AudioCVT)
   peek ptr = do
     needed <- (#peek SDL_AudioCVT, needed) ptr
     src_format <- (#peek SDL_AudioCVT, src_format) ptr
@@ -219,7 +219,7 @@ data AudioSpec = AudioSpec
 
 instance Storable AudioSpec where
   sizeOf _ = (#size SDL_AudioSpec)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_AudioSpec)
   peek ptr = do
     freq <- (#peek SDL_AudioSpec, freq) ptr
     format <- (#peek SDL_AudioSpec, format) ptr
@@ -249,7 +249,7 @@ data Color = Color
 
 instance Storable Color where
   sizeOf _ = (#size SDL_Color)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_Color)
   peek ptr = do
     r <- (#peek SDL_Color, r) ptr
     g <- (#peek SDL_Color, g) ptr
@@ -272,7 +272,7 @@ data DisplayMode = DisplayMode
 
 instance Storable DisplayMode where
   sizeOf _ = (#size SDL_DisplayMode)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_DisplayMode)
   peek ptr = do
     format <- (#peek SDL_DisplayMode, format) ptr
     w <- (#peek SDL_DisplayMode, w) ptr
@@ -477,7 +477,7 @@ data Event
 
 instance Storable Event where
   sizeOf _ = (#size SDL_Event)
-  alignment _ = 16
+  alignment _ = (#alignment SDL_Event)
   peek ptr = do
     typ <- (#peek SDL_Event, common.type) ptr
     timestamp <- (#peek SDL_Event, common.timestamp) ptr
@@ -815,7 +815,7 @@ data Finger = Finger
 
 instance Storable Finger where
   sizeOf _ = (#size SDL_Finger)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_Finger)
   peek ptr = do
     fingerId <- (#peek SDL_Finger, id) ptr
     x <- (#peek SDL_Finger, x) ptr
@@ -844,7 +844,7 @@ data GameControllerButtonBind
 
 instance Storable GameControllerButtonBind where
   sizeOf _ = (#size SDL_GameControllerButtonBind)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_GameControllerButtonBind)
   peek ptr = do
     bind_type <- (#peek SDL_GameControllerButtonBind, bindType) ptr
     case bind_type :: (#type SDL_GameControllerBindType) of
@@ -884,7 +884,7 @@ data HapticDirection = HapticDirection
 
 instance Storable HapticDirection where
   sizeOf _ = (#size SDL_HapticDirection)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_HapticDirection)
   peek ptr = do
     typ <- (#peek SDL_HapticDirection, type) ptr
     x <- (#peek SDL_HapticDirection, dir[0]) ptr
@@ -980,7 +980,7 @@ data HapticEffect
 
 instance Storable HapticEffect where
   sizeOf _ = (#size SDL_HapticEffect)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_HapticEffect)
   peek ptr = do
     typ <- (#peek SDL_HapticEffect, type) ptr
     case typ of
@@ -1152,7 +1152,7 @@ data JoystickGUID = JoystickGUID
 
 instance Storable JoystickGUID where
   sizeOf _ = (#size SDL_JoystickGUID)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_JoystickGUID)
   peek ptr = do
     guid <- peekArray 16 $ (#ptr SDL_JoystickGUID, data) ptr
     return $! JoystickGUID guid
@@ -1167,7 +1167,7 @@ data Keysym = Keysym
 
 instance Storable Keysym where
   sizeOf _ = (#size SDL_Keysym)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_Keysym)
   peek ptr = do
     scancode <- (#peek SDL_Keysym, scancode) ptr
     sym <- (#peek SDL_Keysym, sym) ptr
@@ -1186,7 +1186,7 @@ data MessageBoxButtonData = MessageBoxButtonData
 
 instance Storable MessageBoxButtonData where
   sizeOf _ = (#size SDL_MessageBoxButtonData)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_MessageBoxButtonData)
   peek ptr = do
     flags <- (#peek SDL_MessageBoxButtonData, flags) ptr
     buttonid <- (#peek SDL_MessageBoxButtonData, buttonid) ptr
@@ -1205,7 +1205,7 @@ data MessageBoxColor = MessageBoxColor
 
 instance Storable MessageBoxColor where
   sizeOf _ = (#size SDL_MessageBoxColor)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_MessageBoxColor)
   peek ptr = do
     r <- (#peek SDL_MessageBoxColor, r) ptr
     g <- (#peek SDL_MessageBoxColor, g) ptr
@@ -1226,7 +1226,7 @@ data MessageBoxColorScheme = MessageBoxColorScheme
 
 instance Storable MessageBoxColorScheme where
   sizeOf _ = (#size SDL_MessageBoxColorScheme)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_MessageBoxColorScheme)
   peek ptr = do
     background <- (#peek SDL_MessageBoxColorScheme, colors[SDL_MESSAGEBOX_COLOR_BACKGROUND]) ptr
     text <- (#peek SDL_MessageBoxColorScheme, colors[SDL_MESSAGEBOX_COLOR_TEXT]) ptr
@@ -1253,7 +1253,7 @@ data MessageBoxData = MessageBoxData
 
 instance Storable MessageBoxData where
   sizeOf _ = (#size SDL_MessageBoxData)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_MessageBoxData)
   peek ptr = do
     flags <- (#peek SDL_MessageBoxData, flags) ptr
     window <- (#peek SDL_MessageBoxData, window) ptr
@@ -1279,7 +1279,7 @@ data Palette = Palette
 
 instance Storable Palette where
   sizeOf _ = (#size SDL_Palette)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_Palette)
   peek ptr = do
     ncolors <- (#peek SDL_Palette, ncolors) ptr
     colors <- (#peek SDL_Palette, colors) ptr
@@ -1301,7 +1301,7 @@ data PixelFormat = PixelFormat
 
 instance Storable PixelFormat where
   sizeOf _ = (#size SDL_PixelFormat)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_PixelFormat)
   peek ptr = do
     format <- (#peek SDL_PixelFormat, format) ptr
     palette <- (#peek SDL_PixelFormat, palette) ptr
@@ -1329,7 +1329,7 @@ data Point = Point
 
 instance Storable Point where
   sizeOf _ = (#size SDL_Point)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_Point)
   peek ptr = do
     x <- (#peek SDL_Point, x) ptr
     y <- (#peek SDL_Point, y) ptr
@@ -1347,7 +1347,7 @@ data Rect = Rect
 
 instance Storable Rect where
   sizeOf _ = (#size SDL_Rect)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_Rect)
   peek ptr = do
     x <- (#peek SDL_Rect, x) ptr
     y <- (#peek SDL_Rect, y) ptr
@@ -1369,7 +1369,7 @@ data FPoint = FPoint
 
 instance Storable FPoint where
   sizeOf _ = (#size SDL_FPoint)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_FPoint)
   peek ptr = do
     x <- (#peek SDL_FPoint, x) ptr
     y <- (#peek SDL_FPoint, y) ptr
@@ -1387,7 +1387,7 @@ data FRect = FRect
 
 instance Storable FRect where
   sizeOf _ = (#size SDL_FRect)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_FRect)
   peek ptr = do
     x <- (#peek SDL_FRect, x) ptr
     y <- (#peek SDL_FRect, y) ptr
@@ -1413,7 +1413,7 @@ data RendererInfo = RendererInfo
 
 instance Storable RendererInfo where
   sizeOf _ = (#size SDL_RendererInfo)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_RendererInfo)
   peek ptr = do
     name <- (#peek SDL_RendererInfo, name) ptr
     flags <- (#peek SDL_RendererInfo, flags) ptr
@@ -1441,7 +1441,7 @@ data RWops = RWops
 
 instance Storable RWops where
   sizeOf _ = (#size SDL_RWops)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_RWops)
   peek ptr = do
     size <- (#peek SDL_RWops, size) ptr
     seek <- (#peek SDL_RWops, seek) ptr
@@ -1470,7 +1470,7 @@ data Surface = Surface
 
 instance Storable Surface where
   sizeOf _ = (#size SDL_Surface)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_Surface)
   peek ptr = do
     format <- (#peek SDL_Surface, format) ptr
     w <- (#peek SDL_Surface, w) ptr
@@ -1497,7 +1497,7 @@ data Version = Version
 
 instance Storable Version where
   sizeOf _ = (#size SDL_version)
-  alignment = sizeOf
+  alignment _ = (#alignment SDL_version)
   peek ptr = do
     major <- (#peek SDL_version, major) ptr
     minor <- (#peek SDL_version, minor) ptr
