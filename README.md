@@ -73,3 +73,9 @@ cabal configure --ghc-option=-fPIC
 ```
 
 You only need to do this once (unless you reconfigure). From this point, `cabal repl` should Just Work.
+
+If you get an `Invalid window` error, try the `-fno-ghci-sandbox` option. For example, in `ghci`:
+
+```
+:set -fno-ghci-sandbox
+```
