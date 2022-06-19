@@ -1,3 +1,8 @@
+2.5.3.3
+=======
+
+* Alignment in hsc files is now provided by hsc2c.
+
 2.5.3.2
 =======
 
