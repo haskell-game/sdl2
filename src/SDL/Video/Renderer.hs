@@ -23,9 +23,6 @@ module SDL.Video.Renderer
   , clear
   , copy
   , copyEx
-#ifdef RECENT_ISH
-  , copyExF
-#endif
   , drawLine
   , drawLines
   , drawPoint
@@ -34,6 +31,18 @@ module SDL.Video.Renderer
   , drawRects
   , fillRect
   , fillRects
+#ifdef RECENT_ISH
+  , copyF
+  , copyExF
+  , drawLineF
+  , drawLinesF
+  , drawPointF
+  , drawPointsF
+  , drawRectF
+  , drawRectsF
+  , fillRectF
+  , fillRectsF
+#endif
   , present
 
   -- * 'Renderer' State
@@ -650,6 +659,94 @@ fillRects (Renderer r) rects = liftIO $
                           (castPtr rp)
                           (fromIntegral (SV.length rects))
 
+#ifdef RECENT_ISH
+
+-- | Copy a portion of the texture to the current rendering target.
+copyF :: MonadIO m => Renderer -> Texture -> Maybe (Rectangle CInt) -> Maybe (Rectangle CFloat) -> m ()
+copyF (Renderer r) (Texture t) srcRect dstRect = liftIO $
+  throwIfNeg_ "SDL.Video.copyF" "SDL_RenderCopyF" $
+    maybeWith with srcRect $ \src ->
+      maybeWith with dstRect $ \dst ->
+        Raw.renderCopyF r t (castPtr src) (castPtr dst)
+
+-- | Copy a portion of the texture to the current rendering target, optionally rotating it by angle around the given center and also flipping it top-bottom and/or left-right.
+copyExF :: MonadIO m
+       => Renderer -- ^ The rendering context
+       -> Texture -- ^ The source texture
+       -> Maybe (Rectangle CInt) -- ^ The source rectangle to copy, or 'Nothing' for the whole texture
+       -> Maybe (Rectangle CFloat) -- ^ The destination rectangle to copy to, or 'Nothing' for the whole rendering target. The texture will be stretched to fill the given rectangle.
+       -> CDouble -- ^ The angle of rotation in degrees. The rotation will be performed clockwise.
+       -> Maybe (Point V2 CFloat) -- ^ The point indicating the center of the rotation, or 'Nothing' to rotate around the center of the destination rectangle
+       -> V2 Bool -- ^ Whether to flip the texture on the X and/or Y axis
+       -> m ()
+copyExF (Renderer r) (Texture t) srcRect dstRect theta center flips =
+  liftIO $
+  throwIfNeg_ "SDL.Video.copyExF" "SDL_RenderCopyExF" $
+  maybeWith with srcRect $ \src ->
+  maybeWith with dstRect $ \dst ->
+  maybeWith with center $ \c ->
+  Raw.renderCopyExF r t (castPtr src) (castPtr dst) theta (castPtr c)
+                   (case flips of
+                      V2 x y -> (if x then Raw.SDL_FLIP_HORIZONTAL else 0) .|.
+                               (if y then Raw.SDL_FLIP_VERTICAL else 0))
+
+-- | Draw a line between two points on the current rendering target.
+drawLineF :: MonadIO m => Renderer -> Point V2 CFloat -> Point V2 CFloat -> m ()
+drawLineF (Renderer r) (P (V2 x y)) (P (V2 x' y')) = liftIO $
+  throwIfNeg_ "SDL.Video.drawLineF" "SDL_RenderDrawLineF" $
+    Raw.renderDrawLineF r x y x' y'
+
+-- | Draw a series of connected lines on the current rendering target.
+drawLinesF :: MonadIO m => Renderer -> SV.Vector (Point V2 CFloat) -> m ()
+drawLinesF (Renderer r) points = liftIO $
+  throwIfNeg_ "SDL.Video.drawLinesF" "SDL_RenderDrawLinesF" $
+    SV.unsafeWith points $ \p ->
+      Raw.renderDrawLinesF r (castPtr p) (fromIntegral (SV.length points))
+
+-- | Draw a point on the current rendering target.
+drawPointF :: MonadIO m => Renderer -> Point V2 CFloat -> m ()
+drawPointF (Renderer r) (P (V2 x y)) = liftIO $
+  throwIfNeg_ "SDL.Video.drawPointF" "SDL_RenderDrawPointF" $
+    Raw.renderDrawPointF r x y
+
+-- | Draw a collection of points on the current rendering target.
+drawPointsF :: MonadIO m => Renderer -> SV.Vector (Point V2 CFloat) -> m ()
+drawPointsF (Renderer r) points = liftIO $
+  throwIfNeg_ "SDL.Video.drawPointsF" "SDL_RenderDrawPointsF" $
+    SV.unsafeWith points $ \p ->
+      Raw.renderDrawPointsF r (castPtr p) (fromIntegral (SV.length points))
+
+-- | Draw the outline of a rectangle on the current rendering target.
+drawRectF :: MonadIO m => Renderer -> Rectangle CFloat -> m ()
+drawRectF (Renderer r) rect = liftIO $
+  throwIfNeg_ "SDL.Video.drawRectF" "SDL_RenderDrawRectF" $
+    with rect $ \rectPtr ->
+      Raw.renderDrawRectF r (castPtr rectPtr)
+
+-- | Draw a series of rectangle outlines on the current rendering target.
+drawRectsF :: MonadIO m => Renderer -> SV.Vector (Rectangle CFloat) -> m ()
+drawRectsF (Renderer r) rects = liftIO $
+  throwIfNeg_ "SDL.Video.drawRectsF" "SDL_RenderDrawRectsF" $
+    SV.unsafeWith rects $ \rp ->
+      Raw.renderDrawRectsF r (castPtr rp) (fromIntegral (SV.length rects))
+
+-- | Draw a filled rectangle on the current rendering target.
+fillRectF :: MonadIO m => Renderer -> Rectangle CFloat -> m ()
+fillRectF (Renderer r) rect = liftIO $
+  throwIfNeg_ "SDL.Video.fillRectF" "SDL_RenderFillRectF" $
+    with rect $ \rectPtr ->
+      Raw.renderFillRectF r (castPtr rectPtr)
+
+-- | Draw a series of filled rectangles on the current rendering target.
+fillRectsF :: MonadIO m => Renderer -> SV.Vector (Rectangle CFloat) -> m ()
+fillRectsF (Renderer r) rects = liftIO $
+  throwIfNeg_ "SDL.Video.fillRectsF" "SDL_RenderFillRectsF" $
+    SV.unsafeWith rects $ \rp ->
+      Raw.renderFillRectsF r (castPtr rp) (fromIntegral (SV.length rects))
+
+#endif
+
+
 -- | Clear the current rendering target with the drawing color.
 --
 -- See @<https://wiki.libsdl.org/SDL_RenderClear SDL_RenderClear>@ for C documentation.
@@ -764,29 +861,6 @@ copyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
                    (case flips of
                       V2 x y -> (if x then Raw.SDL_FLIP_HORIZONTAL else 0) .|.
                                (if y then Raw.SDL_FLIP_VERTICAL else 0))
-
-#ifdef RECENT_ISH
--- | Copy a portion of the texture to the current rendering target, optionally rotating it by angle around the given center and also flipping it top-bottom and/or left-right.
-copyExF :: MonadIO m
-       => Renderer -- ^ The rendering context
-       -> Texture -- ^ The source texture
-       -> Maybe (Rectangle CInt) -- ^ The source rectangle to copy, or 'Nothing' for the whole texture
-       -> Maybe (Rectangle CFloat) -- ^ The destination rectangle to copy to, or 'Nothing' for the whole rendering target. The texture will be stretched to fill the given rectangle.
-       -> CDouble -- ^ The angle of rotation in degrees. The rotation will be performed clockwise.
-       -> Maybe (Point V2 CFloat) -- ^ The point indicating the center of the rotation, or 'Nothing' to rotate around the center of the destination rectangle
-       -> V2 Bool -- ^ Whether to flip the texture on the X and/or Y axis
-       -> m ()
-copyExF (Renderer r) (Texture t) srcRect dstRect theta center flips =
-  liftIO $
-  throwIfNeg_ "SDL.Video.copyExF" "SDL_RenderCopyExF" $
-  maybeWith with srcRect $ \src ->
-  maybeWith with dstRect $ \dst ->
-  maybeWith with center $ \c ->
-  Raw.renderCopyExF r t (castPtr src) (castPtr dst) theta (castPtr c)
-                   (case flips of
-                      V2 x y -> (if x then Raw.SDL_FLIP_HORIZONTAL else 0) .|.
-                               (if y then Raw.SDL_FLIP_VERTICAL else 0))
-#endif
 
 -- | Draw a line on the current rendering target.
 --
