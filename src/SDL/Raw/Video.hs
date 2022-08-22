@@ -108,9 +108,6 @@ module SDL.Raw.Video (
   renderClear,
   renderCopy,
   renderCopyEx,
-#ifdef RECENT_ISH
-  renderCopyExF,
-#endif
   renderDrawLine,
   renderDrawLines,
   renderDrawPoint,
@@ -120,6 +117,18 @@ module SDL.Raw.Video (
   renderFillRect,
   renderFillRectEx,
   renderFillRects,
+#ifdef RECENT_ISH
+  renderCopyF,
+  renderCopyExF,
+  renderDrawLineF,
+  renderDrawLinesF,
+  renderDrawPointF,
+  renderDrawPointsF,
+  renderDrawRectF,
+  renderDrawRectsF,
+  renderFillRectF,
+  renderFillRectsF,
+#endif
   renderGetClipRect,
   renderGetLogicalSize,
   renderGetScale,
@@ -328,9 +337,6 @@ foreign import ccall "SDL.h SDL_QueryTexture" queryTextureFFI :: Texture -> Ptr 
 foreign import ccall "SDL.h SDL_RenderClear" renderClearFFI :: Renderer -> IO CInt
 foreign import ccall "SDL.h SDL_RenderCopy" renderCopyFFI :: Renderer -> Texture -> Ptr Rect -> Ptr Rect -> IO CInt
 foreign import ccall "SDL.h SDL_RenderCopyEx" renderCopyExFFI :: Renderer -> Texture -> Ptr Rect -> Ptr Rect -> CDouble -> Ptr Point -> RendererFlip -> IO CInt
-#ifdef RECENT_ISH
-foreign import ccall "SDL.h SDL_RenderCopyExF" renderCopyExFFFI :: Renderer -> Texture -> Ptr Rect -> Ptr FRect -> CDouble -> Ptr FPoint -> RendererFlip -> IO CInt
-#endif
 foreign import ccall "SDL.h SDL_RenderDrawLine" renderDrawLineFFI :: Renderer -> CInt -> CInt -> CInt -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderDrawLines" renderDrawLinesFFI :: Renderer -> Ptr Point -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderDrawPoint" renderDrawPointFFI :: Renderer -> CInt -> CInt -> IO CInt
@@ -338,6 +344,18 @@ foreign import ccall "SDL.h SDL_RenderDrawPoints" renderDrawPointsFFI :: Rendere
 foreign import ccall "SDL.h SDL_RenderDrawRect" renderDrawRectFFI :: Renderer -> Ptr Rect -> IO CInt
 foreign import ccall "SDL.h SDL_RenderDrawRects" renderDrawRectsFFI :: Renderer -> Ptr Rect -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderFillRect" renderFillRectFFI :: Renderer -> Ptr Rect -> IO CInt
+#ifdef RECENT_ISH
+foreign import ccall "SDL.h SDL_RenderCopyF" renderCopyFFFI :: Renderer -> Texture -> Ptr Rect -> Ptr FRect -> IO CInt
+foreign import ccall "SDL.h SDL_RenderCopyExF" renderCopyExFFFI :: Renderer -> Texture -> Ptr Rect -> Ptr FRect -> CDouble -> Ptr FPoint -> RendererFlip -> IO CInt
+foreign import ccall "SDL.h SDL_RenderDrawLineF" renderDrawLineFFFI :: Renderer -> CFloat -> CFloat -> CFloat -> CFloat -> IO CInt
+foreign import ccall "SDL.h SDL_RenderDrawLinesF" renderDrawLinesFFFI :: Renderer -> Ptr FPoint -> CInt -> IO CInt
+foreign import ccall "SDL.h SDL_RenderDrawPointF" renderDrawPointFFFI :: Renderer -> CFloat -> CFloat -> IO CInt
+foreign import ccall "SDL.h SDL_RenderDrawPointsF" renderDrawPointsFFFI :: Renderer -> Ptr FPoint -> CInt -> IO CInt
+foreign import ccall "SDL.h SDL_RenderDrawRectF" renderDrawRectFFFI :: Renderer -> Ptr FRect -> IO CInt
+foreign import ccall "SDL.h SDL_RenderDrawRectsF" renderDrawRectsFFFI :: Renderer -> Ptr FRect -> CInt -> IO CInt
+foreign import ccall "SDL.h SDL_RenderFillRectF" renderFillRectFFFI :: Renderer -> Ptr FRect -> IO CInt
+foreign import ccall "SDL.h SDL_RenderFillRectsF" renderFillRectsFFFI :: Renderer -> Ptr FRect -> CInt -> IO CInt
+#endif
 foreign import ccall "sqlhelper.c SDLHelper_RenderFillRectEx" renderFillRectExFFI :: Renderer -> CInt -> CInt -> CInt -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderFillRects" renderFillRectsFFI :: Renderer -> Ptr Rect -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderGetClipRect" renderGetClipRectFFI :: Renderer -> Ptr Rect -> IO ()
@@ -841,12 +859,6 @@ renderCopyEx :: MonadIO m => Renderer -> Texture -> Ptr Rect -> Ptr Rect -> CDou
 renderCopyEx v1 v2 v3 v4 v5 v6 v7 = liftIO $ renderCopyExFFI v1 v2 v3 v4 v5 v6 v7
 {-# INLINE renderCopyEx #-}
 
-#ifdef RECENT_ISH
-renderCopyExF :: MonadIO m => Renderer -> Texture -> Ptr Rect -> Ptr FRect -> CDouble -> Ptr FPoint -> RendererFlip -> m CInt
-renderCopyExF v1 v2 v3 v4 v5 v6 v7 = liftIO $ renderCopyExFFFI v1 v2 v3 v4 v5 v6 v7
-{-# INLINE renderCopyExF #-}
-#endif
-
 renderDrawLine :: MonadIO m => Renderer -> CInt -> CInt -> CInt -> CInt -> m CInt
 renderDrawLine v1 v2 v3 v4 v5 = liftIO $ renderDrawLineFFI v1 v2 v3 v4 v5
 {-# INLINE renderDrawLine #-}
@@ -882,6 +894,51 @@ renderFillRect v1 v2 = liftIO $ renderFillRectFFI v1 v2
 renderFillRects :: MonadIO m => Renderer -> Ptr Rect -> CInt -> m CInt
 renderFillRects v1 v2 v3 = liftIO $ renderFillRectsFFI v1 v2 v3
 {-# INLINE renderFillRects #-}
+
+#ifdef RECENT_ISH
+
+renderCopyF :: MonadIO m => Renderer -> Texture -> Ptr Rect -> Ptr FRect -> m CInt
+renderCopyF v1 v2 v3 v4 = liftIO $ renderCopyFFFI v1 v2 v3 v4
+{-# INLINE renderCopyF #-}
+
+renderCopyExF :: MonadIO m => Renderer -> Texture -> Ptr Rect -> Ptr FRect -> CDouble -> Ptr FPoint -> RendererFlip -> m CInt
+renderCopyExF v1 v2 v3 v4 v5 v6 v7 = liftIO $ renderCopyExFFFI v1 v2 v3 v4 v5 v6 v7
+{-# INLINE renderCopyExF #-}
+
+renderDrawLineF :: MonadIO m => Renderer -> CFloat -> CFloat -> CFloat -> CFloat -> m CInt
+renderDrawLineF v1 v2 v3 v4 v5 = liftIO $ renderDrawLineFFFI v1 v2 v3 v4 v5
+{-# INLINE renderDrawLineF #-}
+
+renderDrawLinesF :: MonadIO m => Renderer -> Ptr FPoint -> CInt -> m CInt
+renderDrawLinesF v1 v2 v3 = liftIO $ renderDrawLinesFFFI v1 v2 v3
+{-# INLINE renderDrawLinesF #-}
+
+renderDrawPointF :: MonadIO m => Renderer -> CFloat -> CFloat -> m CInt
+renderDrawPointF v1 v2 v3 = liftIO $ renderDrawPointFFFI v1 v2 v3
+{-# INLINE renderDrawPointF #-}
+
+renderDrawPointsF :: MonadIO m => Renderer -> Ptr FPoint -> CInt -> m CInt
+renderDrawPointsF v1 v2 v3 = liftIO $ renderDrawPointsFFFI v1 v2 v3
+{-# INLINE renderDrawPointsF #-}
+
+renderDrawRectF :: MonadIO m => Renderer -> Ptr FRect -> m CInt
+renderDrawRectF v1 v2 = liftIO $ renderDrawRectFFFI v1 v2
+{-# INLINE renderDrawRectF #-}
+
+renderDrawRectsF :: MonadIO m => Renderer -> Ptr FRect -> CInt -> m CInt
+renderDrawRectsF v1 v2 v3 = liftIO $ renderDrawRectsFFFI v1 v2 v3
+{-# INLINE renderDrawRectsF #-}
+
+renderFillRectF :: MonadIO m => Renderer -> Ptr FRect -> m CInt
+renderFillRectF v1 v2 = liftIO $ renderFillRectFFFI v1 v2
+{-# INLINE renderFillRectF #-}
+
+renderFillRectsF :: MonadIO m => Renderer -> Ptr FRect -> CInt -> m CInt
+renderFillRectsF v1 v2 v3 = liftIO $ renderFillRectsFFFI v1 v2 v3
+{-# INLINE renderFillRectsF #-}
+
+#endif
+
 
 renderGetClipRect :: MonadIO m => Renderer -> Ptr Rect -> m ()
 renderGetClipRect v1 v2 = liftIO $ renderGetClipRectFFI v1 v2
