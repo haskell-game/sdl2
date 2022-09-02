@@ -3,7 +3,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE PatternSynonyms #-}
 
 module SDL.Input.Mouse
   ( -- * Relative Mouse Mode
@@ -35,6 +34,7 @@ module SDL.Input.Mouse
   , SystemCursor(..)
   , activeCursor
   , createCursor
+  , createCursorFrom
   , freeCursor
   , createColorCursor
   , createSystemCursor
@@ -45,6 +45,7 @@ import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Bool
 import Data.Data (Data)
+import Data.List (nub)
 import Data.StateVar
 import Data.Typeable
 import Data.Word
@@ -257,21 +258,86 @@ activeCursor = makeStateVar getCursor setCursor
   setCursor = Raw.setCursor . unwrapCursor
 
 -- | Create a cursor using the specified bitmap data and mask (in MSB format).
---
---
 createCursor :: MonadIO m
-             => V.Vector Bool -- ^ Whether this part of the cursor is black. Use 'False' for white and 'True' for black.
-             -> V.Vector Bool -- ^ Whether or not pixels are visible. Use 'True' for visible and 'False' for transparent.
+             => V.Vector Word8 -- ^ Whether this part of the cursor is black. Use 'False' for white and 'True' for black.
+             -> V.Vector Word8 -- ^ Whether or not pixels are visible. Use 'True' for visible and 'False' for transparent.
              -> V2 CInt -- ^ The width and height of the cursor.
              -> Point V2 CInt -- ^ The X- and Y-axis location of the upper left corner of the cursor relative to the actual mouse position
              -> m Cursor
 createCursor dta msk (V2 w h) (P (V2 hx hy)) =
     liftIO . fmap Cursor $
         throwIfNull "SDL.Input.Mouse.createCursor" "SDL_createCursor" $
-            V.unsafeWith (V.map (bool 0 1) dta) $ \unsafeDta ->
-            V.unsafeWith (V.map (bool 0 1) msk) $ \unsafeMsk ->
+            V.unsafeWith dta $ \unsafeDta ->
+            V.unsafeWith msk $ \unsafeMsk ->
                 Raw.createCursor unsafeDta unsafeMsk w h hx hy
 
+{- | Create a cursor from a bit art painting of it.
+
+The number of columns must be a multiple of 8.
+
+Symbols used: @ @ (space) - transparent, @.@ - visible black, @#@ (or anything else) - visible white.
+
+A minimal cursor template:
+@
+source8x8 :: [[Char]]
+source8x8 =
+  [ "        "
+  , "        "
+  , "        "
+  , "        "
+  , "        "
+  , "        "
+  , "        "
+  , "        "
+  ]
+@
+-}
+createCursorFrom :: MonadIO m
+             => Point V2 CInt -- ^ The X- and Y-axis location of the upper left corner of the cursor relative to the actual mouse position
+             -> [[Char]]
+             -> m Cursor
+createCursorFrom point source = do
+  createCursor color mask (V2 w h) point
+  where
+    h = fromIntegral (length source)
+    w = case nub $ map length source of
+      [okay] ->
+        fromIntegral okay
+      mismatch ->
+        error $ "Inconsistent row widths: " <> show mismatch
+
+    color =  packBools colorBits
+    mask = packBools maskBits
+    (colorBits, maskBits) = unzip $ map charToBool $ concat source
+
+    packBools = V.fromList . boolListToWord8List
+
+    charToBool ' ' = (False, False)  -- transparent
+    charToBool '.' = (True, True)  -- visible black
+    charToBool _ = (True, False)  -- visible white
+
+    boolListToWord8List xs =
+      case xs of
+        b1 : b2 : b3 : b4 : b5 : b6 : b7 : b8 : rest ->
+          let
+            packed =
+              i b1 128 +
+              i b2 64 +
+              i b3 32 +
+              i b4 16 +
+              i b5 8 +
+              i b6 4 +
+              i b7 2 +
+              i b8 1
+            in
+              packed : boolListToWord8List rest
+        [] ->
+          []
+        _leftovers ->
+          error "The number of columns must be a multiple of 8."
+      where
+        i True multiple = multiple
+        i False _ = 0
 
 -- | Free a cursor created with 'createCursor', 'createColorCusor' and 'createSystemCursor'.
 --
