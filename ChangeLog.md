@@ -4,6 +4,7 @@
 * Added missing floating point variants of render functions.
 * Fixed `createCursor` masks.
 * Adapted `createCursorFrom` helper from LambdaHack[1].
+* Added `pkgconfig` flag (enabled by default) to make its use optional.
 
 [1]: https://github.com/LambdaHack/LambdaHack/blob/7ed94b4b6c75fc46afeef01d8ac476c4598fb822/engine-src/Game/LambdaHack/Client/UI/Frontend/Sdl.hs#L421-L455
 
