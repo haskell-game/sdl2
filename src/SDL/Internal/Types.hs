@@ -7,11 +7,11 @@ module SDL.Internal.Types
   , Renderer(..)
   ) where
 
-import           Data.Data                      ( Data )
-import           Data.Typeable
-import           GHC.Generics                   ( Generic )
+import Data.Data (Data)
+import Data.Typeable
+import GHC.Generics (Generic)
 
-import qualified SDL.Raw                       as Raw
+import qualified SDL.Raw as Raw
 
 newtype Joystick = Joystick { joystickPtr :: Raw.Joystick }
   deriving (Data, Eq, Generic, Ord, Show, Typeable)
