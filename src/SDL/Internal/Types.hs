@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 module SDL.Internal.Types
   ( Joystick(..)
+  , GameController(..)
   , Window(..)
   , Renderer(..)
   ) where
@@ -13,6 +14,10 @@ import GHC.Generics (Generic)
 import qualified SDL.Raw as Raw
 
 newtype Joystick = Joystick { joystickPtr :: Raw.Joystick }
+  deriving (Data, Eq, Generic, Ord, Show, Typeable)
+
+newtype GameController = GameController
+  { gameControllerPtr :: Raw.GameController }
   deriving (Data, Eq, Generic, Ord, Show, Typeable)
 
 newtype Window = Window (Raw.Window)

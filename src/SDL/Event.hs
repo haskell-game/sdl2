@@ -405,7 +405,7 @@ data JoyDeviceEventData =
 data ControllerAxisEventData =
   ControllerAxisEventData {controllerAxisEventWhich :: !Raw.JoystickID
                            -- ^ The joystick instance ID that reported the event.
-                          ,controllerAxisEventAxis :: !Word8
+                          ,controllerAxisEventAxis :: !ControllerAxis
                            -- ^ The index of the axis.
                           ,controllerAxisEventValue :: !Int16
                            -- ^ The axis value ranging between -32768 and 32767.
@@ -681,7 +681,11 @@ convertRaw (Raw.JoyButtonEvent _ ts a b c) =
 convertRaw (Raw.JoyDeviceEvent t ts a) =
   return (Event ts (JoyDeviceEvent (JoyDeviceEventData (fromNumber t) a)))
 convertRaw (Raw.ControllerAxisEvent _ ts a b c) =
-  return (Event ts (ControllerAxisEvent (ControllerAxisEventData a b c)))
+  return (Event ts
+            (ControllerAxisEvent
+              (ControllerAxisEventData a
+                                      (fromNumber $ fromIntegral b)
+                                      c)))
 convertRaw (Raw.ControllerButtonEvent t ts a b _) =
   return (Event ts
            (ControllerButtonEvent
