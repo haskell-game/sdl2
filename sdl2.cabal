@@ -165,7 +165,7 @@ library
     Haskell2010
 
   if os(windows)
-    cpp-options: -D_SDL_main_h -DSDL_main_h_
+    cpp-options: -D_SDL_main_h -DSDL_main_h_ -DSDLmain_h_
 
 test-suite sdl-space
   type:                exitcode-stdio-1.0
