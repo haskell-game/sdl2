@@ -109,10 +109,10 @@ import qualified SDL.Raw as Raw
 import Control.Applicative
 #endif
 
--- | A single SDL event. This event occured at 'eventTimestamp' and carries data under 'eventPayload'.
+-- | A single SDL event. This event occurred at 'eventTimestamp' and carries data under 'eventPayload'.
 data Event = Event
   { eventTimestamp :: Timestamp
-    -- ^ The time the event occured.
+    -- ^ The time the event occurred.
   , eventPayload :: EventPayload
     -- ^ Data pertaining to this event.
   } deriving (Eq, Ord, Generic, Show, Typeable)
