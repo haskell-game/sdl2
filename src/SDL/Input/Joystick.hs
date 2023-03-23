@@ -108,7 +108,7 @@ closeJoystick (Joystick j) = Raw.joystickClose j
 -- in future SDL events.
 --
 -- See @<https://wiki.libsdl.org/SDL_JoystickInstanceID SDL_JoystickInstanceID>@ for C documentation.
-getJoystickID :: MonadIO m => Joystick -> m (Int32)
+getJoystickID :: MonadIO m => Joystick -> m Raw.JoystickID
 getJoystickID (Joystick j) =
   throwIfNeg "SDL.Input.Joystick.getJoystickID" "SDL_JoystickInstanceID" $
   Raw.joystickInstanceID j

@@ -396,7 +396,7 @@ data JoyButtonEventData =
 data JoyDeviceEventData =
   JoyDeviceEventData {joyDeviceEventConnection :: !JoyDeviceConnection
                       -- ^ Was the device added or removed?
-                     ,joyDeviceEventWhich :: !Int32
+                     ,joyDeviceEventWhich :: !Raw.JoystickID
                       -- ^ The instance id of the joystick that reported the event.
                      }
   deriving (Eq,Ord,Generic,Show,Typeable)
@@ -427,7 +427,7 @@ data ControllerButtonEventData =
 data ControllerDeviceEventData =
   ControllerDeviceEventData {controllerDeviceEventConnection :: !ControllerDeviceConnection
                              -- ^ Was the device added, removed, or remapped?
-                            ,controllerDeviceEventWhich :: !Int32
+                            ,controllerDeviceEventWhich :: !Raw.JoystickID
                              -- ^ The joystick instance ID that reported the event.
                             }
   deriving (Eq,Ord,Generic,Show,Typeable)
