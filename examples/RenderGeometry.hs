@@ -1,5 +1,5 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
+
 module RenderGeometry where
 
 import Control.Monad
@@ -7,14 +7,10 @@ import Data.Word (Word8)
 import Foreign (castPtr, plusPtr, sizeOf)
 import Foreign.C.Types
 import SDL.Vect
-import qualified Data.ByteString as BS
 import qualified Data.Vector.Storable as V
-import           System.Exit (exitFailure)
-import           System.IO
 
 import SDL (($=))
 import qualified SDL
--- import qualified Graphics.Rendering.OpenGL as GL
 import SDL.Raw.Types (FPoint(..), Color(..))
 
 screenWidth, screenHeight :: CInt
@@ -30,19 +26,17 @@ main = do
 
   window <-
     SDL.createWindow
-      "SDL / OpenGL Example"
+      "SDL / RenderGeometry Example"
       SDL.defaultWindow
         { SDL.windowInitialSize = V2 screenWidth screenHeight
         , SDL.windowGraphicsContext = SDL.OpenGLContext SDL.defaultOpenGL
-            { SDL.glProfile = SDL.Core SDL.Normal 3 2
-            }
         }
   SDL.showWindow window
 
   -- SDL.windowOpacity window $= 0.5
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
 
-  _ <- SDL.glCreateContext window
+  -- _ <- SDL.glCreateContext window
 
   let
     l = fromIntegral screenWidth * 0.33
