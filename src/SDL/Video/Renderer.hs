@@ -44,6 +44,7 @@ module SDL.Video.Renderer
   , fillRectsF
   , renderGeometry
   , Raw.Vertex(..)
+  , renderGeometryRaw
 #endif
   , present
 
@@ -764,6 +765,27 @@ renderGeometry (Renderer r) mtexture vertices indices = liftIO $
 
     ipSize = fromIntegral (SV.length indices)
 
+-- | Render a list of triangles, optionally using a texture and indices into the
+-- vertex array Color and alpha modulation is done per vertex
+-- (SDL_SetTextureColorMod and SDL_SetTextureAlphaMod are ignored).
+--
+-- This version allows storeing vertex data in arbitrary types, but you have to provide
+-- pointers and strides yourself.
+renderGeometryRaw :: forall ix m . (Storable ix, MonadIO m) => Renderer -> Maybe Texture -> Ptr Raw.FPoint -> CInt -> Ptr Raw.Color -> CInt -> Ptr Raw.FPoint -> CInt -> CInt -> SV.Vector ix -> m ()
+renderGeometryRaw (Renderer r) mtexture xy xyStride color colorStride uv uvStride numVertices indices = liftIO $
+  throwIfNeg_ "SDL.Video.renderGeometryRaw" "SDL_RenderGeometryRaw" $
+    SV.unsafeWith indices $ \ip ->
+      Raw.renderGeometryRaw r t xy xyStride color colorStride uv uvStride numVertices (castPtr $ ipOrNull ip) ipSize sizeOfip
+  where
+    t = case mtexture of
+      Just (Texture found) -> found
+      Nothing -> nullPtr
+
+    ipOrNull ip = if ipSize == 0 then nullPtr else ip
+
+    ipSize = fromIntegral (SV.length indices)
+
+    sizeOfip = fromIntegral $ sizeOf (undefined :: ix)
 #endif
 
 
