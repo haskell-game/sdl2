@@ -61,7 +61,7 @@ flag recent-ish
   description:       Use features from a more recent libsdl2 release.
   default:           True
   manual:            False
-  
+
 flag pkgconfig
   description:       Use pkgconfig to sort out SDL2 dependency
   default:           True
@@ -505,6 +505,18 @@ executable userevent-example
   main-is: UserEvents.hs
   default-language: Haskell2010
   ghc-options: -main-is UserEvents
+  other-modules: Paths_sdl2
+
+executable rendergeometry-example
+  if flag(examples)
+    build-depends: base, bytestring, vector, sdl2
+  else
+    buildable: False
+
+  hs-source-dirs: examples
+  main-is: RenderGeometry.hs
+  default-language: Haskell2010
+  ghc-options: -main-is RenderGeometry
   other-modules: Paths_sdl2
 
 executable opengl-example
