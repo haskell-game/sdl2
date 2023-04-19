@@ -72,6 +72,7 @@ module SDL.Raw.Types (
 #ifdef RECENT_ISH
   FPoint(..),
   FRect(..),
+  Vertex(..),
 #endif
   RendererInfo(..),
   RWops(..),
@@ -1400,6 +1401,24 @@ instance Storable FRect where
     (#poke SDL_FRect, w) ptr w
     (#poke SDL_FRect, h) ptr h
 
+data Vertex = Vertex
+  { vertexPosition :: !FPoint
+  , vertexColor :: !Color
+  , vertexTexCoord :: !FPoint
+  } deriving (Eq, Show, Typeable)
+
+instance Storable Vertex where
+  sizeOf _ = (#size SDL_Vertex)
+  alignment _ = (#alignment SDL_Vertex)
+  peek ptr = do
+    position <- (#peek SDL_Vertex, position) ptr
+    color <- (#peek SDL_Vertex, color) ptr
+    tex_coord <- (#peek SDL_Vertex, tex_coord) ptr
+    return $! Vertex position color tex_coord
+  poke ptr (Vertex position color tex_coord) = do
+    (#poke SDL_Vertex, position) ptr position
+    (#poke SDL_Vertex, color) ptr color
+    (#poke SDL_Vertex, tex_coord) ptr tex_coord
 #endif
 
 data RendererInfo = RendererInfo

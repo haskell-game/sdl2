@@ -42,6 +42,8 @@ module SDL.Video.Renderer
   , drawRectsF
   , fillRectF
   , fillRectsF
+  , renderGeometry
+  , Raw.Vertex(..)
 #endif
   , present
 
@@ -743,6 +745,24 @@ fillRectsF (Renderer r) rects = liftIO $
   throwIfNeg_ "SDL.Video.fillRectsF" "SDL_RenderFillRectsF" $
     SV.unsafeWith rects $ \rp ->
       Raw.renderFillRectsF r (castPtr rp) (fromIntegral (SV.length rects))
+
+-- | Render a list of triangles, optionally using a texture and indices into the
+-- vertex array Color and alpha modulation is done per vertex
+-- (SDL_SetTextureColorMod and SDL_SetTextureAlphaMod are ignored).
+renderGeometry :: MonadIO m => Renderer -> Maybe Texture -> SV.Vector Raw.Vertex -> SV.Vector CInt -> m ()
+renderGeometry (Renderer r) mtexture vertices indices = liftIO $
+  throwIfNeg_ "SDL.Video.renderGeometry" "SDL_RenderGeometry" $
+    SV.unsafeWith vertices $ \vp ->
+      SV.unsafeWith indices $ \ip ->
+        Raw.renderGeometry r t vp (fromIntegral (SV.length vertices)) (ipOrNull ip) ipSize
+  where
+    t = case mtexture of
+      Just (Texture found) -> found
+      Nothing -> nullPtr
+
+    ipOrNull ip = if ipSize == 0 then nullPtr else ip
+
+    ipSize = fromIntegral (SV.length indices)
 
 #endif
 
