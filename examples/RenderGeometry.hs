@@ -33,28 +33,25 @@ main = do
         }
   SDL.showWindow window
 
-  -- SDL.windowOpacity window $= 0.5
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
 
-  -- _ <- SDL.glCreateContext window
-
   let
-    l = fromIntegral screenWidth * 0.33
-    t = fromIntegral screenHeight * 0.33
-    r = fromIntegral screenWidth * 0.66
-    b = fromIntegral screenHeight * 0.66
+    tl = fromIntegral screenWidth * 0.1
+    tt = fromIntegral screenHeight * 0.1
+    tr = fromIntegral screenWidth * 0.9
+    tb = fromIntegral screenHeight * 0.9
 
     triVertices = V.fromList
       [ SDL.Vertex
-          (FPoint l b)
+          (FPoint tl tb)
           (Color 0xFF 0 0 255)
           (FPoint 0 0)
       , SDL.Vertex
-          (FPoint r b)
+          (FPoint tr tb)
           (Color 0 0xFF 0 255)
           (FPoint 0 1)
       , SDL.Vertex
-          (FPoint r t)
+          (FPoint (tl/2 + tr/2) tt)
           (Color 0 0 0xFF 255)
           (FPoint 1 1)
       ]
