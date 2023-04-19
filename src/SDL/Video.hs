@@ -25,6 +25,7 @@ module SDL.Video
   -- * Window Attributes
   , windowMinimumSize
   , windowMaximumSize
+  , windowOpacity
   , windowSize
   , windowBordered
   , windowBrightness
@@ -610,6 +611,22 @@ windowMinimumSize (Window win) = makeStateVar getWindowMinimumSize setWindowMini
     alloca $ \hptr -> do
       Raw.getWindowMinimumSize win wptr hptr
       V2 <$> peek wptr <*> peek hptr
+
+-- | Get or set the opacity of a window.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_SetWindowOpacity SDL_SetWindowOpacity>@ and @<https://wiki.libsdl.org/SDL_GetWindowOpacity SDL_GetWindowOpacity>@ for C documentation.
+windowOpacity :: Window -> StateVar CFloat
+windowOpacity (Window win) = makeStateVar getWindowOpacity setWindowOpacity
+  where
+  setWindowOpacity opacity = Raw.setWindowOpacity win opacity
+
+  getWindowOpacity =
+    liftIO $
+    alloca $ \optr -> do
+      Raw.getWindowOpacity win optr
+      peek optr
 
 createRenderer :: MonadIO m => Window -> CInt -> RendererConfig -> m Renderer
 createRenderer (Window w) driver config =

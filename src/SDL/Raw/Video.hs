@@ -52,6 +52,7 @@ module SDL.Raw.Video (
   getWindowID,
   getWindowMaximumSize,
   getWindowMinimumSize,
+  getWindowOpacity,
   getWindowPixelFormat,
   getWindowPosition,
   getWindowSize,
@@ -73,6 +74,7 @@ module SDL.Raw.Video (
   setWindowIcon,
   setWindowMaximumSize,
   setWindowMinimumSize,
+  setWindowOpacity,
   setWindowPosition,
   setWindowSize,
   setWindowTitle,
@@ -282,6 +284,7 @@ foreign import ccall "SDL.h SDL_GetWindowGrab" getWindowGrabFFI :: Window -> IO 
 foreign import ccall "SDL.h SDL_GetWindowID" getWindowIDFFI :: Window -> IO Word32
 foreign import ccall "SDL.h SDL_GetWindowMaximumSize" getWindowMaximumSizeFFI :: Window -> Ptr CInt -> Ptr CInt -> IO ()
 foreign import ccall "SDL.h SDL_GetWindowMinimumSize" getWindowMinimumSizeFFI :: Window -> Ptr CInt -> Ptr CInt -> IO ()
+foreign import ccall "SDL.h SDL_GetWindowOpacity" getWindowOpacityFFI :: Window -> Ptr CFloat -> IO ()
 foreign import ccall "SDL.h SDL_GetWindowPixelFormat" getWindowPixelFormatFFI :: Window -> IO Word32
 foreign import ccall "SDL.h SDL_GetWindowPosition" getWindowPositionFFI :: Window -> Ptr CInt -> Ptr CInt -> IO ()
 foreign import ccall "SDL.h SDL_GetWindowSize" getWindowSizeFFI :: Window -> Ptr CInt -> Ptr CInt -> IO ()
@@ -303,6 +306,7 @@ foreign import ccall "SDL.h SDL_SetWindowGrab" setWindowGrabFFI :: Window -> Boo
 foreign import ccall "SDL.h SDL_SetWindowIcon" setWindowIconFFI :: Window -> Ptr Surface -> IO ()
 foreign import ccall "SDL.h SDL_SetWindowMaximumSize" setWindowMaximumSizeFFI :: Window -> CInt -> CInt -> IO ()
 foreign import ccall "SDL.h SDL_SetWindowMinimumSize" setWindowMinimumSizeFFI :: Window -> CInt -> CInt -> IO ()
+foreign import ccall "SDL.h SDL_SetWindowOpacity" setWindowOpacityFFI :: Window -> CFloat -> IO ()
 foreign import ccall "SDL.h SDL_SetWindowPosition" setWindowPositionFFI :: Window -> CInt -> CInt -> IO ()
 foreign import ccall "SDL.h SDL_SetWindowSize" setWindowSizeFFI :: Window -> CInt -> CInt -> IO ()
 foreign import ccall "SDL.h SDL_SetWindowTitle" setWindowTitleFFI :: Window -> CString -> IO ()
@@ -643,6 +647,10 @@ getWindowMinimumSize :: MonadIO m => Window -> Ptr CInt -> Ptr CInt -> m ()
 getWindowMinimumSize v1 v2 v3 = liftIO $ getWindowMinimumSizeFFI v1 v2 v3
 {-# INLINE getWindowMinimumSize #-}
 
+getWindowOpacity :: MonadIO m => Window -> Ptr CFloat -> m ()
+getWindowOpacity v1 v2 = liftIO $ getWindowOpacityFFI v1 v2
+{-# INLINE getWindowOpacity #-}
+
 getWindowPixelFormat :: MonadIO m => Window -> m Word32
 getWindowPixelFormat v1 = liftIO $ getWindowPixelFormatFFI v1
 {-# INLINE getWindowPixelFormat #-}
@@ -726,6 +734,10 @@ setWindowMaximumSize v1 v2 v3 = liftIO $ setWindowMaximumSizeFFI v1 v2 v3
 setWindowMinimumSize :: MonadIO m => Window -> CInt -> CInt -> m ()
 setWindowMinimumSize v1 v2 v3 = liftIO $ setWindowMinimumSizeFFI v1 v2 v3
 {-# INLINE setWindowMinimumSize #-}
+
+setWindowOpacity :: MonadIO m => Window -> CFloat -> m ()
+setWindowOpacity v1 v2 = liftIO $ setWindowOpacityFFI v1 v2
+{-# INLINE setWindowOpacity #-}
 
 setWindowPosition :: MonadIO m => Window -> CInt -> CInt -> m ()
 setWindowPosition v1 v2 v3 = liftIO $ setWindowPositionFFI v1 v2 v3
