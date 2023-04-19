@@ -1,3 +1,11 @@
+2.5.4.1
+=======
+
+* Added `windowOpacity` property
+* Added `renderGeometry` and `renderGeometryRaw`
+  - Requires SDL 2.0.18
+  - See examples/RenderGeometry.hs
+
 2.5.4.0
 =======
 
