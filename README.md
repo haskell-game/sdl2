@@ -35,6 +35,13 @@ On Windows you can install SDL with `pacman` under [MSYS2](https://msys2.github.
 
     pacman -S mingw-w64-x86_64-pkg-config mingw-w64-x86_64-SDL2
 
+> Note: If you want to use console output, you should add this in your cabal configuration:
+> ```
+> executable your-app
+>   if os(windows)
+>     ghc-options: -optl-mconsole
+> ```
+
 # Get Started
 
 Take a look at the [getting started guide](https://hackage.haskell.org/package/sdl2/docs/SDL.html).
