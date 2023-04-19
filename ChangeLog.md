@@ -1,10 +1,12 @@
-2.5.4.1
+2.5.5.0
 =======
 
 * Added `windowOpacity` property
 * Added `renderGeometry` and `renderGeometryRaw`
   - Requires SDL 2.0.18
-  - See examples/RenderGeometry.hs
+  - See `examples/RenderGeometry.hs`
+* Changed `SDL.Input.GameController` bindings to be more high-level
+  - `ControllerAxisEventData` type changed
 
 2.5.4.0
 =======
