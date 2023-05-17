@@ -42,6 +42,45 @@ On Windows you can install SDL with `pacman` under [MSYS2](https://msys2.github.
 >     ghc-options: -optl-mconsole
 > ```
 
+## Build errors
+
+If you are getting build errors like `‘SDL_Vertex’ undeclared` then your installed libsdl2 version is missing some recent additions.
+
+You have two options to mitigate this:
+1. Flip a package flag named `recent-ish` in your **project** configuration file.
+  * `cabal.project.local`:
+    ```yaml
+    package sdl2
+      flags: -recent-ish
+    ```
+  * `stack.yaml`:
+    ```yaml
+    flags:
+      sdl2:
+        recent-ish: false
+    ```
+2. Build SDL2 from source and use `extra-include-dirs` / `extra-lib-dirs` options, while disabling the pkgconfig-provided dependency:
+  * `cabal.project.local`:
+    ```yaml
+    extra-include-dirs: /path/to/sdl2/include
+    extra-lib-dirs: /path/to/sdl2/lib
+    package sdl2:
+      flags: -pkgconfig
+    ```
+  * `stack.yaml`:
+    ```yaml
+    extra-include-dirs:
+    - /path/to/sdl2/include
+    extra-lib-dirs:
+    - /path/to/sdl2/lib
+    flags:
+      sdl2:
+        pkgconfig: false
+    ```
+
+The flag enables some features from SDL2 past 2.0.8 and assumes a host system has at least version 2.0.20 installed.
+If you have libsdl2 version older than that, but need some features past 2.0.8, you'd have to use the `extra-*-dirs` way.
+
 # Get Started
 
 Take a look at the [getting started guide](https://hackage.haskell.org/package/sdl2/docs/SDL.html).
