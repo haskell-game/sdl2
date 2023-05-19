@@ -64,7 +64,7 @@ You have two options to mitigate this:
     ```yaml
     extra-include-dirs: /path/to/sdl2/include
     extra-lib-dirs: /path/to/sdl2/lib
-    package sdl2:
+    package sdl2
       flags: -pkgconfig
     ```
   * `stack.yaml`:
