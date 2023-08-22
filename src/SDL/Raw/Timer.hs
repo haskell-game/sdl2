@@ -5,6 +5,7 @@ module SDL.Raw.Timer (
   getPerformanceCounter,
   getPerformanceFrequency,
   getTicks,
+  getTicks64,
   removeTimer
 ) where
 
@@ -19,6 +20,7 @@ foreign import ccall "SDL.h SDL_Delay" delayFFI :: Word32 -> IO ()
 foreign import ccall "SDL.h SDL_GetPerformanceCounter" getPerformanceCounterFFI :: IO Word64
 foreign import ccall "SDL.h SDL_GetPerformanceFrequency" getPerformanceFrequencyFFI :: IO Word64
 foreign import ccall "SDL.h SDL_GetTicks" getTicksFFI :: IO Word32
+foreign import ccall "SDL.h SDL_GetTicks64" getTicks64FFI :: IO Word64
 foreign import ccall "SDL.h SDL_RemoveTimer" removeTimerFFI :: TimerID -> IO Bool
 
 addTimer :: MonadIO m => Word32 -> TimerCallback -> Ptr () -> m TimerID
@@ -40,6 +42,10 @@ getPerformanceFrequency = liftIO getPerformanceFrequencyFFI
 getTicks :: MonadIO m => m Word32
 getTicks = liftIO getTicksFFI
 {-# INLINE getTicks #-}
+
+getTicks64 :: MonadIO m => m Word64
+getTicks64 = liftIO getTicks64FFI
+{-# INLINE getTicks64 #-}
 
 removeTimer :: MonadIO m => TimerID -> m Bool
 removeTimer v1 = liftIO $ removeTimerFFI v1
