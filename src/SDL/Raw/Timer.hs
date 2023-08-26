@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 module SDL.Raw.Timer (
   -- * Timer Support
   addTimer,
@@ -6,6 +8,10 @@ module SDL.Raw.Timer (
   getPerformanceFrequency,
   getTicks,
   removeTimer
+
+#ifdef RECENT_ISH
+  , getTicks64
+#endif
 ) where
 
 import Control.Monad.IO.Class
@@ -20,6 +26,10 @@ foreign import ccall "SDL.h SDL_GetPerformanceCounter" getPerformanceCounterFFI 
 foreign import ccall "SDL.h SDL_GetPerformanceFrequency" getPerformanceFrequencyFFI :: IO Word64
 foreign import ccall "SDL.h SDL_GetTicks" getTicksFFI :: IO Word32
 foreign import ccall "SDL.h SDL_RemoveTimer" removeTimerFFI :: TimerID -> IO Bool
+
+#ifdef RECENT_ISH
+foreign import ccall "SDL.h SDL_GetTicks64" getTicks64FFI :: IO Word64
+#endif
 
 addTimer :: MonadIO m => Word32 -> TimerCallback -> Ptr () -> m TimerID
 addTimer v1 v2 v3 = liftIO $ addTimerFFI v1 v2 v3
@@ -44,3 +54,9 @@ getTicks = liftIO getTicksFFI
 removeTimer :: MonadIO m => TimerID -> m Bool
 removeTimer v1 = liftIO $ removeTimerFFI v1
 {-# INLINE removeTimer #-}
+
+#ifdef RECENT_ISH
+getTicks64 :: MonadIO m => m Word64
+getTicks64 = liftIO getTicks64FFI
+{-# INLINE getTicks64 #-}
+#endif

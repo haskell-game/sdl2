@@ -1,6 +1,8 @@
+{-# LANGUAGE CPP                #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE CPP #-}
 module SDL.Time
   ( -- * Time Measurement
     ticks
@@ -13,6 +15,10 @@ module SDL.Time
   , RetriggerTimer(..)
   , addTimer
   , removeTimer
+
+#ifdef RECENT_ISH
+  , ticks64
+#endif
   ) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
@@ -93,3 +99,11 @@ addTimer timeout callback = liftIO $ do
 -- See @<https://wiki.libsdl.org/SDL_RemoveTimer SDL_RemoveTimer>@ for C documentation.
 removeTimer :: MonadIO m => Timer -> m Bool
 removeTimer f = liftIO $ runTimerRemoval f
+
+#ifdef RECENT_ISH
+-- | Number of milliseconds since library initialization.
+--
+-- See @<https://wiki.libsdl.org/SDL_GetTicks64 SDL_GetTicks64>@ for C documentation.
+ticks64 :: MonadIO m => m Word64
+ticks64 = Raw.getTicks64
+#endif
