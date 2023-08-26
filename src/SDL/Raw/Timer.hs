@@ -5,8 +5,11 @@ module SDL.Raw.Timer (
   getPerformanceCounter,
   getPerformanceFrequency,
   getTicks,
-  getTicks64,
   removeTimer
+
+#ifdef RECENT_ISH
+  , getTicks64
+#endif
 ) where
 
 import Control.Monad.IO.Class
