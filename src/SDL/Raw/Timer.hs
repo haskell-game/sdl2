@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 module SDL.Raw.Timer (
   -- * Timer Support
   addTimer,
