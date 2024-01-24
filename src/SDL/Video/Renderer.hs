@@ -507,7 +507,7 @@ getWindowSurface (Window w) =
 rendererDrawBlendMode :: Renderer -> StateVar BlendMode
 rendererDrawBlendMode (Renderer r) = makeStateVar getRenderDrawBlendMode setRenderDrawBlendMode
   where
-  getRenderDrawBlendMode = liftIO $
+  getRenderDrawBlendMode =
     alloca $ \bmPtr -> do
       throwIfNeg_ "SDL.Video.Renderer.getRenderDrawBlendMode" "SDL_GetRenderDrawBlendMode" $
         Raw.getRenderDrawBlendMode r bmPtr
@@ -525,7 +525,7 @@ rendererDrawBlendMode (Renderer r) = makeStateVar getRenderDrawBlendMode setRend
 rendererDrawColor :: Renderer -> StateVar (V4 Word8)
 rendererDrawColor (Renderer re) = makeStateVar getRenderDrawColor setRenderDrawColor
   where
-  getRenderDrawColor = liftIO $
+  getRenderDrawColor =
     alloca $ \r ->
     alloca $ \g ->
     alloca $ \b ->
@@ -814,7 +814,7 @@ rendererScale (Renderer r) = makeStateVar renderGetScale renderSetScale
     throwIfNeg_ "SDL.Video.renderSetScale" "SDL_RenderSetScale" $
     Raw.renderSetScale r x y
 
-  renderGetScale = liftIO $
+  renderGetScale =
     alloca $ \w ->
     alloca $ \h -> do
       Raw.renderGetScale r w h
@@ -828,12 +828,11 @@ rendererScale (Renderer r) = makeStateVar renderGetScale renderSetScale
 rendererClipRect :: Renderer -> StateVar (Maybe (Rectangle CInt))
 rendererClipRect (Renderer r) = makeStateVar renderGetClipRect renderSetClipRect
   where
-  renderGetClipRect = liftIO $
+  renderGetClipRect =
     alloca $ \rPtr -> do
       Raw.renderGetClipRect r rPtr
       maybePeek peek (castPtr rPtr)
   renderSetClipRect rect =
-    liftIO $
     throwIfNeg_ "SDL.Video.renderSetClipRect" "SDL_RenderSetClipRect" $
     maybeWith with rect $ Raw.renderSetClipRect r . castPtr
 
@@ -845,13 +844,12 @@ rendererClipRect (Renderer r) = makeStateVar renderGetClipRect renderSetClipRect
 rendererViewport :: Renderer -> StateVar (Maybe (Rectangle CInt))
 rendererViewport (Renderer r) = makeStateVar renderGetViewport renderSetViewport
   where
-  renderGetViewport = liftIO $
+  renderGetViewport =
     alloca $ \rect -> do
       Raw.renderGetViewport r rect
       maybePeek peek (castPtr rect)
 
   renderSetViewport rect =
-    liftIO $
     throwIfNeg_ "SDL.Video.renderSetViewport" "SDL_RenderSetViewport" $
     maybeWith with rect $ Raw.renderSetViewport r . castPtr
 
@@ -992,7 +990,6 @@ surfaceColorKey :: Surface -> StateVar (Maybe (V4 Word8))
 surfaceColorKey (Surface s _) = makeStateVar getColorKey setColorKey
   where
   getColorKey =
-    liftIO $
     alloca $ \keyPtr -> do
       ret <- Raw.getColorKey s keyPtr
       if ret == -1
@@ -1006,7 +1003,6 @@ surfaceColorKey (Surface s _) = makeStateVar getColorKey setColorKey
                     do Raw.getRGBA mapped format r g b a
                        Just <$> (V4 <$> peek r <*> peek g <*> peek b <*> peek a)
   setColorKey key =
-    liftIO $
     throwIfNeg_ "SDL.Video.Renderer.setColorKey" "SDL_SetColorKey" $
     case key of
       Nothing ->
@@ -1032,7 +1028,7 @@ surfaceColorKey (Surface s _) = makeStateVar getColorKey setColorKey
 textureColorMod :: Texture -> StateVar (V3 Word8)
 textureColorMod (Texture t) = makeStateVar getTextureColorMod setTextureColorMod
   where
-  getTextureColorMod = liftIO $
+  getTextureColorMod =
     alloca $ \r ->
     alloca $ \g ->
     alloca $ \b -> do
@@ -1272,7 +1268,7 @@ getRenderDriverInfo = liftIO $ do
 textureAlphaMod :: Texture -> StateVar Word8
 textureAlphaMod (Texture t) = makeStateVar getTextureAlphaMod setTextureAlphaMod
   where
-  getTextureAlphaMod = liftIO $
+  getTextureAlphaMod =
     alloca $ \x -> do
       throwIfNeg_ "SDL.Video.Renderer.getTextureAlphaMod" "SDL_GetTextureAlphaMod" $
         Raw.getTextureAlphaMod t x
@@ -1290,7 +1286,7 @@ textureAlphaMod (Texture t) = makeStateVar getTextureAlphaMod setTextureAlphaMod
 textureBlendMode :: Texture -> StateVar BlendMode
 textureBlendMode (Texture t) = makeStateVar getTextureBlendMode setTextureBlendMode
   where
-  getTextureBlendMode = liftIO $
+  getTextureBlendMode =
     alloca $ \x -> do
       throwIfNeg_ "SDL.Video.Renderer.getTextureBlendMode" "SDL_GetTextureBlendMode" $
         Raw.getTextureBlendMode t x
@@ -1308,7 +1304,7 @@ textureBlendMode (Texture t) = makeStateVar getTextureBlendMode setTextureBlendM
 surfaceBlendMode :: Surface -> StateVar BlendMode
 surfaceBlendMode (Surface s _) = makeStateVar getSurfaceBlendMode setSurfaceBlendMode
   where
-  getSurfaceBlendMode = liftIO $
+  getSurfaceBlendMode =
     alloca $ \x -> do
       throwIfNeg_ "SDL.Video.Renderer.getSurfaceBlendMode" "SDL_GetSurfaceBlendMode" $
         Raw.getSurfaceBlendMode s x
@@ -1364,7 +1360,7 @@ rendererIntegerScale (Renderer r) = makeStateVar renderGetIntegerScale renderSet
 rendererLogicalSize :: Renderer -> StateVar (Maybe (V2 CInt))
 rendererLogicalSize (Renderer r) = makeStateVar renderGetLogicalSize renderSetLogicalSize
   where
-  renderGetLogicalSize = liftIO $
+  renderGetLogicalSize =
     alloca $ \w -> do
     alloca $ \h -> do
       Raw.renderGetLogicalSize r w h
