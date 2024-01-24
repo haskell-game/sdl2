@@ -1,3 +1,8 @@
+2.5.X.Y
+=======
+
+* Added `rendererIntegerScale`
+
 2.5.5.0
 =======
 
