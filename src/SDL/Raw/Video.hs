@@ -134,6 +134,7 @@ module SDL.Raw.Video (
   renderGeometryRaw,
 #endif
   renderGetClipRect,
+  renderGetIntegerScale,
   renderGetLogicalSize,
   renderGetScale,
   renderGetViewport,
@@ -141,6 +142,7 @@ module SDL.Raw.Video (
   renderPresent,
   renderReadPixels,
   renderSetClipRect,
+  renderSetIntegerScale,
   renderSetLogicalSize,
   renderSetScale,
   renderSetViewport,
@@ -367,6 +369,7 @@ foreign import ccall "SDL.h SDL_RenderGeometryRaw" renderGeometryRawFFI :: Rende
 foreign import ccall "sqlhelper.c SDLHelper_RenderFillRectEx" renderFillRectExFFI :: Renderer -> CInt -> CInt -> CInt -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderFillRects" renderFillRectsFFI :: Renderer -> Ptr Rect -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderGetClipRect" renderGetClipRectFFI :: Renderer -> Ptr Rect -> IO ()
+foreign import ccall "SDL.h SDL_RenderGetIntegerScale" renderGetIntegerScaleFFI :: Renderer -> IO CInt
 foreign import ccall "SDL.h SDL_RenderGetLogicalSize" renderGetLogicalSizeFFI :: Renderer -> Ptr CInt -> Ptr CInt -> IO ()
 foreign import ccall "SDL.h SDL_RenderGetScale" renderGetScaleFFI :: Renderer -> Ptr CFloat -> Ptr CFloat -> IO ()
 foreign import ccall "SDL.h SDL_RenderGetViewport" renderGetViewportFFI :: Renderer -> Ptr Rect -> IO ()
@@ -374,6 +377,7 @@ foreign import ccall "SDL.h SDL_RenderIsClipEnabled" renderIsClipEnabledFFI :: R
 foreign import ccall "SDL.h SDL_RenderPresent" renderPresentFFI :: Renderer -> IO ()
 foreign import ccall "SDL.h SDL_RenderReadPixels" renderReadPixelsFFI :: Renderer -> Ptr Rect -> Word32 -> Ptr () -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderSetClipRect" renderSetClipRectFFI :: Renderer -> Ptr Rect -> IO CInt
+foreign import ccall "SDL.h SDL_RenderSetIntegerScale" renderSetIntegerScaleFFI :: Renderer -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderSetLogicalSize" renderSetLogicalSizeFFI :: Renderer -> CInt -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderSetScale" renderSetScaleFFI :: Renderer -> CFloat -> CFloat -> IO CInt
 foreign import ccall "SDL.h SDL_RenderSetViewport" renderSetViewportFFI :: Renderer -> Ptr Rect -> IO CInt
@@ -967,6 +971,10 @@ renderGetClipRect :: MonadIO m => Renderer -> Ptr Rect -> m ()
 renderGetClipRect v1 v2 = liftIO $ renderGetClipRectFFI v1 v2
 {-# INLINE renderGetClipRect #-}
 
+renderGetIntegerScale :: MonadIO m => Renderer -> m CInt
+renderGetIntegerScale v1 = liftIO $ renderGetIntegerScaleFFI v1
+{-# INLINE renderGetIntegerScale #-}
+
 renderGetLogicalSize :: MonadIO m => Renderer -> Ptr CInt -> Ptr CInt -> m ()
 renderGetLogicalSize v1 v2 v3 = liftIO $ renderGetLogicalSizeFFI v1 v2 v3
 {-# INLINE renderGetLogicalSize #-}
@@ -994,6 +1002,10 @@ renderReadPixels v1 v2 v3 v4 v5 = liftIO $ renderReadPixelsFFI v1 v2 v3 v4 v5
 renderSetClipRect :: MonadIO m => Renderer -> Ptr Rect -> m CInt
 renderSetClipRect v1 v2 = liftIO $ renderSetClipRectFFI v1 v2
 {-# INLINE renderSetClipRect #-}
+
+renderSetIntegerScale :: MonadIO m => Renderer -> CInt -> m CInt
+renderSetIntegerScale v1 v2 = liftIO $ renderSetIntegerScaleFFI v1 v2
+{-# INLINE renderSetIntegerScale #-}
 
 renderSetLogicalSize :: MonadIO m => Renderer -> CInt -> CInt -> m CInt
 renderSetLogicalSize v1 v2 v3 = liftIO $ renderSetLogicalSizeFFI v1 v2 v3

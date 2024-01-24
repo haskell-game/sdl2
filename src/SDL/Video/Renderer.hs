@@ -55,6 +55,7 @@ module SDL.Video.Renderer
   , rendererDrawColor
   , rendererRenderTarget
   , rendererClipRect
+  , rendererIntegerScale
   , rendererLogicalSize
   , rendererScale
   , rendererViewport
@@ -133,6 +134,7 @@ module SDL.Video.Renderer
   , getRenderDriverInfo
   ) where
 
+import Control.Monad (void)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Bits
 import Data.Data (Data)
@@ -1337,7 +1339,24 @@ rendererRenderTarget (Renderer r) = makeStateVar getRenderTarget setRenderTarget
       Nothing -> Raw.setRenderTarget r nullPtr
       Just (Texture t) -> Raw.setRenderTarget r t
 
--- | Get or set the device independent resolution for rendering.
+-- | Get or set whether to force integer scales for resolution-independent rendering.
+-- It may be desirable to enable integer scales when using device independent resolution
+-- via 'rendererLogicalSize' so that pixel sizing is consistent.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL_RenderSetIntegerScale SDL_RenderSetIntegerScale>@ and @<https://wiki.libsdl.org/SDL_RenderGetIntegerScale SDL_RenderGetIntegerScale>@ for C documentation.
+rendererIntegerScale :: Renderer -> StateVar Bool
+rendererIntegerScale (Renderer r) = makeStateVar renderGetIntegerScale renderSetIntegerScale
+  where
+  renderGetIntegerScale = (== 1) <$> Raw.renderGetIntegerScale r
+
+  renderSetIntegerScale True = void $ Raw.renderSetIntegerScale r 1
+  renderSetIntegerScale False = void $ Raw.renderSetIntegerScale r 0
+
+-- | Get or set the device independent resolution for rendering. When using this setting,
+-- it may be desirable to also enable integer scales via 'rendererIntegerScale' so that
+-- pixel sizing is consistent.
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
