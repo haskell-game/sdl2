@@ -7,6 +7,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE TypeFamilies #-}
 
 -- | "SDL.Video.Renderer" provides a high-level interface to SDL's accelerated 2D rendering library.
 
@@ -159,8 +160,11 @@ import SDL.Internal.Types
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Internal as BSI
 import qualified Data.Text.Encoding as Text
+import qualified Data.Vector.Generic.Base as GV
+import qualified Data.Vector.Generic.Mutable.Base as GMV
 import qualified Data.Vector.Storable as SV
 import qualified Data.Vector.Storable.Mutable as MSV
+import qualified Data.Vector.Unboxed.Base as UV
 import qualified SDL.Raw as Raw
 
 #if !MIN_VERSION_base(4,8,0)
@@ -602,6 +606,41 @@ instance Storable a => Storable (Rectangle a) where
   poke ptr (Rectangle o s) = do
     poke (castPtr ptr) o
     poke (castPtr (ptr `plusPtr` sizeOf o)) s
+
+newtype instance MVector s (Rectangle a) = MV_Rectangle (MVector s (Point V2 a, V2 a))
+newtype instance Vector (Rectangle a) = V_Rectangle (Vector (Point V2 a, V2 a))
+
+instance UV.Unbox a => GMV.MVector MVector (Rectangle a) where
+  {-# INLINE basicLength #-}
+  {-# INLINE basicUnsafeSlice #-}
+  {-# INLINE basicOverlaps #-}
+  {-# INLINE basicUnsafeNew #-}
+  {-# INLINE basicUnsafeRead #-}
+  {-# INLINE basicUnsafeWrite #-}
+  basicLength (MV_Rectangle v) = GMV.basicLength v
+  basicUnsafeSlice m n (MV_Rectangle v) = MV_Rectangle (GMV.basicUnsafeSlice m n v)
+  basicOverlaps (MV_Rectangle v) (MV_Rectangle u) = GMV.basicOverlaps v u
+  basicUnsafeNew n = MV_Rectangle <$> GMV.basicUnsafeNew n
+  basicUnsafeRead (MV_Rectangle v) i = uncurry Rectangle <$> GMV.basicUnsafeRead v i
+  basicUnsafeWrite (MV_Rectangle v) i (Rectangle p e) = GMV.basicUnsafeWrite v i (p, e)
+#if MIN_VERSION_vector(0,11,0)
+  {-# INLINE basicInitialize #-}
+  basicInitialize (MV_Rectangle v) = GMV.basicInitialize v
+#endif
+
+instance UV.Unbox a => GV.Vector Vector (Rectangle a) where
+  {-# INLINE basicUnsafeFreeze #-}
+  {-# INLINE basicUnsafeThaw   #-}
+  {-# INLINE basicLength       #-}
+  {-# INLINE basicUnsafeSlice  #-}
+  {-# INLINE basicUnsafeIndexM #-}
+  basicUnsafeFreeze (MV_Rectangle v) = V_Rectangle <$> GV.basicUnsafeFreeze v
+  basicUnsafeThaw (V_Rectangle v) = MV_Rectangle <$> GV.basicUnsafeThaw v
+  basicLength (V_Rectangle v) = GV.basicLength v
+  basicUnsafeSlice m n (V_Rectangle v) = V_Rectangle (GV.basicUnsafeSlice m n v)
+  basicUnsafeIndexM (V_Rectangle v) i = uncurry Rectangle <$> GV.basicUnsafeIndexM v i
+
+instance UV.Unbox a => UV.Unbox (Rectangle a)
 
 data Surface = Surface (Ptr Raw.Surface) (Maybe (MSV.IOVector Word8))
   deriving (Typeable)
