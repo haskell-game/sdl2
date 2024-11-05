@@ -1,9 +1,12 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE PatternSynonyms #-}
 
+#if MIN_VERSION_base(4,11,0)
 {-# OPTIONS_GHC -fno-warn-missing-pattern-synonym-signatures #-}
+#endif
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
 {-|

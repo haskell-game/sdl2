@@ -68,6 +68,10 @@ import qualified SDL.Raw.Types as Raw
 import Control.Applicative
 #endif
 
+#if !MIN_VERSION_base(4,11,0)
+import Data.Monoid ((<>))
+#endif
+
 data LocationMode
   = AbsoluteLocation
   | RelativeLocation

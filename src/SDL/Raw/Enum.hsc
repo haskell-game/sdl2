@@ -1,7 +1,10 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE PatternSynonyms #-}
 
+#if MIN_VERSION_base(4,11,0)
 {-# OPTIONS_GHC -fno-warn-missing-pattern-synonym-signatures #-}
+#endif
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
 module SDL.Raw.Enum (
