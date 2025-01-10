@@ -140,7 +140,7 @@ data OpenDeviceSpec = forall sampleType. OpenDeviceSpec
 -- | Attempt to open the closest matching 'AudioDevice', as specified by the
 -- given 'OpenDeviceSpec'.
 --
--- See @<https://wiki.libsdl.org/SDL_OpenAudioDevice SDL_OpenAudioDevice>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_OpenAudioDevice SDL_OpenAudioDevice>@ for C documentation.
 openAudioDevice :: MonadIO m => OpenDeviceSpec -> m (AudioDevice, AudioSpec)
 openAudioDevice OpenDeviceSpec{..} = liftIO $
   maybeWith (BS.useAsCString . Text.encodeUtf8) openDeviceName $ \cDevName -> do
@@ -224,7 +224,7 @@ data Dict :: Constraint -> Type where
 
 -- |
 --
--- See @<https://wiki.libsdl.org/SDL_CloseAudioDevice SDL_CloseAudioDevice>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_CloseAudioDevice SDL_CloseAudioDevice>@ for C documentation.
 closeAudioDevice :: MonadIO m => AudioDevice -> m ()
 closeAudioDevice (AudioDevice d) = Raw.closeAudioDevice d
 

@@ -56,7 +56,7 @@ import Control.Applicative
 
 -- | Get the current key modifier state for the keyboard. The key modifier state is a mask special keys that are held down.
 --
--- See @<https://wiki.libsdl.org/SDL_GetModState SDL_GetModState>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GetModState SDL_GetModState>@ for C documentation.
 getModState :: (Functor m, MonadIO m) => m KeyModifier
 getModState = fromNumber <$> Raw.getModState
 
@@ -108,7 +108,7 @@ instance ToNumber KeyModifier Word32 where
 -- | Set the rectangle used to type text inputs and start accepting text input
 -- events.
 --
--- See @<https://wiki.libsdl.org/SDL_StartTextInput SDL_StartTextInput>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_StartTextInput SDL_StartTextInput>@ for C documentation.
 startTextInput :: MonadIO m => Raw.Rect -> m ()
 startTextInput rect = liftIO $ do
   alloca $ \ptr -> do
@@ -118,25 +118,25 @@ startTextInput rect = liftIO $ do
 
 -- | Stop receiving any text input events.
 --
--- See @<https://wiki.libsdl.org/SDL_StopTextInput SDL_StopTextInput>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_StopTextInput SDL_StopTextInput>@ for C documentation.
 stopTextInput :: MonadIO m => m ()
 stopTextInput = Raw.stopTextInput
 
 -- | Check whether the platform has screen keyboard support.
 --
--- See @<https://wiki.libsdl.org/SDL_HasScreenKeyboardSupport SDL_HasScreenKeyboardSupport>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_HasScreenKeyboardSupport SDL_HasScreenKeyboardSupport>@ for C documentation.
 hasScreenKeyboardSupport :: MonadIO m => m Bool
 hasScreenKeyboardSupport = Raw.hasScreenKeyboardSupport
 
 -- | Check whether the screen keyboard is shown for the given window.
 --
--- See @<https://wiki.libsdl.org/SDL_IsScreenKeyboardShown SDL_IsScreenKeyboardShown>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_IsScreenKeyboardShown SDL_IsScreenKeyboardShown>@ for C documentation.
 isScreenKeyboardShown :: MonadIO m => Window -> m Bool
 isScreenKeyboardShown (Window w) = Raw.isScreenKeyboardShown w
 
 -- | Get a human-readable name for a scancode. If the scancode doesn't have a name this function returns the empty string.
 --
--- See @<https://wiki.libsdl.org/SDL_GetScancodeName SDL_GetScancodeName>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GetScancodeName SDL_GetScancodeName>@ for C documentation.
 getScancodeName :: MonadIO m => Scancode -> m String
 getScancodeName scancode = liftIO $ do
   name <- Raw.getScancodeName $ toNumber scancode
@@ -156,7 +156,7 @@ data Keysym = Keysym
 --
 -- This computation generates a mapping from 'Scancode' to 'Bool' - evaluating the function at specific 'Scancode's will inform you as to whether or not that key was held down when 'getKeyboardState' was called.
 --
--- See @<https://wiki.libsdl.org/SDL_GetKeyboardState SDL_GetKeyboardState>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GetKeyboardState SDL_GetKeyboardState>@ for C documentation.
 getKeyboardState :: MonadIO m => m (Scancode -> Bool)
 getKeyboardState = liftIO $ do
   alloca $ \nkeys -> do

@@ -91,14 +91,14 @@ We need your help! The SDL API is fairly large, and the more hands we have, the
 quicker we can reach full coverage and release this to Hackage. There are a few
 ways you can help:
 
-1. Browse http://wiki.libsdl.org/CategoryAPI and find functions that aren't
+1. Browse https://wiki.libsdl.org/SDL2/CategoryAPI and find functions that aren't
    exposed in the high-level bindings.
 
 2. The above can be somewhat laborious - an easier way to find out what's
    missing is to write code.
 
-   * http://www.willusher.io/pages/sdl2/ is a collection of tutorials for C++.
-   * http://lazyfoo.net/tutorials/SDL/index.php is another collection of C++
+   * https://www.willusher.io/pages/sdl2/ is a collection of tutorials for C++.
+   * https://lazyfoo.net/tutorials/SDL/index.php is another collection of C++
      tutorials.
 
    Both of these would be useful if they were translated to Haskell, and we'd be

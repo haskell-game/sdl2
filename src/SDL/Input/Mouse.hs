@@ -177,7 +177,7 @@ warpMouse WarpGlobal (P (V2 x y)) = throwIfNeg_ "SDL.Mouse.warpMouse" "SDL_WarpM
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_ShowCursor SDL_ShowCursor>@ and @<https://wiki.libsdl.org/SDL_HideCursor SDL_HideCursor>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_ShowCursor SDL_ShowCursor>@ and @<https://wiki.libsdl.org/SDL2/SDL_HideCursor SDL_HideCursor>@ for C documentation.
 cursorVisible :: StateVar Bool
 cursorVisible = makeStateVar getCursorVisible setCursorVisible
   where
@@ -249,7 +249,7 @@ instance ToNumber SystemCursor Word32 where
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetCursor SDL_SetCursor>@ and @<https://wiki.libsdl.org/SDL_GetCursor SDL_GetCursor>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetCursor SDL_SetCursor>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetCursor SDL_GetCursor>@ for C documentation.
 activeCursor :: StateVar Cursor
 activeCursor = makeStateVar getCursor setCursor
   where
@@ -345,13 +345,13 @@ createCursorFrom point source = do
 
 -- | Free a cursor created with 'createCursor', 'createColorCusor' and 'createSystemCursor'.
 --
--- See @<https://wiki.libsdl.org/SDL_FreeCursor SDL_FreeCursor>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_FreeCursor SDL_FreeCursor>@ for C documentation.
 freeCursor :: MonadIO m => Cursor -> m ()
 freeCursor = Raw.freeCursor . unwrapCursor
 
 -- | Create a color cursor.
 --
--- See @<https://wiki.libsdl.org/SDL_CreateColorCursor SDL_CreateColorCursor>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_CreateColorCursor SDL_CreateColorCursor>@ for C documentation.
 createColorCursor :: MonadIO m
                   => Surface
                   -> Point V2 CInt -- ^ The location of the cursor hot spot
@@ -363,7 +363,7 @@ createColorCursor (Surface surfPtr _) (P (V2 hx hy)) =
 
 -- | Create system cursor.
 --
--- See @<https://wiki.libsdl.org/SDL_CreateSystemCursor SDL_CreateSystemCursor>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_CreateSystemCursor SDL_CreateSystemCursor>@ for C documentation.
 createSystemCursor :: MonadIO m => SystemCursor -> m Cursor
 createSystemCursor sc =
     liftIO . fmap Cursor $

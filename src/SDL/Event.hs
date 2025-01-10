@@ -889,7 +889,7 @@ registerEvent registeredEventDataToEvent eventToRegisteredEventData = do
 --
 -- 'pumpEvents' gathers all the pending input information from devices and places it in the event queue. Without calls to 'pumpEvents' no events would ever be placed on the queue. Often the need for calls to 'pumpEvents' is hidden from the user since 'pollEvent' and 'waitEvent' implicitly call 'pumpEvents'. However, if you are not polling or waiting for events (e.g. you are filtering them), then you must call 'pumpEvents' to force an event queue update.
 --
--- See @<https://wiki.libsdl.org/SDL_PumpEvents SDL_PumpEvents>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_PumpEvents SDL_PumpEvents>@ for C documentation.
 pumpEvents :: MonadIO m => m ()
 pumpEvents = Raw.pumpEvents
 
@@ -901,7 +901,7 @@ newtype EventWatch = EventWatch {runEventWatchRemoval :: IO ()}
 -- | Trigger an 'EventWatchCallback' when an event is added to the SDL
 -- event queue.
 --
--- See @<https://wiki.libsdl.org/SDL_AddEventWatch>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_AddEventWatch>@ for C documentation.
 addEventWatch :: MonadIO m => EventWatchCallback -> m EventWatch
 addEventWatch callback = liftIO $ do
   rawFilter <- Raw.mkEventFilter wrappedCb
@@ -918,7 +918,7 @@ addEventWatch callback = liftIO $ do
 
 -- | Remove an 'EventWatch'.
 --
--- See @<https://wiki.libsdl.org/SDL_DelEventWatch>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_DelEventWatch>@ for C documentation.
 delEventWatch :: MonadIO m => EventWatch -> m ()
 delEventWatch = liftIO . runEventWatchRemoval
 

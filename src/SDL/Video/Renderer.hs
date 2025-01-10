@@ -170,7 +170,7 @@ import Data.Traversable
 
 -- | Perform a fast surface copy to a destination surface.
 --
--- See @<https://wiki.libsdl.org/SDL_BlitSurface SDL_BlitSurface>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_BlitSurface SDL_BlitSurface>@ for C documentation.
 surfaceBlit :: MonadIO m
             => Surface -- ^ The 'Surface' to be copied from
             -> Maybe (Rectangle CInt) -- ^ The rectangle to be copied, or 'Nothing' to copy the entire surface
@@ -186,7 +186,7 @@ surfaceBlit (Surface src _) srcRect (Surface dst _) dstLoc = liftIO $
 
 -- | Create a texture for a rendering context.
 --
--- See @<https://wiki.libsdl.org/SDL_CreateTexture SDL_CreateTexture>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_CreateTexture SDL_CreateTexture>@ for C documentation.
 createTexture :: (Functor m,MonadIO m)
               => Renderer -- ^ The rendering context.
               -> PixelFormat
@@ -200,7 +200,7 @@ createTexture (Renderer r) fmt access (V2 w h) =
 
 -- | Create a texture from an existing surface.
 --
--- See @<https://wiki.libsdl.org/SDL_CreateTextureFromSurface SDL_CreateTextureFromSurface>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_CreateTextureFromSurface SDL_CreateTextureFromSurface>@ for C documentation.
 createTextureFromSurface :: (Functor m,MonadIO m)
                          => Renderer -- ^ The rendering context
                          -> Surface -- ^ The surface containing pixel data used to fill the texture
@@ -212,7 +212,7 @@ createTextureFromSurface (Renderer r) (Surface s _) =
 
 -- | Bind an OpenGL\/ES\/ES2 texture to the current context for use with when rendering OpenGL primitives directly.
 --
--- See @<https://wiki.libsdl.org/SDL_GL_BindTexture SDL_GL_BindTexture>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GL_BindTexture SDL_GL_BindTexture>@ for C documentation.
 glBindTexture :: (Functor m,MonadIO m)
               => Texture -- ^ The texture to bind to the current OpenGL\/ES\/ES2 context
               -> m ()
@@ -222,7 +222,7 @@ glBindTexture (Texture t) =
 
 -- | Unbind an OpenGL\/ES\/ES2 texture from the current context.
 --
--- See @<https://wiki.libsdl.org/SDL_GL_UnbindTexture SDL_GL_UnbindTexture>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GL_UnbindTexture SDL_GL_UnbindTexture>@ for C documentation.
 glUnbindTexture :: (Functor m,MonadIO m)
                 => Texture -- ^ The texture to unbind from the current OpenGL\/ES\/ES2 context
                 -> m ()
@@ -232,7 +232,7 @@ glUnbindTexture (Texture t) =
 
 -- | Updates texture rectangle with new pixel data.
 --
--- See @<https://wiki.libsdl.org/SDL_UpdateTexture SDL_UpdateTexture>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_UpdateTexture SDL_UpdateTexture>@ for C documentation.
 updateTexture :: (Functor m, MonadIO m)
               => Texture -- ^ The 'Texture' to be updated
               -> Maybe (Rectangle CInt) -- ^ The area to update, Nothing for entire texture
@@ -248,13 +248,13 @@ updateTexture (Texture t) rect pixels pitch = do
 
 -- | Destroy the specified texture.
 --
--- See @<https://wiki.libsdl.org/SDL_DestroyTexture SDL_DestroyTexture>@ for the C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_DestroyTexture SDL_DestroyTexture>@ for the C documentation.
 destroyTexture :: MonadIO m => Texture -> m ()
 destroyTexture (Texture t) = Raw.destroyTexture t
 
 -- | Lock a portion of the texture for *write-only* pixel access.
 --
--- See @<https://wiki.libsdl.org/SDL_LockTexture SDL_LockTexture>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_LockTexture SDL_LockTexture>@ for C documentation.
 lockTexture :: MonadIO m
             => Texture -- ^ The 'Texture' to lock for access, which must have been created with 'TextureAccessStreaming'
             -> Maybe (Rectangle CInt) -- ^ The area to lock for access; 'Nothing' to lock the entire texture
@@ -273,13 +273,13 @@ lockTexture (Texture t) rect = liftIO $
 --
 -- /Warning/: See <https://bugzilla.libsdl.org/show_bug.cgi?id=1586 Bug No. 1586> before using this function!
 --
--- See @<https://wiki.libsdl.org/SDL_UnlockTexture SDL_UnlockTexture>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_UnlockTexture SDL_UnlockTexture>@ for C documentation.
 unlockTexture :: MonadIO m => Texture -> m ()
 unlockTexture (Texture t) = Raw.unlockTexture t
 
 -- | Set up a surface for directly accessing the pixels.
 --
--- See @<https://wiki.libsdl.org/SDL_LockSurface SDL_LockSurface>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_LockSurface SDL_LockSurface>@ for C documentation.
 lockSurface :: MonadIO m => Surface -> m ()
 lockSurface (Surface s _) =
   throwIfNeg_ "lockSurface" "SDL_LockSurface" $
@@ -287,7 +287,7 @@ lockSurface (Surface s _) =
 
 -- | Release a surface after directly accessing the pixels.
 --
--- See @<https://wiki.libsdl.org/SDL_UnlockSurface SDL_UnlockSurface>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_UnlockSurface SDL_UnlockSurface>@ for C documentation.
 unlockSurface :: MonadIO m => Surface -> m ()
 unlockSurface (Surface s _) = Raw.unlockSurface s
 
@@ -327,7 +327,7 @@ data TextureInfo = TextureInfo
 
 -- | Query the attributes of a texture.
 --
--- See @<https://wiki.libsdl.org/SDL_QueryTexture SDL_QueryTexture>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_QueryTexture SDL_QueryTexture>@ for C documentation.
 queryTexture :: MonadIO m => Texture -> m TextureInfo
 queryTexture (Texture tex) = liftIO $
   alloca $ \pfPtr ->
@@ -344,7 +344,7 @@ queryTexture (Texture tex) = liftIO $
 
 -- | Allocate a new RGB surface.
 --
--- See @<https://wiki.libsdl.org/SDL_CreateRGBSurface SDL_CreateRGBSurface>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_CreateRGBSurface SDL_CreateRGBSurface>@ for C documentation.
 createRGBSurface :: (Functor m, MonadIO m)
                  => V2 CInt -- ^ The size of the surface
                  -> PixelFormat -- ^ The bit depth, red, green, blue and alpha mask for the pixels
@@ -357,7 +357,7 @@ createRGBSurface (V2 w h) pf =
 
 -- | Allocate a new RGB surface with existing pixel data.
 --
--- See @<https://wiki.libsdl.org/SDL_CreateRGBSurfaceFrom SDL_CreateRGBSurfaceFrom>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_CreateRGBSurfaceFrom SDL_CreateRGBSurfaceFrom>@ for C documentation.
 createRGBSurfaceFrom :: (Functor m, MonadIO m)
                      => MSV.IOVector Word8 -- ^ The existing pixel data
                      -> V2 CInt -- ^ The size of the surface
@@ -375,7 +375,7 @@ createRGBSurfaceFrom pixels (V2 w h) p pf = liftIO $
 --
 -- If there is a clip rectangle set on the destination (set via 'clipRect'), then this function will fill based on the intersection of the clip rectangle and the given 'Rectangle'.
 --
--- See @<https://wiki.libsdl.org/SDL_FillRect SDL_FillRect>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_FillRect SDL_FillRect>@ for C documentation.
 surfaceFillRect :: MonadIO m
                 => Surface -- ^ The 'Surface' that is the drawing target.
                 -> Maybe (Rectangle CInt) -- ^ The rectangle to fill, or 'Nothing' to fill the entire surface.
@@ -391,7 +391,7 @@ surfaceFillRect (Surface s _) rect (V4 r g b a) = liftIO $
 --
 -- If there is a clip rectangle set on any of the destinations (set via 'clipRect'), then this function will fill based on the intersection of the clip rectangle and the given 'Rectangle's.
 --
--- See @<https://wiki.libsdl.org/SDL_FillRect SDL_FillRects>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_FillRect SDL_FillRects>@ for C documentation.
 surfaceFillRects :: MonadIO m
                  => Surface -- ^ The 'Surface' that is the drawing target.
                  -> SV.Vector (Rectangle CInt) -- ^ A 'SV.Vector' of 'Rectangle's to be filled.
@@ -410,13 +410,13 @@ surfaceFillRects (Surface s _) rects (V4 r g b a) = liftIO $ do
 --
 -- If the surface was created using 'createRGBSurfaceFrom' then the pixel data is not freed.
 --
--- See @<https://wiki.libsdl.org/SDL_FreeSurface SDL_FreeSurface>@ for the C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_FreeSurface SDL_FreeSurface>@ for the C documentation.
 freeSurface :: MonadIO m => Surface -> m ()
 freeSurface (Surface s _) = Raw.freeSurface s
 
 -- | Load a surface from a BMP file.
 --
--- See @<https://wiki.libsdl.org/SDL_LoadBMP SDL_LoadBMP>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_LoadBMP SDL_LoadBMP>@ for C documentation.
 loadBMP :: MonadIO m => FilePath -> m Surface
 loadBMP filePath = liftIO $
   fmap unmanagedSurface $
@@ -477,7 +477,7 @@ paletteColor q@(Palette p) i = do
 
 -- | Set a range of colors in a palette.
 --
--- See @<https://wiki.libsdl.org/SDL_SetPaletteColors SDL_SetPaletteColors>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetPaletteColors SDL_SetPaletteColors>@ for C documentation.
 setPaletteColors :: MonadIO m
                  => Palette -- ^ The 'Palette' to modify
                  -> (SV.Vector (V4 Word8)) -- ^ A 'SV.Vector' of colours to copy into the palette
@@ -492,7 +492,7 @@ setPaletteColors (Palette p) colors first = liftIO $
 
 -- | Get the SDL surface associated with the window.
 --
--- See @<https://wiki.libsdl.org/SDL_GetWindowSurface SDL_GetWindowSurface>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GetWindowSurface SDL_GetWindowSurface>@ for C documentation.
 getWindowSurface :: (Functor m, MonadIO m) => Window -> m Surface
 getWindowSurface (Window w) =
   fmap unmanagedSurface $
@@ -503,7 +503,7 @@ getWindowSurface (Window w) =
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetRenderDrawBlendMode SDL_SetRenderDrawBlendMode>@ and @<https://wiki.libsdl.org/SDL_GetRenderDrawBlendMode SDL_GetRenderDrawBlendMode>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetRenderDrawBlendMode SDL_SetRenderDrawBlendMode>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetRenderDrawBlendMode SDL_GetRenderDrawBlendMode>@ for C documentation.
 rendererDrawBlendMode :: Renderer -> StateVar BlendMode
 rendererDrawBlendMode (Renderer r) = makeStateVar getRenderDrawBlendMode setRenderDrawBlendMode
   where
@@ -521,7 +521,7 @@ rendererDrawBlendMode (Renderer r) = makeStateVar getRenderDrawBlendMode setRend
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetRenderDrawColor SDL_SetRenderDrawColor>@ and @<https://wiki.libsdl.org/SDL_GetRenderDrawColor SDL_GetRenderDrawColor>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetRenderDrawColor SDL_SetRenderDrawColor>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetRenderDrawColor SDL_GetRenderDrawColor>@ for C documentation.
 rendererDrawColor :: Renderer -> StateVar (V4 Word8)
 rendererDrawColor (Renderer re) = makeStateVar getRenderDrawColor setRenderDrawColor
   where
@@ -542,7 +542,7 @@ rendererDrawColor (Renderer re) = makeStateVar getRenderDrawColor setRenderDrawC
 --
 -- This is the function you use to reflect any changes to the surface on the screen.
 --
--- See @<https://wiki.libsdl.org/SDL_UpdateWindowSurface SDL_UpdateWindowSurface>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_UpdateWindowSurface SDL_UpdateWindowSurface>@ for C documentation.
 updateWindowSurface :: (Functor m, MonadIO m) => Window -> m ()
 updateWindowSurface (Window w) =
   throwIfNeg_ "SDL.Video.updateWindowSurface" "SDL_UpdateWindowSurface" $
@@ -617,7 +617,7 @@ newtype Texture = Texture Raw.Texture
 
 -- | Draw a rectangle outline on the current rendering target.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderDrawRect SDL_RenderDrawRect>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderDrawRect SDL_RenderDrawRect>@ for C documentation.
 drawRect :: MonadIO m
          => Renderer
          -> Maybe (Rectangle CInt) -- ^ The rectangle outline to draw. 'Nothing' for the entire rendering context.
@@ -628,7 +628,7 @@ drawRect (Renderer r) rect = liftIO $
 
 -- | Draw some number of rectangles on the current rendering target.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderDrawRects SDL_RenderDrawRects>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderDrawRects SDL_RenderDrawRects>@ for C documentation.
 drawRects :: MonadIO m => Renderer -> SV.Vector (Rectangle CInt) -> m ()
 drawRects (Renderer r) rects = liftIO $
   throwIfNeg_ "SDL.Video.drawRects" "SDL_RenderDrawRects" $
@@ -639,7 +639,7 @@ drawRects (Renderer r) rects = liftIO $
 
 -- | Fill a rectangle on the current rendering target with the drawing color.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderFillRect SDL_RenderFillRect>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderFillRect SDL_RenderFillRect>@ for C documentation.
 fillRect ::
      MonadIO m
   => Renderer
@@ -655,7 +655,7 @@ fillRect (Renderer r) rect =
 
 -- | Fill some number of rectangles on the current rendering target with the drawing color.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderFillRects SDL_RenderFillRects>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderFillRects SDL_RenderFillRects>@ for C documentation.
 fillRects :: MonadIO m => Renderer -> SV.Vector (Rectangle CInt) -> m ()
 fillRects (Renderer r) rects = liftIO $
   throwIfNeg_ "SDL.Video.fillRects" "SDL_RenderFillRects" $
@@ -793,7 +793,7 @@ renderGeometryRaw (Renderer r) mtexture xy xyStride color colorStride uv uvStrid
 
 -- | Clear the current rendering target with the drawing color.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderClear SDL_RenderClear>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderClear SDL_RenderClear>@ for C documentation.
 clear :: (Functor m, MonadIO m) => Renderer -> m ()
 clear (Renderer r) =
   throwIfNeg_ "SDL.Video.clear" "SDL_RenderClear" $
@@ -806,7 +806,7 @@ clear (Renderer r) =
 --
 -- If this results in scaling or subpixel drawing by the rendering backend, it will be handled using the appropriate quality hints. For best results use integer scaling factors.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderSetScale SDL_RenderSetScale>@ and @<https://wiki.libsdl.org/SDL_RenderGetScale SDL_RenderGetScale>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderSetScale SDL_RenderSetScale>@ and @<https://wiki.libsdl.org/SDL2/SDL_RenderGetScale SDL_RenderGetScale>@ for C documentation.
 rendererScale :: Renderer -> StateVar (V2 CFloat)
 rendererScale (Renderer r) = makeStateVar renderGetScale renderSetScale
   where
@@ -824,7 +824,7 @@ rendererScale (Renderer r) = makeStateVar renderGetScale renderSetScale
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderSetClipRect SDL_RenderSetClipRect>@ and @<https://wiki.libsdl.org/SDL_RenderGetClipRect SDL_RenderGetClipRect>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderSetClipRect SDL_RenderSetClipRect>@ and @<https://wiki.libsdl.org/SDL2/SDL_RenderGetClipRect SDL_RenderGetClipRect>@ for C documentation.
 rendererClipRect :: Renderer -> StateVar (Maybe (Rectangle CInt))
 rendererClipRect (Renderer r) = makeStateVar renderGetClipRect renderSetClipRect
   where
@@ -840,7 +840,7 @@ rendererClipRect (Renderer r) = makeStateVar renderGetClipRect renderSetClipRect
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderSetViewport SDL_RenderSetViewport>@ and @<https://wiki.libsdl.org/SDL_RenderGetViewport SDL_RenderGetViewport>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderSetViewport SDL_RenderSetViewport>@ and @<https://wiki.libsdl.org/SDL2/SDL_RenderGetViewport SDL_RenderGetViewport>@ for C documentation.
 rendererViewport :: Renderer -> StateVar (Maybe (Rectangle CInt))
 rendererViewport (Renderer r) = makeStateVar renderGetViewport renderSetViewport
   where
@@ -861,13 +861,13 @@ rendererViewport (Renderer r) = makeStateVar renderGetViewport renderSetViewport
 --
 -- The backbuffer should be considered invalidated after each present; do not assume that previous contents will exist between frames. You are strongly encouraged to call 'clear' to initialize the backbuffer before starting each new frame's drawing, even if you plan to overwrite every pixel.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderPresent SDL_RenderPresent>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderPresent SDL_RenderPresent>@ for C documentation.
 present :: MonadIO m => Renderer -> m ()
 present (Renderer r) = Raw.renderPresent r
 
 -- | Copy a portion of the texture to the current rendering target.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderCopy SDL_RenderCopy>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderCopy SDL_RenderCopy>@ for C documentation.
 copy :: MonadIO m
      => Renderer -- ^ The rendering context
      -> Texture -- ^ The source texture
@@ -883,7 +883,7 @@ copy (Renderer r) (Texture t) srcRect dstRect =
 
 -- | Copy a portion of the texture to the current rendering target, optionally rotating it by angle around the given center and also flipping it top-bottom and/or left-right.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderCopyEx SDL_RenderCopyEx>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderCopyEx SDL_RenderCopyEx>@ for C documentation.
 copyEx :: MonadIO m
        => Renderer -- ^ The rendering context
        -> Texture -- ^ The source texture
@@ -906,7 +906,7 @@ copyEx (Renderer r) (Texture t) srcRect dstRect theta center flips =
 
 -- | Draw a line on the current rendering target.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderDrawLine SDL_RenderDrawLine>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderDrawLine SDL_RenderDrawLine>@ for C documentation.
 drawLine :: (Functor m,MonadIO m)
          => Renderer
          -> Point V2 CInt -- ^ The start point of the line
@@ -918,7 +918,7 @@ drawLine (Renderer r) (P (V2 x y)) (P (V2 x' y')) =
 
 -- | Draw a series of connected lines on the current rendering target.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderDrawLines SDL_RenderDrawLines>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderDrawLines SDL_RenderDrawLines>@ for C documentation.
 drawLines :: MonadIO m
           => Renderer
           -> SV.Vector (Point V2 CInt) -- ^ A 'SV.Vector' of points along the line. SDL will draw lines between these points.
@@ -933,7 +933,7 @@ drawLines (Renderer r) points =
 
 -- | Draw a point on the current rendering target.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderDrawPoint SDL_RenderDrawPoint>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderDrawPoint SDL_RenderDrawPoint>@ for C documentation.
 drawPoint :: (Functor m, MonadIO m) => Renderer -> Point V2 CInt -> m ()
 drawPoint (Renderer r) (P (V2 x y)) =
   throwIfNeg_ "SDL.Video.drawPoint" "SDL_RenderDrawPoint" $
@@ -941,7 +941,7 @@ drawPoint (Renderer r) (P (V2 x y)) =
 
 -- | Draw multiple points on the current rendering target.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderDrawPoints SDL_RenderDrawPoints>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderDrawPoints SDL_RenderDrawPoints>@ for C documentation.
 drawPoints :: MonadIO m => Renderer -> SV.Vector (Point V2 CInt) -> m ()
 drawPoints (Renderer r) points =
   liftIO $
@@ -955,7 +955,7 @@ drawPoints (Renderer r) points =
 --
 -- This function is used to optimize images for faster repeat blitting. This is accomplished by converting the original and storing the result as a new surface. The new, optimized surface can then be used as the source for future blits, making them faster.
 --
--- See @<https://wiki.libsdl.org/SDL_ConvertSurface SDL_ConvertSurface>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_ConvertSurface SDL_ConvertSurface>@ for C documentation.
 convertSurface :: (Functor m,MonadIO m)
                => Surface -- ^ The 'Surface' to convert
                -> SurfacePixelFormat -- ^ The pixel format that the new surface is optimized for
@@ -967,7 +967,7 @@ convertSurface (Surface s _) (SurfacePixelFormat fmt) =
 
 -- | Perform a scaled surface copy to a destination surface.
 --
--- See @<https://wiki.libsdl.org/SDL_BlitScaled SDL_BlitScaled>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_BlitScaled SDL_BlitScaled>@ for C documentation.
 surfaceBlitScaled :: MonadIO m
                   => Surface -- ^ The 'Surface' to be copied from
                   -> Maybe (Rectangle CInt) -- ^ The rectangle to be copied, or 'Nothing' to copy the entire surface
@@ -985,7 +985,7 @@ surfaceBlitScaled (Surface src _) srcRect (Surface dst _) dstRect =
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetColorKey SDL_SetColorKey>@ and @<https://wiki.libsdl.org/SDL_GetColorKey SDL_GetColorKey>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetColorKey SDL_SetColorKey>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetColorKey SDL_GetColorKey>@ for C documentation.
 surfaceColorKey :: Surface -> StateVar (Maybe (V4 Word8))
 surfaceColorKey (Surface s _) = makeStateVar getColorKey setColorKey
   where
@@ -1024,7 +1024,7 @@ surfaceColorKey (Surface s _) = makeStateVar getColorKey setColorKey
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetTextureColorMod SDL_SetTextureColorMod>@ and @<https://wiki.libsdl.org/SDL_GetTextureColorMod SDL_GetTextureColorMod>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetTextureColorMod SDL_SetTextureColorMod>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetTextureColorMod SDL_GetTextureColorMod>@ for C documentation.
 textureColorMod :: Texture -> StateVar (V3 Word8)
 textureColorMod (Texture t) = makeStateVar getTextureColorMod setTextureColorMod
   where
@@ -1239,7 +1239,7 @@ fromRawRendererInfo (Raw.RendererInfo name flgs ntf tfs mtw mth) = liftIO $ do
 
 -- | Get information about a rendering context.
 --
--- See @<https://wiki.libsdl.org/SDL_GetRendererInfo SDL_GetRendererInfo>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GetRendererInfo SDL_GetRendererInfo>@ for C documentation.
 getRendererInfo :: MonadIO m => Renderer -> m RendererInfo
 getRendererInfo (Renderer renderer) = liftIO $
   alloca $ \rptr -> do
@@ -1249,7 +1249,7 @@ getRendererInfo (Renderer renderer) = liftIO $
 
 -- | Enumerate all known render drivers on the system, and determine their supported features.
 --
--- See @<https://wiki.libsdl.org/SDL_GetRenderDriverInfo SDL_GetRenderDriverInfo>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GetRenderDriverInfo SDL_GetRenderDriverInfo>@ for C documentation.
 getRenderDriverInfo :: MonadIO m => m [RendererInfo]
 getRenderDriverInfo = liftIO $ do
   count <- Raw.getNumRenderDrivers
@@ -1264,7 +1264,7 @@ getRenderDriverInfo = liftIO $ do
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetTextureAlphaMod SDL_SetTextureAlphaMod>@ and @<https://wiki.libsdl.org/SDL_GetTextureAlphaMod SDL_GetTextureAlphaMod>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetTextureAlphaMod SDL_SetTextureAlphaMod>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetTextureAlphaMod SDL_GetTextureAlphaMod>@ for C documentation.
 textureAlphaMod :: Texture -> StateVar Word8
 textureAlphaMod (Texture t) = makeStateVar getTextureAlphaMod setTextureAlphaMod
   where
@@ -1282,7 +1282,7 @@ textureAlphaMod (Texture t) = makeStateVar getTextureAlphaMod setTextureAlphaMod
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetTextureBlendMode SDL_SetTextureBlendMode>@ and @<https://wiki.libsdl.org/SDL_GetTextureBlendMode SDL_GetTextureBlendMode>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetTextureBlendMode SDL_SetTextureBlendMode>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetTextureBlendMode SDL_GetTextureBlendMode>@ for C documentation.
 textureBlendMode :: Texture -> StateVar BlendMode
 textureBlendMode (Texture t) = makeStateVar getTextureBlendMode setTextureBlendMode
   where
@@ -1300,7 +1300,7 @@ textureBlendMode (Texture t) = makeStateVar getTextureBlendMode setTextureBlendM
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetSurfaceBlendMode SDL_SetSurfaceBlendMode>@ and @<https://wiki.libsdl.org/SDL_GetSurfaceBlendMode SDL_GetSurfaceBlendMode>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetSurfaceBlendMode SDL_SetSurfaceBlendMode>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetSurfaceBlendMode SDL_GetSurfaceBlendMode>@ for C documentation.
 surfaceBlendMode :: Surface -> StateVar BlendMode
 surfaceBlendMode (Surface s _) = makeStateVar getSurfaceBlendMode setSurfaceBlendMode
   where
@@ -1318,7 +1318,7 @@ surfaceBlendMode (Surface s _) = makeStateVar getSurfaceBlendMode setSurfaceBlen
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetRenderTarget SDL_SetRenderTarget>@ and @<https://wiki.libsdl.org/SDL_GetRenderTarget SDL_GetRenderTarget>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetRenderTarget SDL_SetRenderTarget>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetRenderTarget SDL_GetRenderTarget>@ for C documentation.
 rendererRenderTarget :: Renderer -> StateVar (Maybe Texture)
 rendererRenderTarget (Renderer r) = makeStateVar getRenderTarget setRenderTarget
   where
@@ -1341,7 +1341,7 @@ rendererRenderTarget (Renderer r) = makeStateVar getRenderTarget setRenderTarget
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderSetIntegerScale SDL_RenderSetIntegerScale>@ and @<https://wiki.libsdl.org/SDL_RenderGetIntegerScale SDL_RenderGetIntegerScale>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderSetIntegerScale SDL_RenderSetIntegerScale>@ and @<https://wiki.libsdl.org/SDL2/SDL_RenderGetIntegerScale SDL_RenderGetIntegerScale>@ for C documentation.
 rendererIntegerScale :: Renderer -> StateVar Bool
 rendererIntegerScale (Renderer r) = makeStateVar renderGetIntegerScale renderSetIntegerScale
   where
@@ -1356,7 +1356,7 @@ rendererIntegerScale (Renderer r) = makeStateVar renderGetIntegerScale renderSet
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderSetLogicalSize SDL_RenderSetLogicalSize>@ and @<https://wiki.libsdl.org/SDL_RenderGetLogicalSize SDL_RenderGetLogicalSize>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderSetLogicalSize SDL_RenderSetLogicalSize>@ and @<https://wiki.libsdl.org/SDL2/SDL_RenderGetLogicalSize SDL_RenderGetLogicalSize>@ for C documentation.
 rendererLogicalSize :: Renderer -> StateVar (Maybe (V2 CInt))
 rendererLogicalSize (Renderer r) = makeStateVar renderGetLogicalSize renderSetLogicalSize
   where
@@ -1375,13 +1375,13 @@ rendererLogicalSize (Renderer r) = makeStateVar renderGetLogicalSize renderSetLo
 
 -- | Determine whether a window supports the use of render targets.
 --
--- See @<https://wiki.libsdl.org/SDL_RenderTargetSupported SDL_RenderTargetSupported>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RenderTargetSupported SDL_RenderTargetSupported>@ for C documentation.
 renderTargetSupported :: (MonadIO m) => Renderer -> m Bool
 renderTargetSupported (Renderer r) = Raw.renderTargetSupported r
 
 -- | Convert the given the enumerated pixel format to a bpp value and RGBA masks.
 --
--- See @<https://wiki.libsdl.org/SDL_PixelFormatEnumToMasks SDL_PixelFormatEnumToMasks>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_PixelFormatEnumToMasks SDL_PixelFormatEnumToMasks>@ for C documentation.
 pixelFormatToMasks :: (MonadIO m) => PixelFormat -> m (CInt, V4 Word32)
 pixelFormatToMasks pf = liftIO $
   alloca $ \bpp ->
@@ -1397,7 +1397,7 @@ pixelFormatToMasks pf = liftIO $
 
 -- | Convert a bpp value and RGBA masks to an enumerated pixel format.
 --
--- See @<https://wiki.libsdl.org/SDL_MasksToPixelFormatEnum SDL_MasksToPixelFormatEnum>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_MasksToPixelFormatEnum SDL_MasksToPixelFormatEnum>@ for C documentation.
 masksToPixelFormat :: (MonadIO m) => CInt -> V4 Word32 -> m PixelFormat
 masksToPixelFormat bpp (V4 r g b a) = liftIO $
   fromNumber <$> Raw.masksToPixelFormatEnum bpp r g b a
