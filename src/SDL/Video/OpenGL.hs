@@ -103,7 +103,7 @@ newtype GLContext = GLContext Raw.GLContext
 -- Throws 'SDLException' if the window wasn't configured with OpenGL
 -- support, or if context creation fails.
 --
--- See @<https://wiki.libsdl.org/SDL_GL_CreateContext SDL_GL_CreateContext>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GL_CreateContext SDL_GL_CreateContext>@ for C documentation.
 glCreateContext :: (Functor m, MonadIO m) => Window -> m GLContext
 glCreateContext (Window w) =
   GLContext <$> throwIfNull "SDL.Video.glCreateContext" "SDL_GL_CreateContext"
@@ -113,7 +113,7 @@ glCreateContext (Window w) =
 --
 -- Throws 'SDLException' on failure.
 --
--- See @<https://wiki.libsdl.org/SDL_GL_MakeCurrent SDL_GL_MakeCurrent>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GL_MakeCurrent SDL_GL_MakeCurrent>@ for C documentation.
 glMakeCurrent :: (Functor m, MonadIO m) => Window -> GLContext -> m ()
 glMakeCurrent (Window w) (GLContext ctx) =
   throwIfNeg_ "SDL.Video.OpenGL.glMakeCurrent" "SDL_GL_MakeCurrent" $
@@ -128,7 +128,7 @@ glMakeCurrent (Window w) (GLContext ctx) =
 -- The @glFinish@ command will block until the command queue has been fully
 -- processed. You should call that function before deleting a context.
 --
--- See @<https://wiki.libsdl.org/SDL_GL_DeleteContext SDL_GL_DeleteContext>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GL_DeleteContext SDL_GL_DeleteContext>@ for C documentation.
 glDeleteContext :: MonadIO m => GLContext -> m ()
 glDeleteContext (GLContext ctx) = Raw.glDeleteContext ctx
 
@@ -136,7 +136,7 @@ glDeleteContext (GLContext ctx) = Raw.glDeleteContext ctx
 -- contents of the back buffer are undefined, clear them with @glClear@ or
 -- equivalent before drawing to them again.
 --
--- See @<https://wiki.libsdl.org/SDL_GL_SwapWindow SDL_GL_SwapWindow>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GL_SwapWindow SDL_GL_SwapWindow>@ for C documentation.
 glSwapWindow :: MonadIO m => Window -> m ()
 glSwapWindow (Window w) = Raw.glSwapWindow w
 
@@ -167,7 +167,7 @@ instance FromNumber SwapInterval CInt where
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_GL_SetSwapInterval SDL_GL_SetSwapInterval>@ and @<https://wiki.libsdl.org/SDL_GL_GetSwapInterval SDL_GL_GetSwapInterval>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GL_SetSwapInterval SDL_GL_SetSwapInterval>@ and @<https://wiki.libsdl.org/SDL2/SDL_GL_GetSwapInterval SDL_GL_GetSwapInterval>@ for C documentation.
 swapInterval :: StateVar SwapInterval
 swapInterval = makeStateVar glGetSwapInterval glSetSwapInterval
   where

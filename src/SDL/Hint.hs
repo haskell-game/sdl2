@@ -136,7 +136,7 @@ data VideoWinD3DCompilerOptions
   deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
 
 -- | The 'Hint' type exports a well-typed interface to SDL's concept of
--- <https://wiki.libsdl.org/CategoryHints hints>. This type has instances for
+-- <https://wiki.libsdl.org/SDL2/CategoryHints hints>. This type has instances for
 -- both 'HasGetter' and 'HasSetter', allowing you to get and set hints. Note that
 -- the 'HasSetter' interface is fairly relaxed - if a hint cannot be set, the
 -- failure will be silently discarded. For more feedback and control when setting

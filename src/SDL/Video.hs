@@ -321,7 +321,7 @@ getWindowAbsolutePosition (Window w) =
 
 -- | Get the size of a window's borders (decorations) around the client area (top, left, bottom, right).
 --
--- See @<https://wiki.libsdl.org/SDL_GetWindowBordersSize SDL_GetWindowBordersSize>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GetWindowBordersSize SDL_GetWindowBordersSize>@ for C documentation.
 getWindowBordersSize :: MonadIO m => Window -> m (Maybe (V4 CInt))
 getWindowBordersSize (Window win) =
   liftIO $
@@ -341,7 +341,7 @@ getWindowBordersSize (Window win) =
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetWindowSize SDL_SetWindowSize>@ and @<https://wiki.libsdl.org/SDL_GetWindowSize SDL_GetWindowSize>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetWindowSize SDL_SetWindowSize>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetWindowSize SDL_GetWindowSize>@ for C documentation.
 windowSize :: Window -> StateVar (V2 CInt)
 windowSize (Window win) = makeStateVar getWindowSize setWindowSize
   where
@@ -358,7 +358,7 @@ windowSize (Window win) = makeStateVar getWindowSize setWindowSize
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetWindowTitle SDL_SetWindowTitle>@ and @<https://wiki.libsdl.org/SDL_GetWindowTitle SDL_GetWindowTitle>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetWindowTitle SDL_SetWindowTitle>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetWindowTitle SDL_GetWindowTitle>@ for C documentation.
 windowTitle :: Window -> StateVar Text
 windowTitle (Window w) = makeStateVar getWindowTitle setWindowTitle
   where
@@ -432,13 +432,13 @@ setClipboardText str = liftIO $ do
 
 -- | Hide a window.
 --
--- See @<https://wiki.libsdl.org/SDL_HideWindow SDL_HideWindow>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_HideWindow SDL_HideWindow>@ for C documentation.
 hideWindow :: MonadIO m => Window -> m ()
 hideWindow (Window w) = Raw.hideWindow w
 
 -- | Raise the window above other windows and set the input focus.
 --
--- See @<https://wiki.libsdl.org/SDL_RaiseWindow SDL_RaiseWindow>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RaiseWindow SDL_RaiseWindow>@ for C documentation.
 raiseWindow :: MonadIO m => Window -> m ()
 raiseWindow (Window w) = Raw.raiseWindow w
 
@@ -455,7 +455,7 @@ screenSaverEnabled = makeStateVar (isScreenSaverEnabled) (setScreenSaverEnabled)
 
 -- | Show a window.
 --
--- See @<https://wiki.libsdl.org/SDL_ShowWindow SDL_ShowWindow>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_ShowWindow SDL_ShowWindow>@ for C documentation.
 showWindow :: MonadIO m => Window -> m ()
 showWindow (Window w) = Raw.showWindow w
 
@@ -582,7 +582,7 @@ instance ToNumber MessageKind Word32 where
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetWindowMaximumSize SDL_SetWindowMaximumSize>@ and @<https://wiki.libsdl.org/SDL_GetWindowMaximumSize SDL_GetWindowMaximumSize>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetWindowMaximumSize SDL_SetWindowMaximumSize>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetWindowMaximumSize SDL_GetWindowMaximumSize>@ for C documentation.
 windowMaximumSize :: Window -> StateVar (V2 CInt)
 windowMaximumSize (Window win) = makeStateVar getWindowMaximumSize setWindowMaximumSize
   where
@@ -599,7 +599,7 @@ windowMaximumSize (Window win) = makeStateVar getWindowMaximumSize setWindowMaxi
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetWindowMinimumSize SDL_SetWindowMinimumSize>@ and @<https://wiki.libsdl.org/SDL_GetWindowMinimumSize SDL_GetWindowMinimumSize>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetWindowMinimumSize SDL_SetWindowMinimumSize>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetWindowMinimumSize SDL_GetWindowMinimumSize>@ for C documentation.
 windowMinimumSize :: Window -> StateVar (V2 CInt)
 windowMinimumSize (Window win) = makeStateVar getWindowMinimumSize setWindowMinimumSize
   where
@@ -616,7 +616,7 @@ windowMinimumSize (Window win) = makeStateVar getWindowMinimumSize setWindowMini
 --
 -- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
 --
--- See @<https://wiki.libsdl.org/SDL_SetWindowOpacity SDL_SetWindowOpacity>@ and @<https://wiki.libsdl.org/SDL_GetWindowOpacity SDL_GetWindowOpacity>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_SetWindowOpacity SDL_SetWindowOpacity>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetWindowOpacity SDL_GetWindowOpacity>@ for C documentation.
 windowOpacity :: Window -> StateVar CFloat
 windowOpacity (Window win) = makeStateVar getWindowOpacity setWindowOpacity
   where
@@ -636,7 +636,7 @@ createRenderer (Window w) driver config =
 
 -- | Create a 2D software rendering context for the given surface.
 --
--- See @<https://wiki.libsdl.org/SDL_CreateSoftwareRenderer>@
+-- See @<https://wiki.libsdl.org/SDL2/SDL_CreateSoftwareRenderer>@
 createSoftwareRenderer :: MonadIO m => Surface -> m Renderer
 createSoftwareRenderer (Surface ptr _) =
   liftIO . fmap Renderer $

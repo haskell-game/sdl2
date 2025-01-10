@@ -35,13 +35,13 @@ import qualified SDL.Raw.Types as Raw
 
 -- | Number of milliseconds since library initialization.
 --
--- See @<https://wiki.libsdl.org/SDL_GetTicks SDL_GetTicks>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GetTicks SDL_GetTicks>@ for C documentation.
 ticks :: MonadIO m => m Word32
 ticks = Raw.getTicks
 
 -- | The current time in seconds since some arbitrary starting point (consist over the life of the application).
 --
--- This time is derived from the system's performance counter - see @<https://wiki.libsdl.org/SDL_GetPerformanceFrequency SDL_GetPerformanceFrequency>@ and @<https://wiki.libsdl.org/SDL_GetPerformanceCounter SDL_GetPerformanceCounter>@ for C documentation about the implementation.
+-- This time is derived from the system's performance counter - see @<https://wiki.libsdl.org/SDL2/SDL_GetPerformanceFrequency SDL_GetPerformanceFrequency>@ and @<https://wiki.libsdl.org/SDL2/SDL_GetPerformanceCounter SDL_GetPerformanceCounter>@ for C documentation about the implementation.
 time :: (Fractional a, MonadIO m) => m a
 time = do
   freq <- Raw.getPerformanceFrequency
@@ -52,7 +52,7 @@ time = do
 --
 -- Users are generally recommended to use 'threadDelay' instead, to take advantage of the abilities of the Haskell runtime.
 --
--- See @<https://wiki.libsdl.org/SDL_Delay SDL_Delay>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_Delay SDL_Delay>@ for C documentation.
 delay :: MonadIO m => Word32 -> m ()
 delay = Raw.delay
 
@@ -73,7 +73,7 @@ newtype Timer =
 
 -- | Set up a callback function to be run on a separate thread after the specified number of milliseconds has elapsed.
 --
--- See @<https://wiki.libsdl.org/SDL_AddTimer SDL_AddTimer>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_AddTimer SDL_AddTimer>@ for C documentation.
 addTimer :: MonadIO m => Word32 -> TimerCallback -> m Timer
 addTimer timeout callback = liftIO $ do
     cb <- Raw.mkTimerCallback wrappedCb
@@ -96,14 +96,14 @@ addTimer timeout callback = liftIO $ do
 
 -- | Remove a 'Timer'.
 --
--- See @<https://wiki.libsdl.org/SDL_RemoveTimer SDL_RemoveTimer>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_RemoveTimer SDL_RemoveTimer>@ for C documentation.
 removeTimer :: MonadIO m => Timer -> m Bool
 removeTimer f = liftIO $ runTimerRemoval f
 
 #ifdef RECENT_ISH
 -- | Number of milliseconds since library initialization.
 --
--- See @<https://wiki.libsdl.org/SDL_GetTicks64 SDL_GetTicks64>@ for C documentation.
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GetTicks64 SDL_GetTicks64>@ for C documentation.
 ticks64 :: MonadIO m => m Word64
 ticks64 = Raw.getTicks64
 #endif

@@ -83,7 +83,7 @@ availableControllers = liftIO $ do
 
 {- | Open a controller so that you can start receiving events from interaction with this controller.
 
- See @<https://wiki.libsdl.org/SDL_GameControllerOpen SDL_GameControllerOpen>@ for C documentation.
+ See @<https://wiki.libsdl.org/SDL2/SDL_GameControllerOpen SDL_GameControllerOpen>@ for C documentation.
 -}
 openController
   :: (Functor m, MonadIO m)
@@ -97,14 +97,14 @@ openController (ControllerDevice _ x) =
 
 {- | Close a controller previously opened with 'openController'.
 
- See @<https://wiki.libsdl.org/SDL_GameControllerClose SDL_GameControllerClose>@ for C documentation.
+ See @<https://wiki.libsdl.org/SDL2/SDL_GameControllerClose SDL_GameControllerClose>@ for C documentation.
 -}
 closeController :: MonadIO m => GameController -> m ()
 closeController (GameController j) = Raw.gameControllerClose j
 
 {- | Check if a controller has been opened and is currently connected.
 
- See @<https://wiki.libsdl.org/SDL_GameControllerGetAttached SDL_GameControllerGetAttached>@ for C documentation.
+ See @<https://wiki.libsdl.org/SDL2/SDL_GameControllerGetAttached SDL_GameControllerGetAttached>@ for C documentation.
 -}
 controllerAttached :: MonadIO m => GameController -> m Bool
 controllerAttached (GameController c) = Raw.gameControllerGetAttached c
@@ -112,7 +112,7 @@ controllerAttached (GameController c) = Raw.gameControllerGetAttached c
 {- | Get the instance ID of an opened controller. The instance ID is used to identify the controller
  in future SDL events.
 
- See @<https://wiki.libsdl.org/SDL_GameControllerInstanceID SDL_GameControllerInstanceID>@ for C documentation.
+ See @<https://wiki.libsdl.org/SDL2/SDL_GameControllerInstanceID SDL_GameControllerInstanceID>@ for C documentation.
 -}
 getControllerID :: MonadIO m => GameController -> m Int32
 getControllerID (GameController c) =
@@ -121,7 +121,7 @@ getControllerID (GameController c) =
 
 {- | Get the current mapping of a Game Controller.
 
- See @<https://wiki.libsdl.org/SDL_GameControllerMapping SDL_GameControllerMapping>@ for C documentation.
+ See @<https://wiki.libsdl.org/SDL2/SDL_GameControllerMapping SDL_GameControllerMapping>@ for C documentation.
 -}
 controllerMapping :: MonadIO m => GameController -> m Text
 controllerMapping (GameController c) = liftIO $ do
@@ -133,7 +133,7 @@ controllerMapping (GameController c) = liftIO $ do
 {- | Add support for controllers that SDL is unaware of or to cause an existing controller to
  have a different binding.
 
- See @<https://wiki.libsdl.org/SDL_GameControllerAddMapping SDL_GameControllerAddMapping>@ for C documentation.
+ See @<https://wiki.libsdl.org/SDL2/SDL_GameControllerAddMapping SDL_GameControllerAddMapping>@ for C documentation.
 -}
 addControllerMapping :: MonadIO m => BS.ByteString -> m ()
 addControllerMapping mapping =
@@ -148,7 +148,7 @@ addControllerMapping mapping =
  @<https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb.txt here>@
  (on GitHub).
 
- See @<https://wiki.libsdl.org/SDL_GameControllerAddMappingsFromFile SDL_GameControllerAddMappingsFromFile>@ for C documentation.
+ See @<https://wiki.libsdl.org/SDL2/SDL_GameControllerAddMappingsFromFile SDL_GameControllerAddMappingsFromFile>@ for C documentation.
 -}
 addControllerMappingsFromFile :: MonadIO m => FilePath -> m ()
 addControllerMappingsFromFile mappingFile =
@@ -158,7 +158,7 @@ addControllerMappingsFromFile mappingFile =
 
 {- | Get the current state of an axis control on a game controller.
 
- See @<https://wiki.libsdl.org/SDL_GameControllerGetAxis SDL_GameControllerGetAxis>@ for C documentation.
+ See @<https://wiki.libsdl.org/SDL2/SDL_GameControllerGetAxis SDL_GameControllerGetAxis>@ for C documentation.
 -}
 controllerAxis :: MonadIO m => GameController -> ControllerAxis -> m Int16
 controllerAxis (GameController c) axis =
@@ -166,7 +166,7 @@ controllerAxis (GameController c) axis =
 
 {- | Get the current state of a button on a game controller.
 
- See @<https://wiki.libsdl.org/SDL_GameControllerGetButton SDL_GameControllerGetButton>@ for C documentation.
+ See @<https://wiki.libsdl.org/SDL2/SDL_GameControllerGetButton SDL_GameControllerGetButton>@ for C documentation.
 -}
 controllerButton :: MonadIO m => GameController -> ControllerButton -> m ControllerButtonState
 controllerButton (GameController c) button =
