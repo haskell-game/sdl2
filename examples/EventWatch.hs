@@ -51,4 +51,9 @@ appLoop = waitEvent >>= go
         |  keyboardEventKeyMotion keyboardEvent == Pressed &&
            keysymKeycode (keyboardEventKeysym keyboardEvent) == KeycodeQ
         -> return ()
+      KeyboardEvent keyboardEvent
+        |  keyboardEventKeyMotion keyboardEvent == Pressed
+        -> print (keyboardEventKeysym keyboardEvent) >> waitEvent >>= go
+      QuitEvent
+        -> return ()
       _ -> waitEvent >>= go
