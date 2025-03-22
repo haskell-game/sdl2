@@ -1,7 +1,13 @@
 2.5.X.Y
 =======
 
+2.5.5.1
+=======
+
+* Added `getTicks64`
 * Added `rendererIntegerScale`
+* Added unboxed Vector instances for Rectangle
+* Updated dependency ranges
 
 2.5.5.0
 =======
