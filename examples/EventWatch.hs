@@ -54,6 +54,12 @@ appLoop = waitEvent >>= go
       KeyboardEvent keyboardEvent
         |  keyboardEventKeyMotion keyboardEvent == Pressed
         -> print (keyboardEventKeysym keyboardEvent) >> waitEvent >>= go
+      MouseMotionEvent mouseMotionEvent
+        -> print mouseMotionEvent >> waitEvent >>= go
+      MouseButtonEvent mouseButtonEvent
+        -> print mouseButtonEvent >> waitEvent >>= go
+      MouseWheelEvent mouseWheelEvent
+      -> print mouseWheelEvent >> waitEvent >>= go
       QuitEvent
         -> return ()
       _ -> waitEvent >>= go
