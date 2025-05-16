@@ -112,6 +112,7 @@ module SDL.Raw.Event (
   gameControllerNameForIndex,
   gameControllerOpen,
   gameControllerUpdate,
+  gameControllerRumble,
   isGameController,
   eventBuffer,
   eventBufferSize
@@ -235,6 +236,7 @@ foreign import ccall "SDL.h SDL_GameControllerName" gameControllerNameFFI :: Gam
 foreign import ccall "SDL.h SDL_GameControllerNameForIndex" gameControllerNameForIndexFFI :: CInt -> IO CString
 foreign import ccall "SDL.h SDL_GameControllerOpen" gameControllerOpenFFI :: CInt -> IO GameController
 foreign import ccall "SDL.h SDL_GameControllerUpdate" gameControllerUpdateFFI :: IO ()
+foreign import ccall "SDL.h SDL_GameControllerRumble" gameControllerRumbleFFI :: GameController -> CUShort -> CUShort -> CUInt -> IO CInt
 foreign import ccall "SDL.h SDL_IsGameController" isGameControllerFFI :: CInt -> IO Bool
 
 foreign import ccall "sdlhelper.c SDLHelper_GetEventBufferSize" eventBufferSize :: CInt
@@ -674,6 +676,10 @@ gameControllerOpen v1 = liftIO $ gameControllerOpenFFI v1
 gameControllerUpdate :: MonadIO m => m ()
 gameControllerUpdate = liftIO gameControllerUpdateFFI
 {-# INLINE gameControllerUpdate #-}
+
+gameControllerRumble :: MonadIO m => GameController -> CUShort -> CUShort -> CUInt -> m CInt
+gameControllerRumble v1 v2 v3 v4 = liftIO $ gameControllerRumbleFFI v1 v2 v3 v4
+{-# INLINE gameControllerRumble #-}
 
 isGameController :: MonadIO m => CInt -> m Bool
 isGameController v1 = liftIO $ isGameControllerFFI v1
