@@ -132,6 +132,8 @@ module SDL.Raw.Video (
   renderFillRectsF,
   renderGeometry,
   renderGeometryRaw,
+  getTextureScaleMode,
+  setTextureScaleMode,
 #endif
   renderGetClipRect,
   renderGetIntegerScale,
@@ -365,6 +367,8 @@ foreign import ccall "SDL.h SDL_RenderFillRectF" renderFillRectFFFI :: Renderer 
 foreign import ccall "SDL.h SDL_RenderFillRectsF" renderFillRectsFFFI :: Renderer -> Ptr FRect -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderGeometry" renderGeometryFFI :: Renderer -> Texture -> Ptr Vertex -> CInt -> Ptr CInt -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderGeometryRaw" renderGeometryRawFFI :: Renderer -> Texture -> Ptr FPoint -> CInt -> Ptr Color -> CInt -> Ptr FPoint -> CInt -> CInt -> Ptr () -> CInt -> CInt -> IO CInt
+foreign import ccall "SDL.h SDL_GetTextureScaleMode" getTextureScaleModeFFI :: Texture -> Ptr ScaleMode -> IO CInt
+foreign import ccall "SDL.h SDL_SetTextureScaleMode" setTextureScaleModeFFI :: Texture -> ScaleMode -> IO CInt
 #endif
 foreign import ccall "sqlhelper.c SDLHelper_RenderFillRectEx" renderFillRectExFFI :: Renderer -> CInt -> CInt -> CInt -> CInt -> IO CInt
 foreign import ccall "SDL.h SDL_RenderFillRects" renderFillRectsFFI :: Renderer -> Ptr Rect -> CInt -> IO CInt
@@ -964,6 +968,15 @@ renderGeometry v1 v2 v3 v4 v5 v6 = liftIO $ renderGeometryFFI v1 v2 v3 v4 v5 v6
 renderGeometryRaw :: MonadIO m => Renderer -> Texture -> Ptr FPoint -> CInt -> Ptr Color -> CInt -> Ptr FPoint -> CInt -> CInt -> Ptr () -> CInt -> CInt -> m CInt
 renderGeometryRaw v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 v12 = liftIO $ renderGeometryRawFFI v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 v12
 {-# INLINE renderGeometryRaw #-}
+
+getTextureScaleMode :: MonadIO m => Texture -> Ptr ScaleMode -> m CInt
+getTextureScaleMode t ps = liftIO $ getTextureScaleModeFFI t ps
+{-# INLINE getTextureScaleMode #-}
+
+setTextureScaleMode :: MonadIO m => Texture -> ScaleMode -> m CInt
+setTextureScaleMode t s = liftIO $ setTextureScaleModeFFI t s
+{-# INLINE setTextureScaleMode #-}
+
 #endif
 
 
