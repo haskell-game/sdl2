@@ -137,7 +137,7 @@ library
       -DRECENT_ISH
     if flag(pkgconfig)
       pkgconfig-depends:
-        sdl2 >= 2.0.10
+        sdl2 >= 2.0.14
   else
     if flag(pkgconfig)
       pkgconfig-depends:

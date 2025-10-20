@@ -118,6 +118,10 @@ module SDL.Video.Renderer
   , textureBlendMode
   , BlendMode(..)
   , textureColorMod
+#ifdef RECENT_ISH
+  , textureScaleMode
+  , ScaleMode(..)
+#endif
 
   -- ** Accessing 'Texture' Data
   , lockTexture
@@ -1334,6 +1338,51 @@ textureBlendMode (Texture t) = makeStateVar getTextureBlendMode setTextureBlendM
   setTextureBlendMode bm =
     throwIfNeg_ "SDL.Video.Renderer.setTextureBlendMode" "SDL_SetTextureBlendMode" $
     Raw.setTextureBlendMode t (toNumber bm)
+
+#ifdef RECENT_ISH
+
+-- | Scale modes used in copy operations
+data ScaleMode
+  = ScaleModeNearest
+    -- ^ Nearest-neighbor scaling
+  | ScaleModeLinear
+    -- ^ Linear scaling
+  | ScaleModeBest
+    -- ^ anisotropic filtering
+  deriving (Bounded, Data, Enum, Eq, Generic, Ord, Read, Show, Typeable)
+
+instance FromNumber ScaleMode Word32 where
+  fromNumber n = case n of
+    Raw.SDL_ScaleModeNearest -> ScaleModeNearest
+    Raw.SDL_ScaleModeLinear -> ScaleModeLinear
+    Raw.SDL_ScaleModeBest -> ScaleModeBest
+    _ -> error $ "fromNumber <ScaleMode>: unkonwn scale mode: " ++ (show n)
+
+instance ToNumber ScaleMode Word32 where
+  toNumber ScaleModeNearest = Raw.SDL_ScaleModeNearest
+  toNumber ScaleModeLinear = Raw.SDL_ScaleModeLinear
+  toNumber ScaleModeBest = Raw.SDL_ScaleModeBest
+
+-- | Get or set the scale mode use for texture scale operations.
+--
+-- This 'StateVar' can be modified using '$=' and the current value retrieved with 'get'.
+--
+-- See @<https://wiki.libsdl.org/SDL2/SDL_GetTextureScaleMode SDL_GetTextureScaleMode>@ and @<https://wiki.libsdl.org/SDL2/SDL_SetTextureScaleMode SDL_SetTextureScaleMode>@
+textureScaleMode :: Texture -> StateVar ScaleMode
+textureScaleMode (Texture t) = makeStateVar getTextureScaleMode setTextureScaleMode
+  where
+  getTextureScaleMode =
+    alloca $ \x -> do
+      throwIfNeg_ "SDL.Video.Renderer.getTextureScaleMode" "SDL_GetTextureScaleMode" $
+        Raw.getTextureScaleMode t x
+      fromNumber <$> peek x
+
+  setTextureScaleMode sm =
+    throwIfNeg_ "SDL.Video.Renderer.setTextureScaleMode" "SDL_SetTextureScaleMode" $
+    Raw.setTextureScaleMode t (toNumber sm)
+
+#endif
+
 
 -- | Get or set the blend mode used for blit operations.
 --

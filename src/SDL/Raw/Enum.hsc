@@ -691,6 +691,15 @@ module SDL.Raw.Enum (
   pattern SDL_SYSTEM_CURSOR_IBEAM,
   pattern SDL_SYSTEM_CURSOR_WAIT,
 
+#ifdef RECENT_ISH
+  -- ** Scale mode
+  ScaleMode,
+  -- NB. no idea why this enum uses camel case instead of scream case
+  pattern SDL_ScaleModeNearest,
+  pattern SDL_ScaleModeLinear,
+  pattern SDL_ScaleModeBest,
+#endif
+
   -- ** System Cursor
   SystemCursor,
   pattern SDL_SYSTEM_CURSOR_CROSSHAIR,
@@ -978,6 +987,9 @@ type LogPriority = (#type SDL_LogPriority)
 type PowerState = (#type SDL_PowerState)
 type RendererFlip = (#type SDL_RendererFlip)
 type Scancode = (#type SDL_Scancode)
+#ifdef RECENT_ISH
+type ScaleMode = (#type SDL_ScaleMode)
+#endif
 type SystemCursor = (#type SDL_SystemCursor)
 type ThreadPriority = (#type SDL_ThreadPriority)
 
@@ -1620,6 +1632,12 @@ pattern SDL_SCANCODE_SLEEP = (#const SDL_SCANCODE_SLEEP) :: Scancode
 pattern SDL_SCANCODE_APP1 = (#const SDL_SCANCODE_APP1) :: Scancode
 pattern SDL_SCANCODE_APP2 = (#const SDL_SCANCODE_APP2) :: Scancode
 pattern SDL_NUM_SCANCODES = (#const SDL_NUM_SCANCODES) :: Scancode
+
+#ifdef RECENT_ISH
+pattern SDL_ScaleModeNearest = (#const SDL_ScaleModeNearest) :: ScaleMode
+pattern SDL_ScaleModeLinear = (#const SDL_ScaleModeLinear) :: ScaleMode
+pattern SDL_ScaleModeBest = (#const SDL_ScaleModeBest) :: ScaleMode
+#endif
 
 pattern SDL_SYSTEM_CURSOR_ARROW = (#const SDL_SYSTEM_CURSOR_ARROW) :: SystemCursor
 pattern SDL_SYSTEM_CURSOR_IBEAM = (#const SDL_SYSTEM_CURSOR_IBEAM) :: SystemCursor
