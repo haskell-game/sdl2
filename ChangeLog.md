@@ -1,6 +1,12 @@
 2.5.X.Y
 =======
 
+* Added game controller helper functions: `isGameController`, `mkControllerDevice`, `mkControllerDevice'`, `controllerFromInstanceID`
+* Added raw bindings for player index, LED control, rumble triggers, and touchpad query functions
+* Added `JoystickIndex` type alias for clarity
+* `getControllerID` now returns `Raw.JoystickID` for improved type documentation
+* Fixed `controllerDeviceEventWhich` documentation to clarify index vs instance ID semantics
+
 2.5.5.1
 =======
 
