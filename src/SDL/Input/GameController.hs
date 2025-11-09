@@ -7,8 +7,15 @@
 
 module SDL.Input.GameController
   ( ControllerDevice (..)
-  , availableControllers
+  , GameController
+  , JoystickIndex
+  , Raw.JoystickID
 
+  , isGameController
+  , mkControllerDevice
+  , mkControllerDevice'
+  , controllerFromInstanceID
+  , availableControllers
   , openController
   , closeController
   , controllerAttached
@@ -29,12 +36,12 @@ module SDL.Input.GameController
   , ControllerDeviceConnection (..)
   ) where
 
-import Control.Monad (filterM)
+import Control.Monad (guard)
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.Trans.Maybe (runMaybeT)
 import Data.Data (Data)
 import Data.Int
 import Data.Text (Text)
-import Data.Traversable (for)
 import Data.Typeable
 import Data.Word
 import Foreign.C (withCString)
@@ -60,26 +67,61 @@ import qualified Data.Vector as V
 import Control.Applicative
 #endif
 
+type JoystickIndex = CInt
+
 {- | A description of game controller that can be opened using 'openController'.
  To retrieve a list of connected game controllers, use 'availableControllers'.
 -}
 data ControllerDevice = ControllerDevice
   { gameControllerDeviceName :: Text
-  , gameControllerDeviceId :: CInt
+  , gameControllerDeviceId :: JoystickIndex
   }
   deriving (Eq, Generic, Read, Ord, Show, Typeable)
+
+
+{- | Check if the given joystick is supported by the game controller interface.
+
+ See @<https://wiki.libsdl.org/SDL2/SDL_IsGameController SDL_IsGameController>@ for C documentation.
+-}
+isGameController :: MonadIO m => JoystickIndex -> m Bool
+isGameController = Raw.isGameController
+
+{- | Create a 'ControllerDevice' from a 'JoystickIndex'. Returns 'Nothing' if 
+     the 'JoystickIndex' does not support the game controller interface.
+-}
+mkControllerDevice :: MonadIO m => JoystickIndex -> m (Maybe ControllerDevice)
+mkControllerDevice i = runMaybeT $ do
+  isGC <- isGameController i
+  guard isGC
+  mkControllerDevice' i
+
+{- | Create a 'ControllerDevice' from a 'JoystickIndex'. Does not check whether
+     the 'JoystickIndex' supports the game controller interface.
+-}
+mkControllerDevice' :: MonadIO m => JoystickIndex -> m ControllerDevice
+mkControllerDevice' i = do
+  cstr <- liftIO $
+    throwIfNull "SDL.Input.GameController.mkControllerDevice'" "SDL_GameControllerNameForIndex" $
+      Raw.gameControllerNameForIndex (fromIntegral i)
+  name <- liftIO $ Text.decodeUtf8 <$> BS.packCString cstr
+  return (ControllerDevice name i)
+
+{- | Get the 'GameController' associated with a 'Raw.JoystickID'.
+
+ See @<https://wiki.libsdl.org/SDL2/SDL_GameControllerFromInstanceID SDL_GameControllerFromInstanceID>@ for C documentation.
+-}
+controllerFromInstanceID :: MonadIO m => Raw.JoystickID -> m GameController
+controllerFromInstanceID i =
+  fmap GameController $
+    throwIfNull "SDL.Input.GameController.controllerFromInstanceID" "SDL_GameControllerFromInstanceID" $
+      Raw.gameControllerFromInstanceID (fromIntegral i)
+
 
 -- | Enumerate all connected Controllers, retrieving a description of each.
 availableControllers :: MonadIO m => m (V.Vector ControllerDevice)
 availableControllers = liftIO $ do
-  n <- numJoysticks
-  indices <- filterM Raw.isGameController [0 .. (n - 1)]
-  fmap V.fromList $ for indices $ \i -> do
-    cstr <-
-      throwIfNull "SDL.Input.Controller.availableGameControllers" "SDL_GameControllerNameForIndex" $
-        Raw.gameControllerNameForIndex i
-    name <- Text.decodeUtf8 <$> BS.packCString cstr
-    return (ControllerDevice name i)
+  n <- fromIntegral <$> numJoysticks
+  V.catMaybes <$> V.generateM n (mkControllerDevice . fromIntegral)
 
 {- | Open a controller so that you can start receiving events from interaction with this controller.
 
@@ -90,10 +132,10 @@ openController
   => ControllerDevice
   -- ^ The device to open. Use 'availableControllers' to find 'JoystickDevices's
   -> m GameController
-openController (ControllerDevice _ x) =
+openController (ControllerDevice _ i) =
   fmap GameController $
     throwIfNull "SDL.Input.GameController.openController" "SDL_GameControllerOpen" $
-      Raw.gameControllerOpen x
+      Raw.gameControllerOpen (fromIntegral i)
 
 {- | Close a controller previously opened with 'openController'.
 
@@ -114,7 +156,7 @@ controllerAttached (GameController c) = Raw.gameControllerGetAttached c
 
  See @<https://wiki.libsdl.org/SDL2/SDL_GameControllerInstanceID SDL_GameControllerInstanceID>@ for C documentation.
 -}
-getControllerID :: MonadIO m => GameController -> m Int32
+getControllerID :: MonadIO m => GameController -> m Raw.JoystickID
 getControllerID (GameController c) =
   throwIfNeg "SDL.Input.GameController.getControllerID" "SDL_JoystickInstanceID" $
     Raw.joystickInstanceID c
