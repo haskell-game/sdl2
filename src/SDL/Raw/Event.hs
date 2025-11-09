@@ -96,6 +96,7 @@ module SDL.Raw.Event (
   gameControllerClose,
   gameControllerEventState,
   gameControllerFromInstanceID,
+  gameControllerFromPlayerIndex,
   gameControllerGetAttached,
   gameControllerGetAxis,
   gameControllerGetAxisFromString,
@@ -104,6 +105,12 @@ module SDL.Raw.Event (
   gameControllerGetButton,
   gameControllerGetButtonFromString,
   gameControllerGetJoystick,
+  gameControllerGetNumTouchpadFingers,
+  gameControllerGetNumTouchpads,
+  gameControllerGetPlayerIndex,
+  gameControllerHasLED,
+  gameControllerHasRumble,
+  gameControllerHasRumbleTriggers,
   gameControllerGetStringForAxis,
   gameControllerGetStringForButton,
   gameControllerMapping,
@@ -113,6 +120,9 @@ module SDL.Raw.Event (
   gameControllerOpen,
   gameControllerUpdate,
   gameControllerRumble,
+  gameControllerRumbleTriggers,
+  gameControllerSetLED,
+  gameControllerSetPlayerIndex,
   isGameController,
   eventBuffer,
   eventBufferSize
@@ -220,6 +230,7 @@ foreign import ccall "SDL.h SDL_GameControllerAddMappingsFromRW" gameControllerA
 foreign import ccall "SDL.h SDL_GameControllerClose" gameControllerCloseFFI :: GameController -> IO ()
 foreign import ccall "SDL.h SDL_GameControllerEventState" gameControllerEventStateFFI :: CInt -> IO CInt
 foreign import ccall "SDL.h SDL_GameControllerFromInstanceID" gameControllerFromInstanceIDFFI :: JoystickID -> IO GameController
+foreign import ccall "SDL.h SDL_GameControllerFromPlayerIndex" gameControllerFromPlayerIndexFFI :: CInt -> IO GameController
 foreign import ccall "SDL.h SDL_GameControllerGetAttached" gameControllerGetAttachedFFI :: GameController -> IO Bool
 foreign import ccall "SDL.h SDL_GameControllerGetAxis" gameControllerGetAxisFFI :: GameController -> GameControllerAxis -> IO Int16
 foreign import ccall "SDL.h SDL_GameControllerGetAxisFromString" gameControllerGetAxisFromStringFFI :: CString -> IO GameControllerAxis
@@ -228,6 +239,12 @@ foreign import ccall "sdlhelper.h SDLHelper_GameControllerGetBindForButton" game
 foreign import ccall "SDL.h SDL_GameControllerGetButton" gameControllerGetButtonFFI :: GameController -> GameControllerButton -> IO Word8
 foreign import ccall "SDL.h SDL_GameControllerGetButtonFromString" gameControllerGetButtonFromStringFFI :: CString -> IO GameControllerButton
 foreign import ccall "SDL.h SDL_GameControllerGetJoystick" gameControllerGetJoystickFFI :: GameController -> IO Joystick
+foreign import ccall "SDL.h SDL_GameControllerGetNumTouchpadFingers" gameControllerGetNumTouchpadFingersFFI :: GameController -> CInt -> IO CInt
+foreign import ccall "SDL.h SDL_GameControllerGetNumTouchpads" gameControllerGetNumTouchpadsFFI :: GameController -> IO CInt
+foreign import ccall "SDL.h SDL_GameControllerGetPlayerIndex" gameControllerGetPlayerIndexFFI :: GameController -> IO CInt
+foreign import ccall "SDL.h SDL_GameControllerHasLED" gameControllerHasLEDFFI :: GameController -> IO Bool
+foreign import ccall "SDL.h SDL_GameControllerHasRumble" gameControllerHasRumbleFFI :: GameController -> IO Bool
+foreign import ccall "SDL.h SDL_GameControllerHasRumbleTriggers" gameControllerHasRumbleTriggersFFI :: GameController -> IO Bool
 foreign import ccall "SDL.h SDL_GameControllerGetStringForAxis" gameControllerGetStringForAxisFFI :: GameControllerAxis -> IO CString
 foreign import ccall "SDL.h SDL_GameControllerGetStringForButton" gameControllerGetStringForButtonFFI :: GameControllerButton -> IO CString
 foreign import ccall "SDL.h SDL_GameControllerMapping" gameControllerMappingFFI :: GameController -> IO CString
@@ -237,6 +254,9 @@ foreign import ccall "SDL.h SDL_GameControllerNameForIndex" gameControllerNameFo
 foreign import ccall "SDL.h SDL_GameControllerOpen" gameControllerOpenFFI :: CInt -> IO GameController
 foreign import ccall "SDL.h SDL_GameControllerUpdate" gameControllerUpdateFFI :: IO ()
 foreign import ccall "SDL.h SDL_GameControllerRumble" gameControllerRumbleFFI :: GameController -> CUShort -> CUShort -> CUInt -> IO CInt
+foreign import ccall "SDL.h SDL_GameControllerRumbleTriggers" gameControllerRumbleTriggersFFI :: GameController -> CUShort -> CUShort -> CUInt -> IO CInt
+foreign import ccall "SDL.h SDL_GameControllerSetLED" gameControllerSetLEDFFI :: GameController -> Word8 -> Word8 -> Word8 -> IO CInt
+foreign import ccall "SDL.h SDL_GameControllerSetPlayerIndex" gameControllerSetPlayerIndexFFI :: GameController -> CInt -> IO ()
 foreign import ccall "SDL.h SDL_IsGameController" isGameControllerFFI :: CInt -> IO Bool
 
 foreign import ccall "sdlhelper.c SDLHelper_GetEventBufferSize" eventBufferSize :: CInt
@@ -607,6 +627,10 @@ gameControllerFromInstanceID :: MonadIO m => JoystickID -> m GameController
 gameControllerFromInstanceID v1 = liftIO $ gameControllerFromInstanceIDFFI v1
 {-# INLINE gameControllerFromInstanceID #-}
 
+gameControllerFromPlayerIndex :: MonadIO m => CInt -> m GameController
+gameControllerFromPlayerIndex v1 = liftIO $ gameControllerFromPlayerIndexFFI v1
+{-# INLINE gameControllerFromPlayerIndex #-}
+
 gameControllerGetAttached :: MonadIO m => GameController -> m Bool
 gameControllerGetAttached v1 = liftIO $ gameControllerGetAttachedFFI v1
 {-# INLINE gameControllerGetAttached #-}
@@ -642,6 +666,31 @@ gameControllerGetButtonFromString v1 = liftIO $ gameControllerGetButtonFromStrin
 gameControllerGetJoystick :: MonadIO m => GameController -> m Joystick
 gameControllerGetJoystick v1 = liftIO $ gameControllerGetJoystickFFI v1
 {-# INLINE gameControllerGetJoystick #-}
+
+gameControllerGetNumTouchpadFingers :: MonadIO m => GameController -> CInt -> m CInt
+gameControllerGetNumTouchpadFingers gamecontroller touchpad =
+  liftIO $ gameControllerGetNumTouchpadFingersFFI gamecontroller touchpad
+{-# INLINE gameControllerGetNumTouchpadFingers #-}
+
+gameControllerGetNumTouchpads :: MonadIO m => GameController -> m CInt
+gameControllerGetNumTouchpads gamecontroller = liftIO $ gameControllerGetNumTouchpadsFFI gamecontroller
+{-# INLINE gameControllerGetNumTouchpads #-}
+
+gameControllerGetPlayerIndex :: MonadIO m => GameController -> m CInt
+gameControllerGetPlayerIndex gamecontroller = liftIO $ gameControllerGetPlayerIndexFFI gamecontroller
+{-# INLINE gameControllerGetPlayerIndex #-}
+
+gameControllerHasLED :: MonadIO m => GameController -> m Bool
+gameControllerHasLED gamecontroller = liftIO $ gameControllerHasLEDFFI gamecontroller
+{-# INLINE gameControllerHasLED #-}
+
+gameControllerHasRumble :: MonadIO m => GameController -> m Bool
+gameControllerHasRumble gamecontroller = liftIO $ gameControllerHasRumbleFFI gamecontroller
+{-# INLINE gameControllerHasRumble #-}
+
+gameControllerHasRumbleTriggers :: MonadIO m => GameController -> m Bool
+gameControllerHasRumbleTriggers gamecontroller = liftIO $ gameControllerHasRumbleTriggersFFI gamecontroller
+{-# INLINE gameControllerHasRumbleTriggers #-}
 
 gameControllerGetStringForAxis :: MonadIO m => GameControllerAxis -> m CString
 gameControllerGetStringForAxis v1 = liftIO $ gameControllerGetStringForAxisFFI v1
@@ -680,6 +729,18 @@ gameControllerUpdate = liftIO gameControllerUpdateFFI
 gameControllerRumble :: MonadIO m => GameController -> CUShort -> CUShort -> CUInt -> m CInt
 gameControllerRumble v1 v2 v3 v4 = liftIO $ gameControllerRumbleFFI v1 v2 v3 v4
 {-# INLINE gameControllerRumble #-}
+
+gameControllerRumbleTriggers :: MonadIO m => GameController -> CUShort -> CUShort -> CUInt -> m CInt
+gameControllerRumbleTriggers gamecontroller v1 v2 v3 = liftIO $ gameControllerRumbleTriggersFFI gamecontroller v1 v2 v3
+{-# INLINE gameControllerRumbleTriggers #-}
+
+gameControllerSetLED :: MonadIO m => GameController -> Word8 -> Word8 -> Word8 -> m CInt
+gameControllerSetLED gamecontroller v1 v2 v3 = liftIO $ gameControllerSetLEDFFI gamecontroller v1 v2 v3
+{-# INLINE gameControllerSetLED #-}
+
+gameControllerSetPlayerIndex :: MonadIO m => GameController -> CInt -> m ()
+gameControllerSetPlayerIndex gamecontroller v1 = liftIO $ gameControllerSetPlayerIndexFFI gamecontroller v1
+{-# INLINE gameControllerSetPlayerIndex #-}
 
 isGameController :: MonadIO m => CInt -> m Bool
 isGameController v1 = liftIO $ isGameControllerFFI v1
