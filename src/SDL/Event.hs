@@ -428,7 +428,7 @@ data ControllerDeviceEventData =
   ControllerDeviceEventData {controllerDeviceEventConnection :: !ControllerDeviceConnection
                              -- ^ Was the device added, removed, or remapped?
                             ,controllerDeviceEventWhich :: !Raw.JoystickID
-                             -- ^ The joystick instance ID that reported the event.
+                             -- ^ The joystick device index for the ADDED event, instance id for the REMOVED or REMAPPED event
                             }
   deriving (Eq,Ord,Generic,Show,Typeable)
 
