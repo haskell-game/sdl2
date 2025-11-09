@@ -42,7 +42,6 @@ import Control.Monad.Trans.Maybe (runMaybeT)
 import Data.Data (Data)
 import Data.Int
 import Data.Text (Text)
-import Data.Traversable (for)
 import Data.Typeable
 import Data.Word
 import Foreign.C (withCString)
@@ -85,10 +84,10 @@ data ControllerDevice = ControllerDevice
  See @<https://wiki.libsdl.org/SDL2/SDL_IsGameController SDL_IsGameController>@ for C documentation.
 -}
 isGameController :: MonadIO m => JoystickIndex -> m Bool
-isGameController = Raw.isGameController . fromIntegral
+isGameController = Raw.isGameController
 
-{- | Create a 'ControllerDevice' from a 'Raw.JoystickID'. Returns 'Nothing' if 
-     the 'Raw.JoystickID' does not support the game controller interface.
+{- | Create a 'ControllerDevice' from a 'JoystickIndex'. Returns 'Nothing' if 
+     the 'JoystickIndex' does not support the game controller interface.
 -}
 mkControllerDevice :: MonadIO m => JoystickIndex -> m (Maybe ControllerDevice)
 mkControllerDevice i = runMaybeT $ do
@@ -102,7 +101,7 @@ mkControllerDevice i = runMaybeT $ do
 mkControllerDevice' :: MonadIO m => JoystickIndex -> m ControllerDevice
 mkControllerDevice' i = do
   cstr <- liftIO $
-    throwIfNull "SDL.Input.Controller.availableGameControllers" "SDL_GameControllerNameForIndex" $
+    throwIfNull "SDL.Input.GameController.mkControllerDevice'" "SDL_GameControllerNameForIndex" $
       Raw.gameControllerNameForIndex (fromIntegral i)
   name <- liftIO $ Text.decodeUtf8 <$> BS.packCString cstr
   return (ControllerDevice name i)
