@@ -14,6 +14,7 @@ module SDL.Input.GameController
   , isGameController
   , mkControllerDevice
   , mkControllerDevice'
+  , controllerFromInstanceID
   , availableControllers
   , openController
   , closeController
@@ -105,6 +106,17 @@ mkControllerDevice' i = do
       Raw.gameControllerNameForIndex (fromIntegral i)
   name <- liftIO $ Text.decodeUtf8 <$> BS.packCString cstr
   return (ControllerDevice name i)
+
+{- | Get the 'GameController' associated with a 'Raw.JoystickID'.
+
+ See @<https://wiki.libsdl.org/SDL2/SDL_GameControllerFromInstanceID SDL_GameControllerFromInstanceID>@ for C documentation.
+-}
+controllerFromInstanceID :: MonadIO m => Raw.JoystickID -> m GameController
+controllerFromInstanceID i =
+  fmap GameController $
+    throwIfNull "SDL.Input.GameController.controllerFromInstanceID" "SDL_GameControllerFromInstanceID" $
+      Raw.gameControllerFromInstanceID (fromIntegral i)
+
 
 -- | Enumerate all connected Controllers, retrieving a description of each.
 availableControllers :: MonadIO m => m (V.Vector ControllerDevice)
