@@ -611,10 +611,10 @@ instance Storable a => Storable (Rectangle a) where
     poke (castPtr ptr) o
     poke (castPtr (ptr `plusPtr` sizeOf o)) s
 
-newtype instance MVector s (Rectangle a) = MV_Rectangle (MVector s (Point V2 a, V2 a))
-newtype instance Vector (Rectangle a) = V_Rectangle (Vector (Point V2 a, V2 a))
+newtype instance UV.MVector s (Rectangle a) = MV_Rectangle (UV.MVector s (Point V2 a, V2 a))
+newtype instance UV.Vector (Rectangle a) = V_Rectangle (UV.Vector (Point V2 a, V2 a))
 
-instance UV.Unbox a => GMV.MVector MVector (Rectangle a) where
+instance UV.Unbox a => GMV.MVector UV.MVector (Rectangle a) where
   {-# INLINE basicLength #-}
   {-# INLINE basicUnsafeSlice #-}
   {-# INLINE basicOverlaps #-}
@@ -632,7 +632,7 @@ instance UV.Unbox a => GMV.MVector MVector (Rectangle a) where
   basicInitialize (MV_Rectangle v) = GMV.basicInitialize v
 #endif
 
-instance UV.Unbox a => GV.Vector Vector (Rectangle a) where
+instance UV.Unbox a => GV.Vector UV.Vector (Rectangle a) where
   {-# INLINE basicUnsafeFreeze #-}
   {-# INLINE basicUnsafeThaw   #-}
   {-# INLINE basicLength       #-}
