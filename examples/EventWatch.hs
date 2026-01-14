@@ -59,7 +59,7 @@ appLoop = waitEvent >>= go
       MouseButtonEvent mouseButtonEvent
         -> print mouseButtonEvent >> waitEvent >>= go
       MouseWheelEvent mouseWheelEvent
-      -> print mouseWheelEvent >> waitEvent >>= go
+        -> print mouseWheelEvent >> waitEvent >>= go
       QuitEvent
         -> return ()
       _ -> waitEvent >>= go
