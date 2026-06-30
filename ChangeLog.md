@@ -1,4 +1,4 @@
-2.5.X.Y
+2.5.6.0
 =======
 
 * Added game controller helper functions: `isGameController`, `mkControllerDevice`, `mkControllerDevice'`, `controllerFromInstanceID`
