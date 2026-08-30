@@ -8,18 +8,17 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        ghc: ['8.8', '8.10', '9.0', '9.2']
+        ghc: ['8.10', '9.2', '9.6']
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        # exclude:
-        #   # GHC 8.8+ only works with cabal v3+
-        #   - ghc: 8.8.4
-        #     cabal: 2.4.1.0
+        exclude:
+        - ghc: 8.10
+          os: macOS-latest
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} ghc-${{ matrix.ghc }}
     steps:
       - uses: actions/checkout@v2
 
-      - uses: haskell/actions/setup@v1
+      - uses: haskell-actions/setup@v2
         with:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
@@ -29,11 +28,6 @@ jobs:
 
       - if: matrix.os == 'macOS-latest'
         run: brew install pkg-config SDL2
-
-      - run: cabal build --only-dependencies -j2
-
-      - if: matrix.os != 'windows-latest'
-        run: cabal build
 
       - if: matrix.os == 'windows-latest'
         uses: msys2/setup-msys2@v2
@@ -45,4 +39,9 @@ jobs:
             mingw-w64-x86_64-SDL2
       - if: matrix.os == 'windows-latest'
         shell: msys2 {0}
+        run: cabal build
+
+      - run: cabal build --only-dependencies -j2
+
+      - if: matrix.os != 'windows-latest'
         run: cabal build
