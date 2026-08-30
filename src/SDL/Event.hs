@@ -83,6 +83,7 @@ module SDL.Event
     -- * Auxiliary event data
   , InputMotion(..)
   , MouseButton(..)
+  , convertRaw
   ) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
